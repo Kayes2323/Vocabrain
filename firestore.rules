@@ -1,0 +1,82 @@
+# Firebase Firestore Security Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isSignedIn() && 
+             request.auth.token.email == 'aakayes99@gmail.com';
+    }
+    
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+    
+    function hasPremium() {
+      let sub = get(/databases/$(database)/documents/subscriptions/$(request.auth.uid));
+      return isSignedIn() && sub.data.status == 'active';
+    }
+    
+    // Users Collection
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create: if isSignedIn() && isOwner(uid);
+      allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Subscriptions Collection
+    match /subscriptions/{subscriptionId} {
+      allow read: if isSignedIn() && 
+                     (isOwner(get(/databases/$(database)/documents/subscriptions/$(subscriptionId)).data.userId) || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isAdmin() || 
+                       (isSignedIn() && isOwner(get(/databases/$(database)/documents/subscriptions/$(subscriptionId)).data.userId));
+      allow delete: if isAdmin();
+    }
+    
+    // User Progress Collection
+    match /user_progress/{progressId} {
+      allow read: if isSignedIn() && 
+                     (isOwner(get(/databases/$(database)/documents/user_progress/$(progressId)).data.userId) || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && 
+                       (isOwner(get(/databases/$(database)/documents/user_progress/$(progressId)).data.userId) || isAdmin());
+      allow delete: if isAdmin();
+    }
+    
+    // Favorite Words Collection
+    match /favorite_words/{favoriteId} {
+      allow read: if isSignedIn() && 
+                     (isOwner(get(/databases/$(database)/documents/favorite_words/$(favoriteId)).data.userId) || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && 
+                       (isOwner(get(/databases/$(database)/documents/favorite_words/$(favoriteId)).data.userId) || isAdmin());
+      allow delete: if isSignedIn() && 
+                       (isOwner(get(/databases/$(database)/documents/favorite_words/$(favoriteId)).data.userId) || isAdmin());
+    }
+    
+    // Vocabulary Collection (Public Read, Admin Write)
+    match /vocabulary/{wordId} {
+      allow read: if true;
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Payment History Collection
+    match /payment_history/{paymentId} {
+      allow read: if isSignedIn() && 
+                     (isOwner(get(/databases/$(database)/documents/payment_history/$(paymentId)).data.userId) || isAdmin());
+      allow create: if isSignedIn();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}
