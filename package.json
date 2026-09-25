@@ -1,12 +1,14 @@
 {
-  "name": "my-project",
+  "name": "vocab-brain",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:rules": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"node scripts/test-firestore-rules.mjs\"",
+    "emulators": "npx -y firebase-tools@15 emulators:start --only auth,firestore --project demo-vocabbrain"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

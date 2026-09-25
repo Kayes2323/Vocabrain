@@ -1,14 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from 'firebase/auth';
-import { BookOpen, GraduationCap, Plane } from 'lucide-react';
-import { auth } from '@/lib/firebase';
+import { BookOpen, GraduationCap, MailCheck, Plane } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,19 +11,10 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { BrandMark } from '@/components/shell/BrandMark';
 import { MinoMark } from '@/components/shell/MinoMark';
+import { authErrorKey } from '@/lib/auth-errors';
 import { cn } from '@/lib/utils';
 
 const PILLAR_ICONS = [GraduationCap, BookOpen, Plane];
-
-function errorKey(err: unknown): string {
-  const code = (err as { code?: string })?.code ?? '';
-  if (code.includes('invalid-credential') || code.includes('wrong-password')) return 'login.errors.credentials';
-  if (code.includes('user-not-found')) return 'login.errors.noUser';
-  if (code.includes('email-already-in-use')) return 'login.errors.exists';
-  if (code.includes('weak-password')) return 'login.errors.weak';
-  if (code.includes('popup-closed')) return 'login.errors.popup';
-  return 'login.errors.generic';
-}
 
 function LanguageToggle() {
   const { locale, setLocale } = useLocale();
@@ -54,72 +38,197 @@ function LanguageToggle() {
   );
 }
 
+type Mode = 'signin' | 'signup' | 'reset';
+
 export default function LoginView() {
-  const { continueAsGuest } = useAuth();
+  const { signIn, signUp, signInWithGoogle, resetPassword, continueAsGuest, canSignIn } = useAuth();
   const { t, list } = useLocale();
+  const [mode, setMode] = useState<Mode>('signin');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetSentTo, setResetSentTo] = useState('');
 
   const run = async (action: () => Promise<unknown>) => {
+    setLoading(true);
+    setError('');
     try {
-      setLoading(true);
-      setError('');
       await action();
     } catch (err) {
-      setError(errorKey(err));
+      setError(authErrorKey(err));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleEmail = (mode: 'signin' | 'signup') => (e: React.FormEvent) => {
-    e.preventDefault();
-    run(() =>
-      mode === 'signin' ? signInWithEmailAndPassword(auth, email, password) : createUserWithEmailAndPassword(auth, email, password),
-    );
+  const switchMode = (next: Mode) => {
+    setMode(next);
+    setError('');
+    setResetSentTo('');
   };
 
-  const fields = (mode: 'signin' | 'signup') => (
-    <form onSubmit={handleEmail(mode)} className="space-y-4 pt-2">
-      <div className="space-y-2">
-        <Label htmlFor={`${mode}-email`}>{t('login.email')}</Label>
-        <Input
-          id={`${mode}-email`}
-          type="email"
-          autoComplete="email"
-          className="h-11"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={loading}
-          required
-        />
+  const emailField = (id: string) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{t('login.email')}</Label>
+      <Input
+        id={id}
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        autoCapitalize="none"
+        className="h-11"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
+        required
+      />
+    </div>
+  );
+
+  const passwordField = (id: string, isNew: boolean) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{t('login.password')}</Label>
+      <Input
+        id={id}
+        type="password"
+        autoComplete={isNew ? 'new-password' : 'current-password'}
+        placeholder={isNew ? t('login.passwordHint') : undefined}
+        minLength={isNew ? 6 : undefined}
+        className="h-11"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
+        required
+      />
+    </div>
+  );
+
+  const errorBox = error && (
+    <Callout tone="danger" className="py-3">
+      <span role="alert">{t(error)}</span>
+    </Callout>
+  );
+
+  const resetView = (
+    <div className="space-y-5">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold tracking-tight">{t('auth.resetTitle')}</h2>
+        <p className="text-muted-foreground">{t('auth.resetBody')}</p>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor={`${mode}-password`}>{t('login.password')}</Label>
-        <Input
-          id={`${mode}-password`}
-          type="password"
-          autoComplete={mode === 'signin' ? 'current-password' : 'new-password'}
-          placeholder={mode === 'signup' ? t('login.passwordHint') : undefined}
-          className="h-11"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={loading}
-          required
-        />
-      </div>
-      <Button type="submit" size="lg" className="w-full" disabled={loading}>
-        {mode === 'signin'
-          ? loading
-            ? t('login.signingIn')
-            : t('login.signIn')
-          : loading
-            ? t('login.creating')
-            : t('login.createAccount')}
+      {resetSentTo ? (
+        <Callout tone="success" icon={MailCheck}>
+          <span role="status">{t('auth.resetSent', { email: resetSentTo })}</span>
+        </Callout>
+      ) : (
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            run(async () => {
+              await resetPassword(email);
+              setResetSentTo(email.trim());
+            });
+          }}
+        >
+          {emailField('reset-email')}
+          <Button type="submit" size="lg" className="w-full" disabled={loading}>
+            {loading ? t('auth.resetSending') : t('auth.resetCta')}
+          </Button>
+        </form>
+      )}
+      {errorBox}
+      <Button variant="ghost" className="w-full" onClick={() => switchMode('signin')}>
+        {t('auth.backToSignIn')}
       </Button>
-    </form>
+    </div>
+  );
+
+  const mainView = (
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h2 className="text-2xl font-semibold tracking-tight">{t('login.welcome')}</h2>
+        <p className="text-muted-foreground">{t('login.subtitle')}</p>
+      </div>
+
+      {canSignIn && (
+        <>
+          <Tabs value={mode} onValueChange={(v) => switchMode(v as Mode)}>
+            <TabsList className="grid h-11 w-full grid-cols-2">
+              <TabsTrigger value="signin">{t('login.signIn')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('login.createAccount')}</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="signin">
+              <form
+                className="space-y-4 pt-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  run(() => signIn(email, password));
+                }}
+              >
+                {emailField('signin-email')}
+                {passwordField('signin-password', false)}
+                <div className="-mt-1 text-right">
+                  <button type="button" onClick={() => switchMode('reset')} className="text-sm font-medium text-brand hover:underline">
+                    {t('auth.forgot')}
+                  </button>
+                </div>
+                <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                  {loading ? t('login.signingIn') : t('login.signIn')}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup">
+              <form
+                className="space-y-4 pt-2"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  run(() => signUp(name, email, password));
+                }}
+              >
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name">{t('auth.name')}</Label>
+                  <Input
+                    id="signup-name"
+                    autoComplete="name"
+                    placeholder={t('auth.namePlaceholder')}
+                    className="h-11"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
+                {emailField('signup-email')}
+                {passwordField('signup-password', true)}
+                <Button type="submit" size="lg" className="w-full" disabled={loading}>
+                  {loading ? t('login.creating') : t('login.createAccount')}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+
+          {errorBox}
+
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            {t('login.or')}
+            <span className="h-px flex-1 bg-border" />
+          </div>
+
+          <Button onClick={() => run(signInWithGoogle)} variant="outline" size="lg" className="w-full" disabled={loading}>
+            {t('login.google')}
+          </Button>
+        </>
+      )}
+
+      <Button onClick={continueAsGuest} variant="secondary" size="lg" className="w-full" disabled={loading}>
+        {t('login.guest')}
+      </Button>
+      <p className="text-center text-xs text-muted-foreground">{t('login.guestNote')}</p>
+    </div>
   );
 
   return (
@@ -150,48 +259,7 @@ export default function LoginView() {
       </section>
 
       <section className="flex flex-1 items-center justify-center px-6 py-8 md:py-10">
-        <div className="w-full max-w-sm space-y-6">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight">{t('login.welcome')}</h2>
-            <p className="text-muted-foreground">{t('login.subtitle')}</p>
-          </div>
-
-          <Tabs defaultValue="signin">
-            <TabsList className="grid h-11 w-full grid-cols-2">
-              <TabsTrigger value="signin">{t('login.signIn')}</TabsTrigger>
-              <TabsTrigger value="signup">{t('login.createAccount')}</TabsTrigger>
-            </TabsList>
-            <TabsContent value="signin">{fields('signin')}</TabsContent>
-            <TabsContent value="signup">{fields('signup')}</TabsContent>
-          </Tabs>
-
-          {error && (
-            <Callout tone="danger" className="py-3">
-              <span role="alert">{t(error)}</span>
-            </Callout>
-          )}
-
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            {t('login.or')}
-            <span className="h-px flex-1 bg-border" />
-          </div>
-
-          <Button
-            onClick={() => run(() => signInWithPopup(auth, new GoogleAuthProvider()))}
-            variant="outline"
-            size="lg"
-            className="w-full"
-            disabled={loading}
-          >
-            {t('login.google')}
-          </Button>
-
-          <Button onClick={continueAsGuest} variant="secondary" size="lg" className="w-full" disabled={loading}>
-            {t('login.guest')}
-          </Button>
-          <p className="text-center text-xs text-muted-foreground">{t('login.guestNote')}</p>
-        </div>
+        <div className="w-full max-w-sm">{mode === 'reset' ? resetView : mainView}</div>
       </section>
     </div>
   );

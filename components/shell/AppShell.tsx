@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { ProfileProvider, useProfile } from '@/components/providers/ProfileProvider';
 import { UpgradeProvider } from '@/components/providers/UpgradeProvider';
 import LoginView from '@/components/LoginView';
+import { db } from '@/lib/firebase';
+import { createFirestoreProfileRepository } from '@/lib/services/firestore-profile-repository';
+import { localProfileRepository } from '@/lib/services/profile-repository';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 import { SplashScreen } from './SplashScreen';
@@ -40,8 +43,13 @@ function JourneyGate({ children }: { children: React.ReactNode }) {
 }
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading, isGuest } = useAuth();
   const pathname = usePathname();
+  // Signed-in students sync to Firestore; guests keep data on this device.
+  const repository = useMemo(
+    () => (!isGuest && db ? createFirestoreProfileRepository(db) : localProfileRepository),
+    [isGuest],
+  );
 
   if (loading) return <SplashScreen />;
   if (!user) return <LoginView />;
@@ -49,7 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const focused = FOCUS_ROUTES.some((r) => pathname.startsWith(r));
 
   return (
-    <ProfileProvider userId={user.uid}>
+    <ProfileProvider userId={user.uid} repository={repository}>
       <UpgradeProvider>
         <JourneyGate>
           {focused ? (

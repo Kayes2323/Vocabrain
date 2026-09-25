@@ -1,16 +1,5 @@
-import { db } from './firebase';
+import { doc, getDoc, serverTimestamp, setDoc, type Firestore } from 'firebase/firestore';
 import { FREE_LESSON_LIMIT } from './constants';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  updateDoc,
-  Timestamp,
-} from 'firebase/firestore';
 
 const ADMIN_EMAIL = 'aakayes99@gmail.com';
 
@@ -20,73 +9,41 @@ export interface UserSubscription {
   plan: 'free' | 'premium';
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
-  createdAt: Date;
-  renewalDate?: Date;
+  /** Derived from the signed-in email; never stored or trusted from Firestore. */
   isAdmin: boolean;
 }
 
-// Check if user is admin
-export const isAdminUser = (email: string | null | undefined): boolean => {
-  return email === ADMIN_EMAIL;
-};
+export const isAdminUser = (email: string | null | undefined): boolean => email === ADMIN_EMAIL;
 
-// Get or create user subscription
-export const getOrCreateSubscription = async (userId: string, email: string): Promise<UserSubscription> => {
-  try {
-    const subDoc = doc(db, 'subscriptions', userId);
-    const snapshot = await getDoc(subDoc);
+/**
+ * Reads subscriptions/{uid}, creating a free one on first sign-in. Clients may
+ * only ever create `plan: 'free'` (enforced by firestore.rules); upgrades are
+ * written server-side by the Stripe webhook.
+ */
+export async function getOrCreateSubscription(db: Firestore, userId: string, email: string): Promise<UserSubscription> {
+  const ref = doc(db, 'subscriptions', userId);
+  const snapshot = await getDoc(ref);
+  const isAdmin = isAdminUser(email);
 
-    if (snapshot.exists()) {
-      return snapshot.data() as UserSubscription;
-    }
-
-    // Create new free subscription
-    const newSub: UserSubscription = {
+  if (snapshot.exists()) {
+    const data = snapshot.data();
+    return {
       userId,
       email,
-      plan: 'free',
-      createdAt: new Date(),
-      isAdmin: isAdminUser(email),
+      plan: data.plan === 'premium' ? 'premium' : 'free',
+      stripeCustomerId: data.stripeCustomerId,
+      stripeSubscriptionId: data.stripeSubscriptionId,
+      isAdmin,
     };
-
-    await setDoc(subDoc, newSub);
-    return newSub;
-  } catch (error) {
-    console.error('[v0] Error getting/creating subscription:', error);
-    throw error;
   }
-};
 
-// Update user subscription to premium
-export const upgradeToPremium = async (
-  userId: string,
-  stripeCustomerId: string,
-  stripeSubscriptionId: string
-): Promise<void> => {
-  try {
-    const subDoc = doc(db, 'subscriptions', userId);
-    await updateDoc(subDoc, {
-      plan: 'premium',
-      stripeCustomerId,
-      stripeSubscriptionId,
-      renewalDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-    });
-  } catch (error) {
-    console.error('[v0] Error upgrading to premium:', error);
-    throw error;
-  }
-};
+  await setDoc(ref, { userId, email, plan: 'free', createdAt: serverTimestamp() });
+  return { userId, email, plan: 'free', isAdmin };
+}
 
-// Check if user has premium access
-export const hasPremiumAccess = (subscription: UserSubscription | null): boolean => {
-  if (!subscription) return false;
-  return subscription.isAdmin || subscription.plan === 'premium';
-};
+export const hasPremiumAccess = (subscription: UserSubscription | null): boolean =>
+  Boolean(subscription && (subscription.isAdmin || subscription.plan === 'premium'));
 
-// Get lesson access level (how many lessons user can access)
-export const getMaxLessonAccess = (subscription: UserSubscription | null): number => {
-  if (!subscription) return FREE_LESSON_LIMIT;
-  if (subscription.isAdmin) return 999; // Admin: unlimited
-  if (subscription.plan === 'premium') return 999; // Premium: unlimited
-  return FREE_LESSON_LIMIT;
-};
+/** How many topic lessons the student can open. */
+export const getMaxLessonAccess = (subscription: UserSubscription | null): number =>
+  hasPremiumAccess(subscription) ? 999 : FREE_LESSON_LIMIT;
