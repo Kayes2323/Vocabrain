@@ -42,7 +42,7 @@ export default function HomePage() {
 
       {isDemo && (
         <Callout tone="warning" title="Guest preview">
-          Firebase isn&apos;t configured, so you&apos;re exploring as a guest. Progress is saved on this device only.
+          You&apos;re exploring without an account. Progress is saved on this device only.
         </Callout>
       )}
 

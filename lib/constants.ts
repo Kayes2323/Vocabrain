@@ -26,6 +26,13 @@ export const IELTS_SKILL_BANDS = [4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9] as 
 
 export const WEEKLY_STUDY_HOUR_OPTIONS = [3, 5, 8, 12, 15] as const;
 
+/**
+ * Sign-in is off unless NEXT_PUBLIC_AUTH_ENABLED=true. While off, everyone uses
+ * a local guest session (progress stays on the device). Flip the env var to
+ * bring back the Firebase login gate.
+ */
+export const AUTH_ENABLED = process.env.NEXT_PUBLIC_AUTH_ENABLED === 'true';
+
 /** Free users can open this many topic lessons. */
 export const FREE_LESSON_LIMIT = 2;
 /** Free users can open this word-bank band. Higher bands are premium. */

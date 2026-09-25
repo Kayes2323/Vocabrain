@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { AUTH_ENABLED } from '@/lib/constants';
 import {
   getMaxLessonAccess,
   getOrCreateSubscription,
@@ -22,8 +23,8 @@ interface AuthState {
   subscription: UserSubscription | null;
   loading: boolean;
   /**
-   * True when Firebase isn't configured (e.g. local development without env
-   * vars). The app runs as a local guest so every screen stays reachable.
+   * True when sign-in is turned off (AUTH_ENABLED) or Firebase isn't
+   * configured. The app runs as a local guest so every screen stays reachable.
    */
   isDemo: boolean;
   isPremium: boolean;
@@ -36,7 +37,7 @@ const AuthContext = createContext<AuthState | null>(null);
 const DEMO_USER: AppUser = { uid: 'demo', email: null, displayName: 'Guest' };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const isDemo = !auth;
+  const isDemo = !AUTH_ENABLED || !auth;
   const [user, setUser] = useState<AppUser | null>(isDemo ? DEMO_USER : null);
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(!isDemo);

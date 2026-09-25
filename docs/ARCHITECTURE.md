@@ -136,8 +136,9 @@ buildMinoContext(profile)     buildMinoSystemPrompt(context)
 
 ## 6. Guest preview
 
-If the Firebase env vars are absent, `AuthProvider` runs a local guest session so every screen can be
-developed and reviewed. A banner makes this explicit. With Firebase configured, the login screen gates the app.
+Sign-in is currently switched off. Unless `NEXT_PUBLIC_AUTH_ENABLED=true` (and the Firebase env vars are
+set), `AuthProvider` runs a local guest session so anyone can open every screen. A banner makes this explicit,
+and progress is stored on the device. Setting the flag brings back the Firebase login gate with no code change.
 
 ## 7. Roadmap
 

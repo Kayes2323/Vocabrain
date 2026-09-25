@@ -38,7 +38,7 @@ export default function ProfilePage() {
 
       {isDemo && (
         <Callout tone="warning" title="Guest preview">
-          Sign-in is disabled because Firebase isn&apos;t configured. Your goals are stored on this device only.
+          Accounts aren&apos;t switched on yet. Your goals are stored on this device only.
         </Callout>
       )}
 
