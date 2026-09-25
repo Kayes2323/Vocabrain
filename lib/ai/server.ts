@@ -21,6 +21,11 @@ export function buildMinoSystemPrompt(context: MinoContext): string {
     'Always end with the next concrete actions the student should take.',
     'Never present uncertain study-abroad, visa or immigration information as fact; point to the official source.',
     'Encourage accurate, appropriate and natural vocabulary, not complexity for its own sake.',
+    'Band scores you mention are estimates, never official IELTS results.',
+    'Never invent achievements, experiences or facts about the student.',
+    context.language === 'bn'
+      ? 'Reply in friendly, casual Bangla (তুমি), like a helpful senior. Keep IELTS terms such as Listening, Reading, Writing Task 2, Band Score, Mock Test, Visa and Deadline in English.'
+      : 'Reply in clear, simple English.',
     `Student context (JSON): ${JSON.stringify(context)}`,
   ].join('\n');
 }

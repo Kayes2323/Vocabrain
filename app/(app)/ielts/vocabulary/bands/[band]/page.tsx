@@ -5,6 +5,7 @@ import { notFound, useParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
 import { EmptyState, PageHeader, ScreenSkeleton } from '@/components/ds';
@@ -18,6 +19,7 @@ export default function BandPage() {
   const params = useParams<{ band: string }>();
   const band = Number(params.band) as Band;
   const { isPremium } = useAuth();
+  const { t } = useLocale();
   const { profile, updateProfile } = useProfile();
   const { openUpgrade } = useUpgrade();
   const valid = getAllBands().includes(band);
@@ -44,13 +46,17 @@ export default function BandPage() {
 
   return (
     <div>
-      <PageHeader title={`Band ${band} words`} backHref="/ielts/vocabulary" backLabel="Vocabulary" />
+      <PageHeader
+        title={t('vocabulary.bank.title', { band: String(band) })}
+        backHref="/ielts/vocabulary"
+        backLabel={t('skills.vocabulary')}
+      />
       {locked ? (
         <EmptyState
           icon={Lock}
-          title={`Band ${band} is part of Premium`}
-          description={`Band ${FREE_BAND_LEVEL} is free. Premium opens Bands 7–9.`}
-          action={<Button onClick={openUpgrade}>See Premium</Button>}
+          title={t('vocabulary.bank.lockedTitle', { band: String(band) })}
+          description={t('vocabulary.bank.lockedBody')}
+          action={<Button onClick={openUpgrade}>{t('vocabulary.seePremium')}</Button>}
         />
       ) : (
         <WordBankStudy

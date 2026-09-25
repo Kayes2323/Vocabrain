@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ChoiceGrid, ScreenSkeleton, StepFlow } from '@/components/ds';
+import { useLeave } from '@/components/setup/useLeave';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { DEGREE_LEVELS, MONTHS } from '@/lib/constants';
 import type { StudyAbroadProfile } from '@/lib/models';
@@ -26,6 +28,8 @@ const SUBJECT_SUGGESTIONS = [
 
 export function AbroadSetupFlow() {
   const router = useRouter();
+  const leave = useLeave('/abroad');
+  const { t } = useLocale();
   const { profile, updateProfile } = useProfile();
   const flow = useStep(STEPS);
   const [draft, setDraft] = useState<StudyAbroadProfile | null>(null);
@@ -44,7 +48,7 @@ export function AbroadSetupFlow() {
     step: flow.number,
     totalSteps: flow.total,
     onBack: flow.back,
-    onClose: () => router.back(),
+    onClose: () => leave(),
   };
 
   const thisYear = new Date().getFullYear();
@@ -56,17 +60,17 @@ export function AbroadSetupFlow() {
       return (
         <StepFlow
           {...common}
-          title="What do you want to study abroad?"
-          primaryLabel="Continue"
+          title={t('setup.abroad.degreeTitle')}
+          primaryLabel={t('common.continue')}
           primaryDisabled={!abroad.degreeLevel}
           onPrimary={advance}
         >
           <ChoiceGrid
-            label="Degree level"
+            label={t('setup.abroad.degreeTitle')}
             columns={1}
             value={abroad.degreeLevel}
             onChange={(degreeLevel) => set({ degreeLevel })}
-            options={DEGREE_LEVELS.map((d) => ({ value: d.id, label: d.label }))}
+            options={DEGREE_LEVELS.map((d) => ({ value: d.id, label: t(`degree.${d.id}`) }))}
           />
         </StepFlow>
       );
@@ -75,21 +79,21 @@ export function AbroadSetupFlow() {
       return (
         <StepFlow
           {...common}
-          title="Which subject?"
-          description="A broad area is fine. You can refine it later."
-          primaryLabel="Continue"
+          title={t('setup.abroad.subjectTitle')}
+          description={t('setup.abroad.subjectDescription')}
+          primaryLabel={t('common.continue')}
           primaryDisabled={!abroad.subject?.trim()}
           onPrimary={advance}
-          secondaryLabel="I'm not sure yet"
+          secondaryLabel={t('setup.abroad.notSureYet')}
           onSecondary={flow.next}
         >
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="subject">Subject</Label>
+              <Label htmlFor="subject">{t('setup.abroad.subjectLabel')}</Label>
               <Input
                 id="subject"
                 className="h-12 text-base"
-                placeholder="e.g. Computer Science"
+                placeholder={t('setup.abroad.subjectPlaceholder')}
                 value={abroad.subject ?? ''}
                 onChange={(e) => set({ subject: e.target.value })}
               />
@@ -117,17 +121,17 @@ export function AbroadSetupFlow() {
       return (
         <StepFlow
           {...common}
-          title="When do you want to start?"
-          description="Intakes differ by university and course. This helps us find the right deadlines later."
-          primaryLabel="Save my goal"
+          title={t('setup.abroad.intakeTitle')}
+          description={t('setup.abroad.intakeDescription')}
+          primaryLabel={t('setup.abroad.save')}
           primaryDisabled={!intake?.month || !intake?.year}
           onPrimary={advance}
         >
           <div className="space-y-5">
             <div className="space-y-2">
-              <p className="text-sm font-medium">Year</p>
+              <p className="text-sm font-medium">{t('setup.abroad.year')}</p>
               <ChoiceGrid
-                label="Intake year"
+                label={t('setup.abroad.year')}
                 columns={2}
                 value={intake?.year}
                 onChange={(year) => set({ targetIntake: { month: intake?.month ?? 0, year } })}
@@ -135,9 +139,9 @@ export function AbroadSetupFlow() {
               />
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-medium">Month</p>
+              <p className="text-sm font-medium">{t('setup.abroad.month')}</p>
               <ChoiceGrid
-                label="Intake month"
+                label={t('setup.abroad.month')}
                 columns={3}
                 value={intake?.month}
                 onChange={(month) => set({ targetIntake: { year: intake?.year ?? 0, month } })}

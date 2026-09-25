@@ -5,13 +5,15 @@ import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Callout, Panel } from '@/components/ds';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { IELTS_SKILLS, IELTS_SKILL_LABELS, type IELTSSkill } from '@/lib/constants';
+import { IELTS_SKILLS, type IELTSSkill } from '@/lib/constants';
 import { formatBand, overallBand } from '@/lib/engine';
 
 type Scores = Record<IELTSSkill, number>;
 
 export function BandCalculator() {
+  const { t } = useLocale();
   const { profile, updateProfile } = useProfile();
   const [scores, setScores] = useState<Scores>(() => ({
     listening: profile?.ielts.currentBands.listening ?? 6,
@@ -29,16 +31,16 @@ export function BandCalculator() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="max-w-xl space-y-5">
       <Panel className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-muted-foreground">Overall band</p>
+          <p className="text-sm text-muted-foreground">{t('calculator.overall')}</p>
           <p className="text-4xl font-semibold tabular-nums" aria-live="polite">
             {formatBand(overall)}
           </p>
         </div>
         <p className="max-w-[12rem] text-right text-sm text-muted-foreground">
-          Average of four skills, rounded to the nearest half band.
+          {t('calculator.rule')}
         </p>
       </Panel>
 
@@ -47,7 +49,7 @@ export function BandCalculator() {
           <div key={skill} className="space-y-3">
             <div className="flex items-center justify-between">
               <label id={`${skill}-label`} className="font-medium">
-                {IELTS_SKILL_LABELS[skill]}
+                {t(`skills.${skill}`)}
               </label>
               <span className="text-lg font-semibold tabular-nums">{formatBand(scores[skill])}</span>
             </div>
@@ -70,17 +72,17 @@ export function BandCalculator() {
         <Button size="lg" onClick={save} disabled={saved}>
           {saved ? (
             <>
-              <Check /> Saved to your profile
+              <Check /> {t('calculator.saved')}
             </>
           ) : (
-            'Use as my current scores'
+            t('calculator.use')
           )}
         </Button>
-        <p className="text-sm text-muted-foreground">Your plan and Mino use these to decide where to focus.</p>
+        <p className="text-sm text-muted-foreground">{t('calculator.useNote')}</p>
       </div>
 
       <Callout>
-        This is an estimate. Official scores come only from an IELTS test.
+        {t('calculator.disclaimer')}
       </Callout>
     </div>
   );

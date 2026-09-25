@@ -7,10 +7,11 @@ interface FlashcardProps {
   back: React.ReactNode;
   revealed: boolean;
   onToggle: () => void;
+  hint: string;
 }
 
-/** Tap-to-reveal card. The whole surface is one large, accessible button. */
-export function Flashcard({ front, back, revealed, onToggle }: FlashcardProps) {
+/** Recall-first card: the student tries to remember, then taps to check. */
+export function Flashcard({ front, back, revealed, onToggle, hint }: FlashcardProps) {
   return (
     <button
       type="button"
@@ -22,11 +23,7 @@ export function Flashcard({ front, back, revealed, onToggle }: FlashcardProps) {
       )}
     >
       {front}
-      {revealed ? (
-        <div className="w-full border-t pt-5">{back}</div>
-      ) : (
-        <span className="text-sm text-muted-foreground">Tap to reveal</span>
-      )}
+      {revealed ? <div className="w-full border-t pt-5">{back}</div> : <span className="text-sm text-muted-foreground">{hint}</span>}
     </button>
   );
 }

@@ -16,13 +16,25 @@ const KEY_PREFIX = 'vocabbrain:profile:';
 function withDefaults(userId: string, stored: Partial<UserProfile> | undefined): UserProfile {
   const base = emptyProfile(userId);
   if (!stored) return base;
+  // Profiles from before onboarding existed: a set target means they already told us their goal.
+  const migrated =
+    !stored.onboardedAt && stored.ielts?.targetBand !== undefined
+      ? { onboardedAt: stored.updatedAt ?? new Date().toISOString(), goal: stored.goal ?? ('ielts' as const) }
+      : {};
   return {
     ...base,
     ...stored,
+    ...migrated,
     userId,
     ielts: { ...base.ielts, ...stored.ielts, currentBands: { ...stored.ielts?.currentBands } },
     abroad: { ...base.abroad, ...stored.abroad },
-    vocabulary: { ...base.vocabulary, ...stored.vocabulary },
+    vocabulary: { ...base.vocabulary, ...stored.vocabulary, words: { ...stored.vocabulary?.words } },
+    study: {
+      ...base.study,
+      ...stored.study,
+      completedTasks: { ...stored.study?.completedTasks },
+      days: { ...stored.study?.days },
+    },
   };
 }
 

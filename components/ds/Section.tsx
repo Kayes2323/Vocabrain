@@ -14,7 +14,7 @@ export function Section({ title, description, action, className, children }: Sec
       {(title || action) && (
         <div className="flex items-end justify-between gap-4 px-1">
           <div>
-            {title && <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>}
+            {title && <h2 className="text-[15px] font-semibold text-muted-foreground">{title}</h2>}
             {description && <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>}
           </div>
           {action}

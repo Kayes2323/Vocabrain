@@ -5,6 +5,7 @@ import { notFound, useParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
 import { EmptyState, PageHeader } from '@/components/ds';
@@ -16,6 +17,7 @@ export default function LessonPage() {
   const lessonId = Number(params.lessonId);
   const lesson = getLesson(lessonId);
   const { maxLessonAccess } = useAuth();
+  const { t } = useLocale();
   const { profile, updateProfile } = useProfile();
   const profileReady = profile !== null;
   const { openUpgrade } = useUpgrade();
@@ -34,13 +36,18 @@ export default function LessonPage() {
 
   return (
     <div>
-      <PageHeader title={`Lesson ${lesson.lessonId}`} subtitle={lesson.topic} backHref="/ielts/vocabulary" backLabel="Vocabulary" />
+      <PageHeader
+        title={t('vocabulary.lesson.title', { n: lesson.lessonId })}
+        subtitle={lesson.topic}
+        backHref="/ielts/vocabulary"
+        backLabel={t('skills.vocabulary')}
+      />
       {locked ? (
         <EmptyState
           icon={Lock}
-          title="This lesson is part of Premium"
-          description="Upgrade to open every topic lesson and the full word bank."
-          action={<Button onClick={openUpgrade}>See Premium</Button>}
+          title={t('vocabulary.lesson.lockedTitle')}
+          description={t('vocabulary.lesson.lockedBody')}
+          action={<Button onClick={openUpgrade}>{t('vocabulary.seePremium')}</Button>}
         />
       ) : (
         <LessonStudy key={lesson.lessonId} lesson={lesson} nextLessonId={nextLessonId} />

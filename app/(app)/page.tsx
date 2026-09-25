@@ -1,18 +1,18 @@
 'use client';
 
 import { useAuth } from '@/components/providers/AuthProvider';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { Callout, ScreenSkeleton } from '@/components/ds';
-import { AbroadProgressCard } from '@/components/home/AbroadProgressCard';
-import { IELTSJourneyCard } from '@/components/home/IELTSJourneyCard';
-import { MinoInsightCard } from '@/components/home/MinoInsightCard';
-import { TodayPlanCard } from '@/components/home/TodayPlanCard';
+import { JourneyCard } from '@/components/home/JourneyCard';
+import { MinoCard } from '@/components/home/MinoCard';
+import { TodayCard } from '@/components/home/TodayCard';
 
-function greeting(date = new Date()): string {
+function greetingKey(date = new Date()): string {
   const h = date.getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (h < 12) return 'greeting.morning';
+  if (h < 18) return 'greeting.afternoon';
+  return 'greeting.evening';
 }
 
 function firstName(name: string | null | undefined, email: string | null | undefined): string | undefined {
@@ -22,34 +22,41 @@ function firstName(name: string | null | undefined, email: string | null | undef
   return first.charAt(0).toUpperCase() + first.slice(1);
 }
 
+/**
+ * Home answers three questions: where am I, where am I going, what do I do
+ * today. Everything else lives in its own section.
+ */
 export default function HomePage() {
   const { user, isGuest } = useAuth();
+  const { t } = useLocale();
   const { profile } = useProfile();
 
   if (!profile) return <ScreenSkeleton />;
 
-  const name = isGuest ? undefined : firstName(profile.displayName ?? user?.displayName, user?.email);
+  const name = profile.displayName || (isGuest ? undefined : firstName(user?.displayName, user?.email));
 
   return (
     <div className="space-y-5">
-      <header className="space-y-1 pb-1">
-        <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
-          {greeting()}
-          {name ? `, ${name}` : ''} 👋
-        </h1>
-        <p className="text-[15px] text-muted-foreground">Here&apos;s what to do today.</p>
-      </header>
+      <h1 className="pb-1 text-2xl font-semibold tracking-tight md:text-3xl">
+        {t(greetingKey())}
+        {name ? `, ${name}` : ''} 👋
+      </h1>
 
       {isGuest && (
-        <Callout tone="warning" title="You're using Vocab Brain as a guest">
-          Progress is saved on this device only. Create an account from Profile to keep it everywhere.
+        <Callout tone="warning" title={t('guest.bannerTitle')}>
+          {t('guest.bannerBody')}
         </Callout>
       )}
 
-      <IELTSJourneyCard profile={profile} />
-      <TodayPlanCard profile={profile} />
-      <MinoInsightCard profile={profile} />
-      <AbroadProgressCard profile={profile} />
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
+        <div className="space-y-5">
+          <JourneyCard profile={profile} />
+          <TodayCard profile={profile} />
+        </div>
+        <div className="lg:sticky lg:top-10">
+          <MinoCard profile={profile} />
+        </div>
+      </div>
     </div>
   );
 }

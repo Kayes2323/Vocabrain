@@ -7,22 +7,25 @@ export interface MinoCapability {
   phase: number;
 }
 
+/** Internal registry of Mino capabilities and the roadmap phase that ships each. */
 export const MINO_CAPABILITIES: MinoCapability[] = [
-  { id: 'next-action', title: 'Next Action', description: 'What to do now, in order.', phase: 4 },
-  { id: 'ielts-coach', title: 'IELTS Coach', description: 'Your plan, adjusted as you improve.', phase: 4 },
-  { id: 'vocabulary-coach', title: 'Vocabulary Coach', description: 'Words from your reading, reviewed at the right time.', phase: 4 },
-  { id: 'writing-coach', title: 'Writing Coach', description: 'Feedback on Task 1 and Task 2.', phase: 7 },
-  { id: 'speaking-coach', title: 'Speaking Coach', description: 'Voice practice with feedback.', phase: 7 },
-  { id: 'study-abroad-advisor', title: 'Study Abroad Advisor', description: 'Countries and courses that fit your goals.', phase: 5 },
-  { id: 'scholarship-assistant', title: 'Scholarship Assistant', description: 'Funding you may be eligible for.', phase: 6 },
-  { id: 'application-manager', title: 'Application Manager', description: 'Deadlines and tasks across applications.', phase: 6 },
-  { id: 'interview-coach', title: 'Interview Coach', description: 'University, scholarship and visa interview practice.', phase: 7 },
+  { id: 'next-action', title: 'Next Best Action', description: 'What to do now, in order.', phase: 1 },
+  { id: 'study-planner', title: 'Study Planner', description: 'Daily plan, minimum day and catch-up.', phase: 2 },
+  { id: 'ielts-coach', title: 'IELTS Mentor', description: 'Plan and advice from the student journey.', phase: 3 },
+  { id: 'vocabulary-coach', title: 'Vocabulary Coach', description: 'Meaning, collocation and usage of saved words.', phase: 3 },
+  { id: 'writing-coach', title: 'Writing Coach', description: 'Examiner Mode and Teacher Mode for Task 1 and 2.', phase: 3 },
+  { id: 'speaking-coach', title: 'Speaking Coach', description: 'Part 1-3 voice practice with feedback.', phase: 3 },
+  { id: 'study-abroad-advisor', title: 'Study Abroad Guide', description: 'Country discovery and shortlists.', phase: 4 },
+  { id: 'application-manager', title: 'Application & Deadline Assistant', description: 'Tasks and dates across applications.', phase: 5 },
+  { id: 'sop-assistant', title: 'SOP Assistant', description: 'Structure and feedback, from true information only.', phase: 5 },
+  { id: 'cv-assistant', title: 'CV Assistant', description: 'Academic CV structure and wording.', phase: 5 },
+  { id: 'lor-assistant', title: 'LOR Assistant', description: 'Organise recommender information.', phase: 5 },
+  { id: 'interview-coach', title: 'Interview Coach', description: 'University, scholarship and visa interview practice.', phase: 6 },
 ];
 
-/** Prompts shown as quick starts on the Mino screen. */
-export const MINO_SUGGESTED_PROMPTS = [
-  'What should I study today?',
-  'My Writing is stuck at 5.5. What should I do?',
-  'I want to study Computer Science abroad. What should I prepare?',
-  'What should I do next?',
-];
+/**
+ * Quick-start prompts on the Mino screen (copy under `mino.prompts`).
+ * `minimumDay` is handled locally: it switches today's plan to 15 minutes.
+ */
+export const MINO_PROMPT_IDS = ['today', 'writingStuck', 'minimumDay', 'next'] as const;
+export type MinoPromptId = (typeof MINO_PROMPT_IDS)[number];

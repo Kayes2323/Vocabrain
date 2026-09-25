@@ -3,14 +3,16 @@
 
 export type MinoCapabilityId =
   | 'next-action'
+  | 'study-planner'
   | 'ielts-coach'
   | 'vocabulary-coach'
   | 'writing-coach'
   | 'speaking-coach'
   | 'study-abroad-advisor'
-  | 'university-assistant'
-  | 'scholarship-assistant'
   | 'application-manager'
+  | 'sop-assistant'
+  | 'cv-assistant'
+  | 'lor-assistant'
   | 'interview-coach';
 
 export interface AIMessage {
@@ -39,12 +41,18 @@ export interface AIProvider {
  * profile, sent to /api/mino, and turned into the system prompt server-side.
  */
 export interface MinoContext {
+  /** Reply language. 'bn' means casual Bangla with IELTS terms kept in English. */
+  language: 'en' | 'bn';
+  goal?: string;
   ielts: {
     targetBand?: number;
     currentBands: Partial<Record<'listening' | 'reading' | 'writing' | 'speaking', number>>;
     estimatedOverall?: number;
     weeksUntilTest?: number;
     weeklyStudyHours?: number;
+    journeyStage: string;
+    /** Always a self-assessment estimate, never an official score. */
+    estimateSource?: 'self-assessment' | 'self-reported';
   };
   vocabulary: {
     lastLessonId?: number;

@@ -1,24 +1,18 @@
 import { MONTHS } from '@/lib/constants';
 import type { StudyAbroadProfile, UserProfile } from '@/lib/models';
+import { ieltsJourney } from './journey';
 
-export interface JourneyStage {
-  id: string;
-  title: string;
-}
-
-export const JOURNEY_STAGES: JourneyStage[] = [
-  { id: 'ielts', title: 'IELTS preparation' },
-  { id: 'countries', title: 'Country shortlist' },
-  { id: 'universities', title: 'University shortlist' },
-  { id: 'documents', title: 'Documents' },
-  { id: 'sop', title: 'Statement of purpose' },
-  { id: 'lor', title: 'Recommendation letters' },
-  { id: 'application', title: 'Applications' },
-  { id: 'offer', title: 'Offer' },
-  { id: 'funding', title: 'Funding' },
-  { id: 'visa', title: 'Visa' },
-  { id: 'departure', title: 'Departure' },
-];
+export const ABROAD_STAGE_IDS = [
+  'goal',
+  'destination',
+  'ielts',
+  'university',
+  'scholarship',
+  'application',
+  'visa',
+  'departure',
+] as const;
+export type AbroadStageId = (typeof ABROAD_STAGE_IDS)[number];
 
 export function hasAbroadGoal(abroad: StudyAbroadProfile): boolean {
   return Boolean(abroad.degreeLevel || abroad.targetIntake);
@@ -30,22 +24,38 @@ export function formatIntake(abroad: StudyAbroadProfile): string | undefined {
   return `${MONTHS[intake.month - 1]} ${intake.year}`;
 }
 
-export interface JourneyStatus {
+export interface AbroadJourney {
+  stages: { id: AbroadStageId; state: 'done' | 'current' | 'upcoming' }[];
   currentIndex: number;
-  current: JourneyStage;
-  /** 0-100. Completed stages over total. */
+  /** Completed stages out of the total, as a percentage. */
   percent: number;
 }
 
 /**
- * Where the student is on the journey. Until applications and documents are
- * tracked (Phase 6), everyone is at the IELTS stage and 0% is shown honestly.
+ * Study Abroad journey. A stage is done only when its completion rule is met:
+ * goal = degree or intake set; destination = at least one chosen country;
+ * IELTS = the IELTS journey reached Target Ready. Later stages complete once
+ * shortlists, scholarships, applications and visa tracking exist.
  */
-export function journeyStatus(_profile: UserProfile): JourneyStatus {
-  const currentIndex = 0;
+export function abroadJourney(profile: UserProfile): AbroadJourney {
+  const done: Record<AbroadStageId, boolean> = {
+    goal: hasAbroadGoal(profile.abroad),
+    destination: (profile.abroad.preferredCountryCodes?.length ?? 0) > 0,
+    ielts: ieltsJourney(profile).current === 'target-ready' && ieltsJourney(profile).percent === 100,
+    university: false,
+    scholarship: false,
+    application: false,
+    visa: false,
+    departure: false,
+  };
+  const currentIndex = Math.max(0, ABROAD_STAGE_IDS.findIndex((id) => !done[id]));
+  const completed = ABROAD_STAGE_IDS.filter((id) => done[id]).length;
   return {
     currentIndex,
-    current: JOURNEY_STAGES[currentIndex],
-    percent: Math.round((currentIndex / JOURNEY_STAGES.length) * 100),
+    percent: Math.round((completed / ABROAD_STAGE_IDS.length) * 100),
+    stages: ABROAD_STAGE_IDS.map((id, i) => ({
+      id,
+      state: done[id] ? 'done' : i === currentIndex ? 'current' : 'upcoming',
+    })),
   };
 }

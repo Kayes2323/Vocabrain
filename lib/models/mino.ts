@@ -1,3 +1,4 @@
+import type { Message } from '@/lib/i18n/message';
 import type { ID, ISODate } from './common';
 
 export type Pillar = 'ielts' | 'vocabulary' | 'abroad' | 'profile';
@@ -6,10 +7,10 @@ export type Pillar = 'ielts' | 'vocabulary' | 'abroad' | 'profile';
 export interface NextAction {
   id: string;
   pillar: Pillar;
-  title: string;
-  reason: string;
+  title: Message;
+  reason: Message;
   href: string;
-  cta: string;
+  cta: Message;
   /** Lower runs first. */
   priority: number;
   estimatedMinutes?: number;

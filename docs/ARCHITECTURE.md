@@ -37,14 +37,16 @@ Known issues left for follow-up:
 ## 2. Information architecture
 
 ```
-/                      Home: "What should I do today?"
+/onboarding            Mino-guided first run (language, goal, target, experience, study time)
+/                      Home: where am I, where am I going, what do I do today
 /ielts                 IELTS hub
-  /plan                My IELTS Plan            (planned, Phase 3)
+  /diagnostic          Find your starting point (live, estimate only)
+  /plan                My IELTS Plan            (planned)
   /listening|reading|writing|speaking           (planned)
   /vocabulary          Vocabulary hub           (live)
     /lessons/[id]      Topic lesson flashcards  (live, free: 1–2)
     /bands/[band]      Word bank by band        (live, free: band 6)
-  /mock-tests                                   (planned)
+  /grammar, /mock-tests                         (planned)
   /band-calculator     Band score calculator    (live, saves to profile)
 /mino                  Mino: next 3 actions, chat entry, context transparency
 /abroad                Study Abroad hub: journey + section groups
@@ -140,17 +142,56 @@ The login screen offers email, Google and **Continue as guest**. A guest session
 (`vocabbrain:guest`), stores progress locally and shows a banner; signing out of a guest session returns to the
 login screen. If the Firebase env vars are absent, the app starts as a guest automatically.
 
-## 7. Roadmap
+## 7. Phase 2 additions: student journey
 
-| Phase | Scope | Builds on |
+| Area | Where | Notes |
 | --- | --- | --- |
-| 1 ✅ | Audit, architecture, design system, navigation, core screens | — |
-| 2 | Vocabulary engine, Today's Reading, tap-to-save notebook | `VocabularyItem/Encounter/Review`, `ReadingPassage` |
-| 3 | IELTS planner, skill tracking, adaptive plan | `IELTSPlan`, `IELTSActivity`, `buildTodayPlan` |
-| 4 | Mino AI provider, structured context, AI next actions | `lib/ai`, `/api/mino` |
-| 5 | Study-abroad profile, sourced country database, Country Match | `Country`, `SourcedValue`, priorities |
-| 6 | Universities, scholarships, cost, deadlines, applications, documents | abroad models |
-| 7 | Writing, Speaking, interview and visa practice | attempts, capabilities |
-| 8 | Pre-departure and first 30 days | tasks |
+| Bilingual UI | `lib/i18n`, `docs/LOCALIZATION.md` | Bangla + English, typed key parity |
+| Onboarding | `/onboarding`, `components/onboarding` | Mino-guided, one question per screen: language, goal, target, taken before, previous score, study time |
+| Diagnostic | `/ielts/diagnostic`, `lib/engine/diagnostic.ts` | 12 can-do statements (3 per skill) → Estimated / Practice Score per skill, biggest opportunity and why. Never an official score |
+| IELTS journey | `lib/engine/journey.ts` | Criteria-based stages (below) |
+| Daily plan | `lib/engine/daily-plan.ts` | 3 tasks, checkable; 15-minute minimum day; catch-up after 3+ inactive days |
+| Information gaps | `lib/engine/profile-gaps.ts` | The single next missing fact, shown on Home and as Mino's first next step |
+| Active vocabulary | `lib/engine/vocabulary.ts` | Recall-first flashcards: seen vs. active (recalled ≥ missed) |
+| Study Abroad journey | `lib/engine/abroad-journey.ts` | Goal → Destination → IELTS → University → Scholarship → Application → Visa → Departure, completion-based |
 
-Next technical steps before Phase 2: Firestore `ProfileRepository`, Firestore rules fix, and unit tests for `lib/engine`.
+### IELTS journey completion rules
+
+| Stage | Complete when |
+| --- | --- |
+| Starting Point | Diagnostic done (or all four skill bands known) |
+| Foundation | 10 daily-plan tasks completed |
+| Skill Building | 40 tasks, including 5 in each of Listening, Reading, Writing and Speaking |
+| Mock Tests | 2 full Mock Tests (module not built yet) |
+| Target Ready | Estimated overall ≥ target |
+
+Percent = (completed stages + progress within the current stage) ÷ 5. No arbitrary numbers.
+
+## 8. Deployment and domain (audited)
+
+| | |
+| --- | --- |
+| Hosting | Vercel, team `kayes2323's projects`, Git-connected to `kayes2323/vocabrain` |
+| Projects | `vocabrain` (domain `vocabrain.vercel.app`) and `vocabrain-5lyb` (domain `vocabrain-5lyb.vercel.app`), both building the same repo |
+| Custom domain | None. The team's only custom domains belong to another product |
+| `vocabrain.vercel.app` | Returned 404: the project had no framework preset. Fixed by setting the framework to Next.js; production updates on the next `main` deploy |
+| `vocabrain-5lyb.vercel.app` | Serves the old v2 app from `main` |
+| Protection | Vercel Authentication on preview URLs; production `*.vercel.app` domains are public |
+| Routing | Next.js App Router on Vercel: every route (e.g. `/ielts/vocabulary/bands/6`) works on direct visit and refresh |
+
+Recommended: use `vocabrain.vercel.app` as the product URL (or connect a custom domain to the `vocabrain`
+project and set `NEXT_PUBLIC_APP_URL`), and remove the duplicate `vocabrain-5lyb` project once production
+is verified.
+
+## 9. Roadmap
+
+| Phase | Scope |
+| --- | --- |
+| 1 ✅ | Foundation, design system, navigation, bilingual UX, onboarding, IELTS journey, diagnostic, daily plan |
+| 2 | IELTS depth: skill modules (Listening, Reading with Save to Brain, Grammar), My IELTS Plan, Mock Tests, timed diagnostic |
+| 3 | Mino AI: provider behind `/api/mino`, Writing Coach (Examiner + Teacher Mode), Speaking Coach |
+| 4 | Study Abroad: country discovery, sourced country data, Country Match |
+| 5 | Applications: University shortlist, Scholarships, Deadlines, Documents, SOP / CV / LOR assistants |
+| 6 | Advanced AI and SaaS |
+
+Next technical steps: Firestore `ProfileRepository`, Firestore rules fix, unit tests for `lib/engine`.

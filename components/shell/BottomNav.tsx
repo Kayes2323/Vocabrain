@@ -2,19 +2,21 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 
 /** Mobile primary navigation. Hidden from md upwards, where SideNav takes over. */
 export function BottomNav() {
   const pathname = usePathname();
+  const { t } = useLocale();
   return (
     <nav
-      aria-label="Primary"
+      aria-label={t('nav.primary')}
       className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/90 pb-safe backdrop-blur-lg md:hidden"
     >
       <ul className="mx-auto grid h-16 max-w-lg grid-cols-5">
-        {PRIMARY_NAV.map(({ href, label, icon: Icon, featured }) => {
+        {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured }) => {
           const active = isNavActive(pathname, href);
           return (
             <li key={href}>
@@ -45,7 +47,7 @@ export function BottomNav() {
                     <Icon className="size-5" aria-hidden />
                   </span>
                 )}
-                <span className={cn(featured && 'text-brand')}>{label}</span>
+                <span className={cn(featured && 'text-brand')}>{t(labelKey)}</span>
               </Link>
             </li>
           );

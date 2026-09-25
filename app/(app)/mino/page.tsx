@@ -1,5 +1,6 @@
 'use client';
 
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { ScreenSkeleton, Section } from '@/components/ds';
 import { MinoChat } from '@/components/mino/MinoChat';
@@ -11,10 +12,10 @@ import { MINO } from '@/lib/constants';
 import { getMinoInsight, getNextActions } from '@/lib/engine';
 
 export default function MinoPage() {
+  const { t, m } = useLocale();
   const { profile } = useProfile();
   if (!profile) return <ScreenSkeleton />;
 
-  const actions = getNextActions(profile);
   const context = buildMinoContext(profile);
 
   return (
@@ -23,23 +24,25 @@ export default function MinoPage() {
         <MinoMark size="lg" />
         <div className="space-y-1 pt-1">
           <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{MINO.name}</h1>
-          <p className="text-[15px] text-muted-foreground">{MINO.role}</p>
+          <p className="text-[15px] text-muted-foreground">{t('mino.role')}</p>
         </div>
       </header>
 
-      <p className="text-lg text-pretty">{getMinoInsight(profile)}</p>
+      <p className="max-w-2xl text-lg text-pretty">{m(getMinoInsight(profile))}</p>
 
-      <Section title="Your next 3 actions">
-        <NextActionList actions={actions} />
-      </Section>
-
-      <Section title={`Ask ${MINO.name}`}>
-        <MinoChat context={context} />
-      </Section>
-
-      <Section title={`What ${MINO.name} knows about you`}>
-        <MinoContextSummary context={context} />
-      </Section>
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <div className="space-y-8">
+          <Section title={t('mino.nextSteps')}>
+            <NextActionList actions={getNextActions(profile)} />
+          </Section>
+          <Section title={t('mino.ask')}>
+            <MinoChat context={context} />
+          </Section>
+        </div>
+        <Section title={t('mino.knows')}>
+          <MinoContextSummary context={context} />
+        </Section>
+      </div>
     </div>
   );
 }

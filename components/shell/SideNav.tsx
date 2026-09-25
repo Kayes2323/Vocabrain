@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { BrandMark } from './BrandMark';
@@ -9,14 +10,15 @@ import { BrandMark } from './BrandMark';
 /** Tablet/desktop navigation rail, same destinations as BottomNav. */
 export function SideNav() {
   const pathname = usePathname();
+  const { t } = useLocale();
   return (
     <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar px-3 py-5 md:flex">
       <Link href="/" className="mb-8 px-3">
         <BrandMark />
       </Link>
-      <nav aria-label="Primary">
+      <nav aria-label={t('nav.primary')}>
         <ul className="space-y-1">
-          {PRIMARY_NAV.map(({ href, label, icon: Icon, featured }) => {
+          {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured }) => {
             const active = isNavActive(pathname, href);
             return (
               <li key={href}>
@@ -31,7 +33,7 @@ export function SideNav() {
                   )}
                 >
                   <Icon className={cn('size-5', featured && !active && 'text-brand')} aria-hidden />
-                  {label}
+                  {t(labelKey)}
                   {featured && (
                     <span className="ml-auto rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">
                       AI
