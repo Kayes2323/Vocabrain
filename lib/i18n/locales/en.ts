@@ -149,8 +149,15 @@ export const en = {
     placeholder: 'Ask Mino anything…',
     send: 'Send',
     thinking: 'Thinking…',
-    unavailable: "Mino's chat isn't connected yet. Your next steps above are already personalised for you.",
-    error: "Couldn't reach Mino. Please try again.",
+    errors: {
+      unauthenticated: 'Sign in to chat with Mino. Your next steps above work without an account.',
+      not_configured: "Mino's chat isn't connected yet. Your next steps above are already personalised for you.",
+      rate_limited: "You're sending messages quickly. Take a short break and try again in a minute.",
+      timeout: 'Mino took too long to answer. Please try again.',
+      provider_busy: 'Mino is a little busy right now. Please try again in a moment.',
+      invalid_request: 'That message could not be sent. Try a shorter message.',
+      unavailable: "Couldn't reach Mino. Check your connection and try again.",
+    },
     minimumDayReply: "Done. Today's plan is now 15 minutes: 5 min Vocabulary Review, 5 min Reading, 5 min Speaking.",
     prompts: {
       today: 'What should I study today?',

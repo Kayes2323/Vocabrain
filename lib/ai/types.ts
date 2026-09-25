@@ -15,25 +15,61 @@ export type MinoCapabilityId =
   | 'lor-assistant'
   | 'interview-coach';
 
+/** A turn in the short-term conversation (what the student sees). */
 export interface AIMessage {
   role: 'user' | 'assistant';
   content: string;
 }
 
-export interface AICompletionRequest {
+/** Model tiers. Simple chat uses `fast`; deeper analysis uses `smart`. */
+export type ModelTier = 'fast' | 'smart';
+
+/** A function Mino can call. Parameters follow the JSON-schema subset providers share. */
+export interface ToolDeclaration {
+  name: string;
+  description: string;
+  parameters: {
+    type: 'object';
+    properties: Record<string, { type: 'string' | 'number' | 'integer' | 'boolean'; description: string; enum?: string[] }>;
+    required?: string[];
+  };
+}
+
+export interface ToolCallRecord {
+  name: string;
+  ok: boolean;
+}
+
+export interface AIRunRequest {
   system: string;
   messages: AIMessage[];
-  maxTokens?: number;
+  tier: ModelTier;
+  maxOutputTokens?: number;
+  tools?: ToolDeclaration[];
+  /** Executes a tool the model asked for and returns JSON-serialisable data. */
+  runTool?: (name: string, args: Record<string, unknown>) => Promise<unknown>;
+  /** Upper bound on tool round-trips per request (cost and latency guard). */
+  maxToolRounds?: number;
+  signal?: AbortSignal;
 }
 
-export interface AICompletionResult {
+export interface AIRunResult {
   text: string;
+  model: string;
+  usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number };
+  toolCalls: ToolCallRecord[];
+  /** The model stopped early (e.g. output limit). */
+  truncated: boolean;
 }
 
-/** Implemented server-side only (API keys never reach the browser). */
+/**
+ * An AI provider (Gemini today, others later). Implemented server-side only:
+ * API keys never reach the browser. Provider-specific details such as tool
+ * call formats stay inside the implementation.
+ */
 export interface AIProvider {
   id: string;
-  complete(request: AICompletionRequest): Promise<AICompletionResult>;
+  run(request: AIRunRequest): Promise<AIRunResult>;
 }
 
 /**
@@ -69,11 +105,33 @@ export interface MinoContext {
 }
 
 export interface MinoAskRequest {
-  capability: MinoCapabilityId;
-  messages: AIMessage[];
-  context: MinoContext;
+  message: string;
+  language: 'en' | 'bn';
+  /** Recent turns for short-term context (trimmed server-side). */
+  history: AIMessage[];
+  /** Client-side summary. Treated as hints only; tools read authoritative data. */
+  userContext: MinoContext;
+  capability?: MinoCapabilityId;
+}
+
+/** Stable error codes the UI turns into friendly, localised messages. */
+export type MinoErrorCode =
+  | 'unauthenticated'
+  | 'not_configured'
+  | 'rate_limited'
+  | 'timeout'
+  | 'provider_busy'
+  | 'invalid_request'
+  | 'unavailable';
+
+export interface MinoResponseMetadata {
+  model: string;
+  tier: ModelTier;
+  latencyMs: number;
+  toolCalls: ToolCallRecord[];
+  usage?: AIRunResult['usage'];
 }
 
 export type MinoAskResponse =
-  | { ok: true; reply: string }
-  | { ok: false; reason: 'unavailable' | 'invalid-request' | 'error'; message: string };
+  | { ok: true; response: string; metadata: MinoResponseMetadata }
+  | { ok: false; error: MinoErrorCode };

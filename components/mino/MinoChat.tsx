@@ -18,7 +18,7 @@ interface ChatMessage extends AIMessage {
 }
 
 export function MinoChat({ context }: { context: MinoContext }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { updateProfile } = useProfile();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
@@ -31,12 +31,17 @@ export function MinoChat({ context }: { context: MinoContext }) {
     setMessages(history);
     setDraft('');
     setPending(true);
-    const res = await askMino({ capability: 'next-action', messages: history.filter((m) => !m.notice), context });
+    const res = await askMino({
+      message: content,
+      language: locale === 'bn' ? 'bn' : 'en',
+      history: messages.filter((m) => !m.notice).map(({ role, content }) => ({ role, content })),
+      userContext: context,
+    });
     setMessages((prev) => [
       ...prev,
       res.ok
-        ? { role: 'assistant', content: res.reply }
-        : { role: 'assistant', content: t(res.reason === 'unavailable' ? 'mino.unavailable' : 'mino.error'), notice: true },
+        ? { role: 'assistant', content: res.response }
+        : { role: 'assistant', content: t(`mino.errors.${res.error}`), notice: true },
     ]);
     setPending(false);
   };

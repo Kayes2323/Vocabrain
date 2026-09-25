@@ -152,8 +152,15 @@ export const bn: LocaleDictionary = {
     placeholder: 'Mino-কে কিছু জিজ্ঞেস করো…',
     send: 'পাঠাও',
     thinking: 'ভাবছি…',
-    unavailable: 'Mino-র chat এখনো connect হয়নি। তবে উপরের next step গুলো তোমার জন্যই বানানো।',
-    error: 'Mino-র সাথে connect করা যায়নি। আবার চেষ্টা করো।',
+    errors: {
+      unauthenticated: 'Mino-র সাথে কথা বলতে sign in করো। উপরের next step গুলো account ছাড়াও কাজ করে।',
+      not_configured: 'Mino-র chat এখনো connect হয়নি। তবে উপরের next step গুলো তোমার জন্যই বানানো।',
+      rate_limited: 'তুমি খুব দ্রুত message পাঠাচ্ছো। এক মিনিট পর আবার চেষ্টা করো।',
+      timeout: 'Mino-র উত্তর দিতে একটু বেশি সময় লাগছে। আবার চেষ্টা করো।',
+      provider_busy: 'Mino এখন একটু ব্যস্ত আছে। একটু পরে আবার চেষ্টা করো।',
+      invalid_request: 'Message-টা পাঠানো যায়নি। একটু ছোট করে লিখে দেখো।',
+      unavailable: 'Mino-র সাথে connect করা যায়নি। Internet connection দেখে আবার চেষ্টা করো।',
+    },
     minimumDayReply: 'ঠিক আছে! আজকের plan এখন ১৫ মিনিটের: ৫ মিনিট Vocabulary Review, ৫ মিনিট Reading, ৫ মিনিট Speaking।',
     prompts: {
       today: 'আজ কী পড়বো?',

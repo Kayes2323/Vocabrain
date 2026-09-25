@@ -65,7 +65,7 @@ will do plus a "meanwhile" action, so the student never hits a dead end.
 
 ```
 app/(app)/layout.tsx      AuthProvider + AppShell (auth gate, nav, providers)
-app/api/mino              Mino endpoint (provider-agnostic, validates with zod)
+app/api/mino              Mino endpoint (verified Firebase user, rate limit, zod) + /health
 app/api/stripe            Checkout + webhook
 
 components/ds             Design system: PageHeader, Section, Panel, ListRow/RowGroup,
@@ -120,19 +120,20 @@ Defined in `lib/models/`. Implemented now: `UserProfile` (with `IELTSProfile`,
 
 ## 5. Mino and the AI layer
 
+Full details: `docs/MINO.md`.
+
 ```
-UI ──askMino()──▶ /api/mino ──▶ getMinoProvider(): AIProvider ──▶ any model/vendor
-        ▲                              │
-buildMinoContext(profile)     buildMinoSystemPrompt(context)
+MinoChat ──askMino() + Firebase ID token──▶ POST /api/mino
+  route: verify token → rate limit → validate → runMino()
+  orchestrator (lib/ai/server/mino): system prompt + trimmed history + tools
+  provider (lib/ai/server/providers): Gemini generateContent, tool loop
+  tools (lib/ai/server/tools): read the student's own Firestore data as that student
 ```
 
-- `lib/ai/types.ts` defines `AIProvider`, `MinoContext`, `MinoCapabilityId` and request/response shapes.
-  No vendor SDK is imported outside a provider implementation.
-- Keys live in server env vars only. With `MINO_AI_PROVIDER` unset, `/api/mino` returns a friendly
-  "not connected yet" response, which the chat shows as a notice.
+- Everything under `lib/ai/server/` is server-only. The Gemini key is read from `GEMINI_API_KEY` there
+  and nowhere else; it is never logged, returned or shipped to the browser.
 - The **Next Action Engine** (`lib/engine/next-action.ts`) is live and rule-based. It powers Mino's
-  "next 3 actions", the Home insight and the plan. An AI capability can later produce the same
-  `NextAction[]` shape.
+  "next 3 actions", the Home insight and the plan, and keeps working when the chat is not connected.
 - Capabilities (IELTS Coach, Vocabulary Coach, Writing, Speaking, Study Abroad Advisor, Scholarship,
   Application Manager, Interview Coach) are listed in `lib/ai/capabilities.ts` with their roadmap phase.
 
