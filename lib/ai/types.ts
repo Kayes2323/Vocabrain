@@ -57,6 +57,8 @@ export interface MinoContext {
   vocabulary: {
     lastLessonId?: number;
     savedWordCount: number;
+    dueToday: number;
+    failedLastTime: number;
   };
   abroad: {
     degreeLevel?: string;

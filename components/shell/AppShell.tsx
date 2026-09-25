@@ -4,18 +4,20 @@ import { useEffect, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { BrainProvider } from '@/components/providers/BrainProvider';
 import { ProfileProvider, useProfile } from '@/components/providers/ProfileProvider';
 import { UpgradeProvider } from '@/components/providers/UpgradeProvider';
 import LoginView from '@/components/LoginView';
 import { db } from '@/lib/firebase';
 import { createFirestoreProfileRepository } from '@/lib/services/firestore-profile-repository';
 import { localProfileRepository } from '@/lib/services/profile-repository';
+import { createFirestoreBrainRepository, localBrainRepository } from '@/lib/services/brain-repository';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 import { SplashScreen } from './SplashScreen';
 
 /** Routes that take over the full screen (focused flows, no navigation). */
-const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic'];
+const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '/practice'];
 
 /**
  * Keeps the UI language in step with the profile and sends new students to
@@ -50,6 +52,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     () => (!isGuest && db ? createFirestoreProfileRepository(db) : localProfileRepository),
     [isGuest],
   );
+  const brainRepository = useMemo(
+    () => (!isGuest && db ? createFirestoreBrainRepository(db) : localBrainRepository),
+    [isGuest],
+  );
 
   if (loading) return <SplashScreen />;
   if (!user) return <LoginView />;
@@ -58,6 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ProfileProvider userId={user.uid} repository={repository}>
+      <BrainProvider userId={user.uid} repository={brainRepository}>
       <UpgradeProvider>
         <JourneyGate>
           {focused ? (
@@ -75,6 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
         </JourneyGate>
       </UpgradeProvider>
+      </BrainProvider>
     </ProfileProvider>
   );
 }

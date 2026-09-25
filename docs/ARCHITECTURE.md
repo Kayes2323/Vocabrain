@@ -167,6 +167,24 @@ login screen. If the Firebase env vars are absent, the app starts as a guest aut
 
 Percent = (completed stages + progress within the current stage) ÷ 5. No arbitrary numbers.
 
+## 7b. Phase 3: Vocab Brain core
+
+READ → DISCOVER → SAVE → UNDERSTAND → RECALL → USE → REVIEW → MASTER
+
+| Piece | Where | Notes |
+| --- | --- | --- |
+| Reading | `/ielts/reading`, `components/reading`, `lib/content/passages.ts` | Original IELTS-style passages with `ContentProvenance`; every word is tappable. Licensed content plugs in with `licenseStatus: 'licensed'` |
+| Word lookup | `lib/content/dictionary.ts` | Passage glossary (with Bangla) → IELTS word bank → topic lessons → dictionaryapi.dev (3.5 s timeout) → save with sentence only |
+| Save to Brain | `components/providers/BrainProvider.tsx`, `lib/services/brain-repository.ts` | One tap; stores word, source, original sentence, meaning, synonyms, collocations, example. `users/{uid}/vocabulary/{id}` (Firestore) or localStorage for guests |
+| Model | `lib/models/vocabulary.ts` (`BrainWord`) | status, stage, nextReviewAt, recall/usage counts and capped histories |
+| Spaced review | `lib/engine/brain.ts` | First recall on the day of saving, then 1 → 3 → 7 → 14 → 30 → 60 days; a miss returns the word to tomorrow |
+| Statuses | `deriveStatus` | new → learning → recalling (stage ≥ 2) → active (+ used in Writing/Speaking) → strong (stage ≥ 4 + used) → mastered (stage ≥ 5 + used in both) |
+| Free recall | `/review`, `lib/engine/recall.ts` | Meaning, synonym, context (original sentence) and sentence-completion cloze. Auto-graded when confident (stems, typos), otherwise the student compares and self-grades. Missed words come back once in the session |
+| Active usage | `/practice/writing`, `/practice/speaking`, `lib/engine/usage.ts` | Writing: one sentence, gentle rule-based check (word used, full sentence, collocation). Speaking: Web Speech API transcript (typing fallback), word-used check + self-rating |
+| Mistake diagnosis | `lib/engine/diagnosis.ts` | meaning / context / recall / usage / collocation problems from recent attempts, each with a targeted activity |
+| Today's Learning | `lib/engine/daily-plan.ts` | Vocabulary Review (due words), Reading, Writing, Speaking; tasks complete automatically from real activity |
+| Mino | `getMinoInsight`, `getNextActions` | Vocabulary-first guidance using due and missed words, personalised with the student's name |
+
 ## 8. Deployment and domain (audited)
 
 | | |
@@ -194,4 +212,4 @@ is verified.
 | 5 | Applications: University shortlist, Scholarships, Deadlines, Documents, SOP / CV / LOR assistants |
 | 6 | Advanced AI and SaaS |
 
-Next technical steps: Firestore `ProfileRepository`, Firestore rules fix, unit tests for `lib/engine`.
+Next technical steps: AI provider for Mino (Writing/Speaking feedback via `/api/mino`), Stripe webhook with the Admin SDK, unit tests for `lib/engine`.

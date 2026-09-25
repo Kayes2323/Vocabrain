@@ -71,7 +71,7 @@ export const sectionKey = (id: string, field: 'title' | 'description' | 'highlig
 export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'plan', icon: Target, href: '/ielts/plan', status: 'planned', phase: 2 },
   { id: 'listening', icon: Headphones, href: '/ielts/listening', status: 'planned', phase: 2 },
-  { id: 'reading', icon: BookText, href: '/ielts/reading', status: 'planned', phase: 2 },
+  { id: 'reading', icon: BookText, href: '/ielts/reading', status: 'available', phase: 3 },
   { id: 'writing', icon: PenLine, href: '/ielts/writing', status: 'planned', phase: 3 },
   { id: 'speaking', icon: Mic, href: '/ielts/speaking', status: 'planned', phase: 3 },
   { id: 'vocabulary', icon: BookOpen, href: '/ielts/vocabulary', status: 'available', phase: 1 },

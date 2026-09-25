@@ -2,9 +2,10 @@ import { DEGREE_LEVELS } from '@/lib/constants';
 import { formatIntake, ieltsJourney, overallBand, weeksUntilTest } from '@/lib/engine';
 import { getCountry } from '@/lib/content/countries';
 import type { UserProfile } from '@/lib/models';
+import type { MinoBrainContext } from '@/lib/engine';
 import type { MinoContext } from './types';
 
-export function buildMinoContext(profile: UserProfile): MinoContext {
+export function buildMinoContext(profile: UserProfile, brain: MinoBrainContext): MinoContext {
   const { ielts, abroad, vocabulary } = profile;
   return {
     language: profile.language ?? 'en',
@@ -20,7 +21,9 @@ export function buildMinoContext(profile: UserProfile): MinoContext {
     },
     vocabulary: {
       lastLessonId: vocabulary.lastLessonId,
-      savedWordCount: vocabulary.savedWordIds.length,
+      savedWordCount: brain.total,
+      dueToday: brain.due,
+      failedLastTime: brain.failedLastTime,
     },
     abroad: {
       degreeLevel: DEGREE_LEVELS.find((d) => d.id === abroad.degreeLevel)?.label,

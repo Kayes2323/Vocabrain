@@ -93,6 +93,8 @@ export interface StudyProgress {
   days: Record<string, DailyLog>;
   /** Last local date the student completed anything. */
   lastActiveDate?: string;
+  /** Passage ids the student finished reading. */
+  readPassages?: string[];
 }
 
 export interface UserProfile {

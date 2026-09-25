@@ -1,15 +1,14 @@
 'use client';
 
-import { BookOpenCheck, Layers, Lock, Sparkles } from 'lucide-react';
+import { BookOpenCheck, BookText, Layers, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
 import { ListRow, PageHeader, Panel, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
-import { ActiveVocabularyPanel } from '@/components/vocabulary/ActiveVocabularyPanel';
+import { BrainSummaryPanel } from '@/components/brain/BrainSummaryPanel';
 import { FREE_BAND_LEVEL } from '@/lib/constants';
-import { vocabularySummary } from '@/lib/engine';
 import { getAllBands, getVocabularyByBand } from '@/lib/ielts-vocabulary';
 import { VOCABULARY_DATA } from '@/lib/vocabulary';
 
@@ -27,7 +26,7 @@ export default function VocabularyPage() {
     <div className="space-y-8">
       <PageHeader title={t('skills.vocabulary')} subtitle={t('vocabulary.subtitle')} backHref="/ielts" backLabel={t('nav.ielts')} />
 
-      <ActiveVocabularyPanel summary={vocabularySummary(profile)} />
+      <BrainSummaryPanel />
 
       <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
         <Section title={t('vocabulary.topicLessons')} description={t('vocabulary.topicLessonsDesc')}>
@@ -74,14 +73,14 @@ export default function VocabularyPage() {
             </RowGroup>
           </Section>
 
-          <Section title={t('vocabulary.comingNext')}>
+          <Section title={t('vocabulary.findWords')}>
             <RowGroup>
               <ListRow
-                icon={Sparkles}
+                icon={BookText}
+                iconTone="brand"
                 title={t('vocabulary.notebookTitle')}
                 description={t('vocabulary.notebookDesc')}
                 href="/ielts/reading"
-                trailing={<StatusChip>{t('common.soon')}</StatusChip>}
               />
             </RowGroup>
           </Section>

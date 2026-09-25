@@ -9,8 +9,9 @@ export interface Dictionary {
 function lookup(dict: Dictionary, key: string): string | readonly string[] | undefined {
   let node: string | readonly string[] | Dictionary | undefined = dict;
   for (const part of key.split('.')) {
-    if (node === undefined || typeof node === 'string' || Array.isArray(node)) return undefined;
-    node = (node as Dictionary)[part];
+    if (node === undefined || typeof node === 'string') return undefined;
+    // Lists can be indexed: `practice.speakingPrompts.noun.0`.
+    node = Array.isArray(node) ? (node as readonly string[])[Number(part)] : (node as Dictionary)[part];
   }
   return typeof node === 'string' || Array.isArray(node) ? (node as string | readonly string[]) : undefined;
 }

@@ -1,83 +1,91 @@
-import type { ContentProvenance, ID, ISODate } from './common';
+import type { ID, ISODate, LicenseStatus } from './common';
 
-/** Ordered from first contact to full command of a word. */
-export const MASTERY_LEVELS = [
-  'encountered',
-  'recognised',
-  'understood',
-  'retrievable',
-  'usable',
-  'transferable',
-  'mastered',
-] as const;
-export type MasteryLevel = (typeof MASTERY_LEVELS)[number];
+/**
+ * The student's Brain: every word they saved, with where it came from and
+ * how well they can recall and use it. Stored at users/{uid}/vocabulary/{id}
+ * (or localStorage for guests).
+ */
 
-export const MASTERY_LEVEL_INFO: Record<MasteryLevel, { label: string; description: string }> = {
-  encountered: { label: 'Encountered', description: 'You met the word in context.' },
-  recognised: { label: 'Recognised', description: 'You know you have seen it before.' },
-  understood: { label: 'Understood', description: 'You know what it means here.' },
-  retrievable: { label: 'Retrievable', description: 'You can recall it without a prompt.' },
-  usable: { label: 'Usable', description: 'You use it correctly in your own sentences.' },
-  transferable: { label: 'Transferable', description: 'You use it naturally in new contexts.' },
-  mastered: { label: 'Mastered', description: 'Accurate, appropriate and natural in Writing and Speaking.' },
-};
+/** Learning states shown in My Notebook, from first save to full command. */
+export const WORD_STATUSES = ['new', 'learning', 'recalling', 'active', 'strong', 'mastered'] as const;
+export type WordStatus = (typeof WORD_STATUSES)[number];
 
-/** Separate strengths tracked per word; a word can be strong in one and weak in another. */
-export type MasteryDimension =
-  | 'recognition'
-  | 'meaning'
-  | 'collocation'
-  | 'writing'
-  | 'speaking'
-  | 'newContext';
+/** Free-recall exercise types. Never multiple choice. */
+export type RecallExercise = 'meaning' | 'synonym' | 'context' | 'completion';
 
-export type DimensionStatus = 'not-started' | 'developing' | 'secure';
+/** What is going wrong when a word keeps failing. */
+export type WordProblem = 'meaning' | 'context' | 'recall' | 'collocation' | 'usage' | 'pronunciation';
 
-export interface WordSense {
-  meaning: string;
-  /** Explains how a synonym differs, e.g. "crucial: essential for an outcome". */
-  nuance?: string;
-}
+export type WordSourceType = 'reading-passage' | 'word-bank' | 'lesson' | 'manual';
 
-export interface VocabularyItem {
-  id: ID;
-  userId: ID;
-  word: string;
-  partOfSpeech?: string;
-  senses: WordSense[];
-  translation?: { language: string; text: string };
-  synonyms?: WordSense[];
-  antonyms?: string[];
-  collocations?: string[];
-  wordFamily?: string[];
-  connotation?: 'positive' | 'neutral' | 'negative';
-  mastery: MasteryLevel;
-  dimensions: Partial<Record<MasteryDimension, DimensionStatus>>;
-  createdAt: ISODate;
-  nextReviewAt?: ISODate;
-}
-
-/** One time the student met a word. Captured automatically from reading. */
-export interface VocabularyEncounter {
-  id: ID;
-  itemId: ID;
-  userId: ID;
-  sentence: string;
-  surroundingContext?: string;
+export interface WordSource {
+  type: WordSourceType;
+  title: string;
   passageId?: ID;
-  passageTitle?: string;
-  topic?: string;
-  source?: Pick<ContentProvenance, 'source' | 'sourceType'>;
-  encounteredAt: ISODate;
+  licenseStatus?: LicenseStatus;
 }
 
-export interface VocabularyReview {
-  id: ID;
-  itemId: ID;
-  userId: ID;
-  dimension: MasteryDimension;
-  /** e.g. context-clue, synonym-recognition, paraphrase, sentence-writing. */
-  exerciseType: string;
+export interface RecallAttempt {
+  at: ISODate;
+  exercise: RecallExercise;
   correct: boolean;
-  reviewedAt: ISODate;
+  answer?: string;
+}
+
+export interface UsageAttempt {
+  at: ISODate;
+  mode: 'writing' | 'speaking';
+  text: string;
+  /** The word was used correctly and naturally. */
+  correct: boolean;
+  /** i18n keys of the feedback given. */
+  feedback?: string[];
+}
+
+export interface BrainWord {
+  id: ID;
+  word: string;
+  /** Lowercase dictionary form, used to avoid duplicates. */
+  lemma: string;
+  source: WordSource;
+  originalSentence?: string;
+  meaning: string;
+  meaningBn?: string;
+  partOfSpeech?: string;
+  synonyms: string[];
+  antonyms: string[];
+  collocations: string[];
+  exampleSentence?: string;
+  /** Derived from the fields below on every write (see lib/engine/brain.ts). */
+  status: WordStatus;
+  createdAt: ISODate;
+  updatedAt: ISODate;
+  /** Successful spaced recalls in a row (0-6). Drives the review interval. */
+  stage: number;
+  nextReviewAt: ISODate;
+  lastReviewedAt?: ISODate;
+  recallCount: number;
+  successfulRecallCount: number;
+  consecutiveFailures: number;
+  /** Successful uses in the student's own writing / speaking. */
+  writingUsageCount: number;
+  speakingUsageCount: number;
+  /** Most recent attempts, capped so documents stay small. */
+  recallHistory: RecallAttempt[];
+  usageHistory: UsageAttempt[];
+}
+
+/** Dictionary information for a word, before it is saved. */
+export interface WordInfo {
+  word: string;
+  lemma: string;
+  meaning: string;
+  meaningBn?: string;
+  partOfSpeech?: string;
+  synonyms: string[];
+  antonyms: string[];
+  collocations: string[];
+  exampleSentence?: string;
+  /** Where the definition came from, e.g. "Vocab Brain glossary". */
+  dictionarySource: 'glossary' | 'word-bank' | 'dictionary-api' | 'none';
 }

@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Panel, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
+import { useBrain } from '@/components/providers/BrainProvider';
+import { getWordBankInfo } from '@/lib/content/dictionary';
+import { wordId } from '@/lib/engine';
 import { recordRecall } from '@/lib/engine';
 import type { IELTSWord } from '@/lib/ielts-vocabulary';
 import { Flashcard } from './Flashcard';
@@ -14,8 +17,6 @@ import { RecallButtons, StudyNav, StudyProgress } from './StudyControls';
 interface WordBankStudyProps {
   band: number;
   words: IELTSWord[];
-  savedIds: string[];
-  onToggleSave: (wordId: string) => void;
 }
 
 function ChipList({ label, items }: { label: string; items: string[] }) {
@@ -33,9 +34,10 @@ function ChipList({ label, items }: { label: string; items: string[] }) {
   );
 }
 
-export function WordBankStudy({ band, words, savedIds, onToggleSave }: WordBankStudyProps) {
+export function WordBankStudy({ band, words }: WordBankStudyProps) {
   const { t } = useLocale();
   const { updateProfile } = useProfile();
+  const brain = useBrain();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
 
@@ -45,7 +47,13 @@ export function WordBankStudy({ band, words, savedIds, onToggleSave }: WordBankS
   };
 
   const word = words[index];
-  const saved = savedIds.includes(word.id);
+  const brainId = wordId(word.word.toLowerCase());
+  const saved = Boolean(brain.get(brainId));
+  const toggleSave = () => {
+    if (saved) return void brain.remove(brainId);
+    const entry = getWordBankInfo(word.id);
+    if (entry) void brain.save(entry.info, { type: 'word-bank', title: entry.title }, entry.info.exampleSentence);
+  };
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
@@ -82,7 +90,7 @@ export function WordBankStudy({ band, words, savedIds, onToggleSave }: WordBankS
           variant={saved ? 'secondary' : 'outline'}
           size="lg"
           className="w-full"
-          onClick={() => onToggleSave(word.id)}
+          onClick={toggleSave}
           aria-pressed={saved}
         >
           {saved ? <BookmarkCheck className="text-brand" /> : <Bookmark />}

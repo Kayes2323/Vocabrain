@@ -42,6 +42,7 @@ export function MinoContextSummary({ context }: { context: MinoContext }) {
           fallback={notSet}
         />
         <Fact label={t('mino.facts.savedWords')} value={String(vocabulary.savedWordCount)} fallback={notSet} />
+        <Fact label={t('mino.facts.dueToday')} value={String(vocabulary.dueToday)} fallback={notSet} />
         {(abroad.degreeLevel || abroad.targetIntake) && (
           <>
             <Fact label={t('mino.facts.degree')} value={abroad.degreeLevel} fallback={notSet} />

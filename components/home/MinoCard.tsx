@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
+import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { getMinoInsight, nextProfileGap } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
@@ -13,6 +14,8 @@ import type { UserProfile } from '@/lib/models';
 export function MinoCard({ profile }: { profile: UserProfile }) {
   const { t, m } = useLocale();
   const gap = nextProfileGap(profile);
+  const brain = useBrainContext();
+  const name = profile.displayName;
 
   return (
     <Panel variant="brand" className="space-y-4">
@@ -20,7 +23,7 @@ export function MinoCard({ profile }: { profile: UserProfile }) {
         <MinoMark />
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold text-brand">{t('mino.insightLabel')}</p>
-          <p className="text-[15px] text-foreground/90 text-pretty">“{m(getMinoInsight(profile))}”</p>
+          <p className="text-[15px] text-foreground/90 text-pretty">“{name ? `${name}, ` : ''}{m(getMinoInsight(profile, brain))}”</p>
         </div>
       </div>
 

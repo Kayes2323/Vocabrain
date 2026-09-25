@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -31,15 +31,6 @@ export default function BandPage() {
     updateProfile((p) => ({ ...p, vocabulary: { ...p.vocabulary, lastBand: band } }));
   }, [valid, locked, band, profileReady, updateProfile]);
 
-  const toggleSave = useCallback(
-    (wordId: string) =>
-      updateProfile((p) => {
-        const ids = p.vocabulary.savedWordIds;
-        const savedWordIds = ids.includes(wordId) ? ids.filter((id) => id !== wordId) : [...ids, wordId];
-        return { ...p, vocabulary: { ...p.vocabulary, savedWordIds } };
-      }),
-    [updateProfile],
-  );
 
   if (!valid) notFound();
   if (!profile) return <ScreenSkeleton />;
@@ -59,12 +50,7 @@ export default function BandPage() {
           action={<Button onClick={openUpgrade}>{t('vocabulary.seePremium')}</Button>}
         />
       ) : (
-        <WordBankStudy
-          band={band}
-          words={getVocabularyByBand(band)}
-          savedIds={profile.vocabulary.savedWordIds}
-          onToggleSave={toggleSave}
-        />
+        <WordBankStudy band={band} words={getVocabularyByBand(band)} />
       )}
     </div>
   );

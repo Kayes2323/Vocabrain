@@ -1,6 +1,13 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { browserLocalPersistence, connectAuthEmulator, getAuth, setPersistence, type Auth } from 'firebase/auth';
-import { connectFirestoreEmulator, getFirestore, type Firestore } from 'firebase/firestore';
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from 'firebase/firestore';
 
 /**
  * Firebase Web SDK configuration. These values identify the project and are
@@ -32,7 +39,12 @@ if (isFirebaseConfigured && typeof window !== 'undefined') {
   try {
     app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     auth = getAuth(app);
-    db = getFirestore(app);
+    try {
+      // Offline cache: saves survive refreshes and poor connections, then sync.
+      db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+    } catch {
+      db = getFirestore(app); // Already initialised (hot reload) or IndexedDB unavailable.
+    }
     if (useEmulator && !(auth as Auth & { emulatorConfig?: unknown }).emulatorConfig) {
       connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
       connectFirestoreEmulator(db, '127.0.0.1', 8080);

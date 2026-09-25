@@ -1,4 +1,3 @@
-import { IELTS_SKILLS } from '@/lib/constants';
 import type { UserProfile } from '@/lib/models';
 import { knownSkillCount, overallBand } from './ielts';
 
@@ -14,8 +13,9 @@ export const JOURNEY_RULES = {
   foundationTasks: 10,
   /** Completed tasks to finish Skill Building... */
   skillBuildingTasks: 40,
-  /** ...including at least this many in each of the four skills. */
+  /** ...including at least this many of each practice kind. */
   skillBuildingPerSkill: 5,
+  skillBuildingKinds: ['vocabulary', 'reading', 'writing', 'speaking'] as const,
   /** Full mock tests to finish the Mock Tests stage. */
   mockTests: 2,
 } as const;
@@ -47,7 +47,7 @@ function stageProgress(id: JourneyStageId, profile: UserProfile): number {
     case 'foundation':
       return Math.min(1, tasks / JOURNEY_RULES.foundationTasks);
     case 'skill-building': {
-      const perSkill = IELTS_SKILLS.map((s) =>
+      const perSkill = JOURNEY_RULES.skillBuildingKinds.map((s) =>
         Math.min(1, (study.completedTasks[s] ?? 0) / JOURNEY_RULES.skillBuildingPerSkill),
       );
       const skillShare = perSkill.reduce((a, b) => a + b, 0) / perSkill.length;

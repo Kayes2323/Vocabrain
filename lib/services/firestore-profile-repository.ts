@@ -3,41 +3,34 @@ import type { UserProfile } from '@/lib/models';
 import { withProfileDefaults, type ProfileRepository } from './profile-repository';
 import { summaryFields } from './user-document';
 
-const SAVE_DELAY_MS = 800;
-
 /**
- * Stores the app profile in users/{uid}. Rapid updates (e.g. answering
- * flashcards) are coalesced into one write; pending writes flush when the tab
- * is hidden so nothing is lost.
+ * Stores the app profile in users/{uid}. Every change is written straight
+ * away (Firestore's offline cache keeps it across refreshes); writes are
+ * serialised so a slow write never overwrites a newer one.
  */
 export function createFirestoreProfileRepository(db: Firestore): ProfileRepository {
-  let pending: UserProfile | null = null;
-  let timer: ReturnType<typeof setTimeout> | null = null;
+  let latest: UserProfile | null = null;
+  let writing = false;
 
-  const flush = async () => {
-    if (timer) clearTimeout(timer);
-    timer = null;
-    const profile = pending;
-    pending = null;
-    if (!profile) return;
-    const { userId, ...app } = profile;
-    try {
-      await setDoc(
-        doc(db, 'users', userId),
-        { ...summaryFields(profile), app: JSON.parse(JSON.stringify(app)), updatedAt: serverTimestamp() },
-        { merge: true },
-      );
-    } catch (error) {
-      console.error('[profile] Save failed', error);
+  const pump = async () => {
+    if (writing) return;
+    writing = true;
+    while (latest) {
+      const profile = latest;
+      latest = null;
+      const { userId, ...app } = profile;
+      try {
+        await setDoc(
+          doc(db, 'users', userId),
+          { ...summaryFields(profile), app: JSON.parse(JSON.stringify(app)), updatedAt: serverTimestamp() },
+          { merge: true },
+        );
+      } catch (error) {
+        console.error('[profile] Save failed', error);
+      }
     }
+    writing = false;
   };
-
-  if (typeof window !== 'undefined') {
-    window.addEventListener('pagehide', () => void flush());
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') void flush();
-    });
-  }
 
   return {
     async load(userId) {
@@ -51,9 +44,8 @@ export function createFirestoreProfileRepository(db: Firestore): ProfileReposito
       };
     },
     async save(profile) {
-      pending = profile;
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => void flush(), SAVE_DELAY_MS);
+      latest = profile;
+      void pump();
     },
   };
 }

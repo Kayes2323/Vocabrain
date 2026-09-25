@@ -9,7 +9,7 @@ import { MinoMark } from '@/components/shell/MinoMark';
 import { askMino } from '@/lib/ai/client';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoContext } from '@/lib/ai/types';
-import { buildDailyPlan, setPlanMode } from '@/lib/engine';
+import { setPlanMode } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
 interface ChatMessage extends AIMessage {
@@ -45,7 +45,7 @@ export function MinoChat({ context }: { context: MinoContext }) {
     const text = t(`mino.prompts.${id}`);
     if (id === 'minimumDay') {
       // Handled without AI: switch today's plan to the 15-minute version.
-      updateProfile((p) => setPlanMode(p, buildDailyPlan(p), 'minimum'));
+      updateProfile((p) => setPlanMode(p, 'minimum'));
       setMessages((prev) => [...prev, { role: 'user', content: text }, { role: 'assistant', content: t('mino.minimumDayReply') }]);
       return;
     }

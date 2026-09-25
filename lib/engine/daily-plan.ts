@@ -1,111 +1,132 @@
-import type { IELTSSkill } from '@/lib/constants';
 import type { PlanMode, PlanTaskKind, UserProfile } from '@/lib/models';
 import { daysSince, localDateKey } from './dates';
-import { skillGaps } from './ielts';
+
+/**
+ * Today's Learning. Vocabulary-first: review what's due, read one passage
+ * (and save new words), then use a word in Writing and in Speaking. Tasks
+ * complete automatically when the student finishes the real activity.
+ */
+export type DailyTaskKind = 'vocabulary' | 'reading' | 'writing' | 'speaking';
 
 export interface PlanTask {
-  kind: PlanTaskKind;
-  /** i18n key for the task title, e.g. "Writing Task 2". */
+  kind: DailyTaskKind;
+  /** i18n key for the title, e.g. "Vocabulary Review". */
   titleKey: string;
+  /** i18n key + vars for the detail line, e.g. "12 words". */
+  detailKey: string;
+  detailVars?: Record<string, string | number>;
   minutes: number;
   href: string;
+  done: boolean;
 }
 
 export interface DailyPlan {
   date: string;
   mode: PlanMode;
   tasks: PlanTask[];
-  done: PlanTaskKind[];
+}
+
+/** What the plan needs to know about the student's Brain. */
+export interface BrainContext {
+  total: number;
+  due: number;
 }
 
 /** After this many days without activity the plan switches to catch-up mode. */
 export const CATCH_UP_AFTER_DAYS = 3;
-
-const DEFAULT_DAILY_MINUTES = 50;
-const DEFAULT_PRIORITY: IELTSSkill[] = ['writing', 'speaking', 'reading', 'listening'];
-
-function round5(n: number, min = 5): number {
-  return Math.max(min, Math.round(n / 5) * 5);
-}
-
-export function dailyMinutes(profile: UserProfile): number {
-  const { weeklyStudyHours, studyDays } = profile.ielts;
-  if (!weeklyStudyHours) return DEFAULT_DAILY_MINUTES;
-  const days = studyDays?.length || 6;
-  return Math.min(150, Math.max(30, Math.round((weeklyStudyHours * 60) / days)));
-}
-
-/** Skills ordered by how much they need attention. */
-export function skillPriority(profile: UserProfile): IELTSSkill[] {
-  const gaps = skillGaps(profile.ielts).map((g) => g.skill);
-  return [...gaps, ...DEFAULT_PRIORITY.filter((s) => !gaps.includes(s))];
-}
-
-function task(kind: PlanTaskKind, minutes: number, profile: UserProfile): PlanTask {
-  const lessonId = profile.vocabulary.lastLessonId;
-  return {
-    kind,
-    minutes,
-    titleKey: `plan.task.${kind}`,
-    href:
-      kind === 'vocabulary'
-        ? lessonId
-          ? `/ielts/vocabulary/lessons/${lessonId}`
-          : '/ielts/vocabulary'
-        : `/ielts/${kind}`,
-  };
-}
 
 export function needsCatchUp(profile: UserProfile, now = new Date()): boolean {
   const last = profile.study.lastActiveDate;
   return last !== undefined && daysSince(last, now) >= CATCH_UP_AFTER_DAYS;
 }
 
-/**
- * Today's plan: three tasks normally, a 15-minute minimum day on request,
- * or a lighter restart after a gap. The student's choice for the day sticks.
- */
-export function buildDailyPlan(profile: UserProfile, now = new Date()): DailyPlan {
+export function buildDailyPlan(profile: UserProfile, brain: BrainContext, now = new Date()): DailyPlan {
   const date = localDateKey(now);
   const log = profile.study.days[date];
   const mode: PlanMode = log?.mode ?? (needsCatchUp(profile, now) ? 'catch-up' : 'normal');
-  const [first, second] = skillPriority(profile);
+  const done = new Set(log?.done ?? []);
+  const short = mode !== 'normal';
 
-  let tasks: PlanTask[];
-  if (mode === 'minimum') {
-    tasks = [task('vocabulary', 5, profile), task('listening', 5, profile), task('speaking', 5, profile)];
-  } else if (mode === 'catch-up') {
-    tasks = [task('vocabulary', 10, profile), task(first, 15, profile)];
-  } else {
-    const total = dailyMinutes(profile);
-    tasks = [
-      task(first, round5(total * 0.5, 10), profile),
-      task('vocabulary', round5(total * 0.3, 10), profile),
-      task(second, round5(total * 0.2, 10), profile),
-    ];
-  }
-  return { date, mode, tasks, done: log?.done ?? [] };
+  const reviewCap = mode === 'minimum' ? 8 : mode === 'catch-up' ? 10 : 20;
+  const reviewCount = Math.min(brain.due, reviewCap);
+  const vocabulary: PlanTask =
+    brain.total === 0
+      ? { kind: 'vocabulary', titleKey: 'plan.task.vocabulary', detailKey: 'plan.detail.noWords', minutes: 5, href: '/ielts/reading', done: false }
+      : {
+          kind: 'vocabulary',
+          titleKey: 'plan.task.vocabulary',
+          detailKey: reviewCount > 0 ? 'plan.detail.words' : 'plan.detail.allReviewed',
+          detailVars: { n: reviewCount },
+          minutes: mode === 'minimum' ? 5 : Math.min(20, Math.max(5, reviewCount)),
+          href: '/review',
+          // Nothing due counts as done: the student is up to date.
+          done: done.has('vocabulary') || brain.due === 0,
+        };
+
+  const reading: PlanTask = {
+    kind: 'reading',
+    titleKey: 'plan.task.reading',
+    detailKey: 'plan.detail.passage',
+    minutes: short ? 5 : 10,
+    href: '/ielts/reading',
+    done: done.has('reading'),
+  };
+  const writing: PlanTask = {
+    kind: 'writing',
+    titleKey: 'plan.task.writing',
+    detailKey: 'plan.detail.sentence',
+    minutes: 5,
+    href: '/practice/writing',
+    done: done.has('writing'),
+  };
+  const speaking: PlanTask = {
+    kind: 'speaking',
+    titleKey: 'plan.task.speaking',
+    detailKey: 'plan.detail.prompt',
+    minutes: 5,
+    href: '/practice/speaking',
+    done: done.has('speaking'),
+  };
+
+  // Practice needs at least one recalled word; before that, reading comes first.
+  const canPractise = brain.total > 0;
+  const tasks =
+    mode === 'minimum'
+      ? [vocabulary, reading, speaking]
+      : mode === 'catch-up'
+        ? [vocabulary, reading]
+        : canPractise
+          ? [vocabulary, reading, writing, speaking]
+          : [reading, vocabulary];
+
+  return { date, mode, tasks };
 }
 
-/** Returns the profile with a task toggled for today and totals updated. */
-export function toggleTask(profile: UserProfile, plan: DailyPlan, kind: PlanTaskKind): UserProfile {
-  const wasDone = plan.done.includes(kind);
-  const done = wasDone ? plan.done.filter((k) => k !== kind) : [...plan.done, kind];
-  const count = profile.study.completedTasks[kind] ?? 0;
+/**
+ * Marks an activity as done today (idempotent per day) and counts it towards
+ * the journey. Called by real activities: finishing a passage, a review
+ * session, a writing or speaking practice.
+ */
+export function markActivityDone(profile: UserProfile, kind: PlanTaskKind, now = new Date()): UserProfile {
+  const date = localDateKey(now);
+  const log = profile.study.days[date] ?? { mode: needsCatchUp(profile, now) ? 'catch-up' : 'normal', done: [] };
+  if (log.done.includes(kind)) return profile;
   return {
     ...profile,
     study: {
       ...profile.study,
-      completedTasks: { ...profile.study.completedTasks, [kind]: Math.max(0, count + (wasDone ? -1 : 1)) },
-      days: { ...profile.study.days, [plan.date]: { mode: plan.mode, done } },
-      lastActiveDate: done.length > 0 ? plan.date : profile.study.lastActiveDate,
+      completedTasks: { ...profile.study.completedTasks, [kind]: (profile.study.completedTasks[kind] ?? 0) + 1 },
+      days: { ...profile.study.days, [date]: { ...log, done: [...log.done, kind] } },
+      lastActiveDate: date,
     },
   };
 }
 
-export function setPlanMode(profile: UserProfile, plan: DailyPlan, mode: PlanMode): UserProfile {
+export function setPlanMode(profile: UserProfile, mode: PlanMode, now = new Date()): UserProfile {
+  const date = localDateKey(now);
+  const log = profile.study.days[date];
   return {
     ...profile,
-    study: { ...profile.study, days: { ...profile.study.days, [plan.date]: { mode, done: plan.done } } },
+    study: { ...profile.study, days: { ...profile.study.days, [date]: { mode, done: log?.done ?? [] } } },
   };
 }
