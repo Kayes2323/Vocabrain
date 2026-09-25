@@ -6,3 +6,6 @@ out
 *.tsbuildinfo
 .DS_Store
 .vercel
+
+# Firebase emulator logs
+*-debug.log
