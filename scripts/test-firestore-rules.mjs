@@ -34,6 +34,16 @@ await expect('A creates free subscription', () => setDoc(doc(A.db, 'subscription
 await expect('A upgrades self to premium', () => updateDoc(doc(A.db, 'subscriptions', ua.uid), { plan: 'premium' }), false);
 await expect('B creates premium subscription', () => setDoc(doc(B.db, 'subscriptions', ub.uid), { userId: ub.uid, email: ub.email, plan: 'premium' }), false);
 await expect('A reads B subscription', () => getDoc(doc(A.db, 'subscriptions', ub.uid)), false);
+const session = (u, id, extra = {}) => ({ id, testId: 'vb-practice-1', bookId: 'vb-practice', skill: 'reading', status: 'in-progress', startedAt: '2026-09-26T10:00:00Z', updatedAt: '2026-09-26T10:00:00Z', timeLimitSeconds: 2400, elapsedSeconds: 0, answers: {}, flagged: [], currentNumber: 1, ...extra });
+const ts = (db, u, id) => doc(db, 'users', u.uid, 'testSessions', id);
+await expect('A starts own test session', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1')), true);
+await expect('A saves answers', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1', { answers: { 'r1-q1': 'ii' }, elapsedSeconds: 60 })), true);
+await expect('A session with mismatched id', () => setDoc(ts(A.db, ua, 's2'), session(ua, 'other')), false);
+await expect('A session with extra field', () => setDoc(ts(A.db, ua, 's3'), session(ua, 's3', { verified: true })), false);
+await expect('A submits session', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1', { status: 'submitted', result: { correct: 1, total: 24 } })), true);
+await expect('A edits submitted session', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1', { status: 'submitted', result: { correct: 24, total: 24 } })), false);
+await expect('A reads B test session', () => getDoc(ts(A.db, ub, 's1')), false);
+await expect('A writes B test session', () => setDoc(ts(A.db, ub, 'x'), session(ub, 'x')), false);
 await signOut(A.auth);
 await expect('Signed-out reads A profile', () => getDoc(doc(A.db, 'users', ua.uid)), false);
 console.table(results);

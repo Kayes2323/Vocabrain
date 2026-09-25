@@ -18,6 +18,8 @@ import { SplashScreen } from './SplashScreen';
 
 /** Routes that take over the full screen (focused flows, no navigation). */
 const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '/practice'];
+/** Test runner: full screen, no app navigation (/ielts/tests/{testId}/{skill}). */
+const TEST_RUNNER = /^\/ielts\/tests\/[^/]+\/[^/]+/;
 
 /**
  * Keeps the UI language in step with the profile and sends new students to
@@ -60,7 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (loading) return <SplashScreen />;
   if (!user) return <LoginView />;
 
-  const focused = FOCUS_ROUTES.some((r) => pathname.startsWith(r));
+  const focused = FOCUS_ROUTES.some((r) => pathname.startsWith(r)) || TEST_RUNNER.test(pathname);
 
   return (
     <ProfileProvider userId={user.uid} repository={repository}>

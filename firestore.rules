@@ -18,6 +18,18 @@ service cloud.firestore {
       return request.resource.data.keys().hasOnly(allowed);
     }
 
+    function validTestSession(sessionId) {
+      let d = request.resource.data;
+      return d.id == sessionId
+        && d.testId is string && d.testId.size() <= 100
+        && d.skill in ['listening', 'reading']
+        && d.status in ['in-progress', 'submitted']
+        && d.answers is map
+        && d.elapsedSeconds is number && d.elapsedSeconds >= 0 && d.elapsedSeconds <= d.timeLimitSeconds
+        && d.keys().hasOnly(['id', 'testId', 'bookId', 'skill', 'status', 'startedAt', 'updatedAt', 'submittedAt',
+                             'timeLimitSeconds', 'elapsedSeconds', 'answers', 'flagged', 'currentNumber', 'timedOut', 'result']);
+    }
+
     // users/{uid}: profile summary + app state (goals, plan, progress).
     match /users/{uid} {
       allow read, delete: if isOwner(uid);
@@ -40,10 +52,22 @@ service cloud.firestore {
           && request.resource.data.word.size() <= 64;
       }
 
-      // Any future private sub-collection (attempts, results, plans) stays owner-only.
-      // (vocabulary is excluded so its validation above can't be bypassed.)
+      // users/{uid}/testSessions/{sessionId}: IELTS practice attempts.
+      // A submitted attempt is final: it can be read or deleted, never edited.
+      match /testSessions/{sessionId} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid) && validTestSession(sessionId);
+        allow update: if isOwner(uid) && validTestSession(sessionId)
+          && resource.data.status == 'in-progress'
+          && request.resource.data.testId == resource.data.testId
+          && request.resource.data.skill == resource.data.skill
+          && request.resource.data.startedAt == resource.data.startedAt;
+      }
+
+      // Any future private sub-collection (results, plans, mistakes) stays owner-only.
+      // (Collections with their own rules above are excluded so they can't be bypassed.)
       match /{collection}/{docId} {
-        allow read, write: if isOwner(uid) && collection != 'vocabulary';
+        allow read, write: if isOwner(uid) && !(collection in ['vocabulary', 'testSessions']);
       }
     }
 

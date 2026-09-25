@@ -76,7 +76,7 @@ export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'speaking', icon: Mic, href: '/ielts/speaking', status: 'planned', phase: 3 },
   { id: 'vocabulary', icon: BookOpen, href: '/ielts/vocabulary', status: 'available', phase: 1 },
   { id: 'grammar', icon: SpellCheck, href: '/ielts/grammar', status: 'planned', phase: 2 },
-  { id: 'mock-tests', icon: Timer, href: '/ielts/mock-tests', status: 'planned', phase: 2 },
+  { id: 'mock-tests', icon: Timer, href: '/ielts/tests', status: 'available', phase: 4 },
 ];
 
 export const IELTS_TOOLS: SectionDef[] = [

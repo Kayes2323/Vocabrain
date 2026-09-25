@@ -137,6 +137,12 @@ MinoChat ──askMino() + Firebase ID token──▶ POST /api/mino
 - Capabilities (IELTS Coach, Vocabulary Coach, Writing, Speaking, Study Abroad Advisor, Scholarship,
   Application Manager, Interview Coach) are listed in `lib/ai/capabilities.ts` with their roadmap phase.
 
+## 5b. IELTS test engine
+
+Content model, scoring, sessions and runner: see `docs/IELTS_ENGINE.md`.
+`lib/ielts` is pure (model, question types, scoring, session, validation);
+`lib/ielts/content` is the book library; `components/test` renders any test.
+
 ## 6. Guest preview
 
 The login screen offers email, Google and **Continue as guest**. A guest session is remembered on the device
