@@ -39,12 +39,15 @@ message travels, how data stays private, and how to extend Mino.
 
 | Tier | Default | Env override | Used for |
 | --- | --- | --- | --- |
-| fast | `gemini-2.5-flash-lite` | `MINO_MODEL_FAST` | Everyday chat (current) |
-| smart | `gemini-2.5-flash` | `MINO_MODEL_SMART` | Deeper analysis (later) |
+| fast | `gemini-3.5-flash-lite` → `gemini-3.1-flash-lite` → `gemini-2.5-flash-lite` | `MINO_MODEL_FAST` | Everyday chat (current) |
+| smart | `gemini-3.5-flash` → `gemini-2.5-flash` | `MINO_MODEL_SMART` | Deeper analysis (later) |
+
+Each tier is a chain: if Google returns 404 for a model (retired or not enabled
+for the key), Mino moves to the next one and remembers the one that worked.
 
 Cost controls: short system prompt, compact client hints instead of full
-profiles, data fetched by tools only when needed, trimmed history, 1024 output
-tokens max, per-student rate limits.
+profiles, data fetched by tools only when needed, trimmed history, 2048 output
+tokens max (newer models spend part of it thinking), per-student rate limits.
 
 ## Tools
 

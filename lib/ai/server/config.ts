@@ -2,12 +2,16 @@
 import type { ModelTier } from '../types';
 
 /**
- * Model per tier, changeable without code changes. Defaults favour low cost:
- * `fast` for everyday chat, `smart` for deeper analysis (Phase 4+).
+ * Models per tier, tried in order until one exists for this API key. Google
+ * retires models over time; the chain keeps Mino working when one disappears.
+ * `MINO_MODEL_FAST` / `MINO_MODEL_SMART` put a specific model first.
  */
-export const MODELS: Record<ModelTier, string> = {
-  fast: process.env.MINO_MODEL_FAST || 'gemini-2.5-flash-lite',
-  smart: process.env.MINO_MODEL_SMART || 'gemini-2.5-flash',
+const chain = (preferred: string | undefined, defaults: string[]) =>
+  [...new Set([preferred?.trim(), ...defaults].filter((m): m is string => Boolean(m)))];
+
+export const MODEL_CHAINS: Record<ModelTier, string[]> = {
+  fast: chain(process.env.MINO_MODEL_FAST, ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite']),
+  smart: chain(process.env.MINO_MODEL_SMART, ['gemini-3.5-flash', 'gemini-2.5-flash']),
 };
 
 export const LIMITS = {
@@ -16,7 +20,8 @@ export const LIMITS = {
   /** Recent turns sent to the model (short-term memory). */
   historyTurns: 10,
   historyChars: 6000,
-  maxOutputTokens: 1024,
+  /** Newer models think before answering; thinking counts towards this limit. */
+  maxOutputTokens: 2048,
   maxToolRounds: 3,
   /** Provider call timeout. */
   timeoutMs: 25_000,

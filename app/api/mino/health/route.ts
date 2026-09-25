@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { firebaseProjectId, geminiApiKey, MODELS } from '@/lib/ai/server/config';
+import { firebaseProjectId, geminiApiKey, MODEL_CHAINS } from '@/lib/ai/server/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,6 +9,6 @@ export function GET() {
     provider: process.env.MINO_AI_PROVIDER || 'gemini',
     aiKeyConfigured: Boolean(geminiApiKey()),
     firebaseProjectConfigured: Boolean(firebaseProjectId()),
-    models: MODELS,
+    models: MODEL_CHAINS,
   });
 }

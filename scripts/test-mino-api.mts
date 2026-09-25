@@ -9,7 +9,7 @@ process.env.GEMINI_API_KEY = 'test-key-not-real';
 const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 const realFetch = globalThis.fetch;
 const geminiBodies: any[] = [];
-let geminiMode: 'tool' | 'busy' = 'tool';
+let geminiMode: 'tool' | 'busy' | 'retired' = 'tool';
 
 globalThis.fetch = (async (input: any, init?: any) => {
   const url = String(input);
@@ -19,6 +19,7 @@ globalThis.fetch = (async (input: any, init?: any) => {
     const body = JSON.parse(init.body);
     geminiBodies.push(body);
     if (geminiMode === 'busy') return new Response('{}', { status: 429 });
+    if (geminiMode === 'retired' && url.includes('/gemini-3.5-flash-lite:')) return new Response('{}', { status: 404 });
     const last = body.contents.at(-1);
     const answered = last.parts.some((p: any) => p.functionResponse);
     const parts = answered
@@ -91,6 +92,11 @@ check('system prompt Bangla + tools sent', geminiBodies[0].systemInstruction.par
 // Rules still protect other students even with a valid token.
 const cross = await realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/users/${b.uid}/vocabulary/secretword`, { headers: { Authorization: `Bearer ${a.token}` } });
 check('cross-user Firestore read denied', cross.status === 403, cross.status);
+
+geminiMode = 'retired';
+res = await call(msg, a.token);
+const fb = await res.json();
+check('retired model → falls back to next model', res.status === 200 && fb.metadata?.model === 'gemini-3.1-flash-lite', fb.metadata ?? fb);
 
 geminiMode = 'busy';
 res = await call(msg, a.token);

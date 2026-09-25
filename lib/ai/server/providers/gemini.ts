@@ -1,8 +1,12 @@
 import type { AIProvider, AIRunRequest, AIRunResult, ToolCallRecord } from '../../types';
-import { LIMITS, MODELS } from '../config';
+import { LIMITS, MODEL_CHAINS } from '../config';
 import { MinoError } from '../errors';
 
 const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
+const MODEL_NOT_FOUND = 'model not found';
+
+/** The first model in each tier's chain that worked, remembered per server instance. */
+const workingModel = new Map<string, string>();
 
 interface GeminiPart {
   text?: string;
@@ -27,7 +31,7 @@ function mapHttpError(status: number, body: string): MinoError {
   // Never include the request (it carries the key) in errors.
   if (status === 400 && /API_KEY_INVALID|API key not valid/i.test(body)) return new MinoError('not_configured', 'invalid api key');
   if (status === 401 || status === 403) return new MinoError('not_configured', `auth ${status}`);
-  if (status === 404) return new MinoError('not_configured', 'model not found; check MINO_MODEL_* settings');
+  if (status === 404) return new MinoError('not_configured', MODEL_NOT_FOUND);
   if (status === 429) return new MinoError('provider_busy', 'rate limited by provider');
   if (status >= 500) return new MinoError('provider_busy', `provider ${status}`);
   return new MinoError('unavailable', `provider ${status}`);
@@ -63,7 +67,8 @@ export function createGeminiProvider(apiKey: string): AIProvider {
   return {
     id: 'gemini',
     async run(req: AIRunRequest): Promise<AIRunResult> {
-      const model = MODELS[req.tier];
+      const chain = MODEL_CHAINS[req.tier];
+      let model = workingModel.get(req.tier) ?? chain[0];
       const contents: GeminiContent[] = req.messages.map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
@@ -73,17 +78,29 @@ export function createGeminiProvider(apiKey: string): AIProvider {
       const maxRounds = req.tools?.length ? (req.maxToolRounds ?? LIMITS.maxToolRounds) : 0;
 
       for (let round = 0; ; round++) {
-        const data = await call(
-          model,
-          apiKey,
-          {
-            systemInstruction: { parts: [{ text: req.system }] },
-            contents,
-            generationConfig: { maxOutputTokens: req.maxOutputTokens ?? LIMITS.maxOutputTokens, temperature: 0.6 },
-            ...(req.tools?.length && round < maxRounds ? { tools: [{ functionDeclarations: req.tools }] } : {}),
-          },
-          req.signal,
-        );
+        const body = {
+          systemInstruction: { parts: [{ text: req.system }] },
+          contents,
+          generationConfig: { maxOutputTokens: req.maxOutputTokens ?? LIMITS.maxOutputTokens, temperature: 0.6 },
+          ...(req.tools?.length && round < maxRounds ? { tools: [{ functionDeclarations: req.tools }] } : {}),
+        };
+        let data: GeminiResponse;
+        for (;;) {
+          try {
+            data = await call(model, apiKey, body, req.signal);
+            workingModel.set(req.tier, model);
+            break;
+          } catch (error) {
+            // Retired model: move to the next one in the chain (only before the conversation has started).
+            const next = chain[chain.indexOf(model) + 1];
+            if (round === 0 && next && error instanceof MinoError && error.detail === MODEL_NOT_FOUND) {
+              console.warn('[mino] model unavailable, trying next', JSON.stringify({ model, next }));
+              model = next;
+              continue;
+            }
+            throw error;
+          }
+        }
         usage.inputTokens += data.usageMetadata?.promptTokenCount ?? 0;
         usage.outputTokens += data.usageMetadata?.candidatesTokenCount ?? 0;
         usage.totalTokens += data.usageMetadata?.totalTokenCount ?? 0;
