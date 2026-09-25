@@ -29,6 +29,13 @@ export const bn: LocaleDictionary = {
     loading: 'Loading',
     locked: 'Premium',
   },
+  loadError: {
+    title: 'তোমার account load করা যায়নি',
+    body: 'Internet connection দেখে আবার চেষ্টা করো। বারবার হলে sign out করে আবার sign in করো।',
+    retry: 'আবার চেষ্টা করো',
+    signOut: 'Sign out',
+    code: 'Error code: {code}',
+  },
   nav: {
     home: 'Home',
     ielts: 'IELTS',

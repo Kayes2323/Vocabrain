@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc, type Firestore } from 'firebase/firestore';
+import { doc, getDoc, getDocFromCache, serverTimestamp, setDoc, type Firestore } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/models';
 import { withProfileDefaults, type ProfileRepository } from './profile-repository';
 import { summaryFields } from './user-document';
@@ -34,7 +34,9 @@ export function createFirestoreProfileRepository(db: Firestore): ProfileReposito
 
   return {
     async load(userId) {
-      const snap = await getDoc(doc(db, 'users', userId));
+      const ref = doc(db, 'users', userId);
+      // Offline or flaky network: fall back to the device cache before giving up.
+      const snap = await getDoc(ref).catch((error) => getDocFromCache(ref).catch(() => Promise.reject(error)));
       const data = snap.data() as { app?: Partial<UserProfile>; name?: string; preferredLanguage?: UserProfile['language'] } | undefined;
       const profile = withProfileDefaults(userId, data?.app);
       return {

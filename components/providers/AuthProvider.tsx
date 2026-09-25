@@ -19,6 +19,7 @@ import {
   hasPremiumAccess,
   type UserSubscription,
 } from '@/lib/subscription-service';
+import { withTimeout } from '@/lib/async';
 import { useLocale } from './LocaleProvider';
 
 /** App-level user, decoupled from the Firebase SDK type. */
@@ -70,6 +71,8 @@ function wasGuest(): boolean {
   }
 }
 
+const ACCOUNT_DATA_TIMEOUT_MS = 8000;
+
 function requireAuth() {
   if (!auth || !db) throw Object.assign(new Error('Firebase is not configured'), { code: 'auth/not-configured' });
   return { auth, db };
@@ -99,8 +102,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         rememberGuest(false);
         const appUser = { uid: current.uid, email: current.email, displayName: current.displayName };
         try {
-          if (!signingUp.current) await ensureUserDocument(firestore, appUser, locale);
-          setSubscription(current.email ? await getOrCreateSubscription(firestore, current.uid, current.email) : null);
+          // Bounded so a slow or blocked Firestore can never keep the app on the splash screen.
+          await withTimeout(
+            (async () => {
+              if (!signingUp.current) await ensureUserDocument(firestore, appUser, locale);
+              setSubscription(current.email ? await getOrCreateSubscription(firestore, current.uid, current.email) : null);
+            })(),
+            ACCOUNT_DATA_TIMEOUT_MS,
+          );
         } catch (error) {
           console.error('[auth] Could not load account data', error);
         }
