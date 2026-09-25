@@ -1,6 +1,6 @@
 'use client';
 
-import { Calculator, Crown, GraduationCap, LogOut, Plane } from 'lucide-react';
+import { Calculator, Crown, GraduationCap, LogIn, LogOut, Plane } from 'lucide-react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
@@ -9,7 +9,7 @@ import { DEGREE_LEVELS } from '@/lib/constants';
 import { formatBand, formatIntake } from '@/lib/engine';
 
 export default function ProfilePage() {
-  const { user, isDemo, isPremium, subscription, signOut } = useAuth();
+  const { user, isGuest, canSignIn, isPremium, subscription, signOut } = useAuth();
   const { profile } = useProfile();
   const { openUpgrade } = useUpgrade();
 
@@ -36,9 +36,9 @@ export default function ProfilePage() {
         </StatusChip>
       </Panel>
 
-      {isDemo && (
-        <Callout tone="warning" title="Guest preview">
-          Accounts aren&apos;t switched on yet. Your goals are stored on this device only.
+      {isGuest && (
+        <Callout tone="warning" title="Guest session">
+          Your goals and progress are stored on this device only.
         </Callout>
       )}
 
@@ -87,9 +87,19 @@ export default function ProfilePage() {
         </RowGroup>
       </Section>
 
-      {!isDemo && (
+      {canSignIn && (
         <RowGroup>
-          <ListRow onClick={signOut} icon={LogOut} iconTone="danger" title="Sign out" />
+          {isGuest ? (
+            <ListRow
+              onClick={signOut}
+              icon={LogIn}
+              iconTone="brand"
+              title="Sign in or create an account"
+              description="Guest progress on this device stays here."
+            />
+          ) : (
+            <ListRow onClick={signOut} icon={LogOut} iconTone="danger" title="Sign out" />
+          )}
         </RowGroup>
       )}
     </div>

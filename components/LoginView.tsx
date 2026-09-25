@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Callout } from '@/components/ds';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { BrandMark } from '@/components/shell/BrandMark';
 import { MinoMark } from '@/components/shell/MinoMark';
 
@@ -35,6 +36,7 @@ function friendlyError(err: unknown, fallback: string): string {
 }
 
 export default function LoginView() {
+  const { continueAsGuest } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -102,13 +104,13 @@ export default function LoginView() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-background md:flex-row">
-      <section className="flex flex-col justify-between gap-10 bg-primary px-6 py-8 text-primary-foreground md:w-1/2 md:px-12 md:py-12">
+      <section className="flex flex-col justify-between gap-5 bg-primary px-6 py-6 text-primary-foreground md:w-1/2 md:gap-10 md:px-12 md:py-12">
         <BrandMark className="[&>span:first-child]:bg-primary-foreground [&>span:first-child]:text-primary" />
         <div className="max-w-md space-y-6">
-          <h1 className="text-3xl font-semibold tracking-tight text-balance md:text-4xl">
+          <h1 className="text-2xl font-semibold tracking-tight text-balance md:text-4xl">
             Your journey from IELTS to studying abroad, one clear step at a time.
           </h1>
-          <ul className="space-y-3">
+          <ul className="hidden space-y-3 md:block">
             {PILLARS.map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-start gap-3 text-primary-foreground/80">
                 <Icon className="mt-0.5 size-5 shrink-0" aria-hidden />
@@ -117,15 +119,15 @@ export default function LoginView() {
             ))}
           </ul>
         </div>
-        <div className="flex items-center gap-3 text-sm text-primary-foreground/70">
+        <div className="hidden items-center gap-3 text-sm text-primary-foreground/70 md:flex">
           <MinoMark size="sm" />
           <span>
-            Guided by {MINO.name}, {MINO.role.toLowerCase()}.
+            Guided by {MINO.name} · {MINO.role}
           </span>
         </div>
       </section>
 
-      <section className="flex flex-1 items-center justify-center px-6 py-10">
+      <section className="flex flex-1 items-center justify-center px-6 py-8 md:py-10">
         <div className="w-full max-w-sm space-y-6">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">Welcome to {APP_NAME}</h2>
@@ -156,6 +158,13 @@ export default function LoginView() {
           <Button onClick={handleGoogleSignIn} variant="outline" size="lg" className="w-full" disabled={loading}>
             Continue with Google
           </Button>
+
+          <Button onClick={continueAsGuest} variant="ghost" size="lg" className="w-full" disabled={loading}>
+            Continue as guest
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            As a guest, your progress is saved on this device only.
+          </p>
         </div>
       </section>
     </div>

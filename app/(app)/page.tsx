@@ -23,12 +23,12 @@ function firstName(name: string | null | undefined, email: string | null | undef
 }
 
 export default function HomePage() {
-  const { user, isDemo } = useAuth();
+  const { user, isGuest } = useAuth();
   const { profile } = useProfile();
 
   if (!profile) return <ScreenSkeleton />;
 
-  const name = isDemo ? undefined : firstName(profile.displayName ?? user?.displayName, user?.email);
+  const name = isGuest ? undefined : firstName(profile.displayName ?? user?.displayName, user?.email);
 
   return (
     <div className="space-y-5">
@@ -40,9 +40,9 @@ export default function HomePage() {
         <p className="text-[15px] text-muted-foreground">Here&apos;s what to do today.</p>
       </header>
 
-      {isDemo && (
-        <Callout tone="warning" title="Guest preview">
-          You&apos;re exploring without an account. Progress is saved on this device only.
+      {isGuest && (
+        <Callout tone="warning" title="You're using Vocab Brain as a guest">
+          Progress is saved on this device only. Create an account from Profile to keep it everywhere.
         </Callout>
       )}
 
