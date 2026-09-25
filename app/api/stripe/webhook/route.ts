@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe-server';
+import { getStripe } from '@/lib/stripe-server';
 
 // This is an API route, not a page - don't try to generate static HTML
 export const dynamic = 'force-dynamic';
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   let event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+    event = getStripe().webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
     console.error('[v0] Webhook error:', err.message);
     return NextResponse.json({ error: 'Webhook error' }, { status: 400 });

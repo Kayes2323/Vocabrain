@@ -1,14 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { User } from 'firebase/auth';
+import type { AppUser } from '@/components/providers/AuthProvider';
 import { UserSubscription } from '@/lib/subscription-service';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, Check, Sparkles, Zap, TrendingUp } from 'lucide-react';
 
 interface PremiumPaywallProps {
-  user: User | null;
+  user: AppUser | null;
   subscription: UserSubscription | null;
   onClose: () => void;
   onSuccess: () => void;
@@ -45,15 +45,10 @@ export default function PremiumPaywall({ user, subscription, onClose, onSuccess 
         throw new Error(data.error || 'Failed to create checkout session');
       }
 
-      // Redirect to Stripe checkout
-      // Note: You'll need to install @stripe/react-stripe-js and use loadStripe
-      const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-      if (!stripePublishableKey) {
-        throw new Error('Stripe publishable key not configured');
+      if (!data.url) {
+        throw new Error('Checkout is not available right now');
       }
-
-      // For now, we'll show a message about what should happen
-      window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+      window.location.href = data.url;
     } catch (error) {
       console.error('[v0] Checkout error:', error);
       alert(error instanceof Error ? error.message : 'Failed to process checkout');

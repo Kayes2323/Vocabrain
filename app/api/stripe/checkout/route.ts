@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe-server';
+import { getStripe } from '@/lib/stripe-server';
 
 // This is an API route, not a page - don't try to generate static HTML
 export const dynamic = 'force-dynamic';
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // Create or get Stripe customer
     let customer;
-    const existingCustomers = await stripe.customers.list({
+    const existingCustomers = await getStripe().customers.list({
       email: email,
       limit: 1,
     });
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (existingCustomers.data.length > 0) {
       customer = existingCustomers.data[0];
     } else {
-      customer = await stripe.customers.create({
+      customer = await getStripe().customers.create({
         email: email,
         metadata: {
           firebaseUserId: userId,
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customer.id,
       payment_method_types: ['card'],
       line_items: [
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ sessionId: session.id });
+    return NextResponse.json({ sessionId: session.id, url: session.url });
   } catch (error) {
     console.error('[v0] Checkout error:', error);
     return NextResponse.json(

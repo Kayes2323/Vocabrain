@@ -1,0 +1,155 @@
+# Vocab Brain: Architecture
+
+Vocab Brain is growing from an IELTS vocabulary trainer into a student platform:
+**IELTS preparation + vocabulary mastery + AI mentorship (Mino) + study-abroad planning.**
+This document records the Phase 1 audit, the target architecture and the rules that keep
+the system coherent as features are added.
+
+## 1. Phase 1 audit (starting point)
+
+| Area | Before Phase 1 |
+| --- | --- |
+| Framework | Next.js 16 App Router, React 19, TypeScript, Tailwind v4, shadcn/ui |
+| Routing | One page (`/`) with tab state in `FirebaseApp.tsx` |
+| State | Component `useState` only; nothing persisted except the subscription |
+| Auth / DB | Firebase Auth (email + Google), Firestore `subscriptions/{uid}` |
+| Payments | Stripe Checkout route + webhook (webhook upgrade logic still a TODO) |
+| Vocabulary | 6 topic lessons × 10 words (Bengali meanings); 210-word IELTS bank by band 6–9 |
+| Orphaned | `IELTSDashboard`, `IELTSStudyView`, `IELTSBandCalculator`, `AdminPanel` were never rendered |
+
+Issues found and fixed in Phase 1:
+
+- `pnpm build` failed without `STRIPE_SECRET_KEY` (client created at import). The client is now lazy (`getStripe()`).
+- Checkout redirected to a non-existent `checkout.stripe.com/pay/{id}` URL. It now uses `session.url`.
+- The Geist font was loaded but never applied; the page title was "v0 App".
+- `StudyView` labelled the Bengali meaning as "English".
+- Two TypeScript errors (the build ignored type errors).
+- `.gitignore` was UTF-16, so git ignored none of it (e.g. `.next/`).
+
+Known issues left for follow-up:
+
+- **Security:** Firestore rules let a signed-in user write `plan: 'premium'` to their own subscription.
+  Premium must be granted only by the Stripe webhook via the Admin SDK.
+- `AnalyticsDashboard.tsx` shows hard-coded mock numbers. It is no longer routed, so students never see
+  invented stats. Rebuild it on real `IELTSActivity`/`VocabularyReview` data.
+- `AdminPanel.tsx` edits an in-memory copy of the word bank only; not routed.
+
+## 2. Information architecture
+
+```
+/                      Home: "What should I do today?"
+/ielts                 IELTS hub
+  /plan                My IELTS Plan            (planned, Phase 3)
+  /listening|reading|writing|speaking           (planned)
+  /vocabulary          Vocabulary hub           (live)
+    /lessons/[id]      Topic lesson flashcards  (live, free: 1–2)
+    /bands/[band]      Word bank by band        (live, free: band 6)
+  /mock-tests                                   (planned)
+  /band-calculator     Band score calculator    (live, saves to profile)
+/mino                  Mino: next 3 actions, chat entry, context transparency
+/abroad                Study Abroad hub: journey + section groups
+  /countries           Country Explorer         (live, registry only)
+  /country-match|universities|cost|scholarships|deadlines|applications|documents|visa|pre-departure  (planned)
+/profile               Account, goals, membership, tools, sign out
+/setup/ielts           4-step goal flow (target, date, skills, time); `?step=skills` deep-links
+/setup/abroad          3-step goal flow (degree, subject, intake)
+```
+
+All sections are declared once in `lib/navigation.ts`. Hubs and placeholders render from
+that config, so adding a section means adding one entry. Planned sections show what they
+will do plus a "meanwhile" action, so the student never hits a dead end.
+
+## 3. Code layout
+
+```
+app/(app)/layout.tsx      AuthProvider + AppShell (auth gate, nav, providers)
+app/api/mino              Mino endpoint (provider-agnostic, validates with zod)
+app/api/stripe            Checkout + webhook
+
+components/ds             Design system: PageHeader, Section, Panel, ListRow/RowGroup,
+                          StatusChip, IconBadge, ProgressBar, Callout, ChoiceGrid,
+                          StepFlow, EmptyState/ErrorState/ScreenSkeleton
+components/shell          AppShell, BottomNav (mobile), SideNav (md+), BrandMark, MinoMark
+components/providers      AuthProvider, ProfileProvider, UpgradeProvider
+components/{home,ielts,mino,abroad,vocabulary,setup,sections}   Feature UI
+
+lib/constants.ts          Product names, IELTS skills and bands, limits
+lib/navigation.ts         Primary nav + every section definition
+lib/models/               Typed domain models (see §4)
+lib/engine/               Pure business logic: band maths, today's plan, journey, next actions
+lib/ai/                   AI contracts, Mino context builder, client + server entry points
+lib/services/             Persistence boundaries (ProfileRepository)
+lib/content/              Content registries (countries)
+```
+
+Rules:
+
+- **UI never contains business rules.** Screens call `lib/engine` functions, which are pure and testable.
+- **Screens never hard-code content that changes.** Country lists, sections and limits come from registries/constants.
+- **Persistence sits behind interfaces.** `ProfileRepository` is local-only today; a Firestore
+  implementation (`users/{uid}/profile`) can replace it without touching screens.
+
+## 4. Data model
+
+Defined in `lib/models/`. Implemented now: `UserProfile` (with `IELTSProfile`,
+`StudyAbroadProfile`, `VocabularyProgress`), `NextAction`. Typed and ready for later phases:
+
+- IELTS: `IELTSPlan`, `IELTSPlanPhase`, `IELTSActivity`, `WritingAttempt`, `SpeakingAttempt`
+- Vocabulary: `VocabularyItem`, `VocabularyEncounter`, `VocabularyReview`, `MASTERY_LEVELS`
+  (Encountered → Recognised → Understood → Retrievable → Usable → Transferable → Mastered) and per-word
+  `MasteryDimension`s (recognition, meaning, collocation, writing, speaking, new context)
+- Reading: `ReadingPassage` (extends `ContentProvenance`), `ReadingAttempt`
+- Study abroad: `Country`, `University`, `Course`, `Intake`, `Deadline`, `Scholarship`, `Application`,
+  `StudentDocument`, `StudyAbroadTask`
+- Mino: `MinoConversation`, `MinoMessage`, `MinoRecommendation`
+
+### Trust and provenance
+
+- Every dynamic study-abroad fact is a `SourcedValue<T>`: `value`, `source` (`name`, `url`,
+  `sourceType`), `lastVerified`, `applicableDegree`, `applicableStudentType`.
+  Visa and work rules must come from official government sources; entry requirements from official university sources.
+- `SourceType` separates `user-provided` and `calculated` from factual sources, so the UI can always
+  show preference, fact, calculated fit and uncertainty differently.
+- Country records in `lib/content/countries.ts` hold identity fields only. The UI shows "Profile coming"
+  until sourced data exists, and never shows an unsourced figure.
+- Reading content carries `ContentProvenance` (`source`, `sourceType`, `licenseStatus`, `dateAdded`).
+  Cambridge passages may only be stored with `licenseStatus: 'licensed'`. "Cambridge-style" passages are
+  `vocab-brain-original`.
+
+## 5. Mino and the AI layer
+
+```
+UI ──askMino()──▶ /api/mino ──▶ getMinoProvider(): AIProvider ──▶ any model/vendor
+        ▲                              │
+buildMinoContext(profile)     buildMinoSystemPrompt(context)
+```
+
+- `lib/ai/types.ts` defines `AIProvider`, `MinoContext`, `MinoCapabilityId` and request/response shapes.
+  No vendor SDK is imported outside a provider implementation.
+- Keys live in server env vars only. With `MINO_AI_PROVIDER` unset, `/api/mino` returns a friendly
+  "not connected yet" response, which the chat shows as a notice.
+- The **Next Action Engine** (`lib/engine/next-action.ts`) is live and rule-based. It powers Mino's
+  "next 3 actions", the Home insight and the plan. An AI capability can later produce the same
+  `NextAction[]` shape.
+- Capabilities (IELTS Coach, Vocabulary Coach, Writing, Speaking, Study Abroad Advisor, Scholarship,
+  Application Manager, Interview Coach) are listed in `lib/ai/capabilities.ts` with their roadmap phase.
+
+## 6. Guest preview
+
+If the Firebase env vars are absent, `AuthProvider` runs a local guest session so every screen can be
+developed and reviewed. A banner makes this explicit. With Firebase configured, the login screen gates the app.
+
+## 7. Roadmap
+
+| Phase | Scope | Builds on |
+| --- | --- | --- |
+| 1 ✅ | Audit, architecture, design system, navigation, core screens | — |
+| 2 | Vocabulary engine, Today's Reading, tap-to-save notebook | `VocabularyItem/Encounter/Review`, `ReadingPassage` |
+| 3 | IELTS planner, skill tracking, adaptive plan | `IELTSPlan`, `IELTSActivity`, `buildTodayPlan` |
+| 4 | Mino AI provider, structured context, AI next actions | `lib/ai`, `/api/mino` |
+| 5 | Study-abroad profile, sourced country database, Country Match | `Country`, `SourcedValue`, priorities |
+| 6 | Universities, scholarships, cost, deadlines, applications, documents | abroad models |
+| 7 | Writing, Speaking, interview and visa practice | attempts, capabilities |
+| 8 | Pre-departure and first 30 days | tasks |
+
+Next technical steps before Phase 2: Firestore `ProfileRepository`, Firestore rules fix, and unit tests for `lib/engine`.

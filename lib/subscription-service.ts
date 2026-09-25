@@ -1,4 +1,5 @@
 import { db } from './firebase';
+import { FREE_LESSON_LIMIT } from './constants';
 import {
   doc,
   getDoc,
@@ -84,8 +85,8 @@ export const hasPremiumAccess = (subscription: UserSubscription | null): boolean
 
 // Get lesson access level (how many lessons user can access)
 export const getMaxLessonAccess = (subscription: UserSubscription | null): number => {
-  if (!subscription) return 2; // Default: 2 lessons for free users
+  if (!subscription) return FREE_LESSON_LIMIT;
   if (subscription.isAdmin) return 999; // Admin: unlimited
   if (subscription.plan === 'premium') return 999; // Premium: unlimited
-  return 2; // Free: 2 lessons
+  return FREE_LESSON_LIMIT;
 };

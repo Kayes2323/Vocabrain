@@ -9,7 +9,7 @@ export interface IELTSWord {
   example: string;
   synonyms: string[];
   antonyms?: string[];
-  partOfSpeech: 'noun' | 'verb' | 'adjective' | 'adverb' | 'phrasal';
+  partOfSpeech: 'noun' | 'verb' | 'adjective' | 'adverb' | 'phrasal' | 'noun/adjective';
   bandLevel: 6 | 7 | 8 | 9;
   category: string;
   memoryTip: string;
