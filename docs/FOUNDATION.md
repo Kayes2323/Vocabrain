@@ -136,7 +136,7 @@ See `docs/TENSES_CURRICULUM.md` for the full 15-stage Tenses map.
 - **Error memory:** Mino-judged sentences that need work are stored as
   mistakes (`questionType: 'write'`, the student's text and Mino's correction).
 
-## v4: Parts of Speech (module 3), phase 1
+## v4: Parts of Speech (module 3)
 
 Route: `/ielts/foundation/parts-of-speech` (units dashboard), `/ielts/foundation/parts-of-speech/<unit>`,
 targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
@@ -156,3 +156,19 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   concepts `pos-noun`, `pos-adjective`, `pos-adverb`, `pos-forms`.
 - **Mino.** `posSummaryLines()` adds unit status with accuracy, open patterns with the student's own
   sentence, and weak word families to the snapshot; product guide `parts-of-speech`; action `parts-of-speech`.
+
+### Phase 2
+
+- **Content.** 32 lessons: + Verb 1–5 (`pos-verb.ts`), Pronoun 1–3, Preposition 1–3, Conjunction 1–3,
+  Interjection 1, Word Forms 3–5 (word families, prefixes, word forms in IELTS). Concepts added:
+  `pos-verb`, `pos-pronoun`, `pos-preposition` (tag `preposition`), `pos-conjunction` (tag `connector`),
+  `pos-interjection`. Still planned: Parts of Speech in IELTS, Common Mistakes Lab, Final Mastery Challenge.
+- **Unit check.** `/ielts/foundation/<module>/<unit>/check`: `unitCheckQuestions()` gives 8 graded
+  questions from the unit's finished lessons (up to 3 recent mistakes first); the score is recorded
+  with `recordReview()` on the unit's concept, so it moves the spaced review. `canUnitCheck()` needs
+  a concept and at least 5 questions.
+- **Fixes for every job.** `fixQuestions()` falls back to tag exercises and the expected job's unit
+  questions, so pronoun / preposition / conjunction confusions get a full 5-question fix. A pattern
+  opens only when a full fix exists (e.g. never for determiner, which has no unit).
+- **Validation.** A spot item's corrected sentence must not repeat a word ("must submit submit"):
+  a fix that needs a deletion must be written as a correct / choice item instead.

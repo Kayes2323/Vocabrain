@@ -1,12 +1,12 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Circle, CircleDashed, Clock, RotateCcw } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Circle, CircleDashed, Clock, ListChecks, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  getModule, lessonOutcome, posPatterns, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
+  canUnitCheck, getModule, lessonOutcome, posPatterns, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
 } from '@/lib/foundation';
 import { STATUS_TONE, UnitMark, unitPattern } from './UnitsDashboard';
 import { useFoundation, useText } from './useFoundation';
@@ -25,6 +25,7 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
   const pattern = unitPattern(unit, posPatterns(fp));
   const continues = unit.continues ? getModule(unit.continues.moduleId) : undefined;
   const conceptReview = status === 'review' && !pattern && unit.concept;
+  const checkable = canUnitCheck(fp, module, unit);
 
   return (
     <div className="space-y-8">
@@ -91,6 +92,17 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
           ))}
         </RowGroup>
       </Section>
+
+      {checkable && (
+        <Panel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-muted-foreground">{t('foundation.units.checkHint')}</p>
+          <Button asChild size="lg" variant="outline" className="h-12 shrink-0">
+            <Link href={`/ielts/foundation/${module.id}/${unit.id}/check`}>
+              <ListChecks /> {t('foundation.units.check')}
+            </Link>
+          </Button>
+        </Panel>
+      )}
 
       {continues && unit.continues && (
         <Callout>

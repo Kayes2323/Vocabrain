@@ -698,6 +698,8 @@ export function posPatterns(fp: FoundationProgress, now = new Date()): PosPatter
     lastTwo.length === 2 ? lastTwo[0].pos!.map((p) => pairKey(p.expected, p.chosen)).filter((k) => lastTwo[1].pos!.some((q) => pairKey(q.expected, q.chosen) === k)) : [];
   return [...found.entries()]
     .filter(([key, v]) => v.count >= PATTERN_THRESHOLD || (inRow.includes(key) && v.count >= 2))
+    // Only confusions a full 5-question fix can practise (e.g. not jobs without a unit).
+    .filter(([key]) => fixQuestions(fp, key, now).length >= FIX_QUESTIONS)
     .map(([pair, v]) => {
       const [expected, chosen] = pair.split('>') as [Pos, Pos];
       return { pair, expected, chosen, count: v.count, latest: v.latest };
@@ -720,9 +722,13 @@ export function fixQuestions(fp: FoundationProgress, pair: string, now = new Dat
   const tagged = pool.filter((e) => e.type === 'tag' && e.tokens.some((t) => t.pos === expected) && e.tokens.some((t) => t.pos === chosen));
   const reverse = pool.filter((e) => e.pos === chosen && Object.values(e.wrongPos ?? {}).includes(expected as Pos));
   const same = pool.filter((e) => e.pos === expected);
+  // Jobs taught mostly through sentences (pronoun, preposition, conjunction): tagging and the unit's own questions.
+  const taggedExpected = pool.filter((e) => e.type === 'tag' && e.tokens.some((t) => t.pos === expected));
+  const unitConcept = MODULES.flatMap((m) => m.units ?? []).find((u) => u.pos === expected)?.concept;
+  const unitPool = unitConcept ? pool.filter((e) => e.concept === unitConcept) : [];
   const seen = new Set<string>();
   const out: Exercise[] = [];
-  for (const group of [exact, tagged, reverse, same]) {
+  for (const group of [exact, tagged, reverse, same, taggedExpected, unitPool]) {
     for (const e of shuffle(group, `${pair}:${today(now)}`)) {
       if (out.length >= FIX_QUESTIONS) break;
       if (!seen.has(e.id)) {
@@ -772,6 +778,22 @@ export function unitStatus(module: Module, unit: Unit, fp: FoundationProgress, n
   if (mastery?.level === 'practising') return 'practising';
   return 'learning';
 }
+
+export const UNIT_CHECK_QUESTIONS = 8;
+
+/**
+ * A unit check: 8 questions from the unit's finished lessons, with up to 3
+ * recently missed ones first. Scored like a concept review (same SRS).
+ */
+export function unitCheckQuestions(fp: FoundationProgress, module: Module, unit: Unit, now = new Date()): Exercise[] {
+  const pool = allExercises(unitLessons(module, unit).filter((l) => fp.lessons[l.id])).filter(graded);
+  const missedIds = new Set(unit.concept ? recentConceptMistakes(fp, unit.concept, now).map((m) => m.questionId) : []);
+  const missed = shuffle(pool.filter((e) => missedIds.has(e.id)), `unit:${unit.id}:${today(now)}:m`).slice(0, 3);
+  const rest = shuffle(pool.filter((e) => !missed.includes(e)), `unit:${unit.id}:${today(now)}`);
+  return shuffle([...missed, ...rest].slice(0, UNIT_CHECK_QUESTIONS), `unit:${unit.id}:${today(now)}:order`);
+}
+
+export const canUnitCheck = (fp: FoundationProgress, module: Module, unit: Unit) => Boolean(unit.concept) && unitCheckQuestions(fp, module, unit).length >= 5;
 
 /** The next lesson in a unit: unfinished one in progress, else the first not done. */
 export function unitNextLesson(module: Module, unit: Unit, fp: FoundationProgress): Lesson | undefined {

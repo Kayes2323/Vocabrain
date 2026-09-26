@@ -5,7 +5,7 @@ import {
   foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
-  canonicalAnswer, fixQuestions, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
+  canonicalAnswer, canUnitCheck, fixQuestions, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
@@ -30,7 +30,7 @@ test('all Foundation content validates (incl. 12 Tenses lessons)', () => {
   assert.deepEqual(validateFoundation(), []);
   assert.equal(tenses.lessons.length, 12);
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 12);
+  assert.equal(CONCEPTS.length, 17);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -261,9 +261,12 @@ const allEx = pos.lessons.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'pra
 const exById = (id: string) => allEx.find((e) => e.id === id)!;
 const wrongAt = (fp: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(fp, { source: 'x', exercise: exById(id), answer, correct: false, attempt: 1, now: new Date(at) });
 
-test('Parts of Speech: 12 units, 14 written lessons, every exercise grades its own answer', () => {
+test('Parts of Speech: 12 units, 32 written lessons, every exercise grades its own answer', () => {
   assert.equal(pos.units!.length, 12);
-  assert.equal(pos.lessons.length, 14);
+  assert.equal(pos.lessons.length, 32);
+  for (const u of pos.units!.filter((x) => x.group === 'jobs' || x.id === 'forms')) {
+    assert.ok(unitLessons(pos, u).length > 0 && !u.planned?.length && u.concept, `${u.id} is fully written`);
+  }
   for (const e of allEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(pos.lessons.every((l) => l.steps.some((s) => s.kind === 'identify')), 'every lesson starts with discovery by tagging');
 });
@@ -303,7 +306,7 @@ test('patterns: 3 of the same pair in 14 days (or 2 in a row) → open; a passed
 });
 
 test('fix sessions have 5 questions for the main confusions', () => {
-  for (const pair of ['adjective>adverb', 'adverb>adjective', 'noun>verb', 'noun>adjective', 'adjective>noun', 'verb>noun']) {
+  for (const pair of ['adjective>adverb', 'adverb>adjective', 'noun>verb', 'noun>adjective', 'adjective>noun', 'verb>noun', 'pronoun>noun', 'preposition>noun', 'conjunction>preposition', 'interjection>noun']) {
     assert.equal(fixQuestions(empty(), pair, NOW).length, 5, pair);
   }
 });
@@ -318,6 +321,22 @@ test('unit status comes from answers: new → learning → mastered; units have 
   const adj = pos.lessons.find((l) => l.id === 'pa-1')!;
   assert.equal(lessonState(pos, adj, empty()), 'available', 'the first lesson of every unit is open');
   assert.equal(lessonState(pos, pos.lessons.find((l) => l.id === 'pa-2')!, empty()), 'locked', 'inside a unit the order is recommended');
+});
+
+test('unit check: 8 questions from finished lessons only, recorded as a concept review', () => {
+  let fp = empty();
+  const verb = unit('verb');
+  assert.equal(canUnitCheck(fp, pos, verb), false, 'nothing finished yet');
+  fp = completeLesson(fp, 'pvb-1', 90, NOW);
+  const qs = unitCheckQuestions(fp, pos, verb, NOW);
+  assert.equal(qs.length, 8);
+  assert.ok(qs.every((q) => q.id.startsWith('pvb-1-')), 'only from the finished lesson');
+  assert.equal(new Set(qs.map((q) => q.id)).size, 8, 'no repeats');
+  fp = wrongAt(fp, 'pvb-1-c2', '0:was', '2026-09-25T10:00:00');
+  assert.ok(unitCheckQuestions(fp, pos, verb, NOW).some((q) => q.id === 'pvb-1-c2'), 'a recent mistake comes back');
+  const passed = recordReview(fp, 'pos-verb', 100, NOW);
+  assert.equal(passed.concepts['pos-verb'].lastReviewScore, 100);
+  assert.equal(canUnitCheck(fp, pos, unit('ielts')), false, 'units without lessons have no check');
 });
 
 const asyncTests: [string, () => Promise<void>][] = [];
