@@ -65,8 +65,9 @@ async function main() {
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
     await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
     check('dashboard shows LEVEL 1 — Foundation Grammar and LEVEL 2 — IELTS Basics', await p.getByText('Level 2 — IELTS Basics').isVisible());
-    await p.locator('main a[href="/ielts/foundation/tenses"]').first().click();
-    await p.waitForURL('**/ielts/foundation/tenses');
+    check('dashboard links to the Tenses module', await p.locator('main a[href="/ielts/foundation/tenses"]').first().isVisible());
+    // (Clicking it first offers Sentence Basics — "guide, don't block" — so open the module directly.)
+    await p.goto(`${BASE}/ielts/foundation/tenses`, { waitUntil: 'load' });
     const lessonLinks = p.locator('main a[href^="/ielts/foundation/lesson/t-"]');
     await lessonLinks.first().waitFor({ timeout: 30_000 });
     check('Tenses module opens with 15 lessons', (await lessonLinks.count()) === 15, await lessonLinks.count());
