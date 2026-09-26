@@ -3,6 +3,7 @@ import { LIMITS } from '../config';
 import { runTool, toolDeclarations } from '../tools';
 import type { ToolContext } from '../tools/types';
 import { isMinoAction } from '../../actions';
+import { MinoError } from '../errors';
 import { buildSystemPrompt } from './prompt';
 import { buildStudentSnapshot } from './snapshot';
 
@@ -33,12 +34,13 @@ function trimHistory(history: AIMessage[]): AIMessage[] {
 
 /** Mino → AI service → provider. One student message in, one reply out. */
 /** Deeper work (plans, analysis, Writing/Speaking feedback) uses the smart model; everyday chat stays fast and cheap. */
-const SMART_CAPABILITIES = new Set<MinoCapabilityId>(['study-planner', 'ielts-coach', 'writing-coach', 'speaking-coach']);
-const SMART_WORDS = /\b(plan|routine|schedule|analy[sz]e|analysis|weak|improv|diagnos|strategy|compare)\w*|রুটিন|প্ল্যান|পরিকল্পনা|বিশ্লেষণ|দুর্বল|উন্নতি|analyse/i;
+// Chat stays on the fast model: it answers in seconds and is rarely overloaded.
+// Only explicit plan/feedback coaching asks for the bigger model, and falls back
+// to the fast one if that is busy.
+const SMART_CAPABILITIES = new Set<MinoCapabilityId>(['study-planner', 'writing-coach', 'speaking-coach']);
 
 export function chooseTier(turn: Pick<MinoTurn, 'capability' | 'message'>): ModelTier {
-  if (turn.capability && SMART_CAPABILITIES.has(turn.capability)) return 'smart';
-  return SMART_WORDS.test(turn.message) ? 'smart' : 'fast';
+  return turn.capability && SMART_CAPABILITIES.has(turn.capability) ? 'smart' : 'fast';
 }
 
 export async function runMino(provider: AIProvider, turn: MinoTurn): Promise<{ response: string; metadata: MinoResponseMetadata }> {
@@ -53,21 +55,34 @@ export async function runMino(provider: AIProvider, turn: MinoTurn): Promise<{ r
     return 'STUDENT SNAPSHOT: unavailable right now. You do not know this student\'s data; do not guess it.';
   });
 
-  const result = await provider.run({
+  const request = {
     system: buildSystemPrompt({ language: turn.language, snapshot, capability: turn.capability }),
-    messages: [...trimHistory(turn.history), { role: 'user', content: turn.message }],
-    tier,
+    messages: [...trimHistory(turn.history), { role: 'user' as const, content: turn.message }],
     maxOutputTokens: LIMITS.maxOutputTokens,
     tools: toolDeclarations,
-    runTool: (name, args) => runTool(ctx, name, args as Record<string, unknown>),
+    runTool: (name: string, args: unknown) => runTool(ctx, name, args as Record<string, unknown>),
     maxToolRounds: LIMITS.maxToolRounds,
-  });
+  };
+  // A busy or slow model can fail mid-conversation (after tool calls), where the
+  // provider can't switch models. Then the whole turn is retried once on the
+  // fast chain; tools are read-only or idempotent, so repeating them is safe.
+  let result;
+  let usedTier: ModelTier = tier;
+  try {
+    result = await provider.run({ ...request, tier, timeoutMs: 18_000, budgetMs: tier === 'smart' ? 24_000 : 30_000 });
+  } catch (error) {
+    const transient = error instanceof MinoError && (error.code === 'provider_busy' || error.code === 'timeout');
+    if (!transient) throw error;
+    console.warn('[mino] retrying turn on the fast model', JSON.stringify({ tier, reason: (error as MinoError).code }));
+    usedTier = 'fast';
+    result = await provider.run({ ...request, tier: 'fast', timeoutMs: 15_000, budgetMs: 25_000 });
+  }
 
   return {
     response: result.text,
     metadata: {
       model: result.model,
-      tier,
+      tier: usedTier,
       latencyMs: Date.now() - started,
       toolCalls: result.toolCalls,
       usage: result.usage,

@@ -409,6 +409,7 @@ export const bn: LocaleDictionary = {
     askFeedback: 'আমার {date}-এর {skill} feedback টা বুঝিয়ে বলো: কোনটা সবচেয়ে জরুরি, আর আমার সবচেয়ে দুর্বল criterion-এর জন্য একটা exercise দাও।',
     askResult: 'আমার {test} {skill} test ({date})-এর result analyse করো। কোথায় নম্বর হারাচ্ছি, কেন, আর এরপর কী practice করব?',
     thinking: 'ভাবছি…',
+    thinkingLonger: 'একটু বেশি সময় লাগছে, আবার চেষ্টা করছি…',
     errors: {
       unauthenticated: 'Mino-র সাথে কথা বলতে sign in করো। উপরের next step গুলো account ছাড়াও কাজ করে।',
       not_configured: 'Mino-র chat এখনো connect হয়নি। তবে উপরের next step গুলো তোমার জন্যই বানানো।',

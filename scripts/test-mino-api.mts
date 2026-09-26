@@ -174,7 +174,7 @@ toolName = 'getStudyPlan';
 toolArgs = { days: 14 };
 res = await call({ ...msg, message: 'আমার জন্য একটা 14 দিনের routine বানাও' }, a.token);
 const plan = await res.json();
-check('plan request uses the smart model', plan.metadata?.tier === 'smart' && plan.metadata?.model === 'gemini-3.5-flash', plan.metadata);
+check('everyday plan questions use the fast model', plan.metadata?.tier === 'fast', plan.metadata);
 check('getStudyPlan returns a data-based plan', plan.response.includes('"horizonDays":14') && plan.response.includes('Vocabulary Review') && plan.response.includes('/ielts/plan'), plan.response?.slice(0, 300));
 toolName = 'rememberAboutStudent';
 toolArgs = { category: 'concern', note: 'Freezes in Speaking Part 2 after 30 seconds' };
@@ -223,9 +223,9 @@ check('retired model → falls back to next model', res.status === 200 && fb.met
 
 const c = await signUp(`c${Date.now()}@test.com`); // fresh student: earlier checks used up A's per-minute limit
 geminiMode = 'busyFirst';
-res = await call({ ...msg, message: 'একটা plan বানাও' }, c.token);
+res = await call({ ...msg, message: 'একটা plan বানাও', capability: 'study-planner' }, c.token);
 const bf = await res.json();
-check('overloaded model → falls back for this request', res.status === 200 && bf.metadata?.model === 'gemini-2.5-flash', bf.metadata ?? bf);
+check('overloaded smart model → turn answered by the fast chain', res.status === 200 && bf.metadata?.model === 'gemini-3.1-flash-lite', bf.metadata ?? bf);
 
 geminiMode = 'busy';
 res = await call(msg, c.token);

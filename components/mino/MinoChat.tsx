@@ -36,6 +36,7 @@ export function MinoChat({ context }: { context: MinoContext }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [pending, setPending] = useState(false);
+  const [slow, setSlow] = useState(false);
   const repo = useMinoRepository();
   const [loaded, setLoaded] = useState(!repo);
 
@@ -65,14 +66,22 @@ export function MinoChat({ context }: { context: MinoContext }) {
     setMessages(history);
     setDraft('');
     setPending(true);
-    const res = await askMino({
+    const request = {
       message: content,
-      language: locale === 'bn' ? 'bn' : 'en',
+      language: (locale === 'bn' ? 'bn' : 'en') as 'bn' | 'en',
       history: messages.filter((m) => !m.notice).map(({ role, content }) => ({ role, content })),
       userContext: context,
       tzOffsetMinutes: -new Date().getTimezoneOffset(),
       capability,
-    });
+    };
+    let res = await askMino(request);
+    // A busy AI model is usually free again seconds later: retry once before showing an error.
+    if (!res.ok && (res.error === 'provider_busy' || res.error === 'timeout')) {
+      setSlow(true);
+      await new Promise((r) => setTimeout(r, 1500));
+      res = await askMino(request);
+      setSlow(false);
+    }
     const reply: ChatMessage = res.ok
       ? { role: 'assistant', content: res.response, actions: res.metadata.actions }
       : { role: 'assistant', content: t(`mino.errors.${res.error}`), notice: true };
@@ -179,7 +188,7 @@ export function MinoChat({ context }: { context: MinoContext }) {
           {pending && (
             <li className="flex gap-2.5">
               <MinoMark size="sm" className="mt-0.5" />
-              <p className="rounded-2xl rounded-bl-md border bg-card px-4 py-2.5 text-muted-foreground">{t('mino.thinking')}</p>
+              <p className="rounded-2xl rounded-bl-md border bg-card px-4 py-2.5 text-muted-foreground">{slow ? t('mino.thinkingLonger') : t('mino.thinking')}</p>
             </li>
           )}
         </ul>

@@ -406,6 +406,7 @@ export const en = {
     askFeedback: 'Explain my {skill} feedback from {date}: what matters most, and give me one exercise for my weakest criterion.',
     askResult: 'Analyse my {test} {skill} result from {date}. Where am I losing marks, why, and what should I practise next?',
     thinking: 'Thinking…',
+    thinkingLonger: 'Taking a little longer, trying again…',
     errors: {
       unauthenticated: 'Sign in to chat with Mino. Your next steps above work without an account.',
       not_configured: "Mino's chat isn't connected yet. Your next steps above are already personalised for you.",
