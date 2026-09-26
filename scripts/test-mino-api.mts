@@ -9,7 +9,8 @@ process.env.GEMINI_API_KEY = 'test-key-not-real';
 const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 const realFetch = globalThis.fetch;
 const geminiBodies: any[] = [];
-let geminiMode: 'tool' | 'busy' | 'retired' = 'tool';
+let geminiMode: 'tool' | 'busy' | 'retired' | 'weak' = 'tool';
+let toolName = 'getVocabulary';
 
 globalThis.fetch = (async (input: any, init?: any) => {
   const url = String(input);
@@ -24,7 +25,7 @@ globalThis.fetch = (async (input: any, init?: any) => {
     const answered = last.parts.some((p: any) => p.functionResponse);
     const parts = answered
       ? [{ text: `substantial মানে অনেক বা উল্লেখযোগ্য। TOOL=${JSON.stringify(last.parts[0].functionResponse.response.result)}` }]
-      : [{ functionCall: { name: 'getVocabulary', args: { word: 'substantial' } } }];
+      : [{ functionCall: { name: toolName, args: toolName === 'getVocabulary' ? { word: 'substantial' } : {} } }];
     return Response.json({
       candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }],
       usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 20, totalTokenCount: 120 },
@@ -115,13 +116,40 @@ const system: string = geminiBodies[0].systemInstruction.parts[0].text;
 if (process.env.PRINT_PROMPT) console.log(system);
 check('system prompt Bangla + tools sent', system.includes('Bangla') && geminiBodies[0].tools[0].functionDeclarations.length >= 5);
 check('snapshot from database: target, bands, missing skills', system.includes('IELTS target: 7.0') && system.includes('reading 6.5') && system.includes('speaking no data'), system.slice(system.indexOf('STUDENT SNAPSHOT'), system.indexOf('STUDENT SNAPSHOT') + 600));
-check('snapshot: test result and weakest question type', system.includes('Practice tests completed: 1') && system.includes('lowest question type: Matching Headings 1/4'));
+check('snapshot: test result and weakest question type', system.includes('Practice tests completed: 1') && system.includes('No practice-test data for: listening, writing, speaking'));
 check('snapshot: vocabulary and today', system.includes('Vocabulary (Brain): 1 saved') && /TODAY: \d{4}-\d{2}-\d{2}/.test(system));
 check('snapshot never includes another student', !system.includes('secretword'));
 
 // Rules still protect other students even with a valid token.
 const cross = await realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/users/${b.uid}/vocabulary/secretword`, { headers: { Authorization: `Bearer ${a.token}` } });
 check('cross-user Firestore read denied', cross.status === 403, cross.status);
+
+// A real submitted test (scored by the engine) for student B: getWeakAreas must analyse it.
+const ielts = await import('../lib/ielts/index.ts');
+const content = await import('../lib/ielts/content/index.ts');
+const I = (ielts as any).default ?? ielts;
+const C = (content as any).default ?? content;
+const t1 = C.getTest('vb-practice-1');
+let sess = I.createSession(t1, 'reading');
+for (const [k, v] of Object.entries({ 'r1-q1': 'iii', 'r1-q2': 'vi', 'r1-q3': 'v', 'r1-q4': 'i', 'r1-q8': 'TRUE', 'r1-q10': 'rainwatter' })) sess = I.setAnswer(sess, k, v);
+sess = I.submit(sess, t1);
+const enc = (v: unknown): unknown =>
+  v === null ? { nullValue: null }
+  : Array.isArray(v) ? { arrayValue: { values: v.map(enc) } }
+  : typeof v === 'object' ? { mapValue: { fields: Object.fromEntries(Object.entries(v as object).map(([k, x]) => [k, enc(x)])) } }
+  : typeof v === 'number' ? (Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v })
+  : typeof v === 'boolean' ? { booleanValue: v } : { stringValue: String(v) };
+await put(`users/${b.uid}/testSessions/${sess.id}`, (enc(JSON.parse(JSON.stringify(sess))) as any).mapValue.fields);
+geminiMode = 'tool';
+toolName = 'getWeakAreas';
+res = await call(msg, b.token);
+const weak = await res.json();
+check('getWeakAreas analyses real answers with evidence', res.status === 200 && weak.response.includes('Matching Headings') && weak.response.includes('rainwatter') && weak.response.includes('not-given-confusion'), weak.response);
+toolName = 'getTestHistory';
+res = await call(msg, b.token);
+const hist = await res.json();
+check('getTestHistory lists the attempt', hist.response.includes('Practice Test 1') && hist.response.includes('/24'), hist.response?.slice(0, 200));
+toolName = 'getVocabulary';
 
 geminiMode = 'retired';
 res = await call(msg, a.token);

@@ -96,6 +96,7 @@ export const bn: LocaleDictionary = {
     paragraph: 'Paragraph {id}',
     whyNot: '{answer} কেন না?',
     noExplanation: 'এই question-এর explanation এখনো নেই।',
+    askMino: 'এই result নিয়ে Mino-কে জিজ্ঞেস করো',
   },
   nav: {
     home: 'Home',
@@ -219,6 +220,7 @@ export const bn: LocaleDictionary = {
     knows: 'Mino তোমার সম্পর্কে যা জানে',
     placeholder: 'Mino-কে কিছু জিজ্ঞেস করো…',
     send: 'পাঠাও',
+    askResult: 'আমার {test} {skill} test ({date})-এর result analyse করো। কোথায় নম্বর হারাচ্ছি, কেন, আর এরপর কী practice করব?',
     thinking: 'ভাবছি…',
     errors: {
       unauthenticated: 'Mino-র সাথে কথা বলতে sign in করো। উপরের next step গুলো account ছাড়াও কাজ করে।',

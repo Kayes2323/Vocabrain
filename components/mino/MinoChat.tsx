@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -54,6 +54,22 @@ export function MinoChat({ context }: { context: MinoContext }) {
     ]);
     setPending(false);
   };
+
+  // Opened from a test result (/mino?ask=result&test=…): ask Mino to analyse it once.
+  const asked = useRef(false);
+  useEffect(() => {
+    if (asked.current) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ask') !== 'result') return;
+    asked.current = true;
+    window.history.replaceState(null, '', '/mino');
+    const skill = params.get('skill') ?? 'reading';
+    send(
+      t('mino.askResult', { test: params.get('test') ?? '', skill: t(`skills.${skill}`), date: params.get('date') ?? '' }),
+      'ielts-coach',
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const pickPrompt = (id: MinoPromptId) => {
     const text = t(`mino.prompts.${id}`);

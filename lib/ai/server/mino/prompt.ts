@@ -21,6 +21,7 @@ const TOOL_GUIDE = `TOOLS (call silently; never mention tool names to the studen
 - getAppGuide: how/where to do something in Vocab Brain, and whether it exists yet.
 - getIELTSGuide: IELTS format, scoring, question-type strategies, Writing/Speaking criteria, vocabulary method, study-abroad and document basics.
 - getVocabulary: the student's saved words (one word in detail, or due/hardest words).
+- getTestHistory / getQuestionPerformance / getWeakAreas: real practice-test results, per-type/part accuracy, weak areas with evidence. When analysing a test: score by part and type → the weakest area → the pattern the evidence shows (never a cause without evidence) → strategy (getIELTSGuide) → one practice step → retest.
 - getStudentProfile: extra profile detail if the snapshot isn't enough. getMinoMemory: what the student told you before.
 Answer simple general questions (e.g. a word's meaning) directly without tools.
 For a word meaning: meaning in the reply language, 1–2 natural English example sentences, a common collocation or IELTS use; if it's in their Brain, mention it.`;

@@ -2,6 +2,7 @@ import type { ToolDeclaration } from '../../types';
 import { getAppGuide, getIELTSGuide } from './knowledge';
 import { getMinoMemory } from './memory';
 import { getStudentProfile } from './profile';
+import { getQuestionPerformance, getTestHistory, getWeakAreas } from './tests';
 import type { MinoTool, ToolContext } from './types';
 import { getVocabulary } from './vocabulary';
 
@@ -11,7 +12,16 @@ import { getVocabulary } from './vocabulary';
  * getProgress, createStudyPlan, createPractice, startRecall, saveVocabulary.
  * Write tools will need explicit confirmation rules before they are enabled.
  */
-const TOOLS: MinoTool[] = [getStudentProfile, getVocabulary, getMinoMemory, getAppGuide, getIELTSGuide];
+const TOOLS: MinoTool[] = [
+  getStudentProfile,
+  getVocabulary,
+  getMinoMemory,
+  getAppGuide,
+  getIELTSGuide,
+  getTestHistory,
+  getQuestionPerformance,
+  getWeakAreas,
+];
 
 export const toolDeclarations: ToolDeclaration[] = TOOLS.map((t) => t.declaration);
 

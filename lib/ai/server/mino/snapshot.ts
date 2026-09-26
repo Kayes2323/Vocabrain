@@ -4,7 +4,7 @@
 import { IELTS_SKILLS } from '@/lib/constants';
 import { brainSummary, buildDailyPlan, daysUntil, formatBand, ieltsJourney, overallBand } from '@/lib/engine';
 import { getTranslator } from '@/lib/i18n';
-import { QUESTION_TYPE_LABELS, type SectionResult } from '@/lib/ielts';
+import { analyseTests, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
@@ -21,7 +21,6 @@ export function studentNow(tzOffsetMinutes = 360, now = Date.now()): Date {
   return new Date(now + tzOffsetMinutes * 60_000);
 }
 
-const pct = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
 
 export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?: number): Promise<string> {
   const now = studentNow(tzOffsetMinutes);
@@ -58,21 +57,20 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
   const journey = ieltsJourney(profile);
   lines.push(`- IELTS journey stage: ${t(`journey.stages.${journey.current}`)} (${journey.percent}% of the journey).`);
 
-  // Practice tests (deterministic results)
-  const submitted = (sessions as { status?: string; submittedAt?: string; testId?: string; skill?: string; result?: SectionResult }[])
-    .filter((s) => s.status === 'submitted' && s.result)
-    .sort((a, b) => (b.submittedAt ?? '').localeCompare(a.submittedAt ?? ''));
-  if (submitted.length === 0) {
+  // Practice tests (deterministic analysis of real answers)
+  const analysis = analyseTests(sessions as unknown as TestSession[], getTest);
+  if (analysis.attempts.length === 0) {
     lines.push('- Practice tests: none completed yet (no Listening/Reading/Writing/Speaking test data).');
   } else {
-    const last = submitted[0];
-    const r = last.result!;
-    const weakest = [...r.byType].filter((x) => x.total >= 2).sort((a, b) => a.correct / a.total - b.correct / b.total)[0];
+    const last = analysis.attempts[0];
     lines.push(
-      `- Practice tests completed: ${submitted.length}. Latest: ${getTest(last.testId ?? '')?.title ?? last.testId} ${last.skill} ${r.correct}/${r.total} (${pct(r.correct, r.total)}%) on ${last.submittedAt?.slice(0, 10)}` +
-        (weakest ? `; lowest question type: ${QUESTION_TYPE_LABELS[weakest.type] ?? weakest.type} ${weakest.correct}/${weakest.total}` : '') +
-        '. No Listening, Writing or Speaking test data yet.',
+      `- Practice tests completed: ${analysis.attempts.length}. Latest: ${last.testTitle} ${last.skill} ${last.correct}/${last.total} (${last.accuracy}%) on ${last.submittedAt.slice(0, 10)}.`,
     );
+    const weak = analysis.weakAreas[0];
+    if (weak) lines.push(`- Weakest area so far: ${weak.label} (${weak.skill}) ${weak.correct}/${weak.total}, ${weak.confidence} confidence. Details: getWeakAreas.`);
+    const skillsWithTests = new Set(analysis.attempts.map((a) => a.skill));
+    const missing = ['listening', 'reading', 'writing', 'speaking'].filter((sk) => !skillsWithTests.has(sk as never));
+    if (missing.length) lines.push(`- No practice-test data for: ${missing.join(', ')}.`);
   }
 
   // Vocabulary (Brain)

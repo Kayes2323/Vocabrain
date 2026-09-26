@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, ChevronDown, RotateCcw, X } from 'lucide-react';
+import { Check, ChevronDown, RotateCcw, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -56,6 +56,14 @@ export function ResultView({ test, section, session, onRetry }: { test: Practice
           {t('tests.focusBody', { type: QUESTION_TYPE_LABELS[weakest.type], correct: weakest.correct, total: weakest.total })}
         </Callout>
       )}
+
+      <Button asChild variant="brand" className="w-full sm:w-auto">
+        <Link
+          href={`/mino?${new URLSearchParams({ ask: 'result', test: test.title, skill: section.skill, date: (session.submittedAt ?? '').slice(0, 10) })}`}
+        >
+          <Sparkles /> {t('tests.askMino')}
+        </Link>
+      </Button>
 
       <Section title={t(section.skill === 'reading' ? 'tests.byPassage' : 'tests.byPart')}>
         <Panel className="space-y-4">

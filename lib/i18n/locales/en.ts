@@ -93,6 +93,7 @@ export const en = {
     paragraph: 'Paragraph {id}',
     whyNot: 'Why not {answer}?',
     noExplanation: 'No explanation for this question yet.',
+    askMino: 'Ask Mino about this result',
   },
   nav: {
     home: 'Home',
@@ -216,6 +217,7 @@ export const en = {
     knows: 'What Mino knows about you',
     placeholder: 'Ask Mino anything…',
     send: 'Send',
+    askResult: 'Analyse my {test} {skill} result from {date}. Where am I losing marks, why, and what should I practise next?',
     thinking: 'Thinking…',
     errors: {
       unauthenticated: 'Sign in to chat with Mino. Your next steps above work without an account.',

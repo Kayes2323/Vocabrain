@@ -3,3 +3,4 @@ export * from './question-types';
 export * from './scoring';
 export * from './session';
 export * from './validate';
+export * from './analysis';

@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { ALL_BOOKS, BOOKS, getTest } from '../lib/ielts/content/index';
 import {
-  answeredNumbers, countWords, createSession, expandAccepted, isPublishable, normalise, questionSlots, rawToBand,
+  analyseTests, answeredNumbers, countWords, createSession, expandAccepted, isPublishable, normalise, questionSlots, rawToBand,
   remainingSeconds, scoreSection, setAnswer, submit, tick, toggleFlag, validateBook, validateTest, withinLimit,
   type ObjectiveSection, type PracticeTest,
 } from '../lib/ielts/index';
@@ -137,6 +137,43 @@ test('question slots cover 1..24 in order', () => {
   const slots = questionSlots(reading);
   assert.deepEqual(slots.map((s) => s.number), Array.from({ length: 24 }, (_, i) => i + 1));
   assert.equal(slots.find((s) => s.number === 17)?.answerKey, 'r2-g2');
+});
+
+test('analysis: history, weak areas and evidence-based patterns', () => {
+  const run = (answers: Record<string, string | string[]>, at: string, opts: { timedOut?: boolean } = {}) => {
+    let s = createSession(t1, 'reading', new Date(at));
+    for (const [k, v] of Object.entries(answers)) s = setAnswer(s, k, v);
+    return submit(s, t1, opts);
+  };
+  const weakHeadings = { ...KEY, 'r1-q1': 'iii', 'r1-q2': 'vi', 'r1-q3': 'vii', 'r1-q8': 'TRUE', 'r1-q10': 'rainwatter', 'r2-q13': 'A' };
+  delete (weakHeadings as Record<string, unknown>)['r2-q24'];
+  const first = run(weakHeadings, '2026-09-20T10:00:00Z', { timedOut: true });
+  const second = run({ ...KEY, 'r1-q1': 'iii', 'r1-q3': 'vi' }, '2026-09-22T10:00:00Z');
+  const a = analyseTests([second, first, createSession(t1, 'reading')], getTest);
+
+  assert.equal(a.attempts.length, 2, 'in-progress sessions are ignored');
+  assert.equal(a.attempts[0].sessionId, second.id, 'newest first');
+  const mh = a.byType.find((x) => x.type === 'matching-headings')!;
+  assert.deepEqual([mh.correct, mh.total, mh.tests], [3, 8, 2]);
+  assert.deepEqual([mh.latest.correct, mh.latest.total], [2, 4]);
+  assert.equal(a.weakAreas[0].type, 'matching-headings');
+  assert.equal(a.weakAreas[0].guideTopic, 'matching-headings');
+  assert.equal(a.weakAreas[0].confidence, 'medium');
+
+  const p = (id: string) => a.patterns.find((x) => x.id === id);
+  assert.equal(p('spelling')?.count, 1);
+  assert.match(p('spelling')!.evidence[0], /Q10: wrote "rainwatter" \(answer: rainwater\)/);
+  assert.equal(p('not-given-confusion')?.count, 1);
+  assert.equal(p('distractor')?.count, 2, 'Q8 TRUE and Q13 A are content-marked traps');
+  assert.equal(p('ran-out-of-time')?.count, 1);
+  assert.equal(p('unanswered'), undefined);
+  assert.match(a.dataNote, /2 submitted tests, 48 questions/);
+});
+
+test('analysis with no data says so', () => {
+  const a = analyseTests([], getTest);
+  assert.equal(a.weakAreas.length, 0);
+  assert.match(a.dataNote, /No submitted practice tests yet/);
 });
 
 console.log(`\n${passed} passed`);
