@@ -31,7 +31,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 20);
+  assert.equal(CONCEPTS.length, 24);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -249,10 +249,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const articles = MODULES.find((m) => m.id === 'articles')!;
+  const agreement = MODULES.find((m) => m.id === 'agreement')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(articles, fp), undefined);
+  assert.equal(stepBeforeModule(agreement, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);

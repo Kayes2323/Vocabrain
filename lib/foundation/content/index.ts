@@ -10,6 +10,8 @@ import { futureFormsV2, pastContinuousV2, pastPerfectV2, pastSimpleV2, presentCo
 import { tenseMistakesV2, tensesSpeakingV2, tensesWritingV2 } from './tenses-apply';
 import { presentPerfectContinuous, tenseComparisons, tensesMixedPractice } from './tenses-new';
 import { POS_CONCEPTS, POS_LESSONS, POS_PLANNED, POS_UNITS } from './pos-units';
+import { aAnMeaning, aOrAn, ARTICLE_CONCEPTS, theArticle, zeroArticle } from './articles';
+import { articleChoice, articleMistakes, articlesInIelts, articlesMixed, articlesReview } from './articles-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -95,8 +97,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('One of the most frequent errors in IELTS Writing.', 'IELTS Writing-এর সবচেয়ে বেশি হওয়া ভুলগুলোর একটা।'),
     skill: 'grammar',
     tags: ['article'],
-    lessons: [],
-    planned: [t('a and an', 'a আর an'), t('the', 'the'), t('Zero article', 'Zero article'), t('Articles in Task 1 and Task 2', 'Task 1 আর Task 2-এ article')],
+    lessons: [aOrAn, aAnMeaning, theArticle, zeroArticle, articleChoice, articleMistakes, articlesInIelts, articlesMixed, articlesReview],
   },
   {
     id: 'agreement',
@@ -252,7 +253,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

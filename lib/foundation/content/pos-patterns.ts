@@ -22,13 +22,16 @@ export interface FixGuide {
 export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; unit?: string }> = {
   'sv-agreement': { title: l('Subject–verb agreement', 'Subject–verb agreement'), modules: ['parts-of-speech', 'tenses'], unit: 'lab' },
   'verb-form': { title: l('Verb form after helping verbs', 'Helping verb-এর পরে verb form'), modules: ['parts-of-speech', 'tenses'], unit: 'verb' },
-  'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech'], unit: 'noun' },
+  'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech', 'articles'], unit: 'noun' },
   'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), modules: ['parts-of-speech'], unit: 'pronoun' },
   'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), modules: ['parts-of-speech'], unit: 'preposition' },
   'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), modules: ['parts-of-speech'], unit: 'conjunction' },
   'past-vs-perfect': { title: l('Past Simple or Present Perfect', 'Past Simple নাকি Present Perfect'), modules: ['tenses'] },
   'simple-vs-continuous': { title: l('Simple or continuous', 'Simple নাকি continuous'), modules: ['tenses'] },
   'tense-time': { title: l('Time words decide the tense', 'Time word-ই tense ঠিক করে'), modules: ['tenses'] },
+  'missing-article': { title: l('A missing a / an / the', 'বাদ পড়া a / an / the'), modules: ['articles'] },
+  'general-the': { title: l('"the" with things in general', 'সাধারণ অর্থে "the"'), modules: ['articles'] },
+  'a-an-sound': { title: l('a or an by the sound', 'Sound দেখে a নাকি an'), modules: ['articles'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -176,6 +179,32 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Bangla verbs change less for time, so the time word often feels like enough ("Yesterday I go").', 'বাংলায় verb সময়ের সাথে কম বদলায়, তাই মনে হয় time word-ই যথেষ্ট ("Yesterday I go")।'),
     recognise: l('Underline the time word first. Then check that the verb agrees with it.', 'আগে time word-এর নিচে দাগ দাও। তারপর দেখো verb তার সাথে মেলে কিনা।'),
     avoid: l('When you proofread, read only the time words and verbs together: "in 2015 … increased", "since 2015 … has increased".', 'Proofread করার সময় শুধু time word আর verb একসাথে পড়ো: "in 2015 … increased", "since 2015 … has increased"।'),
+  },  'missing-article': {
+    rule: l(
+      'One countable thing never stands alone. Put a / an before it when it is new or one of many (I am a student, there was a rise), and "the" when the reader knows which one (the number of, the highest, the chart).',
+      'গোনা যায় এমন একটা জিনিস একা দাঁড়ায় না। নতুন বা অনেকের একটা হলে a / an (I am a student, there was a rise), আর পাঠক জানলে কোনটা, তখন "the" (the number of, the highest, the chart)।',
+    ),
+    why: l('Bangla needs nothing before a noun ("আমি ছাত্র", "গ্রাফটি দেখায়"), and marks "the" after it (-টা, -টি), so the English word before the noun gets lost.', 'বাংলায় noun-এর আগে কিছু লাগে না ("আমি ছাত্র", "গ্রাফটি দেখায়"), আর "the"-এর কাজ হয় পরে (-টা, -টি), তাই English-এ noun-এর আগের word-টা হারিয়ে যায়।'),
+    recognise: l('Find each singular noun (student, graph, number, rise). Is there a / an / the / my / this before it? If not, one is missing.', 'প্রতিটা একবচন noun খোঁজো (student, graph, number, rise)। আগে কি a / an / the / my / this আছে? না থাকলে একটা বাদ পড়েছে।'),
+    avoid: l('Proofread nouns only: singular + countable → add a / an (new) or the (known). In Task 1, "The chart shows the number of…" every time.', 'শুধু noun-গুলো proofread করো: একবচন + গোনা যায় → a / an (নতুন) বা the (চেনা) বসাও। Task 1-এ প্রতিবার "The chart shows the number of…"।'),
+  },
+  'general-the': {
+    rule: l(
+      'Talking about things in general? Plural and uncountable nouns take NO article: Education is important. Cars cause pollution. Use "the" only for a particular thing or group: the education system in Bangladesh, the cars in my street.',
+      'সাধারণভাবে বলছো? Plural আর uncountable noun-এ article লাগে না: Education is important। Cars cause pollution। শুধু নির্দিষ্ট জিনিস বা দলের জন্য "the": the education system in Bangladesh, the cars in my street।',
+    ),
+    why: l('"The" feels formal and academic, like "শিক্ষাব্যবস্থা", so it gets added to general ideas in Task 2. Languages and city names get it too (the English, the Dhaka).', '"The" formal আর academic মনে হয়, যেন "শিক্ষাব্যবস্থা", তাই Task 2-এ সাধারণ ধারণায় বসে যায়। ভাষা আর শহরের নামেও বসে (the English, the Dhaka)।'),
+    recognise: l('Ask "which one?". If the answer is "all of them / in general", there is no "the". Also no "the" with languages, most names and "most + plural".', '"কোনটা?" জিজ্ঞেস করো। উত্তর "সবগুলো / সাধারণভাবে" হলে "the" না। ভাষা, বেশিরভাগ নাম আর "most + plural"-এও "the" না।'),
+    avoid: l('In Task 2, start general statements with the noun itself: Technology…, Children…, Pollution…, Governments…', 'Task 2-এ সাধারণ বক্তব্য noun দিয়েই শুরু করো: Technology…, Children…, Pollution…, Governments…'),
+  },
+  'a-an-sound': {
+    rule: l(
+      'Say the next word: a vowel SOUND → an (an hour, an MBA, an 8% rise); a consonant SOUND → a (a university, a European, a one-year course). The sound decides, not the letter.',
+      'পরের word-টা বলো: vowel SOUND → an (an hour, an MBA, an 8% rise); consonant SOUND → a (a university, a European, a one-year course)। অক্ষর না, sound ঠিক করে।',
+    ),
+    why: l('Bangla spelling follows the sound, so we trust the letter. In English, "u" can sound like "yoo" and "h" can be silent.', 'বাংলা বানান উচ্চারণ মেনে চলে, তাই আমরা অক্ষরের উপর ভরসা করি। English-এ "u" "ইউ" শোনাতে পারে আর "h" নীরব থাকতে পারে।'),
+    recognise: l('Look for u-, eu-, one-, h- and numbers (8, 11, 18) after a / an.', 'a / an-এর পরে u-, eu-, one-, h- আর সংখ্যা (8, 11, 18) খেয়াল করো।'),
+    avoid: l('Before writing a or an, whisper the next word — including adjectives and numbers.', 'a বা an লেখার আগে পরের word-টা মনে মনে বলো — adjective আর সংখ্যাও।'),
   },
 };
 
