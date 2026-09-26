@@ -144,6 +144,8 @@ export interface FoundationMistake {
   pos?: { expected: string; chosen: string }[];
   /** Word family of the answer, when known. */
   family?: string;
+  /** Named mistake pattern (e.g. "sv-agreement"), when the question checks one. */
+  pattern?: string;
   /** Attempt number of this lesson/session. */
   attempt: number;
 }
@@ -200,6 +202,19 @@ export interface FoundationProgress {
   inProgress?: FoundationInProgress;
   /** Parts of Speech mistake patterns ("adjective>adverb") fixed in a targeted session, and when. */
   posFixes?: Record<string, ISODate>;
+  /** Parts of Speech Final Mastery Challenge: latest result. */
+  posFinal?: PosFinalRecord;
+}
+
+/** Final Mastery Challenge result: score, the level reached (1–3) and per-part answers. */
+export interface PosFinalRecord {
+  at: ISODate;
+  score: number;
+  best: number;
+  attempts: number;
+  /** Adaptive level at the end (1 easy – 3 hard). */
+  level: number;
+  parts: Record<string, { correct: number; total: number }>;
 }
 
 /** One local day of Vocabulary Foundation work (YYYY-MM-DD). */

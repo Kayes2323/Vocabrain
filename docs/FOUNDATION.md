@@ -172,3 +172,31 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   opens only when a full fix exists (e.g. never for determiner, which has no unit).
 - **Validation.** A spot item's corrected sentence must not repeat a word ("must submit submit"):
   a fix that needs a deletion must be written as a correct / choice item instead.
+
+### Phase 3: IELTS application and mastery
+
+- **Parts of Speech in IELTS** (`pos-ielts-a.ts`, `pos-ielts-b.ts`, concept `pos-ielts`): 9 v2 lessons:
+  Reading (unknown words, predict the gap), Listening (predict the answer), Writing (the word that
+  breaks the sentence, building an academic sentence), Speaking (upgrade your answer; natural spoken
+  English is never marked wrong), word-form clues, grammar + vocabulary (collocations), application challenge.
+- **Common Mistakes Lab** (`pos-lab.ts`, concept `pos-lab`, lesson `format: 'lab'`): 8 repair stations
+  (noun, verb, pronoun, adjective/adverb, preposition, conjunction, word form, subject–verb). A repair
+  is a typed spot-and-fix followed by a "why" question; then 3 targeted questions without options.
+  `validateLab()` enforces this. "Your own mistakes first": `ownMistakeQuestions()` (last 14 days,
+  newest first) at `/ielts/foundation/parts-of-speech/lab/mine`.
+- **Named patterns** (same error system, no new tracking): exercises may carry `pattern`
+  (`sv-agreement`, `verb-form`, `noun-count`, `pronoun-form`, `prep-choice`, `conj-logic`;
+  catalogue in `content/pos-patterns.ts`). Preposition, conjunction and pronoun questions default to
+  their concept's pattern (`CONCEPT_PATTERN`, never for tagging). Mistakes store `pattern`;
+  `posPatterns()` counts job pairs and named patterns together; `fixQuestions()` uses the pattern's own
+  questions; `/ielts/foundation/fix/<pattern>` works like a pair fix.
+- **Fix guide.** `POS_FIX_GUIDE[key]`: rule (before), then after the 5 questions: what you were
+  confusing (with the student's own latest answer), why it happens, how to recognise it, how to avoid it.
+- **Final Mastery Challenge** (`pos-final.ts`, unit `challenge: true`): 10 parts A–J × 4 items
+  (levels 1–3); 3 served per part (30). `finalStartLevel()` from PoS accuracy; `nextFinalLevel()`
+  (right → up, wrong → down); `pickFinalItem()` = closest unused level. `recordFinal()` stores
+  `posFinal` (score, best, attempts, level, parts). Unit status: new → review (<80%) → mastered.
+  The report: by part, by word job, level reached, what to practise next, Ask Mino. Never an IELTS band.
+- **Mino.** Sentence feedback explains each fix with the student's own words and returns one
+  follow-up gap (`practice`, validated: exactly one `___`, only when something was wrong).
+  Snapshot lines add named patterns and the final result.

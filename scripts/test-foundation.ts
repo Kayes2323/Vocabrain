@@ -5,7 +5,7 @@ import {
   foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
-  canonicalAnswer, canUnitCheck, fixQuestions, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
+  canonicalAnswer, canUnitCheck, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
@@ -30,7 +30,7 @@ test('all Foundation content validates (incl. 12 Tenses lessons)', () => {
   assert.deepEqual(validateFoundation(), []);
   assert.equal(tenses.lessons.length, 12);
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 17);
+  assert.equal(CONCEPTS.length, 19);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -261,14 +261,17 @@ const allEx = pos.lessons.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'pra
 const exById = (id: string) => allEx.find((e) => e.id === id)!;
 const wrongAt = (fp: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(fp, { source: 'x', exercise: exById(id), answer, correct: false, attempt: 1, now: new Date(at) });
 
-test('Parts of Speech: 12 units, 32 written lessons, every exercise grades its own answer', () => {
+test('Parts of Speech: 12 units, 49 written lessons, every exercise grades its own answer', () => {
   assert.equal(pos.units!.length, 12);
-  assert.equal(pos.lessons.length, 32);
-  for (const u of pos.units!.filter((x) => x.group === 'jobs' || x.id === 'forms')) {
+  assert.equal(pos.lessons.length, 49);
+  assert.ok(pos.units!.every((u) => !u.planned?.length), 'no unit is still planned');
+  for (const u of pos.units!.filter((x) => !x.challenge)) {
     assert.ok(unitLessons(pos, u).length > 0 && !u.planned?.length && u.concept, `${u.id} is fully written`);
   }
   for (const e of allEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
-  assert.ok(pos.lessons.every((l) => l.steps.some((s) => s.kind === 'identify')), 'every lesson starts with discovery by tagging');
+  assert.ok(pos.lessons.filter((l) => l.format !== 'lab').every((l) => l.steps.some((s) => s.kind === 'identify')), 'every taught lesson starts with discovery by tagging');
+  assert.ok(pos.lessons.filter((l) => l.format === 'lab').every((l) => l.steps.some((s) => s.kind === 'practice' && s.exercises.some((e) => e.type === 'spot'))), 'lab stations repair sentences');
+  for (const e of FINAL_PARTS.flatMap((p) => p.items)) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
 });
 
 test('tag and spot grading; expected → chosen pairs', () => {
@@ -339,6 +342,72 @@ test('unit check: 8 questions from finished lessons only, recorded as a concept 
   assert.equal(canUnitCheck(fp, pos, unit('ielts')), false, 'units without lessons have no check');
 });
 
+test('named patterns: recorded from the exercise (or its concept), opened after 3, fixed with 5 of their own questions', () => {
+  let fp = empty();
+  const labEx = pos.lessons.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'practice' ? s.exercises : [])));
+  const byId = (id: string) => labEx.find((e) => e.id === id)!;
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: byId(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  fp = wrong(fp, 'pl-8-s1', '0:go', '2026-09-20T10:00:00');
+  assert.equal(fp.mistakes.at(-1)!.pattern, 'sv-agreement');
+  assert.equal(fp.mistakes.at(-1)!.prompt, 'My brother go to university every day.', 'the student’s own sentence is kept for Mino');
+  assert.equal(posPatterns(fp, NOW).length, 0);
+  fp = wrong(fp, 'pl-2-s1', '2:speaks', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'pl-8-s2', '6:are', '2026-09-22T10:00:00');
+  fp = wrong(fp, 'pl-8-r1', 'cost', '2026-09-23T10:00:00');
+  const p = posPatterns(fp, NOW).find((x) => x.pair === 'sv-agreement')!;
+  assert.equal(p.count, 3);
+  assert.equal(p.unit, 'lab');
+  assert.equal(unitStatus(pos, unit('lab'), fp, NOW), 'review', 'a named pattern puts its unit into review');
+  assert.match(posSummaryLines(fp, NOW).join('\n'), /Subject–verb agreement mistakes ×3.*fix\/sv-agreement/);
+  const qs = fixQuestions(fp, 'sv-agreement', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => exercisePattern(q) === 'sv-agreement'));
+  assert.equal(posPatterns(recordFix(fp, 'sv-agreement', 100, NOW), NOW).filter((x) => x.pair === 'sv-agreement').length, 0);
+  // Concept default: preposition questions check "prep-choice" without saying so.
+  assert.equal(exercisePattern(exById('ppp-1-r3')), 'prep-choice');
+  assert.equal(exercisePattern(labEx.find((e) => e.type === 'tag' && e.concept === 'pos-preposition') ?? exById('pn-1-p1')), undefined);
+  for (const k of Object.keys(POS_NAMED_PATTERNS)) {
+    assert.equal(fixQuestions(empty(), k, NOW).length, 5, k);
+    assert.ok(POS_FIX_GUIDE[k], `${k} has a guide`);
+  }
+  for (const k of ['adjective>adverb', 'adverb>adjective', 'noun>verb', 'verb>noun', 'noun>adjective', 'adjective>noun']) assert.ok(POS_FIX_GUIDE[k].avoid, k);
+});
+
+test('lab: your own mistakes first = recent wrong questions, newest first, each once', () => {
+  let fp = empty();
+  fp = wrongAt(fp, 'pv-2-p3', 'effectively', '2026-09-20T10:00:00');
+  fp = wrongAt(fp, 'pv-2-p1', 'qualifiedly', '2026-09-21T10:00:00');
+  fp = wrongAt(fp, 'pv-2-p3', 'effectively', '2026-09-22T10:00:00');
+  assert.deepEqual(ownMistakeQuestions(fp, NOW).map((q) => q.id), ['pv-2-p3', 'pv-2-p1']);
+  assert.equal(ownMistakeQuestions(fp, new Date('2026-11-01T00:00:00')).length, 0, 'only the last 14 days');
+});
+
+test('final challenge: adaptive level, one item per pick, result stored and shown in unit status', () => {
+  assert.equal(FINAL_PARTS.length, 10);
+  assert.equal(finalStartLevel(empty()), 2, 'no data → middle level');
+  const strong = { ...empty(), concepts: { 'pos-noun': { attempts: 40, correct: 38, lastAt: NOW.toISOString() } } };
+  assert.equal(finalStartLevel(strong), 3);
+  assert.equal(nextFinalLevel(3, true), 3);
+  assert.equal(nextFinalLevel(1, false), 1);
+  assert.equal(nextFinalLevel(2, false), 1);
+  const used = new Set<string>();
+  const a = pickFinalItem(FINAL_PARTS[0].items, 3, used, 's')!;
+  assert.equal(a.level, 3);
+  used.add(a.id);
+  const b = pickFinalItem(FINAL_PARTS[0].items, 3, used, 's')!;
+  assert.notEqual(a.id, b.id);
+  assert.equal(b.level, 2, 'closest remaining level');
+  const final = unit('final');
+  assert.equal(unitStatus(pos, final, empty(), NOW), 'new');
+  let fp = recordFinal(empty(), { score: 60, level: 2, parts: { A: { correct: 2, total: 3 } } }, NOW);
+  assert.equal(unitStatus(pos, final, fp, NOW), 'review');
+  fp = recordFinal(fp, { score: 87, level: 3, parts: { A: { correct: 3, total: 3 } } }, NOW);
+  assert.deepEqual([fp.posFinal!.best, fp.posFinal!.attempts], [87, 2]);
+  assert.equal(unitStatus(pos, final, fp, NOW), 'mastered');
+  assert.equal(unitProgress(pos, final, fp), 87);
+  assert.match(posSummaryLines(fp, NOW).join('\n'), /Final Mastery Challenge: last 87% \(best 87%, 2 attempts, level reached 3\/3/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -352,6 +421,12 @@ asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes droppe
   assert.match(seen!.system!, /Bangla/);
   assert.equal((seen!.messages[0] as { content: string }).content.startsWith('<student>'), true);
   await assert.rejects(assessFoundationSentence(fake('not json'), exercise, 'My mother goes to work.', 'en'), (e: { code?: string }) => e.code === 'unavailable');
+  // Follow-up practice: kept only when well-formed and something was wrong.
+  const withPractice = (verdict: string, sentence: string) => JSON.stringify({ verdict, usesTarget: true, corrected: 'He goes.', feedback: 'ok', fixes: [], practice: { sentence, answers: ['lives'] } });
+  assert.deepEqual((await assessFoundationSentence(fake(withPractice('needs-work', 'My sister ___ in Sylhet.')), exercise, 'He go.', 'bn')).practice, { sentence: 'My sister ___ in Sylhet.', answers: ['lives'] });
+  assert.equal((await assessFoundationSentence(fake(withPractice('needs-work', 'No gap here.')), exercise, 'He go.', 'bn')).practice, null);
+  assert.equal((await assessFoundationSentence(fake(withPractice('correct', 'My sister ___ in Sylhet.')), exercise, 'He goes.', 'bn')).practice, null);
+  assert.match(seen!.system!, /student's own words/);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

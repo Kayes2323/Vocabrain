@@ -361,6 +361,7 @@ export function ExerciseView({
                       <span lang="en">{mino.feedback.corrected}</span>
                     </p>
                   )}
+                  {mino.feedback.practice && <MinoPractice practice={mino.feedback.practice} />}
                 </>
               )}
               {mino.status === 'failed' && (
@@ -433,6 +434,41 @@ export function ExerciseView({
           </Button>
         )}
       </div>
+    </div>
+  );
+}
+
+/** Mino's one-question follow-up on the same point (checked here, not graded). */
+function MinoPractice({ practice }: { practice: { sentence: string; answers: string[] } }) {
+  const { t } = useLocale();
+  const [value, setValue] = useState('');
+  const [result, setResult] = useState<boolean | null>(null);
+  const [before, after] = practice.sentence.split('___');
+  return (
+    <div className="space-y-2 rounded-lg border bg-card p-3">
+      <p className="font-semibold">{t('foundation.lesson.minoPractice')}</p>
+      <form
+        className="flex flex-wrap items-center gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (value.trim()) setResult(practice.answers.some((a) => normaliseAnswer(a) === normaliseAnswer(value)));
+        }}
+      >
+        <span lang="en" className="flex flex-wrap items-center gap-1.5">
+          {before}
+          <Input value={value} onChange={(e) => { setValue(e.target.value); setResult(null); }} aria-label={t('foundation.lesson.typeHere')} lang="en" className="h-9 w-32" autoCapitalize="off" autoCorrect="off" spellCheck={false} />
+          {after}
+        </span>
+        <Button type="submit" size="sm" variant="outline" disabled={!value.trim()}>
+          {t('foundation.lesson.check')}
+        </Button>
+      </form>
+      {result !== null && (
+        <p className={cn('flex items-center gap-1.5', result ? 'text-success' : 'text-foreground')}>
+          {result ? <Check className="size-4" aria-hidden /> : <X className="size-4 text-destructive" aria-hidden />}
+          {result ? t('foundation.lesson.minoPracticeRight') : t('foundation.lesson.minoPracticeAnswer', { answer: practice.answers[0] })}
+        </p>
+      )}
     </div>
   );
 }

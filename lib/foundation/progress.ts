@@ -4,6 +4,7 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
+import { CONCEPT_PATTERN, POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { expectedAnswer, posPairs } from './grade';
 import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module, Pos, Unit } from './model';
 
@@ -213,13 +214,14 @@ export function recordAnswer(fp: FoundationProgress, e: AnswerEvent): Foundation
       source: e.source,
       questionId: ex.id,
       questionType: ex.type,
-      prompt: (ex.sentence ?? ex.prompt.en).slice(0, 160),
+      prompt: (ex.sentence ?? (ex.type === 'spot' ? ex.words.join(' ') : ex.prompt.en)).slice(0, 160),
       answer: e.answer.slice(0, 160),
       correctAnswer: expectedAnswer(ex).slice(0, 160),
       tag: ex.tag,
       ...(c ? { concept: c } : {}),
       ...(pairs.length ? { pos: pairs } : {}),
       ...(ex.family ? { family: ex.family } : {}),
+      ...(exercisePattern(ex) ? { pattern: exercisePattern(ex) } : {}),
       attempt: e.attempt,
     };
     next = {
@@ -663,10 +665,23 @@ export const FIX_QUESTIONS = 5;
 
 export const pairKey = (expected: string, chosen: string) => `${expected}>${chosen}`;
 
+/** The named pattern a question checks: its own, else its concept's (tagging never has one). */
+export function exercisePattern(ex: Exercise): string | undefined {
+  if (ex.pattern) return ex.pattern;
+  if (ex.type === 'tag' || ex.type === 'write') return undefined;
+  return ex.concept ? CONCEPT_PATTERN[ex.concept] : undefined;
+}
+
+export const isNamedPattern = (key: string) => key in POS_NAMED_PATTERNS;
+
 export interface PosPattern {
+  /** "expected>chosen" for a job pair, or a named pattern id ("sv-agreement"). */
   pair: string;
-  expected: Pos;
-  chosen: Pos;
+  /** Job pairs only. */
+  expected?: Pos;
+  chosen?: Pos;
+  /** Named patterns only: the unit that teaches it. */
+  unit?: string;
   count: number;
   /** The latest mistake with this pair (the student's own sentence). */
   latest: FoundationMistake;
@@ -679,28 +694,28 @@ export interface PosPattern {
  */
 export function posPatterns(fp: FoundationProgress, now = new Date()): PosPattern[] {
   const since = now.getTime() - REVIEW_WINDOW_DAYS * 86_400_000;
-  const withPairs = fp.mistakes.filter((m) => m.pos?.length);
+  const keysOf = (m: FoundationMistake) => [...(m.pos ?? []).map((p) => pairKey(p.expected, p.chosen)), ...(m.pattern && isNamedPattern(m.pattern) ? [m.pattern] : [])];
+  const withKeys = fp.mistakes.filter((m) => keysOf(m).length);
   const found = new Map<string, { count: number; latest: FoundationMistake }>();
-  for (const m of withPairs) {
+  for (const m of withKeys) {
     const t = new Date(m.at).getTime();
     if (t < since) continue;
-    for (const p of m.pos!) {
-      const key = pairKey(p.expected, p.chosen);
+    for (const key of new Set(keysOf(m))) {
       const fixedAt = fp.posFixes?.[key];
       if (fixedAt && t <= new Date(fixedAt).getTime()) continue;
       const cur = found.get(key);
       found.set(key, { count: (cur?.count ?? 0) + 1, latest: m });
     }
   }
-  // Two in a row (the last two mistakes that had a pair) also count.
-  const lastTwo = withPairs.slice(-2);
-  const inRow =
-    lastTwo.length === 2 ? lastTwo[0].pos!.map((p) => pairKey(p.expected, p.chosen)).filter((k) => lastTwo[1].pos!.some((q) => pairKey(q.expected, q.chosen) === k)) : [];
+  // Two in a row (the last two mistakes that had a pattern) also count.
+  const lastTwo = withKeys.slice(-2);
+  const inRow = lastTwo.length === 2 ? keysOf(lastTwo[0]).filter((k) => keysOf(lastTwo[1]).includes(k)) : [];
   return [...found.entries()]
     .filter(([key, v]) => v.count >= PATTERN_THRESHOLD || (inRow.includes(key) && v.count >= 2))
     // Only confusions a full 5-question fix can practise (e.g. not jobs without a unit).
     .filter(([key]) => fixQuestions(fp, key, now).length >= FIX_QUESTIONS)
-    .map(([pair, v]) => {
+    .map(([pair, v]): PosPattern => {
+      if (isNamedPattern(pair)) return { pair, unit: POS_NAMED_PATTERNS[pair].unit, count: v.count, latest: v.latest };
       const [expected, chosen] = pair.split('>') as [Pos, Pos];
       return { pair, expected, chosen, count: v.count, latest: v.latest };
     })
@@ -716,8 +731,12 @@ const posExercises = () =>
  * contrast, then any question on the expected job.
  */
 export function fixQuestions(fp: FoundationProgress, pair: string, now = new Date()): Exercise[] {
-  const [expected, chosen] = pair.split('>');
   const pool = posExercises();
+  if (isNamedPattern(pair)) {
+    const own = pool.filter((e) => exercisePattern(e) === pair);
+    return shuffle(own, `${pair}:${today(now)}`).slice(0, FIX_QUESTIONS);
+  }
+  const [expected, chosen] = pair.split('>');
   const exact = pool.filter((e) => e.pos === expected && Object.values(e.wrongPos ?? {}).includes(chosen as Pos));
   const tagged = pool.filter((e) => e.type === 'tag' && e.tokens.some((t) => t.pos === expected) && e.tokens.some((t) => t.pos === chosen));
   const reverse = pool.filter((e) => e.pos === chosen && Object.values(e.wrongPos ?? {}).includes(expected as Pos));
@@ -753,6 +772,7 @@ export const unitLessons = (module: Module, unit: Unit) => module.lessons.filter
 export const unitLessonTotal = (module: Module, unit: Unit) => unitLessons(module, unit).length + (unit.planned?.length ?? 0);
 export const unitLessonsDone = (module: Module, unit: Unit, fp: FoundationProgress) => unitLessons(module, unit).filter((l) => fp.lessons[l.id]).length;
 export function unitProgress(module: Module, unit: Unit, fp: FoundationProgress): number {
+  if (unit.challenge) return fp.posFinal?.best ?? 0;
   const total = unitLessonTotal(module, unit);
   return total ? Math.round((unitLessonsDone(module, unit, fp) / total) * 100) : 0;
 }
@@ -763,12 +783,13 @@ export function unitProgress(module: Module, unit: Unit, fp: FoundationProgress)
  * mastered / practising come from the concept's four mastery checks.
  */
 export function unitStatus(module: Module, unit: Unit, fp: FoundationProgress, now = new Date()): UnitStatus {
+  if (unit.challenge) return !fp.posFinal ? 'new' : fp.posFinal.best >= PASS_SCORE ? 'mastered' : 'review';
   const lessons = unitLessons(module, unit);
   const started = lessons.some((l) => fp.lessons[l.id] || fp.inProgress?.lessonId === l.id);
   const stats = unit.concept ? fp.concepts[unit.concept] : undefined;
   if (!started && !stats) return 'new';
   const patterns = posPatterns(fp, now);
-  const inPattern = unit.pos ? patterns.some((p) => p.expected === unit.pos || p.chosen === unit.pos) : false;
+  const inPattern = patterns.some((p) => (unit.pos && (p.expected === unit.pos || p.chosen === unit.pos)) || p.unit === unit.id);
   const overdue = stats?.srs && new Date(stats.srs.dueAt).getTime() < now.getTime() - 3 * 86_400_000;
   const failedReview = stats?.lastReviewScore !== undefined && stats.lastReviewScore < PASS_SCORE;
   const needsReview = unit.concept ? reviewDue(fp, now).some((r) => r.concept === unit.concept) : false;
@@ -817,13 +838,73 @@ export function posSummaryLines(fp: FoundationProgress, now = new Date()): strin
   });
   lines.push(`- Parts of Speech: ${started.length}/${module.units.length} units started; ${unitText.join('; ')}.`);
   for (const p of posPatterns(fp, now).slice(0, 3)) {
+    const what = p.expected && p.chosen ? `chose ${withArticle(p.chosen)} where ${withArticle(p.expected)} was needed` : `${POS_NAMED_PATTERNS[p.pair].title.en} mistakes`;
     lines.push(
-      `- Open Parts of Speech pattern: chose ${withArticle(p.chosen)} where ${withArticle(p.expected)} was needed ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
+      `- Open Parts of Speech pattern: ${what} ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
     );
+  }
+  if (fp.posFinal) {
+    const f = fp.posFinal;
+    const weakParts = Object.entries(f.parts).filter(([, v]) => v.total && v.correct / v.total < 0.67).map(([k]) => k);
+    lines.push(`- Final Mastery Challenge: last ${f.score}% (best ${f.best}%, ${f.attempts} attempt${f.attempts > 1 ? 's' : ''}, level reached ${f.level}/3, ${f.at.slice(0, 10)})${weakParts.length ? `; weaker parts: ${weakParts.join(', ')}` : ''}.`);
   }
   const since = now.getTime() - 30 * 86_400_000;
   const families = new Map<string, number>();
   for (const m of fp.mistakes) if (m.family && new Date(m.at).getTime() >= since) families.set(m.family, (families.get(m.family) ?? 0) + 1);
   if (families.size) lines.push(`- Word families missed (30 days): ${[...families.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([f, n]) => `${f} ×${n}`).join(', ')}.`);
   return lines;
+}
+
+// ---------------------------------------------------------------- final mastery challenge
+
+export const FINAL_PER_PART = 3;
+export type FinalLevel = 1 | 2 | 3;
+
+/** Where the adaptive challenge starts: from the student's Parts of Speech accuracy so far. */
+export function finalStartLevel(fp: FoundationProgress): FinalLevel {
+  const module = MODULES.find((m) => m.units);
+  const stats = (module?.units ?? []).flatMap((u) => (u.concept && fp.concepts[u.concept] ? [fp.concepts[u.concept]] : []));
+  const attempts = stats.reduce((n, s) => n + s.attempts, 0);
+  if (attempts < 20) return 2;
+  const acc = stats.reduce((n, s) => n + s.correct, 0) / attempts;
+  return acc >= 0.85 ? 3 : acc < 0.6 ? 1 : 2;
+}
+
+/** Right → one level harder, wrong → one level easier. */
+export const nextFinalLevel = (level: FinalLevel, correct: boolean): FinalLevel => (correct ? Math.min(3, level + 1) : Math.max(1, level - 1)) as FinalLevel;
+
+/** The unused item closest to the current level (easier first on a tie); order varies by seed. */
+export function pickFinalItem<T extends { id: string; level: FinalLevel }>(items: T[], level: FinalLevel, used: Set<string>, seed: string): T | undefined {
+  const free = shuffle(items.filter((i) => !used.has(i.id)), seed);
+  return free.sort((a, b) => Math.abs(a.level - level) - Math.abs(b.level - level) || a.level - b.level)[0];
+}
+
+export function recordFinal(
+  fp: FoundationProgress,
+  r: { score: number; level: FinalLevel; parts: Record<string, { correct: number; total: number }> },
+  now = new Date(),
+): FoundationProgress {
+  const prev = fp.posFinal;
+  return {
+    ...fp,
+    days: bumpDay(fp, now, { quizzes: 1 }),
+    posFinal: { at: now.toISOString(), score: r.score, best: Math.max(prev?.best ?? 0, r.score), attempts: (prev?.attempts ?? 0) + 1, level: r.level, parts: r.parts },
+  };
+}
+
+// ---------------------------------------------------------------- lab: your own mistakes first
+
+export const OWN_MISTAKES_MAX = 8;
+
+/** Questions the student got wrong in Parts of Speech in the last 14 days (newest first, each once). */
+export function ownMistakeQuestions(fp: FoundationProgress, now = new Date()): Exercise[] {
+  const since = now.getTime() - REVIEW_WINDOW_DAYS * 86_400_000;
+  const pool = new Map(posExercises().map((e) => [e.id, e]));
+  const out: Exercise[] = [];
+  for (const m of [...fp.mistakes].reverse()) {
+    if (out.length >= OWN_MISTAKES_MAX || new Date(m.at).getTime() < since) break;
+    const e = pool.get(m.questionId);
+    if (e && !out.includes(e)) out.push(e);
+  }
+  return out;
 }

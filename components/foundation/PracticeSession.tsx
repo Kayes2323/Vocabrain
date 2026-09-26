@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  expectedAnswer, findLesson, fixQuestions, getConcept, nextAction, PASS_SCORE, POS_PAIR_RULES, quizQuestions, recentConceptMistakes, recordAnswer, recordFix,
-  recordQuiz, recordReview, reviewQuestions, unitCheckQuestions, type Exercise, type Module, type Unit,
+  expectedAnswer, findLesson, fixQuestions, getConcept, isNamedPattern, nextAction, ownMistakeQuestions, PASS_SCORE, POS_FIX_GUIDE, POS_NAMED_PATTERNS, posPatterns,
+  quizQuestions, recentConceptMistakes, recordAnswer, recordFix, recordQuiz, recordReview, reviewQuestions, unitCheckQuestions, type Exercise, type Module, type Unit,
 } from '@/lib/foundation';
 import type { FoundationProgress } from '@/lib/models';
 import { ExerciseView, type ExerciseResult } from './ExerciseView';
@@ -18,7 +18,8 @@ type Mode =
   | { kind: 'review'; concept: string }
   | { kind: 'quiz'; module: Module }
   | { kind: 'fix'; pair: string }
-  | { kind: 'unit'; module: Module; unit: Unit };
+  | { kind: 'unit'; module: Module; unit: Unit }
+  | { kind: 'mine' };
 
 /**
  * A short practice session. Review: 5-minute explanation of one concept, then
@@ -37,14 +38,20 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
     if (mode.kind === 'review') return reviewQuestions(data, mode.concept);
     if (mode.kind === 'fix') return fixQuestions(data, mode.pair);
     if (mode.kind === 'unit') return unitCheckQuestions(data, mode.module, mode.unit);
+    if (mode.kind === 'mine') return ownMistakeQuestions(data);
     return quizQuestions(data, mode.module);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round]);
   const source =
-    mode.kind === 'review' ? `review:${mode.concept}` : mode.kind === 'fix' ? `fix:${mode.pair}` : mode.kind === 'unit' ? `unit:${mode.unit.id}` : `quiz:${mode.module.id}`;
-  const [fixExpected, fixChosen] = mode.kind === 'fix' ? mode.pair.split('>') : ['', ''];
+    mode.kind === 'review' ? `review:${mode.concept}` : mode.kind === 'fix' ? `fix:${mode.pair}` : mode.kind === 'unit' ? `unit:${mode.unit.id}` : mode.kind === 'mine' ? 'lab:mine' : `quiz:${mode.module.id}`;
+  const named = mode.kind === 'fix' && isNamedPattern(mode.pair);
+  const namedTitle = named && mode.kind === 'fix' ? text(POS_NAMED_PATTERNS[mode.pair].title) : '';
+  const guide = mode.kind === 'fix' ? POS_FIX_GUIDE[mode.pair] : undefined;
+  // The student's own latest mistake with this pattern, captured before the session changes it.
+  const [ownExample] = useState(() => (mode.kind === 'fix' ? posPatterns(fp).find((p) => p.pair === mode.pair)?.latest : undefined));
+  const [fixExpected, fixChosen] = mode.kind === 'fix' && !named ? mode.pair.split('>') : ['', ''];
   const pairNames = { expected: fixExpected ? t(`foundation.pos.${fixExpected}`) : '', chosen: fixChosen ? t(`foundation.pos.${fixChosen}`) : '' };
-  const fixRule = mode.kind === 'fix' ? POS_PAIR_RULES[mode.pair] : undefined;
+  const fixRule = guide?.rule;
   const concept = mode.kind === 'review' ? getConcept(mode.concept) : undefined;
   const conceptLesson = concept ? findLesson(concept.lessonId)?.lesson : undefined;
   const conceptStep = conceptLesson?.steps.find((s) => s.kind === 'concept');
@@ -55,7 +62,7 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
   })();
   const recent = mode.kind === 'review' ? recentConceptMistakes(fp, mode.concept).length : 0;
 
-  const [phase, setPhase] = useState<'learn' | 'questions' | 'result'>(mode.kind === 'quiz' || mode.kind === 'unit' ? 'questions' : 'learn');
+  const [phase, setPhase] = useState<'learn' | 'questions' | 'result'>(mode.kind === 'quiz' || mode.kind === 'unit' || mode.kind === 'mine' ? 'questions' : 'learn');
   const [index, setIndex] = useState(0);
   const results = useRef<Record<string, ExerciseResult>>({});
   const [score, setScore] = useState(0);
@@ -64,12 +71,22 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
     mode.kind === 'review'
       ? t('foundation.review.title', { topic: text(concept!.title) })
       : mode.kind === 'fix'
-        ? t('foundation.fix.title', pairNames)
+        ? named
+          ? t('foundation.fix.titleNamed', { name: namedTitle })
+          : t('foundation.fix.title', pairNames)
+        : mode.kind === 'mine'
+          ? t('foundation.units.mineSession')
         : mode.kind === 'unit'
           ? t('foundation.units.checkTitle', { unit: text(mode.unit.title) })
           : t('foundation.quiz.title', { module: text(mode.module.title) });
   const exitHref =
-    mode.kind === 'fix' ? '/ielts/foundation/parts-of-speech' : mode.kind === 'unit' ? `/ielts/foundation/${mode.module.id}/${mode.unit.id}` : '/ielts/foundation';
+    mode.kind === 'fix'
+      ? '/ielts/foundation/parts-of-speech'
+      : mode.kind === 'unit'
+        ? `/ielts/foundation/${mode.module.id}/${mode.unit.id}`
+        : mode.kind === 'mine'
+          ? '/ielts/foundation/parts-of-speech/lab'
+          : '/ielts/foundation';
 
   const finish = () => {
     const graded = questions.filter((q) => results.current[q.id]?.correct !== null);
@@ -90,7 +107,10 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <Header title={title} exitHref={exitHref} progress={0} />
-        <p className="text-sm text-muted-foreground">{t('foundation.fix.why', pairNames)}</p>
+        <div className="space-y-1">
+          <p className="font-semibold">{t('foundation.fix.together')}</p>
+          <p className="text-sm text-muted-foreground">{named ? t('foundation.fix.whyNamed', { name: namedTitle }) : t('foundation.fix.why', pairNames)}</p>
+        </div>
         {fixRule && (
           <Panel className="space-y-2">
             <p className="font-semibold">{t('foundation.fix.rule')}</p>
@@ -158,6 +178,28 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
           <p className="text-lg font-semibold tabular-nums">{score}%</p>
           <p className="text-sm text-muted-foreground">{t(passed ? (mode.kind === 'fix' ? 'foundation.fix.passedBody' : mode.kind === 'unit' ? 'foundation.units.checkPassedBody' : 'foundation.review.passedBody') : 'foundation.review.notYetBody')}</p>
         </Panel>
+        {mode.kind === 'fix' && guide && (
+          <Panel className="space-y-4">
+            <p className="font-semibold">{t('foundation.fix.summaryTitle')}</p>
+            <dl className="space-y-3 text-[15px]">
+              <div className="space-y-0.5">
+                <dt className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t('foundation.fix.confusing')}</dt>
+                <dd>{named ? namedTitle : t('foundation.fix.confusingPair', pairNames)}</dd>
+                {ownExample && (
+                  <dd className="text-sm text-muted-foreground" lang="en">
+                    {ownExample.prompt} · {t('foundation.fix.yourSentence', { answer: ownExample.answer, right: ownExample.correctAnswer })}
+                  </dd>
+                )}
+              </div>
+              {(['whyHappens', 'recognise', 'avoid'] as const).map((k) => (
+                <div key={k} className="space-y-0.5">
+                  <dt className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t(`foundation.fix.${k}`)}</dt>
+                  <dd className="leading-7">{text(guide[k === 'whyHappens' ? 'why' : k])}</dd>
+                </div>
+              ))}
+            </dl>
+          </Panel>
+        )}
         {missed.length > 0 && (
           <Panel className="space-y-3">
             <p className="font-semibold">{t('foundation.lesson.reviewMistakes')}</p>
@@ -177,7 +219,7 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
         <div className="flex flex-col gap-2 sm:flex-row">
           {passed ? (
             <Button asChild size="lg" className="flex-1">
-              <Link href={mode.kind === 'fix' || mode.kind === 'unit' ? exitHref : action?.kind === 'lesson' || action?.kind === 'resume' ? `/ielts/foundation/lesson/${action.lessonId}` : exitHref}>
+              <Link href={mode.kind === 'fix' || mode.kind === 'unit' || mode.kind === 'mine' ? exitHref : action?.kind === 'lesson' || action?.kind === 'resume' ? `/ielts/foundation/lesson/${action.lessonId}` : exitHref}>
                 {t('foundation.action.continueJourney')} <ArrowRight />
               </Link>
             </Button>
@@ -189,7 +231,7 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
                 results.current = {};
                 setIndex(0);
                 setRound((r) => r + 1);
-                setPhase(mode.kind === 'quiz' || mode.kind === 'unit' ? 'questions' : 'learn');
+                setPhase(mode.kind === 'quiz' || mode.kind === 'unit' || mode.kind === 'mine' ? 'questions' : 'learn');
               }}
             >
               <RotateCcw /> {t('foundation.review.retest')}

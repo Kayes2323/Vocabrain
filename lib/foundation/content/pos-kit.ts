@@ -2,12 +2,12 @@
 // answer needs (pos) and the job each wrong answer does (wrongPos), so mistakes
 // become "expected → chosen" pairs.
 import type {
-  ChoiceExercise, CorrectExercise, ErrorTag, GapExercise, L, LessonStep, Pos, SpotExercise, TagExercise, WriteExercise,
+  ChoiceExercise, CorrectExercise, ErrorTag, GapExercise, L, LessonStep, OrderExercise, Pos, SpotExercise, TagExercise, WriteExercise,
 } from '../model';
 
 export const l = (en: string, bn: string): L => ({ en, bn });
 
-type Common = { explanation: L; tag?: ErrorTag; pos?: Pos; wrongPos?: Record<string, Pos>; family?: string };
+type Common = { explanation: L; tag?: ErrorTag; pos?: Pos; wrongPos?: Record<string, Pos>; family?: string; pattern?: string };
 
 export const choice = (id: string, concept: string, o: Common & { prompt: L; sentence?: string; options: string[]; answer: string; why?: Record<string, L> }): ChoiceExercise => ({
   id, type: 'choice', concept, tag: o.tag ?? 'part-of-speech', ...o,
@@ -60,6 +60,11 @@ export const identify = (o: { sentence: string; choices: Pos[]; pattern: L }): L
 export const write = (id: string, concept: string, o: { prompt: L; model: string; task: string; target: L; checklist: L[]; explanation: L; tag?: ErrorTag }): WriteExercise => ({
   id, type: 'write', concept, tag: o.tag ?? 'part-of-speech', prompt: o.prompt, model: o.model, checklist: o.checklist, explanation: o.explanation,
   mino: { task: o.task, target: o.target },
+});
+
+/** Put the words in order (sentence building). */
+export const order = (id: string, concept: string, o: Common & { prompt: L; answer: string; alsoAccepted?: string[] }): OrderExercise => ({
+  id, type: 'order', concept, tag: o.tag ?? 'sentence-structure', ...o,
 });
 
 export const JOBS4: Pos[] = ['noun', 'verb', 'adjective', 'adverb'];

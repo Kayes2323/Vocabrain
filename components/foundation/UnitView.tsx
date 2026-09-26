@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  canUnitCheck, getModule, lessonOutcome, posPatterns, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
+  canUnitCheck, getModule, lessonOutcome, ownMistakeQuestions, POS_NAMED_PATTERNS, posPatterns, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
 } from '@/lib/foundation';
+import { MasteryChallenge } from './MasteryChallenge';
 import { STATUS_TONE, UnitMark, unitPattern } from './UnitsDashboard';
 import { useFoundation, useText } from './useFoundation';
 
@@ -18,6 +19,7 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
   const { fp } = useFoundation();
   const { intercept, dialog } = useGuideReminder();
   if (!fp) return <ScreenSkeleton />;
+  if (unit.challenge) return <MasteryChallenge module={module} unit={unit} fp={fp} />;
 
   const status = unitStatus(module, unit, fp);
   const lessons = unitLessons(module, unit);
@@ -26,6 +28,7 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
   const continues = unit.continues ? getModule(unit.continues.moduleId) : undefined;
   const conceptReview = status === 'review' && !pattern && unit.concept;
   const checkable = canUnitCheck(fp, module, unit);
+  const mine = unit.id === 'lab' ? ownMistakeQuestions(fp).length : 0;
 
   return (
     <div className="space-y-8">
@@ -42,7 +45,11 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
 
       {pattern ? (
         <Panel className="flex flex-col gap-4 border-warning/30 bg-warning-soft sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[15px]">{t('foundation.units.patternHere', { chosen: t(`foundation.pos.${pattern.chosen}`), expected: t(`foundation.pos.${pattern.expected}`), n: pattern.count })}</p>
+          <p className="text-[15px]">
+            {pattern.expected && pattern.chosen
+              ? t('foundation.units.patternHere', { chosen: t(`foundation.pos.${pattern.chosen}`), expected: t(`foundation.pos.${pattern.expected}`), n: pattern.count })
+              : t('foundation.units.patternHereNamed', { name: text(POS_NAMED_PATTERNS[pattern.pair].title), n: pattern.count })}
+          </p>
           <Button asChild size="lg" className="h-12 shrink-0">
             <Link href={`/ielts/foundation/fix/${pattern.pair}`}>
               {t('foundation.units.fixCta')} <ArrowRight />
@@ -56,6 +63,20 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
           </Link>
         </Button>
       ) : null}
+
+      {mine >= 3 && (
+        <Panel variant="brand" className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-1">
+            <p className="font-semibold">{t('foundation.units.mineTitle')}</p>
+            <p className="text-sm text-muted-foreground">{t('foundation.units.mineBody', { n: mine })}</p>
+          </div>
+          <Button asChild size="lg" className="h-12 shrink-0">
+            <Link href={`/ielts/foundation/${module.id}/${unit.id}/mine`}>
+              {t('foundation.units.mineCta', { n: mine })} <ArrowRight />
+            </Link>
+          </Button>
+        </Panel>
+      )}
 
       <Section title={t('foundation.units.unitLessons')} variant="label">
         <RowGroup>

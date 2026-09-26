@@ -1,4 +1,6 @@
 import { CONCEPTS, MODULES } from './content';
+import { FINAL_PARTS } from './content/pos-final';
+import { POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { DIAGNOSTIC_ITEMS } from './diagnostic';
 import { canonicalAnswer, gradeExercise, normaliseAnswer, spotCorrected } from './grade';
 import type { Exercise, L, Lesson } from './model';
@@ -48,12 +50,13 @@ function checkExercise(ex: Exercise, where: string, errors: string[]) {
 /** Every lesson answers: what (concept), why/where (IELTS use), how (examples/practice), can I (practice). */
 export function validateLesson(lesson: Lesson, errors: string[]) {
   const kinds = lesson.steps.map((s) => s.kind);
-  const required = lesson.kind === 'test' ? (['practice'] as const) : (['concept', 'ielts', 'practice', 'recall'] as const);
+  const required = lesson.kind === 'test' ? (['practice'] as const) : lesson.format === 'lab' ? (['hook', 'mistakes', 'practice', 'recall'] as const) : (['concept', 'ielts', 'practice', 'recall'] as const);
   for (const k of required) if (!kinds.includes(k)) errors.push(`${lesson.id}: missing ${k} step`);
   if (lesson.concept && !CONCEPTS.some((c) => c.id === lesson.concept)) errors.push(`${lesson.id}: unknown concept ${lesson.concept}`);
   if (!filled(lesson.title) || !filled(lesson.why)) errors.push(`${lesson.id}: title/why need en and bn`);
   if (lesson.minutes < 3 || lesson.minutes > 15) errors.push(`${lesson.id}: lessons are 3–15 minutes`);
   if (lesson.format === 'v2') validateV2(lesson, errors);
+  if (lesson.format === 'lab') validateLab(lesson, errors);
   for (const step of lesson.steps) {
     if (!filled(step.title)) errors.push(`${lesson.id}: step title needs en and bn`);
     if (step.kind === 'ielts' && step.uses.length === 0) errors.push(`${lesson.id}: needs at least one IELTS use`);
@@ -62,6 +65,23 @@ export function validateLesson(lesson: Lesson, errors: string[]) {
       for (const ex of step.exercises) checkExercise(ex, lesson.id, errors);
     }
   }
+}
+
+/** A repair station: spot-and-fix items each followed by a "why", then targeted practice without options. */
+function validateLab(lesson: Lesson, errors: string[]) {
+  const at = (m: string) => errors.push(`${lesson.id} (lab): ${m}`);
+  if (lesson.steps[0]?.kind !== 'hook') at('must start with the hook');
+  const practice = lesson.steps.filter((s): s is Extract<Lesson['steps'][number], { kind: 'practice' }> => s.kind === 'practice');
+  const repair = practice.filter((s) => (s.mode ?? 'practice') === 'practice').flatMap((s) => s.exercises);
+  const spots = repair.filter((e) => e.type === 'spot');
+  if (spots.length < 3) at('needs 3+ spot-and-fix repairs');
+  repair.forEach((e, i) => {
+    if (e.type === 'spot' && repair[i + 1]?.type !== 'choice') at(`${e.id}: every repair is followed by a "why" question`);
+    if (e.type === 'spot' && e.fixOptions) at(`${e.id}: the fix is typed (free recall)`);
+  });
+  const recall = practice.filter((s) => s.mode === 'recall').flatMap((s) => s.exercises);
+  if (recall.length < 3) at('needs 3+ targeted practice questions');
+  if (recall.some((e) => e.type === 'choice' || e.type === 'order' || e.type === 'tag' || (e.type === 'spot' && e.fixOptions))) at('targeted practice has no options');
 }
 
 /** The problem-first format: every stage must be present and well-formed. */
@@ -119,6 +139,20 @@ export function validateFoundation(): string[] {
     const pool = MODULES.flatMap((m) => m.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : []))));
     if (pool.filter((e) => e.concept === c.id && e.type !== 'write').length < 5) errors.push(`concept ${c.id}: needs 5+ auto-graded questions for review`);
   }
+  for (const part of FINAL_PARTS) {
+    if (!filled(part.title) || !filled(part.intro)) errors.push(`final ${part.id}: title/intro need en and bn`);
+    if (part.items.length < 4) errors.push(`final ${part.id}: needs 4+ items (3 are served adaptively)`);
+    for (const lv of [1, 2, 3]) if (!part.items.some((i) => i.level === lv)) errors.push(`final ${part.id}: needs a level ${lv} item`);
+    for (const item of part.items) {
+      seen(item.id);
+      checkExercise(item, `final ${part.id}`, errors);
+      if (item.type === 'write') errors.push(`final ${item.id}: must be auto-graded`);
+    }
+  }
+  const finalAll = FINAL_PARTS.flatMap((p) => p.items);
+  if (finalAll.filter((e) => e.type === 'gap' || e.type === 'correct' || (e.type === 'spot' && !e.fixOptions)).length < 12) errors.push('final: needs 12+ free-recall items');
+  const allExercises = [...MODULES.flatMap((m) => m.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])))), ...finalAll];
+  for (const e of allExercises) if (e.pattern && !(e.pattern in POS_NAMED_PATTERNS)) errors.push(`${e.id}: unknown pattern ${e.pattern}`);
   for (const item of DIAGNOSTIC_ITEMS) {
     seen(item.id);
     checkExercise(item, 'diagnostic', errors);

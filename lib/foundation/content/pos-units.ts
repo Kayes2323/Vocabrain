@@ -9,10 +9,13 @@ import { posPronounLessons } from './pos-pronoun';
 import { posPrepositionLessons } from './pos-preposition';
 import { posConjunctionLessons } from './pos-conjunction';
 import { posInterjectionLessons } from './pos-interjection';
+import { posIeltsLessonsA } from './pos-ielts-a';
+import { posIeltsLessonsB } from './pos-ielts-b';
+import { posLabLessons } from './pos-lab';
 
 /**
- * Parts of Speech: 12 units in the recommended order. The nine word-job and
- * word-form units are written; the last three show planned lessons as "coming soon".
+ * Parts of Speech: 12 units in the recommended order. Word jobs and word forms
+ * teach; IELTS applies them; the Lab repairs; the Final challenge checks mastery.
  */
 export const POS_UNITS: Unit[] = [
   { id: 'noun', mark: 'N', group: 'jobs', pos: 'noun', concept: 'pos-noun', minutes: 22, title: l('Noun', 'Noun'), tagline: l('Names people, places, things and ideas', 'মানুষ, জায়গা, জিনিস আর idea-র নাম') },
@@ -40,16 +43,13 @@ export const POS_UNITS: Unit[] = [
     id: 'interjection', mark: '!', group: 'jobs', pos: 'interjection', concept: 'pos-interjection', minutes: 5, title: l('Interjection', 'Interjection'), tagline: l('Shows a quick feeling', 'হঠাৎ অনুভূতি প্রকাশ করে'),
   },
   {
-    id: 'ielts', mark: 'IE', group: 'skills', minutes: 20, title: l('Parts of Speech in IELTS', 'IELTS-এ Parts of Speech'), tagline: l('Grammar knowledge into IELTS skill', 'Grammar জ্ঞান থেকে IELTS skill'),
-    planned: [l('Reading: predict the gap', 'Reading: gap আন্দাজ করা'), l('Listening: form and note completion', 'Listening: form আর note completion'), l('Writing: find the problem word', 'Writing: সমস্যার word খোঁজা'), l('Speaking: upgrade your answer', 'Speaking: উত্তর আরো ভালো করা')],
+    id: 'ielts', mark: 'IE', group: 'skills', concept: 'pos-ielts', minutes: 64, title: l('Parts of Speech in IELTS', 'IELTS-এ Parts of Speech'), tagline: l('Grammar knowledge into IELTS skill', 'Grammar জ্ঞান থেকে IELTS skill'),
   },
   {
-    id: 'lab', mark: 'Lb', group: 'together', minutes: 15, title: l('Common Mistakes Lab', 'Common Mistakes Lab'), tagline: l('Repair real sentences', 'আসল sentence ঠিক করো'),
-    planned: [l('Repair stations', 'Repair station'), l('Your own mistakes first', 'আগে তোমার নিজের ভুল')],
+    id: 'lab', mark: 'Lb', group: 'together', concept: 'pos-lab', minutes: 48, title: l('Common Mistakes Lab', 'Common Mistakes Lab'), tagline: l('Repair real sentences', 'আসল sentence ঠিক করো'),
   },
   {
-    id: 'final', mark: '★', group: 'together', minutes: 20, title: l('Final Mastery Challenge', 'Final Mastery Challenge'), tagline: l('30 items, one report', '৩০টা item, একটা report'),
-    planned: [l('Mastery test', 'Mastery test')],
+    id: 'final', mark: '★', group: 'together', challenge: true, minutes: 25, title: l('Final Mastery Challenge', 'Final Mastery Challenge'), tagline: l('30 items, one report', '৩০টা item, একটা report'),
   },
 ];
 
@@ -64,6 +64,9 @@ export const POS_LESSONS: Lesson[] = [
   ...posPrepositionLessons,
   ...posConjunctionLessons,
   ...posInterjectionLessons,
+  ...posIeltsLessonsA,
+  ...posIeltsLessonsB,
+  ...posLabLessons,
 ];
 
 export const POS_CONCEPTS: Concept[] = [
@@ -76,35 +79,10 @@ export const POS_CONCEPTS: Concept[] = [
   { id: 'pos-preposition', title: l('Prepositions', 'Preposition'), lessonId: 'ppp-1', tag: 'preposition' },
   { id: 'pos-conjunction', title: l('Conjunctions', 'Conjunction'), lessonId: 'pcj-1', tag: 'connector' },
   { id: 'pos-interjection', title: l('Interjections', 'Interjection'), lessonId: 'pij-1', tag: 'part-of-speech' },
+  { id: 'pos-ielts', title: l('Parts of Speech in IELTS', 'IELTS-এ Parts of Speech'), lessonId: 'pie-1', tag: 'part-of-speech' },
+  { id: 'pos-lab', title: l('Common mistakes', 'Common ভুল'), lessonId: 'pl-1', tag: 'part-of-speech' },
 ];
 
 /** All planned lessons, so module totals count the whole course. */
 export const POS_PLANNED: L[] = POS_UNITS.flatMap((u) => u.planned ?? []);
 
-/** The short rule shown before a targeted fix, by "expected>chosen" pair. */
-export const POS_PAIR_RULES: Record<string, L> = {
-  'adjective>adverb': l(
-    'Is it describing a noun? Then use an adjective: effective measures, a sharp rise. After be / feel / seem / look, use an adjective too: I feel bad, the results were surprising.',
-    'Word-টা কি একটা noun-কে describe করছে? তাহলে adjective: effective measures, a sharp rise। be / feel / seem / look-এর পরেও adjective: I feel bad, the results were surprising।',
-  ),
-  'adverb>adjective': l(
-    'Is it describing a verb (how, how much)? Then use an adverb: rose sharply, work effectively, increased significantly. Adverbs also describe adjectives: extremely important.',
-    'Word-টা কি একটা verb-কে describe করছে (কীভাবে, কতটা)? তাহলে adverb: rose sharply, work effectively, increased significantly। Adverb adjective-কেও describe করে: extremely important।',
-  ),
-  'noun>verb': l(
-    'After a / the / my / this, and between "the" and "of", you need a noun: the development of, a decision, my improvement.',
-    'a / the / my / this-এর পরে, আর "the" ও "of"-এর মাঝে noun লাগে: the development of, a decision, my improvement।',
-  ),
-  'verb>noun': l(
-    'After to / can / should / must / will, you need a verb: we should protect, to improve, can succeed.',
-    'to / can / should / must / will-এর পরে verb লাগে: we should protect, to improve, can succeed।',
-  ),
-  'noun>adjective': l(
-    'The name of a thing or idea is a noun: the beauty of the city, economic growth → the economy. Adjectives describe; nouns name.',
-    'কোনো জিনিস বা idea-র নাম হলো noun: the beauty of the city, economic growth → the economy। Adjective describe করে; noun নাম দেয়।',
-  ),
-  'adjective>noun': l(
-    'To describe a noun, use the adjective form: a beautiful city, economic benefits, a successful business.',
-    'Noun-কে describe করতে adjective form লাগে: a beautiful city, economic benefits, a successful business।',
-  ),
-};

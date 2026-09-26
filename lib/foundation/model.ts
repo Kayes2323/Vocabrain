@@ -58,6 +58,8 @@ interface ExerciseBase {
   wrongPos?: Record<string, Pos>;
   /** Word family the answer belongs to (e.g. "develop"), so weak families come back in reviews. */
   family?: string;
+  /** A named mistake pattern this question checks (e.g. "sv-agreement", "prep-choice"); see POS_NAMED_PATTERNS. */
+  pattern?: string;
 }
 
 /** Pick one option. Answers are option texts. */
@@ -187,8 +189,9 @@ export interface Lesson {
   skill: FoundationSkill;
   /** 'test' lessons are practice-only (module review tests). Default 'lesson'. */
   kind?: 'lesson' | 'test';
-  /** 'v2' = problem-first format (hook → diagnose → discover → … → personal use). */
-  format?: 'v2';
+  /** 'v2' = problem-first format (hook → diagnose → discover → … → personal use).
+   *  'lab' = a repair station: hook → spot-and-fix + why, pairs → mistakes → targeted practice → remember. */
+  format?: 'v2' | 'lab';
   /** The concept this lesson teaches; its concept step is reused for review. */
   concept?: string;
   /** The unit this lesson belongs to (modules with units, e.g. Parts of Speech). */
@@ -224,6 +227,8 @@ export interface Unit {
   planned?: L[];
   /** Where the topic continues in depth. */
   continues?: { moduleId: string; text: L };
+  /** The unit is a mastery challenge (no lessons): its status comes from the challenge result. */
+  challenge?: boolean;
 }
 
 export interface Module {

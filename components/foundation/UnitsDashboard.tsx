@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader, Panel, ProgressBar, ScreenSkeleton, Section, StatusChip, type Tone } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  moduleProgress, posPatterns, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type PosPattern, type Unit, type UnitStatus,
+  FINAL_PARTS, FINAL_PER_PART, moduleProgress, POS_NAMED_PATTERNS, posPatterns, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type PosPattern, type Unit, type UnitStatus,
 } from '@/lib/foundation';
 import type { FoundationProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
@@ -27,19 +27,30 @@ export function UnitMark({ unit, className }: { unit: Unit; className?: string }
   );
 }
 
-/** The open pattern that belongs to a unit (its job was expected or chosen). */
-export const unitPattern = (unit: Unit, patterns: PosPattern[]) => (unit.pos ? patterns.find((p) => p.expected === unit.pos || p.chosen === unit.pos) : undefined);
+/** The open pattern that belongs to a unit (its job was expected or chosen, or a named pattern it teaches). */
+export const unitPattern = (unit: Unit, patterns: PosPattern[]) =>
+  patterns.find((p) => (unit.pos && (p.expected === unit.pos || p.chosen === unit.pos)) || p.unit === unit.id);
+
+/** "Adverb used where Adjective is needed ×3" or "Subject–verb agreement ×3". */
+export function usePatternLabel() {
+  const { t } = useLocale();
+  const text = useText();
+  return (p: PosPattern) =>
+    p.expected && p.chosen
+      ? t('foundation.units.pattern', { chosen: t(`foundation.pos.${p.chosen}`), expected: t(`foundation.pos.${p.expected}`), n: p.count })
+      : t('foundation.units.patternNamed', { name: text(POS_NAMED_PATTERNS[p.pair].title), n: p.count });
+}
 
 function UnitCard({ module, unit, fp, patterns }: { module: Module; unit: Unit; fp: FoundationProgress; patterns: PosPattern[] }) {
   const { t } = useLocale();
   const text = useText();
   const status = unitStatus(module, unit, fp);
   const total = unitLessonTotal(module, unit);
-  const written = total - (unit.planned?.length ?? 0);
+  const written = unit.challenge ? 1 : total - (unit.planned?.length ?? 0);
   const pct = unitProgress(module, unit, fp);
   const pattern = unitPattern(unit, patterns);
   const cta =
-    written === 0 ? t('foundation.units.soon') : pattern ? t('foundation.units.fix') : status === 'review' || status === 'mastered' ? t('foundation.units.review') : pct > 0 ? t('foundation.units.continue') : t('foundation.units.start');
+    written === 0 ? t('foundation.units.soon') : unit.challenge ? (fp.posFinal ? t('foundation.final.retry') : t('foundation.units.start')) : pattern ? t('foundation.units.fix') : status === 'review' || status === 'mastered' ? t('foundation.units.review') : pct > 0 ? t('foundation.units.continue') : t('foundation.units.start');
   return (
     <Link
       href={`/ielts/foundation/${module.id}/${unit.id}`}
@@ -60,7 +71,11 @@ function UnitCard({ module, unit, fp, patterns }: { module: Module; unit: Unit; 
       <span className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
         <span className="flex items-center gap-1 tabular-nums">
           <Clock className="size-3.5" aria-hidden />
-          {written > 0 ? t('foundation.units.lessons', { n: total, m: unit.minutes }) : t('foundation.units.planned')}
+          {unit.challenge
+            ? t('foundation.units.challengeMeta', { n: FINAL_PARTS.length * FINAL_PER_PART, m: unit.minutes })
+            : written > 0
+              ? t('foundation.units.lessons', { n: total, m: unit.minutes })
+              : t('foundation.units.planned')}
         </span>
         <span className={cn('flex items-center gap-0.5 text-sm font-semibold', written > 0 ? 'text-brand' : 'text-muted-foreground')}>
           {cta} <ChevronRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
@@ -75,6 +90,7 @@ export function UnitsDashboard({ module }: { module: Module }) {
   const { t } = useLocale();
   const text = useText();
   const { fp } = useFoundation();
+  const patternLabel = usePatternLabel();
   if (!fp || !module.units) return <ScreenSkeleton />;
 
   const units = module.units;
@@ -104,7 +120,7 @@ export function UnitsDashboard({ module }: { module: Module }) {
               <Sparkles className="size-3.5" aria-hidden /> {t('foundation.patternTitle')}
             </p>
             <p className="font-semibold">
-              {t('foundation.units.pattern', { chosen: t(`foundation.pos.${top.chosen}`), expected: t(`foundation.pos.${top.expected}`), n: top.count })}
+              {patternLabel(top)}
             </p>
             <p className="text-sm text-muted-foreground" lang="en">
               {top.latest.prompt} · <span className="line-through decoration-destructive/60">{top.latest.answer}</span> → <span className="font-medium text-foreground">{top.latest.correctAnswer}</span>
