@@ -56,6 +56,10 @@ export interface AIRunRequest {
   maxToolRounds?: number;
   /** Ask for a JSON object reply (structured assessment). */
   json?: boolean;
+  /** Per-call timeout; defaults to LIMITS.timeoutMs. */
+  timeoutMs?: number;
+  /** Total time allowed including fallbacks to other models. */
+  budgetMs?: number;
   signal?: AbortSignal;
 }
 

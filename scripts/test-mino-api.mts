@@ -9,7 +9,7 @@ process.env.GEMINI_API_KEY = 'test-key-not-real';
 const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
 const realFetch = globalThis.fetch;
 const geminiBodies: any[] = [];
-let geminiMode: 'tool' | 'busy' | 'retired' | 'weak' = 'tool';
+let geminiMode: 'tool' | 'busy' | 'retired' | 'weak' | 'busyFirst' = 'tool';
 let toolName = 'getVocabulary';
 let toolArgs: Record<string, unknown> | null = null;
 
@@ -35,6 +35,7 @@ globalThis.fetch = (async (input: any, init?: any) => {
     }
     if (geminiMode === 'busy') return new Response('{}', { status: 429 });
     if (geminiMode === 'retired' && url.includes('/gemini-3.5-flash-lite:')) return new Response('{}', { status: 404 });
+    if (geminiMode === 'busyFirst' && url.includes('/gemini-3.5-flash')) return new Response('{}', { status: 503 });
     const last = body.contents.at(-1);
     const answered = last.parts.some((p: any) => p.functionResponse);
     const parts = answered
@@ -221,6 +222,11 @@ const fb = await res.json();
 check('retired model → falls back to next model', res.status === 200 && fb.metadata?.model === 'gemini-3.1-flash-lite', fb.metadata ?? fb);
 
 const c = await signUp(`c${Date.now()}@test.com`); // fresh student: earlier checks used up A's per-minute limit
+geminiMode = 'busyFirst';
+res = await call({ ...msg, message: 'একটা plan বানাও' }, c.token);
+const bf = await res.json();
+check('overloaded model → falls back for this request', res.status === 200 && bf.metadata?.model === 'gemini-2.5-flash', bf.metadata ?? bf);
+
 geminiMode = 'busy';
 res = await call(msg, c.token);
 check('provider 429 → provider_busy 503', res.status === 503 && (await res.json()).error === 'provider_busy');

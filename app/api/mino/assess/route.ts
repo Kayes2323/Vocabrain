@@ -11,7 +11,7 @@ import type { ProductiveFeedback, TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 90;
 
 const bodySchema = z.object({
   sessionId: z.string().min(1).max(200).regex(/^[\w-]+$/),

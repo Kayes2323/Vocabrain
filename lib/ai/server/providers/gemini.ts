@@ -38,9 +38,9 @@ function mapHttpError(status: number, body: string): MinoError {
   return new MinoError('unavailable', `provider ${status}`);
 }
 
-async function call(model: string, apiKey: string, body: unknown, signal?: AbortSignal): Promise<GeminiResponse> {
+async function call(model: string, apiKey: string, body: unknown, signal: AbortSignal | undefined, timeoutMs: number): Promise<GeminiResponse> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), LIMITS.timeoutMs);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   signal?.addEventListener('abort', () => controller.abort());
   let res: Response;
   try {
@@ -70,6 +70,9 @@ export function createGeminiProvider(apiKey: string): AIProvider {
     async run(req: AIRunRequest): Promise<AIRunResult> {
       const chain = MODEL_CHAINS[req.tier];
       let model = workingModel.get(req.tier) ?? chain[0];
+      const started = Date.now();
+      const timeoutMs = req.timeoutMs ?? LIMITS.timeoutMs;
+      const budgetMs = req.budgetMs ?? timeoutMs * 2;
       const contents: GeminiContent[] = req.messages.map((m) => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }],
@@ -92,14 +95,19 @@ export function createGeminiProvider(apiKey: string): AIProvider {
         let data: GeminiResponse;
         for (;;) {
           try {
-            data = await call(model, apiKey, body, req.signal);
-            workingModel.set(req.tier, model);
+            const left = budgetMs - (Date.now() - started);
+            data = await call(model, apiKey, body, req.signal, Math.max(5_000, Math.min(timeoutMs, left)));
             break;
           } catch (error) {
-            // Retired model: move to the next one in the chain (only before the conversation has started).
+            // Before the conversation has started, move down the model chain when a
+            // model is retired (remembered), overloaded or too slow (just this request).
             const next = chain[chain.indexOf(model) + 1];
-            if (round === 0 && next && error instanceof MinoError && error.detail === MODEL_NOT_FOUND) {
-              console.warn('[mino] model unavailable, trying next', JSON.stringify({ model, next }));
+            const retired = error instanceof MinoError && error.detail === MODEL_NOT_FOUND;
+            const transient = error instanceof MinoError && (error.code === 'provider_busy' || error.code === 'timeout');
+            const timeLeft = budgetMs - (Date.now() - started) > 8_000;
+            if (round === 0 && next && (retired || (transient && timeLeft))) {
+              console.warn('[mino] model failed, trying next', JSON.stringify({ model, next, reason: error instanceof MinoError ? error.code : 'error' }));
+              if (retired) workingModel.set(req.tier, next);
               model = next;
               continue;
             }

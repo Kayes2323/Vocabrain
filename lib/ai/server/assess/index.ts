@@ -49,7 +49,17 @@ const CALIBRATION = `Calibration (public IELTS band descriptors, simplified):
 Be strict and realistic, like an examiner: do not inflate. Judge only what is written. This is PRACTICE feedback, an estimate, never an official score.`;
 
 async function runJson(provider: AIProvider, system: string, user: string): Promise<{ data: AIFeedback; model: string }> {
-  const result = await provider.run({ system, messages: [{ role: 'user', content: user }], tier: 'smart', json: true, maxOutputTokens: 4096 });
+  // Assessments are long, structured replies: give each model up to 35 s and fall
+  // back to the next model within 80 s in total (route maxDuration is 90 s).
+  const result = await provider.run({
+    system,
+    messages: [{ role: 'user', content: user }],
+    tier: 'smart',
+    json: true,
+    maxOutputTokens: 4096,
+    timeoutMs: 35_000,
+    budgetMs: 80_000,
+  });
   const text = result.text.replace(/^```(?:json)?\s*|\s*```$/g, '');
   try {
     return { data: aiSchema.parse(JSON.parse(text)), model: result.model };

@@ -11,7 +11,8 @@ const chain = (preferred: string | undefined, defaults: string[]) =>
 
 export const MODEL_CHAINS: Record<ModelTier, string[]> = {
   fast: chain(process.env.MINO_MODEL_FAST, ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash-lite']),
-  smart: chain(process.env.MINO_MODEL_SMART, ['gemini-3.5-flash', 'gemini-2.5-flash']),
+  // Last resort: the fast model, so deep work still gets an answer when bigger models are overloaded.
+  smart: chain(process.env.MINO_MODEL_SMART, ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-3.5-flash-lite']),
 };
 
 export const LIMITS = {
