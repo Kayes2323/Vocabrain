@@ -36,7 +36,7 @@ review early is practice and does not count).
 | 14 | **Mixed Practice** ✅ `t-15` | Choosing under mixed conditions | Mixed situations, increasing difficulty | — | Interleaved practice | mixed choice + recall + correction | All | Feeds spaced review | Picks weakest concepts | 80% mixed |
 | 15 | **Final Assessment** ✅ `t-12` | Proving usage, not labels | Situational tasks: "describe your English journey", "a chart from 2005", "yesterday", "an experience" | "Name the tense" | Realistic situations | situational completion + short writing | All | Schedules reviews for weak concepts | Module summary: learned / strong / improve / mistakes / review / next module | Module completion summary with mastery per concept |
 
-✅ = written in the v2 format and tested (Phase A: all 15). Lesson ids stay
+✅ = tested in Phase A: the 14 taught lessons use the v2 format; lesson 15 is the review test (t-12). Lesson ids stay
 stable so student progress is never lost; the three new lessons use t-13
 (Present Perfect Continuous), t-14 (Tense Comparisons) and t-15 (Mixed Practice).
 

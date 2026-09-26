@@ -203,7 +203,7 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 
 ## Phase A: Tenses v2 + completion
 
-- **All 15 Tenses lessons in v2** (`tenses-v2.ts` t-1/t-2, `tenses-core.ts` t-3…t-8,
+- **All 14 taught Tenses lessons in v2 (+ the t-12 review test)** (`tenses-v2.ts` t-1/t-2, `tenses-core.ts` t-3…t-8,
   `tenses-apply.ts` t-9…t-11, `tenses-new.ts` t-13…t-15, `tenses-2.ts` t-12 review test).
   Old exercise ids were kept, so earlier answers and reviews still count. Order:
   simple → continuous → perfect → perfect continuous → past perfect → future →
