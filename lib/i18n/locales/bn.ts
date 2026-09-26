@@ -340,7 +340,7 @@ export const bn: LocaleDictionary = {
       level: 'Level: {name}',
       passed: 'Mastery challenge pass!',
       notYet: 'ভালো কাজ। আগে আরেকটু practice দরকার।',
-      passedBody: 'তুমি আসল IELTS English-এ Parts of Speech ব্যবহার করতে পারো।',
+      passedBody: 'তুমি আসল IELTS English-এ {module} ব্যবহার করতে পারো।',
       notYetBody: 'নিচের part-গুলো practice করো, তারপর challenge আবার দাও।',
       byPart: 'Part অনুযায়ী',
       byJob: 'Word-এর কাজ অনুযায়ী',

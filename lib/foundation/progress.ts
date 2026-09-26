@@ -329,8 +329,14 @@ export function recordReview(fp: FoundationProgress, concept: string, score: num
   const prev = fp.concepts[concept] ?? { attempts: 0, correct: 0, lastAt: now.toISOString() };
   const passed = score >= PASS_SCORE;
   const stage = prev.srs?.stage ?? 0;
+  // Only a review taken when it is due counts towards consistency: passing the
+  // same review twice in one sitting is practice, not spaced recall.
+  const due = !prev.srs || Date.parse(prev.srs.dueAt) <= now.getTime();
   const nextStage = passed ? Math.min(stage + 1, STAGE_DAYS.length - 1) : 0;
-  const srs = { stage: nextStage, dueAt: addDays(now, passed ? STAGE_DAYS[nextStage] : 1), passes: (prev.srs?.passes ?? 0) + (passed ? 1 : 0) };
+  const srs =
+    passed && !due
+      ? prev.srs!
+      : { stage: nextStage, dueAt: addDays(now, passed ? STAGE_DAYS[nextStage] : 1), passes: (prev.srs?.passes ?? 0) + (passed ? 1 : 0) };
   return {
     ...fp,
     concepts: { ...fp.concepts, [concept]: { ...prev, lastReviewScore: score, srs, ...(passed ? { reviewedAt: now.toISOString() } : {}) } },

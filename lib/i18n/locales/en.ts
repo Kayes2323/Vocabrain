@@ -337,7 +337,7 @@ export const en = {
       level: 'Level: {name}',
       passed: 'Mastery challenge passed!',
       notYet: 'Good work. A little more practice first.',
-      passedBody: 'You can use Parts of Speech in real IELTS English.',
+      passedBody: 'You can use {module} in real IELTS English.',
       notYetBody: 'Practise the parts below, then take the challenge again.',
       byPart: 'By part',
       byJob: 'By word job',

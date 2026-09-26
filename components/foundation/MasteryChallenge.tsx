@@ -242,7 +242,7 @@ function Report({ module, challenge, answered, level, onRetry, levelName }: {
         <p className="text-sm text-muted-foreground">{t('foundation.final.levelReached', { name: levelName(level) })}</p>
         <h1 className="text-2xl font-semibold">{t(passed ? 'foundation.final.passed' : 'foundation.final.notYet')}</h1>
         <p className="text-3xl font-semibold tabular-nums">{score}%</p>
-        <p className="text-sm text-muted-foreground">{t(passed ? 'foundation.final.passedBody' : 'foundation.final.notYetBody')}</p>
+        <p className="text-sm text-muted-foreground">{t(passed ? 'foundation.final.passedBody' : 'foundation.final.notYetBody', { module: text(module.title) })}</p>
       </Panel>
 
       <Section title={t('foundation.final.byPart')} variant="label">

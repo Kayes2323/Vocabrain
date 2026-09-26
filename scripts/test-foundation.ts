@@ -239,6 +239,9 @@ test('mastery needs recognition, recall, application and consistency', () => {
   fp = recordApplication(fp, { source: 't-2', exercise: ex('t-2-y1'), text: 'She goes to work.', verdict: 'correct', corrected: 'She goes to work.', attempt: 1, now: NOW });
   fp = recordReview(fp, 'present-simple', 100, NOW);
   fp = recordReview(fp, 'present-simple', 100, NOW);
+  assert.equal(conceptMastery(fp, 'present-simple').consistency, false, 'repeating a review before it is due is not a second spaced pass');
+  assert.equal(fp.concepts['present-simple'].srs!.passes, 1);
+  fp = recordReview(fp, 'present-simple', 100, new Date(NOW.getTime() + 86_400_000));
   assert.equal(conceptMastery(fp, 'present-simple').level, 'mastered');
 });
 
@@ -441,7 +444,7 @@ test('Tenses: every tense concept is mastery-capable (Mino task), reviewable (5+
   let fp = empty();
   for (const id of ['t-4-e1', 't-4-e4', 't-4-p1', 't-4-e2', 't-4-e3', 't-4-r1']) fp = recordAnswer(fp, { source: 't-4', exercise: ex(id), answer: canonicalAnswer(ex(id)), correct: true, attempt: 1, now: NOW });
   fp = recordApplication(fp, { source: 't-4', exercise: ex('t-4-e6'), text: 'Sales rose in 2010.', verdict: 'correct', corrected: 'Sales rose in 2010.', attempt: 1, now: NOW });
-  fp = recordReview(recordReview(fp, 'past-simple', 100, NOW), 'past-simple', 100, NOW);
+  fp = recordReview(recordReview(fp, 'past-simple', 100, NOW), 'past-simple', 100, new Date(NOW.getTime() + 2 * 86_400_000));
   assert.equal(conceptMastery(fp, 'past-simple').level, 'mastered');
   // Application lessons keep each question on its own concept.
   assert.equal(findLesson('t-9')!.lesson.concept, undefined);

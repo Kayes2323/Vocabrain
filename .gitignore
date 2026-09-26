@@ -9,3 +9,7 @@ out
 
 # Firebase emulator logs
 *-debug.log
+
+# E2E output
+.e2e-logs/
+.e2e-shots/

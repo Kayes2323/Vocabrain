@@ -60,12 +60,12 @@ collection, no rules change; works for guests on-device):
 
 ## Content status
 
-Written: Module 1 Sentence Basics (9 lessons). Outlined with lesson titles:
-Tenses, Parts of Speech & Word Forms, Articles, Subject–Verb Agreement,
-Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors,
-Vocabulary Foundation; Level 2: What is IELTS?, Listening/Reading/Writing/
-Speaking Foundation. Next steps follow the brief: STEP 5 Tenses onwards,
-Readiness Check (STEP 20).
+LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
+(15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
+Vocabulary Foundation. Articles, Subject–Verb Agreement, Prepositions,
+Connectors, Complex Sentences, Punctuation and Common Errors show "Soon".
+LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
+shows "Soon". See `docs/TENSES_CURRICULUM.md` for the Tenses map.
 
 ## Tests
 
@@ -200,3 +200,30 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 - **Mino.** Sentence feedback explains each fix with the student's own words and returns one
   follow-up gap (`practice`, validated: exactly one `___`, only when something was wrong).
   Snapshot lines add named patterns and the final result.
+
+## Phase A: Tenses v2 + completion
+
+- **All 15 Tenses lessons in v2** (`tenses-v2.ts` t-1/t-2, `tenses-core.ts` t-3…t-8,
+  `tenses-apply.ts` t-9…t-11, `tenses-new.ts` t-13…t-15, `tenses-2.ts` t-12 review test).
+  Old exercise ids were kept, so earlier answers and reviews still count. Order:
+  simple → continuous → perfect → perfect continuous → past perfect → future →
+  comparisons → mistakes → Writing → Speaking → mixed → review test.
+- **Concepts.** `present-perfect-continuous` added (9 tense concepts). Application
+  lessons (t-9…t-11, t-14, t-15) have no lesson concept; each question keeps the concept
+  of the tense it tests (`validateV2` enforces it), and each has a Mino task on a real concept.
+- **No fake mastery.** `recordReview()` only counts a spaced pass when the review was due;
+  a review repeated early is practice and leaves the schedule unchanged.
+- **Patterns.** `POS_NAMED_PATTERNS` entries carry `modules`; tense patterns
+  `past-vs-perfect`, `simple-vs-continuous`, `tense-time` (+ shared `verb-form`,
+  `sv-agreement`). `patternsFor(fp, moduleId)` shows each module its own patterns;
+  fix questions for a named pattern come from every module.
+- **Challenges.** `content/challenges.ts` (`CHALLENGES`, `getChallenge`, `challengeForModule`)
+  generalises the final challenge: `pos` (stored in `posFinal`, as before) and `tenses`
+  (stored in `finals.tenses`). Route `/ielts/foundation/challenge/<id>`; the module page lists it.
+  `validateFoundation()` checks each challenge (parts, levels, known concepts, ≥30% free recall).
+- **Mino.** Tense tasks add rules to the sentence check (deciding time word, tense vs form,
+  a follow-up on the same decision). The guide lists the 15 lessons and the challenge and never
+  presents "Soon" modules as available. Snapshot adds open Tenses patterns and the challenge result.
+- **E2E** (committed): `scripts/e2e/` — `run.sh` (emulators + mock Gemini + `next dev`),
+  `helpers.ts` (answers from the real content), `tenses.e2e.ts`. Run `pnpm test:e2e:tenses`.
+
