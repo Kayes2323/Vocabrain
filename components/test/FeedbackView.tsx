@@ -46,7 +46,7 @@ function Band({ band }: { band: number | null }) {
   return band === null ? <StatusChip>{t('tests.feedback.notAssessed')}</StatusChip> : <StatusChip tone="brand">{formatBand(band)}</StatusChip>;
 }
 
-function TaskBlock({ task, answer }: { task: TaskFeedback; answer?: string }) {
+function TaskBlock({ task, answer, minWords }: { task: TaskFeedback; answer?: string; minWords?: number }) {
   const { t } = useLocale();
   const list = (title: string, items: React.ReactNode[]) =>
     items.length > 0 && (
@@ -62,6 +62,9 @@ function TaskBlock({ task, answer }: { task: TaskFeedback; answer?: string }) {
           {task.title}
           {task.wordCount !== undefined && <span className="ml-2 text-sm font-normal text-muted-foreground">{t('tests.feedback.words', { n: task.wordCount })}</span>}
         </p>
+        {minWords !== undefined && task.wordCount !== undefined && task.wordCount < minWords && (
+          <StatusChip tone="warning">{t('tests.writing.under', { n: minWords })}</StatusChip>
+        )}
         <Band band={task.band} />
       </div>
       <div className="divide-y rounded-lg border">
@@ -190,7 +193,12 @@ export function FeedbackView({
           <Section title={t('tests.feedback.title')}>
             <div className="space-y-4">
               {f.tasks.map((task) => (
-                <TaskBlock key={task.taskId} task={task} answer={answers?.[task.taskId]} />
+                <TaskBlock
+                  key={task.taskId}
+                  task={task}
+                  answer={answers?.[task.taskId]}
+                  minWords={test.sections.writing?.tasks.find((w) => w.id === task.taskId)?.minWords}
+                />
               ))}
             </div>
           </Section>

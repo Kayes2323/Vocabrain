@@ -2,7 +2,8 @@ import type { AIProvider, AIRunRequest, AIRunResult, ToolCallRecord } from '../.
 import { LIMITS, MODEL_CHAINS } from '../config';
 import { MinoError } from '../errors';
 
-const ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models';
+// Overridable for local end-to-end tests against a mock server; production uses Google.
+const ENDPOINT = process.env.GEMINI_API_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta/models';
 const MODEL_NOT_FOUND = 'model not found';
 
 /** The first model in each tier's chain that worked, remembered per server instance. */

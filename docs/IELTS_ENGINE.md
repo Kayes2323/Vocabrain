@@ -73,7 +73,23 @@ Firestore rules validate the shape and make a submitted attempt final (no edits)
   scoring, choose-TWO, band tables, session flow.
 - `pnpm test:rules`: includes test-session ownership and immutability.
 
-## Next (4.2+)
+## Writing and Speaking
+
+- Writing (`components/test/WritingRunner.tsx`): Task 1 with a data table and
+  Task 2, live word count (IELTS counting), 60-minute pausing timer, autosave
+  (debounced) plus local clock, draft recovery, submit with a length check.
+- Speaking (`components/test/SpeakingRunner.tsx`): Part 1–3 step by step, Part 2
+  preparation (60 s) and talk (120 s) timers, local recording and playback
+  (never uploaded), browser speech-to-text transcript that the student can fix.
+- After submit, `/api/mino/assess` adds Mino's practice feedback (see
+  `docs/MINO.md`). Guests get the test but need to sign in for feedback.
+
+## Study plan
+
+`lib/engine/study-plan.ts` builds 7–90 day (or until-test) plans from the
+student's data; `/ielts/plan` shows it and Mino explains it (`getStudyPlan`).
+
+## Next
 
 Highlighting + Save to Brain in passages, Listening audio player, Writing and
 Speaking runners, history/progress, mistake notebook, Mino analysis of results.

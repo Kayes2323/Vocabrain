@@ -84,10 +84,16 @@ Registered in `lib/ai/server/tools/index.ts`:
 | `getMinoMemory` | `users/{uid}/mino/memory` |
 | `getAppGuide` | Vocab Brain workflows (no student data) |
 | `getIELTSGuide` | IELTS / vocabulary / study-abroad knowledge cards (no student data) |
+| `getTestHistory` | `users/{uid}/testSessions`: attempts, and one attempt's wrong answers with explanations |
+| `getQuestionPerformance` | accuracy per question type / part across attempts |
+| `getWeakAreas` | weak areas with confidence and evidence-based patterns (`lib/ielts/analysis.ts`) |
+| `getStudyPlan` | the 7–90 day plan (`lib/engine/study-plan.ts`, same as /ielts/plan) |
+| `getStudyAbroadProfile` / `getCountryData` / `getCountryMatch` | study-abroad answers; official dated country facts or `notVerified`; Country Match |
+| `rememberAboutStudent` (write) | a short note in `users/{uid}/mino/memory` (max 15, sensitive text refused) |
+| `suggestActions` | up to 3 buttons from the whitelist in `lib/ai/actions.ts` |
 
-Planned (M2+): `getTestHistory`, `getQuestionPerformance`, `getWeakAreas`, `getProgress`,
-and write tools (`saveVocabulary`, `scheduleReview`, `createStudyTask`), which will
-need explicit student confirmation before they are enabled.
+Planned: `getProgress`, and write tools (`saveVocabulary`, `scheduleReview`,
+`createStudyTask`), which need explicit student confirmation before enabling.
 
 To add a tool: write a `MinoTool` (declaration + `run(ctx, args)`) in
 `lib/ai/server/tools/`, read only under `users/{ctx.uid}`, and list it in `TOOLS`.
@@ -101,10 +107,30 @@ To add a tool: write a `MinoTool` (declaration + `run(ctx, args)`) in
 
 ## Roadmap
 
-M1 knowledge layers + server snapshot (done) → M2 test analysis tools and
-"Ask Mino about this result" → M3 action buttons and 7–90 day plans (smart
-tier) → M4 long-term memory writes → M5 Writing/Speaking analysis → M6 study
-abroad discovery on sourced country data.
+All done: M1 knowledge layers and server snapshot · M2 test analysis tools and
+"Ask Mino about this result" · M3 action buttons, 7–90 day plans, smart-model
+routing · M4 memory notes and conversation continuity · M5 Writing/Speaking
+tests with AI feedback (`/api/mino/assess`) · M6 Country Match on verified
+official data.
+
+Model tiers: plans, analysis and coaching (and matching words in the message)
+use `smart`; everyday chat uses `fast`; assessments always use `smart` in JSON mode.
+
+## Writing / Speaking assessment
+
+`POST /api/mino/assess {sessionId, language}` reads the student's own submitted
+session from Firestore (never text from the request), assesses each Writing task
+(or the Speaking transcript) on the official criteria, clamps and rounds bands,
+drops quotes that don't appear in the answer, weights Task 2 double, never scores
+Pronunciation from text, and writes `feedback` once (rules allow exactly one
+feedback write on a submitted Writing/Speaking attempt).
+
+## Memory
+
+- Notes: `rememberAboutStudent` writes short notes; they appear in every
+  snapshot and in "Mino remembers" on the Mino page, where the student can delete any.
+- Conversation: the last 20 messages are saved to `users/{uid}/mino/conversation`
+  and restored for 7 days; "New chat" deletes it.
 
 ## Manual check questions (run after prompt changes)
 
