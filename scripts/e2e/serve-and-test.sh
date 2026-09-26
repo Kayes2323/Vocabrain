@@ -24,7 +24,7 @@ MOCK=$!
 rm -rf .next/dev
 npx next dev -p "$PORT" >"$LOGS/next.log" 2>&1 &
 APP=$!
-trap 'kill -- -$MOCK -$APP 2>/dev/null || true' EXIT
+trap 'kill -- -$MOCK -$APP 2>/dev/null || true; git checkout -q next-env.d.ts 2>/dev/null || true' EXIT
 
 for i in $(seq 1 120); do
   curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/" | grep -q "^[23]" && break
