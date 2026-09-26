@@ -1,5 +1,6 @@
 import { MONTHS } from '@/lib/constants';
 import type { JourneyMark, StudyAbroadProfile, UserProfile } from '@/lib/models';
+import { countryHref } from '@/lib/abroad/countries';
 import { ieltsJourney } from './journey';
 
 /**
@@ -98,13 +99,13 @@ export function abroadJourney(profile: UserProfile, now = new Date()): AbroadJou
   const href: Record<AbroadStageId, string> = {
     discover: '/setup/abroad',
     'choose-country': '/abroad/countries',
-    eligibility: dream ? `/abroad/countries/${dream}?tab=apply` : '/abroad/countries',
+    eligibility: dream ? countryHref(dream, 'apply') : '/abroad/countries',
     program: '/abroad/universities',
     english: '/ielts',
     documents: '/abroad/documents',
     apply: '/abroad/applications',
     offer: '/abroad/applications',
-    visa: dream ? `/abroad/visa/${dream}` : '/abroad/visa',
+    visa: dream ? `/abroad/visa/${dream.toLowerCase()}` : '/abroad/visa',
     travel: '/abroad/pre-departure',
   };
 

@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { emptyProfile, type UserProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
 import { ABROAD_STAGE_IDS, abroadJourney, markStage, setDreamCountry, toggleShortlist } from '../lib/engine';
+import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
+import { countryHref, countryIndicators } from '../lib/abroad/countries';
 
 /**
  * Study Abroad product tests (journey, countries, hub, roadmap, centres…).
@@ -49,7 +51,7 @@ test('journey: dream country → "Choose a country" done; the next stage links t
   const j = abroadJourney(p, NOW);
   assert.equal(j.stages[1].status, 'done');
   assert.equal(j.current.id, 'eligibility');
-  assert.equal(j.current.href, '/abroad/countries/DE?tab=apply');
+  assert.equal(j.current.href, '/abroad/countries/de?tab=apply');
   assert.equal(j.current.manual, true);
   assert.deepEqual(p.abroad.preferredCountryCodes, ['DE'], 'the dream country joins the shortlist');
   assert.equal(j.percent, 20);
@@ -114,6 +116,28 @@ test('persistence: old profiles load unchanged; journey marks survive a save/loa
   const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify(saved)));
   assert.equal(loaded.abroad.journey!.marks.eligibility.status, 'done');
   assert.equal(abroadJourney(loaded, NOW).stages[2].status, 'done');
+});
+
+// ---------------------------------------------------------------- 3B countries
+test('countries: 14 priority destinations in the approved order (New Zealand included), others after', () => {
+  assert.deepEqual(PRIORITY_COUNTRIES.map((c) => c.code), ['KR', 'DE', 'AU', 'GB', 'CA', 'US', 'JP', 'IT', 'FR', 'NL', 'SE', 'FI', 'IE', 'NZ']);
+  assert.equal(OTHER_COUNTRIES.length + PRIORITY_COUNTRIES.length, COUNTRIES.length);
+  assert.equal(new Set(COUNTRIES.map((c) => c.code)).size, COUNTRIES.length, 'codes are unique');
+  for (const c of COUNTRIES) {
+    assert.match(c.code, /^[A-Z]{2}$/);
+    assert.ok(c.capital, `${c.code} has a capital`);
+    if (c.hero) for (const k of ['src', 'credit', 'source', 'sourceUrl', 'license'] as const) assert.ok(c.hero[k], `${c.code} image ${k}`);
+  }
+  assert.equal(getCountry('nz')?.name, 'New Zealand');
+  assert.equal(countryHref('DE', 'apply'), '/abroad/countries/de?tab=apply');
+});
+
+test('country cards only claim what is verified', () => {
+  assert.deepEqual(countryIndicators(getCountry('KR')!), { verified: [], facts: 0 });
+  assert.deepEqual(countryIndicators(getCountry('DE')!).verified, ['work']);
+  const ca = countryIndicators(getCountry('CA')!);
+  assert.deepEqual(ca.verified, ['work', 'postStudy', 'living']);
+  assert.equal(ca.facts, 3);
 });
 
 console.log(`\n${passed} passed`);

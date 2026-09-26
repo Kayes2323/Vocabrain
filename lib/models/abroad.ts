@@ -10,7 +10,40 @@ export interface Country {
   name: string;
   region: 'Europe' | 'North America' | 'Oceania' | 'Asia' | 'Middle East' | 'Africa' | 'Latin America';
   flag: string;
+  /** 1–14: position in the priority list for Bangladeshi students; absent = "all countries". */
+  priority?: number;
+  /** Capital city (stable, not a changeable fact). */
+  capital?: string;
+  /** One line for the card; written and reviewed in the content phase. */
+  tagline?: Bilingual;
+  /** Popular study cities; content phase. */
+  cities?: string[];
+  /** A licensed photo for cards and the hub hero; a styled placeholder is shown until one is added. */
+  hero?: LicensedImage;
   data: CountryData;
+}
+
+/** Plain bilingual text for Study Abroad content. */
+export interface Bilingual {
+  en: string;
+  bn: string;
+}
+
+/**
+ * An image we are allowed to show: where it came from, who made it and under
+ * which licence. Never add an image without all of these.
+ */
+export interface LicensedImage {
+  /** Path under /public (e.g. /abroad/countries/kr.webp) or an allowed remote URL. */
+  src: string;
+  alt: Bilingual;
+  /** Author / photographer as the source requires it to be credited. */
+  credit: string;
+  /** e.g. "Wikimedia Commons", "Unsplash". */
+  source: string;
+  sourceUrl: string;
+  /** e.g. "CC BY-SA 4.0", "Unsplash License". */
+  license: string;
 }
 
 export interface CountryData {

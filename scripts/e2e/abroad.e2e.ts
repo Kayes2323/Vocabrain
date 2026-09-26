@@ -102,6 +102,36 @@ async function main() {
     check('Foundation still opens (regression)', true);
     const f = await waitForFoundation(uid, () => true);
     check('Foundation progress untouched by Study Abroad', f === null || typeof f === 'object');
+
+    // ============================================================ 3B · Country explorer
+    console.log('\n[3B] Country explorer');
+    await p.goto(`${BASE}/abroad/countries`, { waitUntil: 'load' });
+    await p.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
+    const priorityCodes = await p.getByTestId('priority-countries').locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')));
+    check('14 priority countries, in order, New Zealand last', priorityCodes.join(',') === 'KR,DE,AU,GB,CA,US,JP,IT,FR,NL,SE,FI,IE,NZ', priorityCodes.join(','));
+    check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 6);
+    check('Explore hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
+    const broken = await p.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0).length);
+    check('no broken images (placeholders until licensed photos exist)', broken === 0 && (await p.locator('[data-placeholder]').count()) === 20, `${broken} broken`);
+    const kr = p.locator('[data-country="KR"]');
+    check('South Korea card claims nothing unverified', /Profile coming/.test(await kr.innerText()));
+    check('Canada card shows only verified topics', /Work while studying/.test(await p.locator('[data-country="CA"]').innerText()) && /Verified facts: 3/.test(await p.locator('[data-country="CA"]').innerText()));
+    check('Explore links to the country hub', (await kr.getByRole('link', { name: 'Explore' }).getAttribute('href')) === '/abroad/countries/kr');
+    await p.getByRole('searchbox', { name: 'Search countries or capitals' }).fill('wellington');
+    check('search by capital finds New Zealand', (await p.locator('[data-country]').count()) === 1 && (await p.locator('[data-country="NZ"]').count()) === 1);
+    await p.getByRole('searchbox', { name: 'Search countries or capitals' }).fill('');
+    await p.getByRole('button', { name: 'Asia', exact: true }).click();
+    check('region filter: Asia', (await p.locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')))).join(',') === 'KR,JP,CN,MY');
+    await p.getByRole('button', { name: 'All', exact: true }).click();
+    await kr.getByRole('button', { name: 'Shortlisted' }).click();
+    const sa = await waitForAbroad(uid, (x) => (x.preferredCountryCodes as string[] | undefined)?.includes('KR') === false);
+    check('South Korea was already shortlisted → removed from shortlist', !(sa.preferredCountryCodes as string[]).includes('KR'), JSON.stringify(sa.preferredCountryCodes));
+    await kr.getByRole('button', { name: 'Add to shortlist' }).click();
+    const sb = await waitForAbroad(uid, (x) => (x.preferredCountryCodes as string[] | undefined)?.includes('KR') === true);
+    check('Firestore: shortlist toggles back on', (sb.preferredCountryCodes as string[]).includes('KR'));
+    check('dream country badge on Germany', /Dream country/.test(await p.locator('[data-country="DE"]').innerText()));
+    check('explorer desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3b-01-explorer');
     await ctx.close();
 
     // ============================================================ 3A · Home (Bangla, mobile)
@@ -122,6 +152,12 @@ async function main() {
     await setDark(q, true);
     check('bn mobile dark: no sideways scroll', await noHorizontalScroll(q));
     await shot(q, 'sa-3a-05-mobile-dark');
+    await setDark(q, false);
+    await q.goto(`${BASE}/abroad/countries`, { waitUntil: 'load' });
+    await q.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
+    check('bn explorer mobile: no sideways scroll', await noHorizontalScroll(q));
+    check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখো' }).count()) >= 13);
+    await shot(q, 'sa-3b-02-explorer-mobile', false);
     await m.close();
   } catch (e) {
     const page = browser.contexts().flatMap((x) => x.pages()).at(-1);

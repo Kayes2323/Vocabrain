@@ -61,31 +61,43 @@ const DE: CountryData = {
   metrics: { termWorkHoursPerWeek: v(20, DE_WORK, 'Or 140 full / 280 half days a year.') },
 };
 
+/**
+ * Priority destinations for Bangladeshi students (1–14, in the approved order)
+ * first, then every other destination. Adding a country = adding one entry;
+ * the explorer, hub and matching read this list and nothing else.
+ */
 export const COUNTRIES: Country[] = [
-  { code: 'CA', name: 'Canada', region: 'North America', flag: '🇨🇦', data: CA },
-  { code: 'US', name: 'United States', region: 'North America', flag: '🇺🇸', data: {} },
-  { code: 'GB', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', data: UK },
-  { code: 'IE', name: 'Ireland', region: 'Europe', flag: '🇮🇪', data: {} },
-  { code: 'DE', name: 'Germany', region: 'Europe', flag: '🇩🇪', data: DE },
-  { code: 'FR', name: 'France', region: 'Europe', flag: '🇫🇷', data: {} },
-  { code: 'NL', name: 'Netherlands', region: 'Europe', flag: '🇳🇱', data: {} },
-  { code: 'IT', name: 'Italy', region: 'Europe', flag: '🇮🇹', data: {} },
-  { code: 'ES', name: 'Spain', region: 'Europe', flag: '🇪🇸', data: {} },
-  { code: 'SE', name: 'Sweden', region: 'Europe', flag: '🇸🇪', data: {} },
-  { code: 'FI', name: 'Finland', region: 'Europe', flag: '🇫🇮', data: {} },
-  { code: 'NO', name: 'Norway', region: 'Europe', flag: '🇳🇴', data: {} },
-  { code: 'DK', name: 'Denmark', region: 'Europe', flag: '🇩🇰', data: {} },
-  { code: 'AU', name: 'Australia', region: 'Oceania', flag: '🇦🇺', data: AU },
-  { code: 'KR', name: 'South Korea', region: 'Asia', flag: '🇰🇷', data: {} },
-  { code: 'JP', name: 'Japan', region: 'Asia', flag: '🇯🇵', data: {} },
-  { code: 'CN', name: 'China', region: 'Asia', flag: '🇨🇳', data: {} },
-  { code: 'MY', name: 'Malaysia', region: 'Asia', flag: '🇲🇾', data: {} },
-  { code: 'TR', name: 'Turkey', region: 'Europe', flag: '🇹🇷', data: {} },
+  { code: 'KR', name: 'South Korea', region: 'Asia', flag: '🇰🇷', priority: 1, capital: 'Seoul', data: {} },
+  { code: 'DE', name: 'Germany', region: 'Europe', flag: '🇩🇪', priority: 2, capital: 'Berlin', data: DE },
+  { code: 'AU', name: 'Australia', region: 'Oceania', flag: '🇦🇺', priority: 3, capital: 'Canberra', data: AU },
+  { code: 'GB', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', priority: 4, capital: 'London', data: UK },
+  { code: 'CA', name: 'Canada', region: 'North America', flag: '🇨🇦', priority: 5, capital: 'Ottawa', data: CA },
+  { code: 'US', name: 'United States', region: 'North America', flag: '🇺🇸', priority: 6, capital: 'Washington, D.C.', data: {} },
+  { code: 'JP', name: 'Japan', region: 'Asia', flag: '🇯🇵', priority: 7, capital: 'Tokyo', data: {} },
+  { code: 'IT', name: 'Italy', region: 'Europe', flag: '🇮🇹', priority: 8, capital: 'Rome', data: {} },
+  { code: 'FR', name: 'France', region: 'Europe', flag: '🇫🇷', priority: 9, capital: 'Paris', data: {} },
+  { code: 'NL', name: 'Netherlands', region: 'Europe', flag: '🇳🇱', priority: 10, capital: 'Amsterdam', data: {} },
+  { code: 'SE', name: 'Sweden', region: 'Europe', flag: '🇸🇪', priority: 11, capital: 'Stockholm', data: {} },
+  { code: 'FI', name: 'Finland', region: 'Europe', flag: '🇫🇮', priority: 12, capital: 'Helsinki', data: {} },
+  { code: 'IE', name: 'Ireland', region: 'Europe', flag: '🇮🇪', priority: 13, capital: 'Dublin', data: {} },
+  { code: 'NZ', name: 'New Zealand', region: 'Oceania', flag: '🇳🇿', priority: 14, capital: 'Wellington', data: {} },
+  { code: 'ES', name: 'Spain', region: 'Europe', flag: '🇪🇸', capital: 'Madrid', data: {} },
+  { code: 'NO', name: 'Norway', region: 'Europe', flag: '🇳🇴', capital: 'Oslo', data: {} },
+  { code: 'DK', name: 'Denmark', region: 'Europe', flag: '🇩🇰', capital: 'Copenhagen', data: {} },
+  { code: 'CN', name: 'China', region: 'Asia', flag: '🇨🇳', capital: 'Beijing', data: {} },
+  { code: 'MY', name: 'Malaysia', region: 'Asia', flag: '🇲🇾', capital: 'Kuala Lumpur', data: {} },
+  { code: 'TR', name: 'Turkey', region: 'Europe', flag: '🇹🇷', capital: 'Ankara', data: {} },
 ];
 
 export function getCountry(code: string): Country | undefined {
-  return COUNTRIES.find((c) => c.code === code);
+  const c = code.toUpperCase();
+  return COUNTRIES.find((x) => x.code === c);
 }
+
+/** The 14 priority countries, in order. */
+export const PRIORITY_COUNTRIES = COUNTRIES.filter((c) => c.priority).sort((a, b) => a.priority! - b.priority!);
+/** Every other destination, by name. */
+export const OTHER_COUNTRIES = COUNTRIES.filter((c) => !c.priority).sort((a, b) => a.name.localeCompare(b.name));
 
 /** Number of sourced data points a country currently has. */
 export function countVerifiedDataPoints(country: Country): number {
