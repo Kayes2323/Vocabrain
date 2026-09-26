@@ -95,28 +95,28 @@ export const ABROAD_SECTION_GROUPS: SectionGroup[] = [
     sections: [
       { id: 'countries', icon: Globe2, href: '/abroad/countries', status: 'available', phase: 4 },
       { id: 'country-match', icon: Scale, href: '/abroad/country-match', status: 'available', phase: 4 },
-      { id: 'universities', icon: Building2, href: '/abroad/universities', status: 'planned', phase: 4 },
+      { id: 'universities', icon: Building2, href: '/abroad/universities', status: 'available', phase: 4 },
     ],
   },
   {
     titleKey: 'abroad.groups.plan',
     sections: [
       { id: 'cost', icon: Calculator, href: '/abroad/cost', status: 'planned', phase: 4 },
-      { id: 'scholarships', icon: Landmark, href: '/abroad/scholarships', status: 'planned', phase: 4 },
-      { id: 'deadlines', icon: CalendarClock, href: '/abroad/deadlines', status: 'planned', phase: 4 },
+      { id: 'scholarships', icon: Landmark, href: '/abroad/scholarships', status: 'available', phase: 4 },
+      { id: 'deadlines', icon: CalendarClock, href: '/abroad/deadlines', status: 'available', phase: 4 },
     ],
   },
   {
     titleKey: 'abroad.groups.apply',
     sections: [
       { id: 'applications', icon: ClipboardList, href: '/abroad/applications', status: 'planned', phase: 5 },
-      { id: 'documents', icon: FileText, href: '/abroad/documents', status: 'planned', phase: 5 },
+      { id: 'documents', icon: FileText, href: '/abroad/documents', status: 'available', phase: 5 },
     ],
   },
   {
     titleKey: 'abroad.groups.go',
     sections: [
-      { id: 'visa', icon: ClipboardCheck, href: '/abroad/visa', status: 'planned', phase: 5 },
+      { id: 'visa', icon: ClipboardCheck, href: '/abroad/visa', status: 'available', phase: 5 },
       { id: 'pre-departure', icon: Luggage, href: '/abroad/pre-departure', status: 'planned', phase: 5 },
     ],
   },

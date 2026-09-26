@@ -13,6 +13,8 @@ import { askMino } from '@/lib/ai/client';
 import { getChallenge } from '@/lib/foundation';
 import { getCountry } from '@/lib/content/countries';
 import { roadmapDefs } from '@/lib/abroad/roadmap';
+import { documentGuide } from '@/lib/content/documents';
+import { VISA_PART_IDS } from '@/lib/models';
 import { MINO_ACTIONS, isMinoAction, type MinoActionId } from '@/lib/ai/actions';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
@@ -223,7 +225,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -259,6 +261,15 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       const step = roadmapDefs(country).find((d) => d.id === params.get('step'));
       if (country && step) send(t('sa.roadmap.stepPrompt', { country: country.name, step: step.title[locale === 'bn' ? 'bn' : 'en'] }), 'study-abroad-advisor');
       else send(t('sa.home.askPrompt'), 'study-abroad-advisor');
+    } else if (ask === 'abroad-unis') {
+      send(t('sa.unis.askPrompt'), 'study-abroad-advisor');
+    } else if (ask === 'abroad-doc') {
+      const doc = documentGuide(params.get('doc') ?? '');
+      send(doc ? t('sa.docs.askPrompt', { doc: t(`sa.docKinds.${doc.kind}`) }) : t('sa.home.askPrompt'), 'study-abroad-advisor');
+    } else if (ask === 'abroad-visa') {
+      const country = getCountry(params.get('country') ?? '');
+      const part = (VISA_PART_IDS as readonly string[]).includes(params.get('part') ?? '') ? (params.get('part') as string) : 'type';
+      send(country ? t('sa.visa.partPrompt', { country: country.name, part: t(`sa.visa.parts.${part}`) }) : t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad-next') {
       send(t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad') {

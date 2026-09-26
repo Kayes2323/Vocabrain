@@ -61,6 +61,52 @@ export interface StudyAbroadProfile {
   dreamCountryCode?: string;
   /** The student's own progress on journey stages/steps; computed rules never live here. */
   journey?: StudentJourneyState;
+  /** Universities the student is considering (their own list, from official websites). */
+  universities?: SavedUniversity[];
+  /** Scholarship ids (from the reviewed registry) the student saved. */
+  savedScholarships?: string[];
+  /** Dates the student added themselves. */
+  deadlines?: PersonalDeadline[];
+  /** How far each document is. */
+  documents?: Partial<Record<string, DocumentProgress>>;
+}
+
+export type UniversityFit = 'ambitious' | 'match' | 'safer';
+export type UniversityStatus = 'researching' | 'applying' | 'applied' | 'offer' | 'rejected';
+
+export interface SavedUniversity {
+  id: string;
+  name: string;
+  countryCode: string;
+  program?: string;
+  /** The university's own website, as the student entered it. */
+  officialUrl?: string;
+  fit: UniversityFit;
+  status: UniversityStatus;
+  /** Link to a reviewed registry record, when there is one. */
+  universityId?: string;
+  addedAt: ISODate;
+  updatedAt?: ISODate;
+}
+
+export type PersonalDeadlineKind = 'university' | 'scholarship' | 'test' | 'visa' | 'personal';
+
+export interface PersonalDeadline {
+  id: string;
+  title: string;
+  /** YYYY-MM-DD */
+  date: string;
+  kind: PersonalDeadlineKind;
+  countryCode?: string;
+  done?: boolean;
+  createdAt: ISODate;
+}
+
+export type DocumentStatus = 'not-started' | 'drafting' | 'ready';
+
+export interface DocumentProgress {
+  status: DocumentStatus;
+  updatedAt: ISODate;
 }
 
 /**

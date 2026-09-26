@@ -5,12 +5,23 @@ import { ArrowRight, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import type { ResolvedSection, SectionStatus } from '@/lib/abroad/sections';
+import type { SectionStatus } from '@/lib/abroad/sections';
+import type { Bilingual, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { FactRow } from './FactRow';
 import { useBilingual } from './useBilingual';
 
 export const SECTION_TONE: Record<SectionStatus, 'success' | 'brand' | 'neutral'> = { verified: 'success', partial: 'brand', 'not-yet': 'neutral' };
+
+/** What a card needs: a country section, a visa part, or any other sourced block. */
+export interface SectionCardData {
+  id: string;
+  number: string;
+  status: SectionStatus;
+  facts: SectionFact[];
+  links?: SourceRef[];
+  explanation?: Bilingual;
+}
 
 export interface SectionAction {
   label: string;
@@ -30,16 +41,22 @@ export function SectionCard({
   onToggle,
   askHref,
   action,
+  title: titleProp,
+  reviewAs,
 }: {
-  section: ResolvedSection;
+  section: SectionCardData;
   open: boolean;
   onToggle: () => void;
   askHref: string;
   action?: SectionAction;
+  /** Defaults to the country-section title for section.id. */
+  title?: string;
+  /** Which review window facts follow (defaults to section.id). */
+  reviewAs?: CountrySectionId;
 }) {
   const { t } = useLocale();
   const text = useBilingual();
-  const title = t(`sa.sections.${section.id}`);
+  const title = titleProp ?? t(`sa.sections.${section.id}`);
   const panelId = `section-${section.id}`;
   return (
     <div className="border-b last:border-b-0" data-section={section.id} data-status={section.status}>
@@ -64,7 +81,7 @@ export function SectionCard({
             {section.facts.length > 0 ? (
               <div className="divide-y">
                 {section.facts.map((f, i) => (
-                  <FactRow key={i} item={f} sectionId={section.id} />
+                  <FactRow key={i} item={f} sectionId={reviewAs ?? (section.id as CountrySectionId)} />
                 ))}
               </div>
             ) : (

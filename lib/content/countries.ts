@@ -73,8 +73,8 @@ const DE: CountryData = {
 export const COUNTRIES: Country[] = [
   { code: 'KR', name: 'South Korea', region: 'Asia', flag: '🇰🇷', priority: 1, capital: 'Seoul', data: {} },
   { code: 'DE', name: 'Germany', region: 'Europe', flag: '🇩🇪', priority: 2, capital: 'Berlin', data: DE, sections: { work: { complete: true } } },
-  { code: 'AU', name: 'Australia', region: 'Oceania', flag: '🇦🇺', priority: 3, capital: 'Canberra', data: AU, sections: { work: { complete: true }, 'post-study': { complete: true } } },
-  { code: 'GB', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', priority: 4, capital: 'London', data: UK, sections: { 'post-study': { complete: true } } },
+  { code: 'AU', name: 'Australia', region: 'Oceania', flag: '🇦🇺', priority: 3, capital: 'Canberra', data: AU, sections: { work: { complete: true }, 'post-study': { complete: true }, visa: { links: [AU_STUDENT] } } },
+  { code: 'GB', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', priority: 4, capital: 'London', data: UK, sections: { 'post-study': { complete: true }, visa: { links: [UK_STUDENT] } } },
   { code: 'CA', name: 'Canada', region: 'North America', flag: '🇨🇦', priority: 5, capital: 'Ottawa', data: CA, sections: { work: { complete: true }, 'post-study': { complete: true } } },
   { code: 'US', name: 'United States', region: 'North America', flag: '🇺🇸', priority: 6, capital: 'Washington, D.C.', data: {} },
   { code: 'JP', name: 'Japan', region: 'Asia', flag: '🇯🇵', priority: 7, capital: 'Tokyo', data: {} },

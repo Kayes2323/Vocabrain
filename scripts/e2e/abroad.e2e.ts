@@ -242,6 +242,107 @@ async function main() {
     await p.getByTestId('roadmap-inactive').waitFor({ timeout: 60_000 });
     check('other country: read-only roadmap + way back to the dream plan', (await p.getByRole('link', { name: 'Open my Germany roadmap' }).count()) === 1 && (await p.getByRole('button', { name: 'Mark as done' }).count()) === 0);
 
+    // ============================================================ 3F · Universities
+    console.log('\n[3F] Universities');
+    type AB = Record<string, unknown> & { universities?: { name: string; countryCode: string; status: string; fit: string; officialUrl?: string }[]; deadlines?: { title: string; done?: boolean }[]; documents?: Record<string, { status: string }> };
+    const ab = async (ok: (x: AB) => boolean) => (await waitForAbroad(uid, (x) => ok(x as AB))) as AB;
+    await p.goto(`${BASE}/abroad/universities`, { waitUntil: 'load' });
+    await p.getByLabel('Country').waitFor({ timeout: 60_000 });
+    check('defaults to the dream country', (await p.getByLabel('Country').inputValue()) === 'DE');
+    check('Explore hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
+    check('no invented universities: honest empty state', /No verified university profiles for Germany yet/.test(await p.getByTestId('uni-verified-empty').innerText()));
+    await p.getByRole('button', { name: 'Add a university' }).click();
+    await p.getByLabel('University name').fill('TU Test');
+    await p.getByLabel('Official website (optional)').fill('https://www.tu-test.example');
+    await p.getByRole('button', { name: 'Ambitious' }).click();
+    await p.getByRole('button', { name: 'Add to my list' }).click();
+    let x = await ab((y) => (y.universities?.length ?? 0) === 1);
+    check('Firestore: university saved for Germany', x.universities?.[0].name === 'TU Test' && x.universities?.[0].countryCode === 'DE' && x.universities?.[0].fit === 'ambitious', JSON.stringify(x.universities));
+    await p.locator('[data-university="TU Test"]').getByLabel('Status').selectOption('applied');
+    x = await ab((y) => y.universities?.[0].status === 'applied');
+    check('Firestore: status updated', x.universities?.[0].status === 'applied');
+    check('official website link opens in a new tab', (await p.locator('[data-university="TU Test"]').getByRole('link', { name: 'Official website' }).getAttribute('target')) === '_blank');
+    await p.getByRole('button', { name: 'Add a university' }).click();
+    await p.getByLabel('University name').fill('Uni B');
+    await p.getByRole('button', { name: 'Add to my list' }).click();
+    await p.locator('[data-university="Uni B"]').waitFor();
+    check('balance line + safer-choice tip', /1 ambitious · 1 good match · 0 safer/.test(await p.getByTestId('uni-balance').innerText()) && (await p.getByText(/add at least one safer choice/).count()) === 1);
+    check('shortlist step already done on the roadmap shows here', (await p.getByRole('button', { name: 'Shortlist step done ✓' }).count()) === 1);
+    check('universities desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3f-01-universities');
+
+    // ============================================================ 3G · Scholarships
+    console.log('\n[3G] Scholarships');
+    await p.goto(`${BASE}/abroad/scholarships?country=gb`, { waitUntil: 'load' });
+    await p.getByTestId('schol-empty').waitFor({ timeout: 60_000 });
+    check('Money hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Money' }).getAttribute('aria-current')) === 'page');
+    check('?country=gb selects the UK', (await p.getByLabel('Country').inputValue()) === 'GB');
+    check('no invented scholarship facts', /No verified scholarship information for United Kingdom yet/.test(await p.getByTestId('schol-official').innerText()));
+    check('no invented scholarships', /No verified scholarships here yet/.test(await p.getByTestId('schol-empty').innerText()));
+    await p.getByRole('button', { name: 'Fully funded' }).click();
+    check('funding filter toggles', (await p.getByRole('button', { name: 'Fully funded' }).getAttribute('aria-pressed')) === 'true');
+    await p.getByLabel('Country').selectOption('DE');
+    await p.waitForURL('**country=de');
+    check('changing country updates the URL', p.url().endsWith('?country=de'));
+    await p.getByRole('link', { name: 'Add a scholarship date to my deadlines' }).click();
+    await p.waitForURL('**/abroad/deadlines?add=scholarship');
+
+    // ============================================================ 3H · Deadlines
+    console.log('\n[3H] Deadlines');
+    await p.getByTestId('dl-form').waitFor({ timeout: 60_000 });
+    check('Apply hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Apply' }).getAttribute('aria-current')) === 'page');
+    check('form opens with Scholarship preselected', (await p.getByTestId('dl-form').locator('select').inputValue()) === 'scholarship');
+    check('roadmap target date already listed (This week)', /Write your SOP and CV/.test(await p.locator('[data-bucket="this-week"]').innerText()));
+    const in3 = new Date(Date.now() + 3 * 86_400_000).toISOString().slice(0, 10);
+    await p.getByLabel('What is due?').fill('DAAD application');
+    await p.getByTestId('dl-form').locator('input[type="date"]').fill(in3);
+    await p.getByRole('button', { name: 'Add date' }).click();
+    x = await ab((y) => (y.deadlines?.length ?? 0) === 1);
+    check('Firestore: personal deadline saved', x.deadlines?.[0].title === 'DAAD application');
+    const dl = p.locator('[data-origin="personal"]').first();
+    check('new date sits in This week with days left', /In 3 days/.test(await dl.innerText()) && (await p.locator('[data-bucket="this-week"] [data-origin="personal"]').count()) === 1);
+    await dl.getByRole('button', { name: 'Mark done' }).click();
+    x = await ab((y) => y.deadlines?.[0].done === true);
+    await p.locator('[data-bucket="completed"]').waitFor({ timeout: 10_000 });
+    check('marked done → Completed (and saved)', x.deadlines?.[0].done === true);
+    check('deadlines desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3h-01-deadlines');
+
+    // ============================================================ 3I · Documents
+    console.log('\n[3I] Documents');
+    await p.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' });
+    await p.getByTestId('docs-required').waitFor({ timeout: 60_000 });
+    check('documents for the Germany plan: 0 of 8 ready', /For your Germany plan/.test(await p.locator('main').innerText()) && (await p.getByTestId('docs-readiness').innerText()) === '0 of 8 ready');
+    const sopDoc = p.locator('[data-document="sop"]');
+    await sopDoc.getByRole('button', { name: /Statement of purpose/ }).click();
+    check('guide: what to include + general-guidance label', /What to include/.test(await sopDoc.innerText()) && /General guidance/.test(await sopDoc.innerText()));
+    check('Ask Mino carries the document', (await sopDoc.getByRole('link', { name: 'Ask Mino to help with this' }).getAttribute('href')) === '/mino?ask=abroad-doc&doc=sop');
+    await sopDoc.getByRole('button', { name: 'Ready' }).click();
+    x = await ab((y) => y.documents?.sop?.status === 'ready');
+    check('Firestore: document status saved', x.documents?.sop?.status === 'ready');
+    check('readiness updates: 1 of 8', (await p.getByTestId('docs-readiness').innerText()) === '1 of 8 ready');
+    check('documents desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3i-01-documents');
+
+    // ============================================================ 3J · Visa
+    console.log('\n[3J] Visa');
+    await p.goto(`${BASE}/abroad/visa`, { waitUntil: 'load' });
+    await p.locator('[data-visa-country="DE"]').waitFor({ timeout: 60_000 });
+    check('Visa hub is current; dream country first', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Visa & go' }).getAttribute('aria-current')) === 'page' && (await p.locator('[data-visa-country]').first().getAttribute('data-visa-country')) === 'DE');
+    await p.goto(`${BASE}/abroad/visa/gb`, { waitUntil: 'load' });
+    await p.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
+    check('12 visa parts', (await p.locator('[data-section]').count()) === 12);
+    const fin = p.locator('[data-section="finances"]');
+    check('Proof of funds: partly verified, opened, 2 sourced facts', (await fin.getAttribute('data-status')) === 'partial' && (await fin.locator('[data-fact]').count()) === 2);
+    await p.locator('[data-section="portal"]').getByRole('button', { name: /Where to apply/ }).click();
+    check('Where to apply: official GOV.UK page, still "Not verified yet"', (await p.locator('[data-section="portal"] a[href="https://www.gov.uk/student-visa"]').count()) === 1 && (await p.locator('[data-section="portal"]').getAttribute('data-status')) === 'not-yet');
+    check('Ask Mino carries country and part', (await p.locator('[data-section="portal"]').getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) === '/mino?ask=abroad-visa&country=gb&part=portal');
+    check('visa desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3j-01-visa-gb');
+    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
+    check('home tools: centres no longer "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0, String(await p.locator('main').getByText('Soon', { exact: true }).count()));
+
     await p.goto(`${BASE}/abroad/countries/xx`, { waitUntil: 'load' });
     await p.getByTestId('hub-not-found').waitFor({ timeout: 60_000 });
     check('unknown country → clear message + way back', (await p.getByRole('link', { name: 'Countries' }).count()) >= 1);
@@ -289,6 +390,21 @@ async function main() {
     await setDark(q, true);
     check('bn roadmap mobile dark: no sideways scroll', await noHorizontalScroll(q));
     await shot(q, 'sa-3e-03-roadmap-mobile-dark', false);
+    await setDark(q, false);
+    for (const [path, id] of [['/abroad/universities', 'my-universities'], ['/abroad/deadlines', ''], ['/abroad/documents', 'docs-required'], ['/abroad/visa/au', 'visa-parts'], ['/abroad/scholarships', 'schol-empty']] as const) {
+      await q.goto(`${BASE}${path}`, { waitUntil: 'load' });
+      if (id) await q.getByTestId(id).waitFor({ timeout: 60_000 }).catch(() => {});
+      else await q.getByRole('heading', { level: 1 }).waitFor({ timeout: 60_000 });
+      await q.waitForTimeout(300);
+      check(`bn ${path} mobile: no sideways scroll`, await noHorizontalScroll(q), await overflowers(q));
+    }
+    check('bn documents in Bangla', /তোমার Australia plan-এর জন্য/.test(await (async () => { await q.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' }); await q.getByTestId('docs-required').waitFor({ timeout: 60_000 }); return q.locator('main').innerText(); })()));
+    await shot(q, 'sa-3i-02-documents-mobile-bn', false);
+    await q.goto(`${BASE}/abroad/visa/au`, { waitUntil: 'load' });
+    await q.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
+    await setDark(q, true);
+    check('bn visa mobile dark: no sideways scroll', await noHorizontalScroll(q));
+    await shot(q, 'sa-3j-02-visa-mobile-dark', false);
     await setDark(q, false);
     await m.close();
   } catch (e) {

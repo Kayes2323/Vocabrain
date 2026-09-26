@@ -3,6 +3,13 @@ import { emptyProfile, type UserProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
 import { ABROAD_STAGE_IDS, abroadJourney, countryRoadmap, markStage, markStep, setDreamCountry, setStepDue, toggleShortlist } from '../lib/engine';
 import { roadmapDefs } from '../lib/abroad/roadmap';
+import { visaParts } from '../lib/abroad/visa';
+import { addDeadline, addUniversity, allDeadlines, documentStatus, removeUniversity, requiredDocuments, setDocumentStatus, shortlistBalance, toggleDeadlineDone, toggleSavedScholarship, updateUniversity } from '../lib/engine';
+import { UNIVERSITIES, PROGRAMS } from '../lib/content/universities';
+import { SCHOLARSHIPS } from '../lib/content/scholarships';
+import { DEADLINES } from '../lib/content/deadlines';
+import { VISA_GUIDES } from '../lib/content/visa';
+import { DOCUMENT_GUIDES } from '../lib/content/documents';
 import { ROADMAP_TEMPLATE } from '../lib/content/roadmap';
 import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
 import { countryHref, countryIndicators } from '../lib/abroad/countries';
@@ -284,6 +291,74 @@ test('roadmap: a target date close or missed needs attention (step and stage); m
   assert.equal(countryRoadmap(p, 'DE', NOW).steps.find((s) => s.id === 'eligibility')?.status, 'done');
   const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify(p)) as UserProfile);
   assert.equal(loaded.abroad.journey?.steps?.DE.eligibility.status, 'done');
+});
+
+// ---------------------------------------------------------------- 3F–3J centres
+test('universities: own list with fit and status; bad links are dropped; balance advice', () => {
+  let a = base().abroad;
+  a = addUniversity(a, { name: '  TU Example ', countryCode: 'de', fit: 'ambitious', officialUrl: 'javascript:alert(1)' }, NOW);
+  a = addUniversity(a, { name: 'Uni Two', countryCode: 'DE', fit: 'match', officialUrl: 'https://uni-two.example.de', program: 'MSc CS' }, NOW);
+  a = addUniversity(a, { name: '   ', countryCode: 'DE', fit: 'safer' }, NOW);
+  assert.equal(a.universities?.length, 2);
+  assert.equal(a.universities?.[0].name, 'TU Example');
+  assert.equal(a.universities?.[0].countryCode, 'DE');
+  assert.equal(a.universities?.[0].officialUrl, undefined, 'non-web link dropped');
+  assert.equal(a.universities?.[1].officialUrl, 'https://uni-two.example.de');
+  assert.equal(shortlistBalance(a.universities!).needsSafer, true);
+  a = updateUniversity(a, a.universities![1].id, { fit: 'safer', status: 'applied' }, NOW);
+  assert.deepEqual({ ...shortlistBalance(a.universities!) }, { ambitious: 1, match: 0, safer: 1, total: 2, needsSafer: false });
+  a = removeUniversity(a, a.universities![0].id);
+  assert.equal(a.universities?.length, 1);
+  assert.deepEqual(toggleSavedScholarship(toggleSavedScholarship(a, 's1'), 's1').savedScholarships, []);
+});
+
+test('deadlines: own dates, roadmap target dates and the IELTS test in one list, bucketed by date', () => {
+  const now = new Date('2026-09-26T10:00:00');
+  let p = dreamDE();
+  p = { ...p, ielts: { ...p.ielts, testDate: '2026-10-20' } };
+  p = { ...p, abroad: addDeadline(p.abroad, { title: 'TU application', date: '2026-09-30', kind: 'university' }, now) };
+  p = { ...p, abroad: addDeadline(p.abroad, { title: 'Old one', date: '2026-09-01', kind: 'personal' }, now) };
+  p = { ...p, abroad: addDeadline(p.abroad, { title: 'Bad date', date: '30/09/2026', kind: 'personal' }, now) };
+  p = { ...p, abroad: setStepDue(p.abroad, 'DE', 'sop-cv', '2026-12-01', now) };
+  const list = allDeadlines(p, now);
+  assert.deepEqual(
+    list.map((d) => [d.origin, d.bucket]),
+    [['personal', 'missed'], ['personal', 'this-week'], ['ielts', 'this-month'], ['roadmap', 'upcoming']],
+  );
+  const old = p.abroad.deadlines!.find((d) => d.title === 'Old one')!;
+  p = { ...p, abroad: toggleDeadlineDone(p.abroad, old.id) };
+  assert.equal(allDeadlines(p, now)[0].bucket, 'completed');
+});
+
+test('documents: required set follows the roadmap; status is saved per document', () => {
+  const kinds = requiredDocuments(dreamDE().abroad);
+  assert.deepEqual(kinds, ['financial', 'english-test', 'transcript', 'certificate', 'sop', 'cv', 'lor', 'passport']);
+  let a = dreamDE().abroad;
+  assert.equal(documentStatus(a, 'sop'), 'not-started');
+  a = setDocumentStatus(a, 'sop', 'drafting', NOW);
+  assert.equal(documentStatus(a, 'sop'), 'drafting');
+  assert.ok(kinds.every((k) => DOCUMENT_GUIDES.some((g) => g.kind === k)), 'every required document has a guide');
+  const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify({ ...dreamDE(), abroad: a })) as UserProfile);
+  assert.equal(loaded.abroad.documents?.sop?.status, 'drafting');
+});
+
+test('visa: 12 parts; only official facts count; the official visa page is offered under "Where to apply"', () => {
+  const gb = visaParts(getCountry('GB')!, NOW);
+  assert.equal(gb.length, 12);
+  assert.equal(gb.find((p) => p.id === 'finances')?.status, 'partial');
+  assert.equal(gb.find((p) => p.id === 'finances')?.facts.length, 2);
+  assert.equal(gb.find((p) => p.id === 'portal')?.links?.[0].url, 'https://www.gov.uk/student-visa');
+  assert.equal(gb.find((p) => p.id === 'portal')?.status, 'not-yet', 'a link is not a verified fact');
+  assert.ok(visaParts(getCountry('KR')!, NOW).every((p) => p.status === 'not-yet'));
+});
+
+test('registries hold only traceable records (official links, sourced dates)', () => {
+  const https = (u?: string) => Boolean(u && /^https:\/\//.test(u));
+  for (const u of UNIVERSITIES) assert.ok(https(u.officialUrl), `${u.id} official website`);
+  for (const pr of PROGRAMS) assert.ok(UNIVERSITIES.some((u) => u.id === pr.universityId), `${pr.id} belongs to a university`);
+  for (const sc of SCHOLARSHIPS) assert.ok(https(sc.officialUrl) && sc.eligibility.source.url && sc.eligibility.lastVerified, `${sc.id} is sourced`);
+  for (const d of DEADLINES) assert.ok(d.date.source.url && d.date.lastVerified, `${d.id} is sourced`);
+  for (const g of VISA_GUIDES) for (const part of Object.values(g.parts)) for (const f of part?.facts ?? []) assert.ok(f.fact.source.url, `${g.countryCode} visa fact sourced`);
 });
 
 console.log(`\n${passed} passed`);
