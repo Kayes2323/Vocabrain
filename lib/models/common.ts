@@ -39,6 +39,11 @@ export interface SourcedValue<T> {
   /** e.g. "international", "eu". */
   applicableStudentType?: string;
   notes?: string;
+  /** Re-check the source on or after this date (overrides the default review window). */
+  reviewAt?: ISODate;
+  /** An announced rule that applies only from / until a date. */
+  validFrom?: ISODate;
+  validUntil?: ISODate;
 }
 
 export type LicenseStatus =

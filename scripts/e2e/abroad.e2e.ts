@@ -33,6 +33,16 @@ function lightness(color: string): number {
   return n[0];
 }
 
+/** The elements that stick out past the right edge (for a failing no-scroll check). */
+const overflowers = (p: Page) =>
+  p.evaluate(() =>
+    [...document.querySelectorAll('body *')]
+      .filter((e) => e.getBoundingClientRect().right > document.documentElement.clientWidth + 1)
+      .slice(0, 4)
+      .map((e) => `${e.tagName.toLowerCase()}.${String((e as HTMLElement).className).slice(0, 60)} → ${Math.round(e.getBoundingClientRect().right)}`)
+      .join(' | '),
+  );
+
 async function setDark(p: Page, on: boolean) {
   await p.evaluate((d) => document.documentElement.classList.toggle('dark', d), on);
   await p.waitForTimeout(400); // let colour transitions finish before measuring or capturing
@@ -132,6 +142,59 @@ async function main() {
     check('dream country badge on Germany', /Dream country/.test(await p.locator('[data-country="DE"]').innerText()));
     check('explorer desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-3b-01-explorer');
+
+    // ============================================================ 3C · Country hub (one template)
+    console.log('\n[3C] Country hub');
+    await kr.getByRole('link', { name: 'Explore' }).click();
+    await p.waitForURL('**/abroad/countries/kr');
+    await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('hub: South Korea heading', (await p.getByRole('heading', { level: 1 }).innerText()) === 'South Korea');
+    const tabs = p.getByRole('tablist').getByRole('tab');
+    check('six tabs in order', (await tabs.allInnerTexts()).join('|') === 'Overview|Universities|Money|Apply|Visa & life|My roadmap', (await tabs.allInnerTexts()).join('|'));
+    check('Overview selected by default', (await tabs.first().getAttribute('aria-selected')) === 'true');
+    const krStatuses = await p.locator('[data-section]').evaluateAll((els) => els.map((e) => e.getAttribute('data-status')));
+    check('South Korea: every section “Not verified yet” (nothing invented)', krStatuses.length > 0 && krStatuses.every((s) => s === 'not-yet'), krStatuses.join(','));
+    const firstSection = p.locator('[data-section]').first();
+    check('open section shows Official information block', /Official information/i.test(await firstSection.innerText()) && /Not verified yet\. Official facts will appear here/.test(await firstSection.innerText()));
+    check('open section shows a separate Mino block', /Mino’s explanation/i.test(await firstSection.innerText()));
+    check('Ask Mino link carries the section', (await firstSection.getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) === '/mino?ask=abroad-section&country=kr&section=why');
+    check('fit question links to Mino', (await p.getByTestId('hub-fit').getAttribute('href')) === '/mino?ask=abroad-fit&country=kr');
+    check('non-dream country offers Build my plan', await p.getByTestId('hub-build-plan').isVisible());
+
+    await p.goto(`${BASE}/abroad/countries/de?tab=money`, { waitUntil: 'load' });
+    await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('?tab=money opens the Money tab', (await p.getByRole('tab', { name: 'Money' }).getAttribute('aria-selected')) === 'true');
+    const work = p.locator('[data-section="work"]');
+    check('Germany · Part-time work: Verified', (await work.getAttribute('data-status')) === 'verified');
+    await work.getByRole('button', { name: /Part-time work/ }).click();
+    const fact = work.locator('[data-fact]').first();
+    await fact.waitFor({ timeout: 5_000 });
+    check('verified fact shows its official source link', (await fact.locator('a[href^="http"]').count()) === 1);
+    check('verified fact shows when it was checked', /Verified|verified/.test(await fact.innerText()));
+    check('Germany · Tuition fees: Not verified yet', (await p.locator('[data-section="tuition"]').getAttribute('data-status')) === 'not-yet');
+    check('dream country: “Your dream country” + Open my roadmap', (await p.getByText('Your dream country').count()) === 1 && (await p.getByRole('link', { name: 'Open my roadmap' }).count()) >= 1);
+    await p.getByRole('tab', { name: 'Apply' }).click();
+    await p.waitForURL('**tab=apply');
+    check('tab switch updates the URL', p.url().endsWith('?tab=apply'));
+    const admission = p.locator('[data-section="admission"]');
+    check('Admission section opens first on Apply', (await admission.getByRole('button', { name: /Admission requirements/ }).getAttribute('aria-expanded')) === 'true');
+    const eligBtn = admission.getByRole('button', { name: 'Eligibility checked ✓' });
+    check('eligibility already done on home shows as done here', await eligBtn.isVisible());
+    await eligBtn.click();
+    a = await waitForAbroad(uid, (x) => x.journey?.marks?.eligibility === undefined || x.journey?.marks?.eligibility?.status !== 'done');
+    check('Firestore: eligibility un-marked from the hub', a.journey?.marks?.eligibility?.status !== 'done', JSON.stringify(a.journey ?? {}).slice(0, 160));
+    await admission.getByRole('button', { name: 'I’ve checked my eligibility' }).click();
+    a = await waitForAbroad(uid, (x) => x.journey?.marks?.eligibility?.status === 'done');
+    check('Firestore: eligibility marked again, for Germany', a.journey?.marks?.eligibility?.countryCode === 'DE');
+    check('hub desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3c-01-hub-de-apply');
+
+    await p.goto(`${BASE}/abroad/countries/au?tab=visa`, { waitUntil: 'load' });
+    await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('same template for Australia: Post-study verified', (await p.locator('[data-section="post-study"]').getAttribute('data-status')) === 'verified');
+    await p.goto(`${BASE}/abroad/countries/xx`, { waitUntil: 'load' });
+    await p.getByTestId('hub-not-found').waitFor({ timeout: 60_000 });
+    check('unknown country → clear message + way back', (await p.getByRole('link', { name: 'Countries' }).count()) >= 1);
     await ctx.close();
 
     // ============================================================ 3A · Home (Bangla, mobile)
@@ -158,6 +221,16 @@ async function main() {
     check('bn explorer mobile: no sideways scroll', await noHorizontalScroll(q));
     check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখো' }).count()) >= 13);
     await shot(q, 'sa-3b-02-explorer-mobile', false);
+    await q.goto(`${BASE}/abroad/countries/au`, { waitUntil: 'load' });
+    await q.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('bn hub: tabs in Bangla', (await q.getByRole('tab', { name: 'টাকা-পয়সা' }).count()) === 1);
+    check('bn hub: dream country Australia recognised', (await q.getByRole('link', { name: /roadmap/ }).count()) >= 1);
+    check('bn hub mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-3c-02-hub-mobile-bn', false);
+    await setDark(q, true);
+    check('bn hub mobile dark: no sideways scroll', await noHorizontalScroll(q));
+    await shot(q, 'sa-3c-03-hub-mobile-dark', false);
+    await setDark(q, false);
     await m.close();
   } catch (e) {
     const page = browser.contexts().flatMap((x) => x.pages()).at(-1);

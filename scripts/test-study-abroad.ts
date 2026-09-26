@@ -4,6 +4,9 @@ import { withProfileDefaults } from '../lib/services/profile-repository';
 import { ABROAD_STAGE_IDS, abroadJourney, markStage, setDreamCountry, toggleShortlist } from '../lib/engine';
 import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
 import { countryHref, countryIndicators } from '../lib/abroad/countries';
+import { actionHref, countrySections, factNeedsReview, HUB_TABS, SECTION_DEFS, sectionsOfTab } from '../lib/abroad/sections';
+import { deadlineBucket, scholarshipStatus } from '../lib/abroad/status';
+import { COUNTRY_SECTION_IDS } from '../lib/models';
 
 /**
  * Study Abroad product tests (journey, countries, hub, roadmap, centres…).
@@ -138,6 +141,55 @@ test('country cards only claim what is verified', () => {
   const ca = countryIndicators(getCountry('CA')!);
   assert.deepEqual(ca.verified, ['work', 'postStudy', 'living']);
   assert.equal(ca.facts, 3);
+});
+
+// ---------------------------------------------------------------- 3C/3D hub + models
+test('hub: 24 sections in the approved order, spread over 6 tabs; every tab has sections', () => {
+  assert.equal(COUNTRY_SECTION_IDS.length, 24);
+  assert.deepEqual([...HUB_TABS], ['overview', 'universities', 'money', 'apply', 'visa', 'roadmap']);
+  assert.deepEqual(sectionsOfTab('money'), ['tuition', 'living', 'work', 'scholarships']);
+  assert.deepEqual(sectionsOfTab('apply'), ['admission', 'english', 'documents', 'application', 'offer', 'deadlines']);
+  assert.deepEqual(sectionsOfTab('roadmap'), ['journey']);
+  for (const t of HUB_TABS) assert.ok(sectionsOfTab(t).length > 0, t);
+  assert.equal(actionHref(SECTION_DEFS.visa.action!.href, 'KR'), '/abroad/visa/kr');
+});
+
+test('hub: the same template serves every country; statuses come from verified facts only', () => {
+  for (const c of COUNTRIES) assert.equal(countrySections(c, NOW).length, 24, c.code);
+  const kr = countrySections(getCountry('KR')!, NOW);
+  assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0), 'no facts → not verified yet');
+  const de = countrySections(getCountry('DE')!, NOW);
+  assert.equal(de.find((s) => s.id === 'work')!.status, 'verified');
+  const ca = countrySections(getCountry('CA')!, NOW);
+  assert.equal(ca.find((s) => s.id === 'living')!.status, 'partial', 'money to show is not a full living cost');
+  assert.equal(ca.find((s) => s.id === 'post-study')!.status, 'verified');
+});
+
+test('hub: an old fact needs review and is no longer "verified"; reviewAt overrides the window', () => {
+  const later = new Date('2027-10-01T00:00:00Z');
+  const de = countrySections(getCountry('DE')!, later).find((s) => s.id === 'work')!;
+  assert.equal(de.stale, 1);
+  assert.equal(de.status, 'partial');
+  const f = { value: 'x', source: { name: 's', url: 'https://x', sourceType: 'official-government' as const }, lastVerified: '2026-09-26' };
+  assert.equal(factNeedsReview(f, 'deadlines', new Date('2026-12-01')), true, 'deadlines: 60 days');
+  assert.equal(factNeedsReview({ ...f, reviewAt: '2027-06-01' }, 'deadlines', new Date('2026-12-01')), false);
+  assert.equal(factNeedsReview({ ...f, validUntil: '2026-10-01' }, 'work', new Date('2026-11-01')), true);
+});
+
+test('status: scholarship open / opening soon / closed / passed, and deadline buckets, all computed from dates', () => {
+  const d = (value: string) => ({ value, source: { name: 's', sourceType: 'official-scholarship' as const }, lastVerified: '2026-09-01' });
+  const now = new Date('2026-09-26T10:00:00');
+  assert.equal(scholarshipStatus({ opensAt: d('2026-09-01'), deadline: d('2026-11-30') }, now), 'open');
+  assert.equal(scholarshipStatus({ opensAt: d('2026-11-01'), deadline: d('2027-01-31') }, now), 'opening-soon');
+  assert.equal(scholarshipStatus({ opensAt: d('2027-06-01'), deadline: d('2027-08-31') }, now), 'closed');
+  assert.equal(scholarshipStatus({ deadline: d('2026-09-25') }, now), 'deadline-passed');
+  assert.equal(scholarshipStatus({}, now), 'unknown');
+  assert.equal(deadlineBucket('2026-09-26', now), 'this-week');
+  assert.equal(deadlineBucket('2026-10-03', now), 'this-week');
+  assert.equal(deadlineBucket('2026-10-20', now), 'this-month');
+  assert.equal(deadlineBucket('2027-01-10', now), 'upcoming');
+  assert.equal(deadlineBucket('2026-09-20', now), 'missed');
+  assert.equal(deadlineBucket('2026-09-20', now, true), 'completed');
 });
 
 console.log(`\n${passed} passed`);

@@ -11,6 +11,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { askMino } from '@/lib/ai/client';
 import { getChallenge } from '@/lib/foundation';
+import { getCountry } from '@/lib/content/countries';
 import { MINO_ACTIONS, isMinoAction, type MinoActionId } from '@/lib/ai/actions';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
@@ -221,7 +222,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -245,6 +246,13 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       send(t('foundation.askReview'), 'ielts-coach');
     } else if (ask === 'foundation') {
       send(t('foundation.askPattern', { tag: t(`foundation.tags.${params.get('tag') ?? 'sentence-structure'}`) }), 'ielts-coach');
+    } else if (ask === 'abroad-fit' || ask === 'abroad-section') {
+      const country = getCountry(params.get('country') ?? '')?.name ?? params.get('country') ?? '';
+      const section = params.get('section') ?? '';
+      send(
+        ask === 'abroad-fit' ? t('sa.hub.fitPrompt', { country }) : t('sa.hub.sectionPrompt', { country, section: t(`sa.sections.${section}`) }),
+        'study-abroad-advisor',
+      );
     } else if (ask === 'abroad-next') {
       send(t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad') {
