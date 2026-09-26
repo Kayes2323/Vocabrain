@@ -1,6 +1,7 @@
 'use client';
 
-import { BookOpenCheck, BookText, Layers, Lock } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, BookOpenCheck, BookText, Layers, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -25,6 +26,18 @@ export default function VocabularyPage() {
   return (
     <div className="space-y-8">
       <PageHeader title={t('skills.vocabulary')} subtitle={t('vocabulary.subtitle')} backHref="/ielts" backLabel={t('nav.ielts')} />
+
+      <Panel variant="brand" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-semibold">{t('vocabFoundation.entryTitle')}</p>
+          <p className="text-sm text-muted-foreground">{t('vocabFoundation.entryBody')}</p>
+        </div>
+        <Button asChild size="lg">
+          <Link href="/ielts/vocabulary/foundation">
+            {t('vocabFoundation.entryCta')} <ArrowRight />
+          </Link>
+        </Button>
+      </Panel>
 
       <BrainSummaryPanel />
 

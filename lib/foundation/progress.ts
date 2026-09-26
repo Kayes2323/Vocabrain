@@ -25,7 +25,7 @@ export function lessonOutcome(score: number): LessonOutcome {
 
 export const lessonTotal = (m: Module) => m.lessons.length + (m.planned?.length ?? 0);
 export const lessonsDone = (m: Module, fp: FoundationProgress) => m.lessons.filter((l) => fp.lessons[l.id]).length;
-export const isComingSoon = (m: Module) => m.lessons.length === 0;
+export const isComingSoon = (m: Module) => m.lessons.length === 0 && !m.href;
 const skippedSet = (fp: FoundationProgress) => new Set(fp.diagnostic?.skippedLessons ?? []);
 
 /** 0–100: completed lessons (and lessons skipped after the check) over all lessons, written and planned. */

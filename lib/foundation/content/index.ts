@@ -178,6 +178,7 @@ export const MODULES: Module[] = [
     skill: 'vocabulary',
     tags: ['vocabulary', 'collocation'],
     lessons: [],
+    href: '/ielts/vocabulary/foundation',
     planned: [t('How to learn a word for IELTS', 'IELTS-এর জন্য কীভাবে একটা শব্দ শিখবে'), t('Synonyms and paraphrasing', 'Synonym আর paraphrasing'), t('Collocations', 'Collocations'), t('Using new words in Writing and Speaking', 'Writing আর Speaking-এ নতুন শব্দ ব্যবহার')],
   },
 

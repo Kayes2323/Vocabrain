@@ -33,9 +33,24 @@ export function deriveStatus(w: Pick<BrainWord, 'stage' | 'recallCount' | 'writi
   return 'new';
 }
 
-function withStatus(w: BrainWord): BrainWord {
-  return { ...w, status: deriveStatus(w) };
+/**
+ * Confidence 0–100 from real recalls: recent accuracy (last 5) weighs 60%,
+ * memory stage 40%. 0 until the first recall.
+ */
+export function wordConfidence(w: Pick<BrainWord, 'stage' | 'recallCount' | 'recallHistory'>): number {
+  if (w.recallCount === 0) return 0;
+  const recent = w.recallHistory.slice(-5);
+  const accuracy = recent.length ? recent.filter((r) => r.correct).length / recent.length : 0;
+  return Math.round(accuracy * 60 + (w.stage / MAX_STAGE) * 40);
 }
+
+function withStatus(w: BrainWord): BrainWord {
+  return { ...w, status: deriveStatus(w), confidence: wordConfidence(w) };
+}
+
+/** A word the student keeps getting wrong. */
+export const isWeakWord = (w: BrainWord) =>
+  w.consecutiveFailures > 0 || (w.recallCount >= 3 && w.successfulRecallCount / w.recallCount < 0.5);
 
 export function createBrainWord(info: WordInfo, source: WordSource, originalSentence: string | undefined, now = new Date()): BrainWord {
   const iso = now.toISOString();
@@ -79,13 +94,24 @@ export function dueWords(words: BrainWord[], now = new Date()): BrainWord[] {
     .sort((a, b) => b.consecutiveFailures - a.consecutiveFailures || a.nextReviewAt.localeCompare(b.nextReviewAt));
 }
 
+/**
+ * Adaptive spacing. Correct: next interval (1, 3, 7, 14, 30, 60 days), and 1.5×
+ * longer when the last three recalls were all right. Wrong: back to stage 0 and
+ * tomorrow — or in 4 hours when it is the second failure in a row.
+ */
+export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutiveFailures'>, stage: number, correct: boolean, now: Date): Date {
+  if (!correct) return w.consecutiveFailures + 1 >= 2 ? new Date(now.getTime() + 4 * 3_600_000) : addDays(now, 1);
+  const base = REVIEW_INTERVAL_DAYS[Math.min(stage, MAX_STAGE) - 1];
+  const streak = w.recallHistory.slice(-2).filter((r) => r.correct).length === 2;
+  return addDays(now, stage >= 3 && streak ? Math.round(base * 1.5) : base);
+}
+
 export function applyRecall(w: BrainWord, exercise: RecallExercise, correct: boolean, answer: string | undefined, now = new Date()): BrainWord {
   const stage = correct ? Math.min(w.stage + 1, MAX_STAGE) : 0;
-  const days = correct ? REVIEW_INTERVAL_DAYS[Math.min(stage, MAX_STAGE) - 1] : 1;
   return withStatus({
     ...w,
     stage,
-    nextReviewAt: addDays(now, days).toISOString(),
+    nextReviewAt: nextReviewDate(w, stage, correct, now).toISOString(),
     lastReviewedAt: now.toISOString(),
     updatedAt: now.toISOString(),
     recallCount: w.recallCount + 1,

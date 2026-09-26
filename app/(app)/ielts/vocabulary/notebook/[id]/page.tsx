@@ -23,6 +23,7 @@ import { canSpeak, speakWord } from '@/components/reading/speak';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { MAX_STAGE, diagnoseWord, speakingPrompt } from '@/lib/engine';
+import { FoundationWordExtras } from '@/components/vocab-foundation/FoundationWordExtras';
 
 function Chips({ label, items }: { label: string; items: string[] }) {
   if (items.length === 0) return null;
@@ -116,6 +117,8 @@ export default function WordDetailPage() {
           </div>
         )}
       </Panel>
+
+      <FoundationWordExtras word={word} />
 
       {diagnosis && (
         <Panel variant="brand" className="space-y-3">

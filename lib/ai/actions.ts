@@ -15,6 +15,7 @@ export const MINO_ACTIONS = {
   'foundation-check': '/ielts/foundation/diagnostic',
   'sentence-basics': '/ielts/foundation/sentence-basics',
   tenses: '/ielts/foundation/tenses',
+  'vocab-foundation': '/ielts/vocabulary/foundation',
   'study-plan': '/ielts/plan',
   'my-brain': '/ielts/vocabulary/notebook',
   'set-goal': '/setup/ielts',

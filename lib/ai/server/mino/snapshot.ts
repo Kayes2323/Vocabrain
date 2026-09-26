@@ -7,6 +7,7 @@ import { getTranslator } from '@/lib/i18n';
 import { analyseTests, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
 import { foundationSummaryLines } from '@/lib/foundation/progress';
+import { vocabSummaryLines } from '@/lib/vocab-foundation/mission';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
 import { listOwnCollection, readOwnDoc } from '../firestore-rest';
@@ -94,6 +95,8 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
       ? '- Vocabulary (Brain): no saved words yet.'
       : `- Vocabulary (Brain): ${brain.total} saved, ${brain.due} due for review today, ${brain.failedLastTime} missed last time; by status ${Object.entries(brain.byStatus).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(', ')}.`,
   );
+
+  lines.push(...vocabSummaryLines(words as unknown as BrainWord[], profile.vocabFoundation, now));
 
   // Today's plan (same engine as the Home screen)
   const plan = buildDailyPlan(profile, brain, now);

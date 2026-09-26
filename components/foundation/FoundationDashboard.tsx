@@ -227,12 +227,12 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
               return (
                 <ListRow
                   key={m.id}
-                  href={soon ? undefined : `/ielts/foundation/${m.id}`}
+                  href={soon ? undefined : (m.href ?? `/ielts/foundation/${m.id}`)}
                   icon={soon ? Lock : SKILL_ICON[m.skill]}
                   iconTone={soon ? 'neutral' : 'brand'}
                   muted={soon}
                   title={text(m.title)}
-                  description={soon ? t('foundation.soon') : t('foundation.lessonsCount', { done: lessonsDone(m, fp), total: lessonTotal(m) })}
+                  description={soon ? t('foundation.soon') : m.href ? text(m.description) : t('foundation.lessonsCount', { done: lessonsDone(m, fp), total: lessonTotal(m) })}
                   trailing={
                     soon ? undefined : m.id === rec?.id && pct < 100 ? (
                       <StatusChip tone="brand">{t('foundation.recommended')}</StatusChip>

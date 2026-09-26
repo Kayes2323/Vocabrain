@@ -122,6 +122,19 @@ export const APP_GUIDES: AppGuide[] = [
     ],
   },
   {
+    id: 'vocabulary-foundation',
+    status: 'AVAILABLE',
+    title: 'Vocabulary Foundation (daily word mission)',
+    where: 'IELTS → Vocabulary → Vocabulary Foundation (/ielts/vocabulary/foundation); mission at /ielts/vocabulary/foundation/mission',
+    steps: [
+      'Today’s mission (about 15 minutes): 5 new words, 10 free-recall questions, 2 sentence challenges, plus up to 5 due review words.',
+      'Each word: meet it in a sentence → guess the meaning from context → meaning, pronunciation, examples, collocations, synonyms (with traps), word family, IELTS use revealed step by step → Save to Brain.',
+      'Then free recall without options (a clue after a first miss), a sentence with the word that Mino checks (a rule-based quick check if Mino is busy), and spaced reviews in /review.',
+      'First set: significant, decline, benefit, impact, access, contribute, sustainable, crucial, consequence, afford.',
+    ],
+    notes: ['Saved words live in My Brain (/ielts/vocabulary/notebook). Use the snapshot / getVocabulary for the student’s real word data; never invent counts.'],
+  },
+  {
     id: 'starting-point',
     status: 'AVAILABLE',
     title: 'Find your starting point (diagnostic)',

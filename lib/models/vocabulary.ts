@@ -70,6 +70,8 @@ export interface BrainWord {
   /** Successful uses in the student's own writing / speaking. */
   writingUsageCount: number;
   speakingUsageCount: number;
+  /** 0–100 from recent recall accuracy and memory stage (derived on every write). */
+  confidence?: number;
   /** Most recent attempts, capped so documents stay small. */
   recallHistory: RecallAttempt[];
   usageHistory: UsageAttempt[];

@@ -177,6 +177,8 @@ export interface Module {
   /** Error tags this module practises; the diagnostic uses them to recommend a start. */
   tags: ErrorTag[];
   lessons: Lesson[];
+  /** The module lives in its own experience (e.g. Vocabulary Foundation). */
+  href?: string;
   /** Lessons not written yet: shown as "coming soon" and counted in progress totals. */
   planned?: L[];
 }

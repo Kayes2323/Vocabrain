@@ -63,3 +63,24 @@ export async function foundationFeedback(
     return { ok: false, error: 'unavailable' };
   }
 }
+
+/** Mino's feedback on a sentence with a Vocabulary Foundation word. */
+export async function vocabFeedback(
+  wordId: string,
+  text: string,
+  language: 'en' | 'bn',
+): Promise<{ ok: true; feedback: import('./server/assess/vocab').VocabFeedback } | { ok: false; error: import('./types').MinoErrorCode }> {
+  const user = auth?.currentUser;
+  if (!user) return { ok: false, error: 'unauthenticated' };
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/mino/vocab-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ wordId, text, language }),
+    });
+    return (await res.json().catch(() => ({ ok: false, error: 'unavailable' }))) as never;
+  } catch {
+    return { ok: false, error: 'unavailable' };
+  }
+}

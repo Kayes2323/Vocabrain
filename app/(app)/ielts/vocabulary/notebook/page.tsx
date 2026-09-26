@@ -11,12 +11,12 @@ import { meanings } from '@/components/brain/meaning';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { brainSummary, isDue } from '@/lib/engine';
+import { brainSummary, isDue, isWeakWord } from '@/lib/engine';
 import type { BrainWord } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
-type Filter = 'review' | 'new' | 'learning' | 'strong' | 'mastered' | 'all';
-const FILTERS: Filter[] = ['review', 'new', 'learning', 'strong', 'mastered', 'all'];
+type Filter = 'review' | 'new' | 'learning' | 'weak' | 'strong' | 'mastered' | 'all';
+const FILTERS: Filter[] = ['review', 'new', 'learning', 'weak', 'strong', 'mastered', 'all'];
 
 function matches(w: BrainWord, filter: Filter) {
   switch (filter) {
@@ -26,6 +26,8 @@ function matches(w: BrainWord, filter: Filter) {
       return w.status === 'new';
     case 'learning':
       return w.status === 'learning' || w.status === 'recalling' || w.status === 'active';
+    case 'weak':
+      return isWeakWord(w);
     case 'strong':
       return w.status === 'strong';
     case 'mastered':

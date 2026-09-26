@@ -44,6 +44,12 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       mistakes: [...(stored.foundation?.mistakes ?? [])],
       days: { ...stored.foundation?.days },
     },
+    vocabFoundation: {
+      ...base.vocabFoundation,
+      ...stored.vocabFoundation,
+      discovered: { ...stored.vocabFoundation?.discovered },
+      days: { ...stored.vocabFoundation?.days },
+    },
   };
 }
 

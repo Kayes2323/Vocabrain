@@ -196,6 +196,39 @@ export interface FoundationProgress {
   inProgress?: FoundationInProgress;
 }
 
+/** One local day of Vocabulary Foundation work (YYYY-MM-DD). */
+export interface VocabDay {
+  newWords: number;
+  recalls: number;
+  recallCorrect: number;
+  sentences: number;
+  sentencesCorrect: number;
+  missionDoneAt?: ISODate;
+}
+
+/** An unfinished mission, so a refresh or another device resumes it. */
+export interface VocabSession {
+  date: string;
+  words: string[];
+  phase: 'discover' | 'recall' | 'use' | 'done';
+  /** Position inside the phase. */
+  index: number;
+  /** Results so far, by `${phase}:${wordId}` (recall has two kinds per word). */
+  results: Record<string, { correct: boolean; answer?: string }>;
+}
+
+/**
+ * Vocabulary Foundation progress. The words themselves (meaning, review
+ * schedule, recall and usage history) live in the Brain
+ * (users/{uid}/vocabulary/{id}); this only records the course around them.
+ */
+export interface VocabFoundationProgress {
+  /** Words met in the course and whether the first guess from context was right. */
+  discovered: Record<string, { at: ISODate; guessedRight: boolean }>;
+  days: Record<string, VocabDay>;
+  session?: VocabSession;
+}
+
 export interface UserProfile {
   userId: ID;
   displayName?: string;
@@ -207,6 +240,7 @@ export interface UserProfile {
   vocabulary: VocabularyProgress;
   study: StudyProgress;
   foundation: FoundationProgress;
+  vocabFoundation: VocabFoundationProgress;
   updatedAt: ISODate;
 }
 
@@ -218,6 +252,7 @@ export function emptyProfile(userId: ID): UserProfile {
     vocabulary: { savedWordIds: [], words: {} },
     study: { completedTasks: {}, mockTestsCompleted: 0, days: {} },
     foundation: { lessons: {}, errors: {}, concepts: {}, mistakes: [], days: {} },
+    vocabFoundation: { discovered: {}, days: {} },
     updatedAt: new Date().toISOString(),
   };
 }
