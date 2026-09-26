@@ -174,7 +174,7 @@ function ActiveWriting({
           <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
             {t('tests.writing.taskN', { n: task.task })} · {t('tests.writing.suggested', { n: task.suggestedMinutes })}
           </p>
-          <p className="leading-7" lang="en">
+          <p className="leading-7 whitespace-pre-line" lang="en">
             {task.prompt}
           </p>
           {task.data && (

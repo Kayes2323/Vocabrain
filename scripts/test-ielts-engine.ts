@@ -64,6 +64,7 @@ test('word limits count hyphenated words once and numbers separately', () => {
   assert.equal(withinLimit('air-filled rubber tyres', { words: 2, number: true }), false);
   assert.equal(withinLimit('2 bedrooms', { words: 1, number: true }), true);
   assert.equal(withinLimit('two bedrooms', { words: 1 }), false);
+  assert.equal(withinLimit('07723 419 856', { words: 1, number: true }), true, 'spaced phone number is one number');
 });
 
 test('perfect answers score 24/24', () => {
@@ -72,6 +73,22 @@ test('perfect answers score 24/24', () => {
   assert.equal(r.correct, 24);
   assert.equal(r.estimatedBand, undefined, 'no band for a partial section');
   assert.deepEqual(r.byPart.map((p) => [p.number, p.correct, p.total]), [[1, 12, 12], [2, 12, 12]]);
+});
+
+test('mock test 1: full 40+40, every canonical answer scores, band 9', () => {
+  const mock = getTest('vb-mock-1')!;
+  for (const skill of ['listening', 'reading'] as const) {
+    const section = mock.sections[skill]!;
+    const key: Record<string, string> = {};
+    for (const part of section.parts) for (const g of part.groups) for (const q of g.questions) {
+      if (g.type === 'multiple-choice-multi') key[q.id] = q.answer.accepted[0];
+      else key[q.id] = q.answer.accepted[0].replace(/[()]/g, '');
+    }
+    const r = scoreSection(section, key);
+    assert.equal(r.total, 40, skill);
+    assert.equal(r.correct, 40, skill);
+    assert.equal(r.estimatedBand, 9, skill);
+  }
 });
 
 test('answers are case/space tolerant; spelling and limits are strict', () => {

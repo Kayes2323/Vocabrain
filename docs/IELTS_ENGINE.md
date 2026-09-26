@@ -67,6 +67,27 @@ Firestore rules validate the shape and make a submitted attempt final (no edits)
 - Result: score, per passage/part, per question type (weakest first), a
   deterministic "where to focus", answers with explanations and evidence.
 
+## Listening (`components/test/ListeningPlayer.tsx`)
+
+- Plays the section once, like the computer-delivered test: part intro, 20 s to
+  read the questions, the recording, 10 s to check, then the next part. The
+  question view follows the audio to each new part.
+- A part uses `audio.src` when a recording exists; otherwise the browser reads
+  `audio.script` aloud (speech synthesis), with a voice per speaker matched on
+  accent and gender, and pitch to tell speakers apart.
+- The position is saved on the device, so a refresh resumes from the same
+  sentence instead of replaying. Pause is allowed (practice); the audio pauses
+  with the timer when the page is hidden.
+- The transcript is shown only on the result page.
+
+## Mock tests (`lib/ielts/content/vb-mock`)
+
+Vocab Brain Academic Mock Test 1: original, full-length content written to
+Cambridge IELTS level (40 Listening + 40 Reading questions, Writing Task 1/2,
+Speaking Parts 1–3). Every answer has an explanation with evidence; the
+validator checks numbering and that "from the passage" answers appear in the
+passage. No Cambridge material is used.
+
 ## Tests
 
 - `pnpm test:ielts`: content validation, licensing, normalisation, word limits,
@@ -91,5 +112,6 @@ student's data; `/ielts/plan` shows it and Mino explains it (`getStudyPlan`).
 
 ## Next
 
-Highlighting + Save to Brain in passages, Listening audio player, Writing and
-Speaking runners, history/progress, mistake notebook, Mino analysis of results.
+Full-simulation mode (all four skills in one attempt), highlighting + Save to
+Brain in passages, history/progress, mistake notebook, Mino analysis of results,
+more mock tests.

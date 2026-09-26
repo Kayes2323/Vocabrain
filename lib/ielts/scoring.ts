@@ -64,11 +64,20 @@ export function expandAccepted(answer: string): string[] {
   return [...expandAccepted(before + match[1] + after), ...expandAccepted(before + after)];
 }
 
-/** Words as IELTS counts them: hyphenated words count once, a number is not a word. */
+/**
+ * Words as IELTS counts them: hyphenated words count once, and a number is not
+ * a word. Digits split by spaces (a phone number, "2 500") count as one number.
+ */
 export function countWords(text: string): { words: number; numbers: number } {
   const tokens = normalise(text).split(' ').filter(Boolean);
-  const numbers = tokens.filter((t) => /^[\d.,/:%-]+$/.test(t)).length;
-  return { words: tokens.length - numbers, numbers };
+  const isNumber = (t: string) => /^[\d.,/:%-]+$/.test(t);
+  let numbers = 0;
+  let words = 0;
+  tokens.forEach((t, i) => {
+    if (!isNumber(t)) words++;
+    else if (i === 0 || !isNumber(tokens[i - 1])) numbers++;
+  });
+  return { words, numbers };
 }
 
 export function withinLimit(text: string, limit: WordLimit | undefined): boolean {

@@ -4,6 +4,7 @@
 import type { IELTSSkillId, ObjectiveSkill, PracticeTest, TestBook } from '../model';
 import { isPublishable } from '../validate';
 import { practiceTest1 } from './demo/practice-test-1';
+import { mockTest1 } from './vb-mock';
 
 const ALL_BOOKS: TestBook[] = [
   {
@@ -16,6 +17,17 @@ const ALL_BOOKS: TestBook[] = [
     licenseStatus: 'original',
     dateAdded: '2026-09-26',
     tests: [practiceTest1],
+  },
+  {
+    id: 'vb-mock',
+    series: 'vocab-brain',
+    title: 'Vocab Brain Academic Mock Tests',
+    order: 1,
+    source: 'Vocab Brain',
+    sourceType: 'vocab-brain-original',
+    licenseStatus: 'original',
+    dateAdded: '2026-09-26',
+    tests: [mockTest1],
   },
 ];
 

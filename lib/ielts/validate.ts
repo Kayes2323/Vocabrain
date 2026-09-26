@@ -2,6 +2,7 @@
 // typo in content fails loudly instead of mis-scoring students.
 import type { ObjectiveSection, PracticeTest, TestBook } from './model';
 import { answerMode, optionsFor, QUESTION_TYPES } from './question-types';
+import { expandAccepted, normalise } from './scoring';
 
 /** Content from a publisher (e.g. Cambridge) may only ship when licensed. */
 export function isPublishable(item: { sourceType: string; licenseStatus: string }): boolean {
@@ -22,7 +23,7 @@ function checkSection(section: ObjectiveSection, where: string, errors: string[]
     unique(part.id, 'part');
     const at = `${where} part ${part.number}`;
     if (section.skill === 'reading' && !part.passage) errors.push(`${at}: reading part needs a passage`);
-    if (section.skill === 'listening' && !part.audio) errors.push(`${at}: listening part needs audio`);
+    if (section.skill === 'listening' && !part.audio?.src && !part.audio?.script?.length) errors.push(`${at}: listening part needs audio or a script`);
     const paragraphIds = new Set(part.passage?.paragraphs.map((p) => p.id));
 
     for (const group of part.groups) {
@@ -48,6 +49,13 @@ function checkSection(section: ObjectiveSection, where: string, errors: string[]
           for (const a of q.answer.accepted) if (!valid.has(a.toUpperCase())) errors.push(`${qa}: answer "${a}" is not an option`);
         }
         if (mode === 'text' && !group.template && !group.table && !q.prompt?.includes('___')) errors.push(`${qa}: completion prompt needs a ___ gap`);
+        // "…from the passage": the main answer must appear word for word in the passage
+        // (other accepted forms may be spelling variants).
+        if (mode === 'text' && part.passage && /from the passage/i.test(group.instructions)) {
+          const passageText = ` ${normalise(part.passage.paragraphs.map((p) => p.text).join(' ')).replace(/[^a-z0-9' -]/g, ' ').replace(/\s+/g, ' ')} `;
+          const forms = expandAccepted(q.answer.accepted[0] ?? '');
+          if (!forms.some((a) => passageText.includes(` ${a} `))) errors.push(`${qa}: answer "${q.answer.accepted[0]}" is not in the passage`);
+        }
         const ref = q.explanation?.evidence?.paragraphId;
         if (ref && !paragraphIds.has(ref)) errors.push(`${qa}: evidence paragraph "${ref}" not in passage`);
       });

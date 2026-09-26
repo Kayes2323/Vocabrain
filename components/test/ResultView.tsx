@@ -94,6 +94,30 @@ export function ResultView({ test, section, session, onRetry }: { test: Practice
         </Panel>
       </Section>
 
+      {section.skill === 'listening' && section.parts.some((p) => p.audio?.script?.length) && (
+        <Section title={t('tests.listening.transcript')}>
+          <div className="space-y-2">
+            {section.parts.map((p) =>
+              p.audio?.script?.length ? (
+                <details key={p.id} className="rounded-xl border px-4 py-3 text-sm">
+                  <summary className="cursor-pointer font-medium">
+                    {t('tests.partN', { n: p.number })}
+                    {p.title && <span className="font-normal text-muted-foreground"> · {p.title}</span>}
+                  </summary>
+                  <div className="mt-3 space-y-2" lang="en">
+                    {p.audio.script.map((line, i) => (
+                      <p key={i}>
+                        <span className="font-semibold">{line.speaker}:</span> {line.text}
+                      </p>
+                    ))}
+                  </div>
+                </details>
+              ) : null,
+            )}
+          </div>
+        </Section>
+      )}
+
       <Section title={t('tests.answers')}>
         <ol className="divide-y rounded-xl border">
           {result.questions.map((q) => (

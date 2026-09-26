@@ -14,6 +14,7 @@ import {
 import { writeJSON } from '@/lib/services/local-store';
 import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
+import { ListeningPlayer } from './ListeningPlayer';
 import { QuestionGroupView } from './QuestionGroupView';
 import { ResultView } from './ResultView';
 import { TestIntro } from './TestIntro';
@@ -38,6 +39,7 @@ export function TestRunner({ test, skill }: { test: PracticeTest; skill: Objecti
           [t(skill === 'reading' ? 'tests.passages' : 'tests.parts'), String(section.parts.length)],
           [t('tests.time'), t('common.minutes', { n: section.timeLimitMinutes })],
         ]}
+        bullets={skill === 'listening' ? [t('tests.listening.introOnce'), t('tests.listening.introHeadphones'), t('tests.introReview')] : undefined}
         resumable={resumable}
         onStart={start}
       />
@@ -165,6 +167,10 @@ function ActiveTest({
           <span className="hidden sm:inline">{t('tests.review')}</span>
         </Button>
       </header>
+
+      {section.skill === 'listening' && (
+        <ListeningPlayer sessionId={session.id} section={section} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
+      )}
 
       {/* Mobile: passage and questions take turns; desktop shows both */}
       {part.passage && (

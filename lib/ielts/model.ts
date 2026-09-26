@@ -106,6 +106,23 @@ export interface Paragraph {
   labelled?: boolean;
 }
 
+/** One spoken line in a Listening script. */
+export interface ScriptLine {
+  speaker: string;
+  voice: 'female' | 'male';
+  accent?: 'en-GB' | 'en-US' | 'en-AU';
+  text: string;
+}
+
+export interface ListeningAudio {
+  /** Recorded audio (preferred). */
+  src?: string;
+  /** Spoken script: used when there is no recording, and shown as the transcript after the test. */
+  script?: ScriptLine[];
+  /** Short context the narrator reads first ("You will hear a phone call…"). */
+  intro?: string;
+}
+
 export interface ObjectivePart {
   id: ID;
   /** Listening Part 1–4, Reading Passage 1–3. */
@@ -113,8 +130,8 @@ export interface ObjectivePart {
   title?: string;
   /** Reading only. */
   passage?: { title: string; subtitle?: string; paragraphs: Paragraph[] };
-  /** Listening only. */
-  audio?: { src: string; transcript?: string };
+  /** Listening only: a recorded file, or a script the browser reads aloud. */
+  audio?: ListeningAudio;
   groups: QuestionGroup[];
 }
 
