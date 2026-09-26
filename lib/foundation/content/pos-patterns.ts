@@ -15,15 +15,24 @@ export interface FixGuide {
   avoid: L;
 }
 
-/** Named patterns: their name and the unit that teaches the idea. */
-export const POS_NAMED_PATTERNS: Record<string, { title: L; unit: string }> = {
-  'sv-agreement': { title: l('Subject–verb agreement', 'Subject–verb agreement'), unit: 'lab' },
-  'verb-form': { title: l('Verb form after helping verbs', 'Helping verb-এর পরে verb form'), unit: 'verb' },
-  'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), unit: 'noun' },
-  'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), unit: 'pronoun' },
-  'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), unit: 'preposition' },
-  'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), unit: 'conjunction' },
+/**
+ * Named patterns: their name, the modules whose pages offer the fix (the first
+ * is "home") and, for Parts of Speech, the unit that teaches the idea.
+ */
+export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; unit?: string }> = {
+  'sv-agreement': { title: l('Subject–verb agreement', 'Subject–verb agreement'), modules: ['parts-of-speech', 'tenses'], unit: 'lab' },
+  'verb-form': { title: l('Verb form after helping verbs', 'Helping verb-এর পরে verb form'), modules: ['parts-of-speech', 'tenses'], unit: 'verb' },
+  'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech'], unit: 'noun' },
+  'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), modules: ['parts-of-speech'], unit: 'pronoun' },
+  'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), modules: ['parts-of-speech'], unit: 'preposition' },
+  'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), modules: ['parts-of-speech'], unit: 'conjunction' },
+  'past-vs-perfect': { title: l('Past Simple or Present Perfect', 'Past Simple নাকি Present Perfect'), modules: ['tenses'] },
+  'simple-vs-continuous': { title: l('Simple or continuous', 'Simple নাকি continuous'), modules: ['tenses'] },
+  'tense-time': { title: l('Time words decide the tense', 'Time word-ই tense ঠিক করে'), modules: ['tenses'] },
 };
+
+/** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
+export const patternModules = (key: string): string[] => POS_NAMED_PATTERNS[key]?.modules ?? ['parts-of-speech'];
 
 /** Exercises of these concepts check the named pattern unless they say otherwise (tagging aside). */
 export const CONCEPT_PATTERN: Record<string, string> = {
@@ -140,6 +149,33 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('The ideas are right but the link word says the wrong relation (reason vs result, contrast vs addition).', 'Idea ঠিক আছে, কিন্তু জোড়ার word ভুল সম্পর্ক বলছে (কারণ বনাম ফলাফল, বিপরীত বনাম যোগ)।'),
     recognise: l('Say the two ideas with "and that is why" or "but surprisingly". Which one sounds true?', 'দুটো idea "and that is why" বা "but surprisingly" দিয়ে বলো। কোনটা সত্যি শোনায়?'),
     avoid: l('Choose the relation first (reason, result, contrast), then the word.', 'আগে সম্পর্ক ঠিক করো (কারণ, ফলাফল, বিপরীত), তারপর word।'),
+  },
+  'past-vs-perfect': {
+    rule: l(
+      'A finished time (yesterday, last year, in 2019, ago, when I was…) → Past Simple: I visited Sylhet last year. No finished time, or a link to now (since, for, ever, never, yet, already, recently) → Present Perfect: I have visited Sylhet twice.',
+      'শেষ হয়ে যাওয়া সময় (yesterday, last year, in 2019, ago, when I was…) → Past Simple: I visited Sylhet last year। শেষ সময় নেই, বা এখনের সাথে যোগ আছে (since, for, ever, never, yet, already, recently) → Present Perfect: I have visited Sylhet twice।',
+    ),
+    why: l('Bangla "আমি গিয়েছি" and "আমি গেলাম" both feel like "have gone", so students add "have" even when a finished time is there ("I have gone yesterday").', 'বাংলায় "আমি গিয়েছি" আর "আমি গেলাম" দুটোই "have gone"-এর মতো লাগে, তাই শেষ হওয়া সময় থাকলেও "have" বসে যায় ("I have gone yesterday")।'),
+    recognise: l('Look for a time word. Can you answer "When exactly?" with a finished time? Then it is Past Simple.', 'Time word খোঁজো। "ঠিক কখন?"-এর উত্তরে শেষ হওয়া সময় আছে? তাহলে Past Simple।'),
+    avoid: l('In Task 1, past years → Past Simple. Use Present Perfect only for "since…", "in recent years" or experience.', 'Task 1-এ অতীতের বছর → Past Simple। Present Perfect শুধু "since…", "in recent years" বা অভিজ্ঞতার জন্য।'),
+  },
+  'simple-vs-continuous': {
+    rule: l(
+      'Routines, permanent facts and states (know, like, want, believe, own) → simple: I work in a bank. I know him. Right now, temporary situations and changing trends → continuous: I am working late this week. Prices are rising.',
+      'রুটিন, স্থায়ী সত্য আর অবস্থা (know, like, want, believe, own) → simple: I work in a bank। I know him। এই মুহূর্ত, সাময়িক অবস্থা আর বদলাতে থাকা trend → continuous: I am working late this week। Prices are rising।',
+    ),
+    why: l('Bangla uses "করছি" for both "I work" and "I am working", so the -ing form feels natural everywhere.', 'বাংলায় "I work" আর "I am working" দুটোতেই "করছি" চলে, তাই -ing সব জায়গায় স্বাভাবিক লাগে।'),
+    recognise: l('Ask: is it happening now or only for a while? → continuous. Is it always, usually, or a state? → simple.', 'জিজ্ঞেস করো: এখন হচ্ছে বা কিছুদিনের জন্য? → continuous। সবসময়, সাধারণত, নাকি একটা অবস্থা? → simple।'),
+    avoid: l('Never put -ing on know, understand, believe, want, own, need. For your job or home, use simple unless it is temporary.', 'know, understand, believe, want, own, need-এ কখনো -ing না। চাকরি বা বাসার কথায় simple, যদি না সেটা সাময়িক হয়।'),
+  },
+  'tense-time': {
+    rule: l(
+      'The time words choose the tense: yesterday, last…, ago, in 2010 → past; now, at the moment, these days → present continuous; every day, usually → present simple; since, for, so far → present perfect; tomorrow, next…, by 2030 → future; by the time + past → past perfect.',
+      'Time word-ই tense বেছে দেয়: yesterday, last…, ago, in 2010 → past; now, at the moment, these days → present continuous; every day, usually → present simple; since, for, so far → present perfect; tomorrow, next…, by 2030 → future; by the time + past → past perfect।',
+    ),
+    why: l('Bangla verbs change less for time, so the time word often feels like enough ("Yesterday I go").', 'বাংলায় verb সময়ের সাথে কম বদলায়, তাই মনে হয় time word-ই যথেষ্ট ("Yesterday I go")।'),
+    recognise: l('Underline the time word first. Then check that the verb agrees with it.', 'আগে time word-এর নিচে দাগ দাও। তারপর দেখো verb তার সাথে মেলে কিনা।'),
+    avoid: l('When you proofread, read only the time words and verbs together: "in 2015 … increased", "since 2015 … has increased".', 'Proofread করার সময় শুধু time word আর verb একসাথে পড়ো: "in 2015 … increased", "since 2015 … has increased"।'),
   },
 };
 

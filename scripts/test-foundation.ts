@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import {
   STAGE_DAYS, conceptMastery, dueReviews, recordApplication,
-  CONCEPTS, DIAGNOSTIC_ITEMS, MODULES, adaptiveStart, completeLesson, dailyGoal, diagnosticAreas, findLesson, foundationDailyPlan,
+  CONCEPTS, DIAGNOSTIC_ITEMS, MODULES, getConcept, adaptiveStart, completeLesson, dailyGoal, diagnosticAreas, findLesson, foundationDailyPlan,
   foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
-  canonicalAnswer, canUnitCheck, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
+  canonicalAnswer, canUnitCheck, CHALLENGES, finalRecord, getChallenge, patternsFor, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
@@ -26,11 +26,12 @@ const ex = (id: string): Exercise => {
 const tenses = MODULES.find((m) => m.id === 'tenses')!;
 const NOW = new Date('2026-09-26T10:00:00');
 
-test('all Foundation content validates (incl. 12 Tenses lessons)', () => {
+test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.deepEqual(validateFoundation(), []);
-  assert.equal(tenses.lessons.length, 12);
+  assert.equal(tenses.lessons.length, 15);
+  assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 19);
+  assert.equal(CONCEPTS.length, 20);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -154,7 +155,7 @@ test('progress numbers come from real data', () => {
   assert.equal(moduleProgress(tenses, fp), 0);
   fp = completeLesson(fp, 't-1', 100, NOW);
   fp = completeLesson(fp, 't-2', 75, NOW);
-  assert.equal(moduleProgress(tenses, fp), Math.round((2 / 15) * 100), '12 written + 3 planned stages');
+  assert.equal(moduleProgress(tenses, fp), Math.round((2 / 15) * 100), '15 written lessons');
   assert.ok(levelProgress(1, fp) > 0);
   assert.equal(skillProgress(fp).find((s) => s.skill === 'grammar')!.done, 2);
   assert.equal(lessonOutcome(75), 'good');
@@ -408,6 +409,76 @@ test('final challenge: adaptive level, one item per pick, result stored and show
   assert.match(posSummaryLines(fp, NOW).join('\n'), /Final Mastery Challenge: last 87% \(best 87%, 2 attempts, level reached 3\/3/);
 });
 
+// ---------------------------------------------------------------- tenses (phase A)
+const tenseLessons = tenses.lessons.filter((x) => x.kind !== 'test');
+const tenseEx = tenses.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+
+test('Tenses: 14 taught lessons in v2, the review test last, order runs simple → perfect → comparisons → mixed', () => {
+  assert.equal(tenseLessons.length, 14);
+  assert.ok(tenseLessons.every((x) => x.format === 'v2'), 'every taught Tenses lesson is v2');
+  assert.deepEqual(tenses.lessons.map((x) => x.id), ['t-1', 't-2', 't-3', 't-4', 't-5', 't-6', 't-13', 't-7', 't-8', 't-14', 't-9', 't-10', 't-11', 't-15', 't-12']);
+  for (const x of tenseLessons) {
+    const kinds = x.steps.map((st) => st.kind);
+    for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'recall']) assert.ok(kinds.includes(k as never), `${x.id} has ${k}`);
+    const ielts = x.steps.find((st) => st.kind === 'ielts');
+    if (x.id !== 't-1' && x.id !== 't-2') assert.equal(new Set(ielts && ielts.kind === 'ielts' ? ielts.uses.map((u) => u.skill) : []).size, 4, `${x.id} covers the 4 skills`);
+    const practice = x.steps.filter((st) => st.kind === 'practice');
+    assert.ok(practice.some((st) => st.mode === 'recall'), `${x.id} has free recall`);
+    assert.ok(practice.some((st) => st.exercises.some((e) => e.type === 'correct' || e.type === 'spot')), `${x.id} has error correction`);
+    assert.ok(practice.some((st) => st.mode === 'personal' && st.exercises.some((e) => e.type === 'write' && e.mino)), `${x.id} has a Mino-checked sentence`);
+  }
+  for (const e of tenseEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+});
+
+test('Tenses: every tense concept is mastery-capable (Mino task), reviewable (5+ questions) and tracks mistakes', () => {
+  const tenseConcepts = CONCEPTS.filter((c) => c.tag === 'tense').map((c) => c.id);
+  assert.deepEqual(tenseConcepts.sort(), ['future', 'past-continuous', 'past-perfect', 'past-simple', 'present-continuous', 'present-perfect', 'present-perfect-continuous', 'present-simple', 'time'].sort());
+  for (const c of tenseConcepts) {
+    assert.ok(tenseEx.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked personal sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  // Mastery really happens: recognition + recall + a correct Mino sentence + 2 spaced reviews.
+  let fp = empty();
+  for (const id of ['t-4-e1', 't-4-e4', 't-4-p1', 't-4-e2', 't-4-e3', 't-4-r1']) fp = recordAnswer(fp, { source: 't-4', exercise: ex(id), answer: canonicalAnswer(ex(id)), correct: true, attempt: 1, now: NOW });
+  fp = recordApplication(fp, { source: 't-4', exercise: ex('t-4-e6'), text: 'Sales rose in 2010.', verdict: 'correct', corrected: 'Sales rose in 2010.', attempt: 1, now: NOW });
+  fp = recordReview(recordReview(fp, 'past-simple', 100, NOW), 'past-simple', 100, NOW);
+  assert.equal(conceptMastery(fp, 'past-simple').level, 'mastered');
+  // Application lessons keep each question on its own concept.
+  assert.equal(findLesson('t-9')!.lesson.concept, undefined);
+  assert.equal(ex('t-9-e1').concept, 'past-simple');
+});
+
+test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questions and belongs on the Tenses page', () => {
+  let fp = empty();
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  fp = wrong(fp, 't-4-e1', 'has risen', '2026-09-20T10:00:00');
+  fp = wrong(fp, 't-6-e3', 'I have visited Cox’s Bazar last year.', '2026-09-21T10:00:00');
+  fp = wrong(fp, 't-9-e1', 'The number of tourists has increased in 2012.', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'tenses', NOW).find((x) => x.pair === 'past-vs-perfect')!;
+  assert.equal(p.count, 3);
+  assert.equal(patternsFor(fp, 'parts-of-speech', NOW).some((x) => x.pair === 'past-vs-perfect'), false, 'not shown on Parts of Speech');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Tenses pattern: Past Simple or Present Perfect ×3.*fix\/past-vs-perfect/);
+  const qs = fixQuestions(fp, 'past-vs-perfect', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => q.tag === 'tense' && exercisePattern(q) === 'past-vs-perfect'));
+  for (const k of ['past-vs-perfect', 'simple-vs-continuous', 'tense-time']) assert.ok(POS_FIX_GUIDE[k]?.avoid, `${k} has a guide`);
+});
+
+test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
+  const ch = getChallenge('tenses')!;
+  assert.equal(ch.parts.length, 8);
+  assert.equal(CHALLENGES.length, 2);
+  for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+  assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
+  assert.equal(finalStartLevel(empty(), ch.concepts), 2);
+  let fp = recordFinal(empty(), { score: 58, level: 1, parts: { A: { correct: 2, total: 3 } } }, NOW, 'tenses');
+  assert.equal(fp.posFinal, undefined, 'Parts of Speech result untouched');
+  assert.equal(finalRecord(fp, 'tenses')!.score, 58);
+  fp = recordFinal(fp, { score: 83, level: 3, parts: {} }, NOW, 'tenses');
+  assert.deepEqual([fp.finals!.tenses.best, fp.finals!.tenses.attempts], [83, 2]);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Tenses Final Mastery Challenge: last 83% \(best 83%, 2 attempts/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -427,6 +498,21 @@ asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes droppe
   assert.equal((await assessFoundationSentence(fake(withPractice('needs-work', 'No gap here.')), exercise, 'He go.', 'bn')).practice, null);
   assert.equal((await assessFoundationSentence(fake(withPractice('correct', 'My sister ___ in Sylhet.')), exercise, 'He goes.', 'bn')).practice, null);
   assert.match(seen!.system!, /student's own words/);
+}]);
+asyncTests.push(['Mino tense feedback: names the deciding time word and separates tense choice from verb form', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'I went to Dhaka yesterday.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'have went', fix: 'went', why: "'yesterday' finished time → Past Simple" }], practice: { sentence: 'Last week we ___ (visit) Sylhet.', answers: ['visited'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const tenseWrite = ex('t-4-e6') as Extract<Exercise, { type: 'write' }>;
+  const fb = await assessFoundationSentence(fake, tenseWrite, 'I have went to Dhaka yesterday.', 'bn');
+  assert.match(seen!.system!, /Tense feedback \(target: Past Simple\)/);
+  assert.match(seen!.system!, /time word or context that decides it/);
+  assert.match(seen!.system!, /TENSE CHOICE and a wrong VERB FORM/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['have went']);
+  assert.equal(fb.practice?.answers[0], 'visited', 'one follow-up question on the same decision');
+  const other = MODULES.flatMap((m) => m.lessons).flatMap((l) => l.steps.flatMap((s) => (s.kind === 'practice' ? s.exercises : [])))
+    .find((e): e is Extract<Exercise, { type: 'write' }> => e.type === 'write' && !!e.mino && (!e.concept || getConcept(e.concept)?.tag !== 'tense'))!;
+  await assessFoundationSentence(fake, other, 'A sentence.', 'en');
+  assert.doesNotMatch(seen!.system!, /Tense feedback/, 'non-tense tasks get no tense rules');
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

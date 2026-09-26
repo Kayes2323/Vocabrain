@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  canUnitCheck, getModule, lessonOutcome, ownMistakeQuestions, POS_NAMED_PATTERNS, posPatterns, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
+  canUnitCheck, getChallenge, getModule, lessonOutcome, ownMistakeQuestions, POS_NAMED_PATTERNS, patternsFor, stepBeforeLesson, unitLessons, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type Unit,
 } from '@/lib/foundation';
 import { MasteryChallenge } from './MasteryChallenge';
 import { STATUS_TONE, UnitMark, unitPattern } from './UnitsDashboard';
@@ -19,12 +19,12 @@ export function UnitView({ module, unit }: { module: Module; unit: Unit }) {
   const { fp } = useFoundation();
   const { intercept, dialog } = useGuideReminder();
   if (!fp) return <ScreenSkeleton />;
-  if (unit.challenge) return <MasteryChallenge module={module} unit={unit} fp={fp} />;
+  if (unit.challenge) return <MasteryChallenge module={module} unit={unit} fp={fp} challenge={getChallenge('pos')!} />;
 
   const status = unitStatus(module, unit, fp);
   const lessons = unitLessons(module, unit);
   const next = unitNextLesson(module, unit, fp);
-  const pattern = unitPattern(unit, posPatterns(fp));
+  const pattern = unitPattern(unit, patternsFor(fp, module.id));
   const continues = unit.continues ? getModule(unit.continues.moduleId) : undefined;
   const conceptReview = status === 'review' && !pattern && unit.concept;
   const checkable = canUnitCheck(fp, module, unit);

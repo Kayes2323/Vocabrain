@@ -1,12 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, Circle, CircleDashed, ClipboardCheck, Clock, SkipForward } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Circle, CircleDashed, ClipboardCheck, Clock, SkipForward, Sparkles, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Callout, ListRow, PageHeader, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
+import { Callout, ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { canQuiz, lessonOutcome, lessonState, moduleProgress, nextLesson, stepBeforeLesson, type Module } from '@/lib/foundation';
-import { UnitsDashboard } from './UnitsDashboard';
+import {
+  canQuiz, challengeForModule, finalRecord, lessonOutcome, lessonState, moduleProgress, nextLesson, patternsFor, stepBeforeLesson, type Module,
+} from '@/lib/foundation';
+import { UnitsDashboard, usePatternLabel } from './UnitsDashboard';
 import { useFoundation, useText } from './useFoundation';
 
 export function ModuleView({ module }: { module: Module }) {
@@ -19,9 +21,13 @@ function LessonsView({ module }: { module: Module }) {
   const text = useText();
   const { fp } = useFoundation();
   const { intercept, dialog } = useGuideReminder();
+  const patternLabel = usePatternLabel();
   if (!fp) return <ScreenSkeleton />;
 
   const pct = moduleProgress(module, fp);
+  const pattern = patternsFor(fp, module.id)[0];
+  const challenge = challengeForModule(module.id);
+  const final = challenge ? finalRecord(fp, challenge.id) : undefined;
   const next = nextLesson(fp);
   const nextHere = next?.module.id === module.id ? next.lesson.id : module.lessons.find((l) => lessonState(module, l, fp) === 'available')?.id;
 
@@ -36,6 +42,25 @@ function LessonsView({ module }: { module: Module }) {
         </div>
         <ProgressBar value={pct} label={text(module.title)} />
       </div>
+
+      {pattern && (
+        <Panel className="flex flex-col gap-4 border-warning/30 bg-warning-soft sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-1">
+            <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-warning uppercase">
+              <Sparkles className="size-3.5" aria-hidden /> {t('foundation.patternTitle')}
+            </p>
+            <p className="font-semibold">{patternLabel(pattern)}</p>
+            <p className="text-sm text-muted-foreground" lang="en">
+              {pattern.latest.prompt} · <span className="line-through decoration-destructive/60">{pattern.latest.answer}</span> → <span className="font-medium text-foreground">{pattern.latest.correctAnswer}</span>
+            </p>
+          </div>
+          <Button asChild size="lg" className="h-12 shrink-0">
+            <Link href={`/ielts/foundation/fix/${pattern.pair}`}>
+              {t('foundation.units.fixCta')} <ArrowRight />
+            </Link>
+          </Button>
+        </Panel>
+      )}
 
       <Callout tone="brand" title={t('foundation.module.ieltsLink')}>
         {text(module.ieltsLink)}
@@ -94,6 +119,19 @@ function LessonsView({ module }: { module: Module }) {
           ))}
         </RowGroup>
       </Section>
+
+      {challenge && (
+        <RowGroup>
+          <ListRow
+            href={`/ielts/foundation/challenge/${challenge.id}`}
+            icon={Trophy}
+            iconTone={final && final.best >= 80 ? 'success' : 'brand'}
+            title={text(challenge.title)}
+            description={text(challenge.tagline)}
+            trailing={final ? <StatusChip tone={final.best >= 80 ? 'success' : 'warning'}>{t('foundation.final.bestShort', { best: final.best })}</StatusChip> : undefined}
+          />
+        </RowGroup>
+      )}
 
       {module.lessons.length === 0 && <Callout>{t('foundation.module.comingSoon')}</Callout>}
       {dialog}

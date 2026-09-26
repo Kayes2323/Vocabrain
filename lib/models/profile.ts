@@ -204,6 +204,8 @@ export interface FoundationProgress {
   posFixes?: Record<string, ISODate>;
   /** Parts of Speech Final Mastery Challenge: latest result. */
   posFinal?: PosFinalRecord;
+  /** Other modules' Final Mastery Challenges (e.g. "tenses"), same shape as posFinal. */
+  finals?: Record<string, PosFinalRecord>;
 }
 
 /** Final Mastery Challenge result: score, the level reached (1–3) and per-part answers. */

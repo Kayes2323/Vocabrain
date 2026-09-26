@@ -2,6 +2,7 @@
 // The student's text is data to assess, never instructions. Output is
 // validated; quoted mistakes must really appear in the student's text.
 import { z } from 'zod';
+import { getConcept } from '@/lib/foundation/content';
 import type { WriteExercise } from '@/lib/foundation/model';
 import type { AIProvider } from '../../types';
 import { MinoError } from '../errors';
@@ -22,13 +23,23 @@ const norm = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/[
 
 export async function assessFoundationSentence(provider: AIProvider, exercise: WriteExercise, text: string, language: 'en' | 'bn'): Promise<FoundationFeedback> {
   if (!exercise.mino) throw new MinoError('invalid_request', 'no mino task');
+  const tense = exercise.concept ? getConcept(exercise.concept) : undefined;
+  const tenseRules =
+    tense?.tag === 'tense'
+      ? `
+Tense feedback (target: ${tense.title.en}):
+- If the tense is wrong, name the time word or context that decides it and say why, e.g. "'yesterday' is a finished time, so use the Past Simple: 'I went…'". If there is no time word, explain the meaning (finished vs still true, in progress vs complete, earlier past).
+- Keep two problems apart: a wrong TENSE CHOICE and a wrong VERB FORM. "I have went to Dhaka yesterday" has both: 'have went' is never correct (the forms are 'went' or 'have gone'), and 'yesterday' needs the Past Simple → 'I went to Dhaka yesterday.' Give each its own fix.
+- The follow-up gap practises the same decision with a new time word.
+`
+      : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
 Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice.
-- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
+${tenseRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).
 - fixes: up to 3; "quote" MUST be copied exactly from the student's text. In "why", explain with the student's own words and the grammar reason, e.g. "You used 'go' with 'he'. Because the subject is 'he', the present simple verb needs -s: 'He goes…'". Name the job the word needs (noun, verb, adjective, adverb…) when that is the problem.

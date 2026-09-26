@@ -7,15 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Callout, PageHeader, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  FINAL_PARTS, FINAL_PER_PART, finalStartLevel, nextFinalLevel, PASS_SCORE, pickFinalItem, posPatterns, recordAnswer, recordFinal,
-  type FinalItem, type FinalLevel, type Module, type Pos, type Unit,
+  expectedAnswer, FINAL_PER_PART, finalRecord, finalStartLevel, getConcept, nextFinalLevel, PASS_SCORE, patternsFor, pickFinalItem, recordAnswer, recordFinal,
+  type ChallengeDef, type FinalItem, type FinalLevel, type L, type Module, type Pos, type Unit,
 } from '@/lib/foundation';
 import type { FoundationProgress } from '@/lib/models';
+import { cn } from '@/lib/utils';
 import { ExerciseView } from './ExerciseView';
 import { UnitMark, usePatternLabel } from './UnitsDashboard';
 import { useFoundation, useText } from './useFoundation';
-
-const TOTAL = FINAL_PARTS.length * FINAL_PER_PART;
 
 interface Answered {
   part: string;
@@ -24,29 +23,33 @@ interface Answered {
 }
 
 /**
- * Final Mastery Challenge: 10 parts × 3 questions, adaptive (right → harder,
- * wrong → easier), many without options. Ends with a report by part and by
- * word job, the level reached and what to practise next.
+ * A module's Final Mastery Challenge: its parts × 3 questions, adaptive (right →
+ * harder, wrong → easier), many without options. Ends with a report by part and
+ * by area (word job for Parts of Speech, tense by tense for Tenses), strongest
+ * and weakest areas, the student's own mistakes and what to practise next.
  */
-export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: Unit; fp: FoundationProgress }) {
+export function MasteryChallenge({ module, unit, fp, challenge }: { module: Module; unit?: Unit; fp: FoundationProgress; challenge: ChallengeDef }) {
   const { t } = useLocale();
   const text = useText();
   const { update, fp: live } = useFoundation();
+  const parts = challenge.parts;
+  const total = parts.length * FINAL_PER_PART;
   const [phase, setPhase] = useState<'intro' | 'run' | 'report'>('intro');
   const [round, setRound] = useState(0);
   const [partIndex, setPartIndex] = useState(0);
-  const [level, setLevel] = useState<FinalLevel>(() => finalStartLevel(fp));
+  const [level, setLevel] = useState<FinalLevel>(() => finalStartLevel(fp, challenge.concepts));
   const [answered, setAnswered] = useState<Answered[]>([]);
   const used = useRef(new Set<string>());
   const seed = useMemo(() => `${Date.now()}`, [round]); // eslint-disable-line react-hooks/exhaustive-deps
   const [item, setItem] = useState<FinalItem | undefined>();
   const backHref = `/ielts/foundation/${module.id}`;
   const levelName = (lv: number) => t(`foundation.final.levels.${lv}`);
+  const title = text(unit?.title ?? challenge.title);
 
   const start = () => {
     used.current = new Set();
-    const lv = finalStartLevel(live ?? fp);
-    const first = pickFinalItem(FINAL_PARTS[0].items, lv, used.current, `${seed}:A`)!;
+    const lv = finalStartLevel(live ?? fp, challenge.concepts);
+    const first = pickFinalItem(parts[0].items, lv, used.current, `${seed}:${parts[0].id}`)!;
     used.current.add(first.id);
     setLevel(lv);
     setPartIndex(0);
@@ -57,20 +60,32 @@ export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: U
   };
 
   if (phase === 'intro') {
-    const last = fp.posFinal;
+    const last = finalRecord(fp, challenge.id);
     return (
       <div className="space-y-8">
-        <PageHeader title={text(unit.title)} subtitle={text(unit.tagline)} backHref={backHref} backLabel={text(module.title)} action={<UnitMark unit={unit} className="size-12 text-base" />} />
+        <PageHeader
+          title={title}
+          subtitle={text(unit?.tagline ?? challenge.tagline)}
+          backHref={backHref}
+          backLabel={text(module.title)}
+          action={
+            unit ? (
+              <UnitMark unit={unit} className="size-12 text-base" />
+            ) : (
+              <span aria-hidden className="flex size-12 items-center justify-center rounded-xl bg-tint-yellow text-base font-bold text-tint-yellow-fg">{challenge.mark}</span>
+            )
+          }
+        />
         <Panel variant="brand" className="space-y-4">
-          <p className="leading-7">{t('foundation.final.intro', { n: TOTAL })}</p>
+          <p className="leading-7">{t('foundation.final.intro', { n: total })}</p>
           {last && <p className="text-sm font-medium tabular-nums">{t('foundation.final.last', { score: last.score, best: last.best })}</p>}
           <Button size="lg" className="h-12 w-full sm:w-auto" onClick={start}>
             {last ? t('foundation.final.retry') : t('foundation.final.start')} <ArrowRight />
           </Button>
         </Panel>
-        <Section title={t('foundation.final.partsTitle')} variant="label">
+        <Section title={t('foundation.final.partsTitle', { n: parts.length })} variant="label">
           <ol className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {FINAL_PARTS.map((p) => {
+            {parts.map((p) => {
               const r = last?.parts[p.id];
               return (
                 <li key={p.id} className="flex items-center gap-3 rounded-xl border bg-card px-3.5 py-3">
@@ -90,11 +105,25 @@ export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: U
     );
   }
 
-  if (phase === 'report') return <Report module={module} answered={answered} level={level} onRetry={() => { setRound((r) => r + 1); setPhase('intro'); }} levelName={levelName} />;
+  if (phase === 'report') {
+    return (
+      <Report
+        module={module}
+        challenge={challenge}
+        answered={answered}
+        level={level}
+        levelName={levelName}
+        onRetry={() => {
+          setRound((r) => r + 1);
+          setPhase('intro');
+        }}
+      />
+    );
+  }
 
-  const part = FINAL_PARTS[partIndex];
+  const part = parts[partIndex];
   const n = answered.length;
-  const last = n === TOTAL - 1;
+  const last = n === total - 1;
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
       <div className="space-y-2">
@@ -104,10 +133,10 @@ export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: U
               <X />
             </Link>
           </Button>
-          <h1 className="min-w-0 flex-1 truncate text-lg font-semibold">{text(unit.title)}</h1>
-          <span className="text-xs text-muted-foreground tabular-nums">{t('foundation.lesson.exerciseOf', { n: n + 1, total: TOTAL })}</span>
+          <h1 className="min-w-0 flex-1 truncate text-lg font-semibold">{title}</h1>
+          <span className="text-xs text-muted-foreground tabular-nums">{t('foundation.lesson.exerciseOf', { n: n + 1, total })}</span>
         </div>
-        <ProgressBar value={((n + 1) / TOTAL) * 100} label={text(unit.title)} size="sm" />
+        <ProgressBar value={((n + 1) / total) * 100} label={title} size="sm" />
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <StatusChip tone="brand">{t('foundation.final.part', { id: part.id, title: text(part.title) })}</StatusChip>
@@ -119,7 +148,7 @@ export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: U
             key={`${item.id}-${round}`}
             exercise={item}
             doneLabel={last ? t('foundation.review.finish') : t('foundation.lesson.next')}
-            onAnswer={(r) => update((p) => recordAnswer(p, { source: 'final', exercise: item, answer: r.answer, correct: r.correct, attempt: (fp.posFinal?.attempts ?? 0) + 1 }))}
+            onAnswer={(r) => update((p) => recordAnswer(p, { source: `final:${challenge.id}`, exercise: item, answer: r.answer, correct: r.correct, attempt: (finalRecord(fp, challenge.id)?.attempts ?? 0) + 1 }))}
             onDone={(r) => {
               const correct = r.correct === true;
               const next = [...answered, { part: part.id, item, correct }];
@@ -127,19 +156,19 @@ export function MasteryChallenge({ module, unit, fp }: { module: Module; unit: U
               setAnswered(next);
               setLevel(nextLevel);
               window.scrollTo({ top: 0 });
-              if (next.length >= TOTAL) {
+              if (next.length >= total) {
                 const score = Math.round((next.filter((a) => a.correct).length / next.length) * 100);
-                const parts = Object.fromEntries(FINAL_PARTS.map((p) => {
+                const byPart = Object.fromEntries(parts.map((p) => {
                   const mine = next.filter((a) => a.part === p.id);
                   return [p.id, { correct: mine.filter((a) => a.correct).length, total: mine.length }];
                 }));
-                update((p) => recordFinal(p, { score, level: nextLevel, parts }));
+                update((p) => recordFinal(p, { score, level: nextLevel, parts: byPart }, new Date(), challenge.id));
                 setPhase('report');
                 return;
               }
               const inPart = next.filter((a) => a.part === part.id).length;
               const pi = inPart >= FINAL_PER_PART ? partIndex + 1 : partIndex;
-              const nextItem = pickFinalItem(FINAL_PARTS[pi].items, nextLevel, used.current, `${seed}:${FINAL_PARTS[pi].id}`)!;
+              const nextItem = pickFinalItem(parts[pi].items, nextLevel, used.current, `${seed}:${parts[pi].id}`)!;
               used.current.add(nextItem.id);
               setPartIndex(pi);
               setItem(nextItem);
@@ -156,29 +185,56 @@ const CONCEPT_POS: Record<string, Pos> = {
   'pos-pronoun': 'pronoun', 'pos-preposition': 'preposition', 'pos-conjunction': 'conjunction',
 };
 
-function Report({ module, answered, level, onRetry, levelName }: { module: Module; answered: Answered[]; level: FinalLevel; onRetry: () => void; levelName: (lv: number) => string }) {
+interface Area {
+  key: string;
+  label: string;
+  correct: number;
+  total: number;
+  /** The concept behind the area, for a review link. */
+  concept?: string;
+  /** Parts of Speech: the unit that teaches it. */
+  unit?: Unit;
+}
+
+function Report({ module, challenge, answered, level, onRetry, levelName }: {
+  module: Module; challenge: ChallengeDef; answered: Answered[]; level: FinalLevel; onRetry: () => void; levelName: (lv: number) => string;
+}) {
   const { t } = useLocale();
   const text = useText();
   const { fp } = useFoundation();
   const patternLabel = usePatternLabel();
   const score = Math.round((answered.filter((a) => a.correct).length / answered.length) * 100);
   const passed = score >= PASS_SCORE;
-  const byPart = FINAL_PARTS.map((p) => {
+  const byPart = challenge.parts.map((p) => {
     const mine = answered.filter((a) => a.part === p.id);
     return { part: p, correct: mine.filter((a) => a.correct).length, total: mine.length };
   });
-  // By word job: the job an item checks (its own, or its unit's).
-  const jobs = new Map<Pos, { correct: number; total: number }>();
-  for (const a of answered) {
-    const job = a.item.pos ?? (a.item.concept ? CONCEPT_POS[a.item.concept] : undefined);
-    if (!job) continue;
-    const cur = jobs.get(job) ?? { correct: 0, total: 0 };
-    jobs.set(job, { correct: cur.correct + (a.correct ? 1 : 0), total: cur.total + 1 });
-  }
-  const weakParts = byPart.filter((b) => b.total && b.correct / b.total < 0.67).slice(0, 3);
-  const patterns = fp ? posPatterns(fp).slice(0, 2) : [];
   const units = module.units ?? [];
-  const weakJobs = [...jobs.entries()].filter(([, v]) => v.correct / v.total < 0.67).map(([j]) => units.find((u) => u.pos === j)).filter((u): u is Unit => Boolean(u)).slice(0, 3);
+  // Areas: the word job (Parts of Speech) or the concept (tense by tense).
+  const areaMap = new Map<string, Area>();
+  for (const a of answered) {
+    let key: string | undefined;
+    let label = '';
+    let concept: string | undefined;
+    let unit: Unit | undefined;
+    if (challenge.areas === 'pos') {
+      const job = a.item.pos ?? (a.item.concept ? CONCEPT_POS[a.item.concept] : undefined);
+      if (job) { key = job; label = t(`foundation.pos.${job}`); unit = units.find((u) => u.pos === job); concept = unit?.concept; }
+    } else if (a.item.concept) {
+      key = a.item.concept; concept = a.item.concept; label = text(getConcept(a.item.concept)?.title ?? ({ en: key, bn: key } as L));
+    }
+    if (!key) continue;
+    const cur = areaMap.get(key) ?? { key, label, correct: 0, total: 0, concept, unit };
+    areaMap.set(key, { ...cur, correct: cur.correct + (a.correct ? 1 : 0), total: cur.total + 1 });
+  }
+  const areas = [...areaMap.values()];
+  const rate = (x: Area) => x.correct / x.total;
+  const ranked = areas.filter((x) => x.total >= 2).sort((a, b) => rate(b) - rate(a));
+  const strongest = ranked.filter((x) => rate(x) >= 0.67).slice(0, 2);
+  const weakest = [...ranked].reverse().filter((x) => rate(x) < 0.67).slice(0, 3);
+  const missed = answered.filter((a) => !a.correct).slice(0, 5);
+  const patterns = fp ? patternsFor(fp, module.id).slice(0, 2) : [];
+  const askHref = challenge.id === 'pos' ? '/mino?ask=pos-final' : `/mino?ask=final&challenge=${challenge.id}`;
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6">
@@ -203,19 +259,50 @@ function Report({ module, answered, level, onRetry, levelName }: { module: Modul
         </Panel>
       </Section>
 
-      {jobs.size > 0 && (
-        <Section title={t('foundation.final.byJob')} variant="label">
+      {areas.length > 0 && (
+        <Section title={t(challenge.areas === 'pos' ? 'foundation.final.byJob' : 'foundation.final.byTense')} variant="label">
           <div className="flex flex-wrap gap-2">
-            {[...jobs.entries()].map(([job, v]) => (
-              <StatusChip key={job} tone={v.correct / v.total >= 0.67 ? 'success' : 'warning'}>
-                {t(`foundation.pos.${job}`)} {v.correct}/{v.total}
+            {areas.map((x) => (
+              <StatusChip key={x.key} tone={rate(x) >= 0.67 ? 'success' : 'warning'}>
+                {x.label} {x.correct}/{x.total}
               </StatusChip>
             ))}
           </div>
         </Section>
       )}
 
-      {(weakParts.length > 0 || patterns.length > 0 || weakJobs.length > 0) && (
+      {(strongest.length > 0 || weakest.length > 0) && (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <Panel className="space-y-1.5">
+            <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t('foundation.final.strongest')}</p>
+            <p className="text-[15px] font-semibold">{strongest.length ? strongest.map((x) => x.label).join(', ') : '—'}</p>
+          </Panel>
+          <Panel className="space-y-1.5">
+            <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{t('foundation.final.weakest')}</p>
+            <p className="text-[15px] font-semibold">{weakest.length ? weakest.map((x) => x.label).join(', ') : '—'}</p>
+          </Panel>
+        </div>
+      )}
+
+      {missed.length > 0 && (
+        <Section title={t('foundation.final.yourMistakes')} variant="label">
+          <Panel className="space-y-3">
+            <ul className="space-y-3 text-sm">
+              {missed.map((a) => (
+                <li key={a.item.id} className="space-y-1 border-l-2 border-amber-500/60 pl-3">
+                  {(a.item.sentence ?? (a.item.type === 'spot' ? a.item.words.join(' ') : undefined)) && (
+                    <p lang="en" className="text-muted-foreground">{a.item.sentence ?? (a.item.type === 'spot' ? a.item.words.join(' ') : '')}</p>
+                  )}
+                  <p lang="en" className="font-medium">→ {expectedAnswer(a.item)}</p>
+                  <p className="text-foreground/80">{text(a.item.explanation)}</p>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+        </Section>
+      )}
+
+      {(patterns.length > 0 || weakest.length > 0) && (
         <Section title={t('foundation.final.practiseNext')} variant="label">
           <div className="flex flex-col gap-2">
             {patterns.map((p) => (
@@ -228,27 +315,23 @@ function Report({ module, answered, level, onRetry, levelName }: { module: Modul
                 </Link>
               </Button>
             ))}
-            {weakJobs.map((u) => (
-              <Button key={u.id} asChild variant="outline" size="lg" className="h-12 justify-between">
-                <Link href={`/ielts/foundation/${module.id}/${u.id}`}>
-                  {text(u.title)} <ArrowRight />
-                </Link>
-              </Button>
-            ))}
-            {weakParts.length > 0 && weakJobs.length === 0 && (
-              <Button asChild variant="outline" size="lg" className="h-12 justify-between">
-                <Link href={`/ielts/foundation/${module.id}/lab`}>
-                  {text(units.find((u) => u.id === 'lab')?.title ?? { en: 'Lab', bn: 'Lab' })} <ArrowRight />
-                </Link>
-              </Button>
-            )}
+            {weakest.map((x) => {
+              const href = x.unit ? `/ielts/foundation/${module.id}/${x.unit.id}` : x.concept ? `/ielts/foundation/review/${x.concept}` : backHrefOf(module);
+              return (
+                <Button key={x.key} asChild variant="outline" size="lg" className="h-12 justify-between">
+                  <Link href={href}>
+                    <span className="truncate">{x.unit ? text(x.unit.title) : t('foundation.final.reviewArea', { topic: x.label })}</span> <ArrowRight />
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
         </Section>
       )}
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Button asChild size="lg" className="flex-1">
-          <Link href="/mino?ask=pos-final">{t('foundation.final.askMino')}</Link>
+        <Button asChild size="lg" className={cn('flex-1')}>
+          <Link href={askHref}>{challenge.id === 'pos' ? t('foundation.final.askMino') : t('foundation.final.askMinoTenses')}</Link>
         </Button>
         <Button size="lg" variant="outline" className="flex-1" onClick={onRetry}>
           <RotateCcw /> {t('foundation.final.retry')}
@@ -256,8 +339,10 @@ function Report({ module, answered, level, onRetry, levelName }: { module: Modul
       </div>
       <Callout>{t('foundation.final.note')}</Callout>
       <Button asChild variant="ghost" className="w-full">
-        <Link href={`/ielts/foundation/${module.id}`}>{t('foundation.final.back')}</Link>
+        <Link href={backHrefOf(module)}>{t('foundation.final.back', { module: text(module.short ?? module.title) })}</Link>
       </Button>
     </div>
   );
 }
+
+const backHrefOf = (module: Module) => `/ielts/foundation/${module.id}`;

@@ -1,22 +1,25 @@
 // The IELTS Foundation course catalogue. Levels 1–2 are taught here; levels
 // 3–5 hand over to features that already exist (practice, tests, mock tests).
-// A module with only `planned` lessons shows as "coming soon".
+// A module with only `planned` lessons shows as "Soon" (never as available).
 import type { Concept, L, Lesson, Level, Module } from '../model';
 import { sentenceBasicsLessons } from './sentence-basics';
 import { TENSE_CONCEPTS, tensesLessons } from './tenses';
 import { tensesLessons2 } from './tenses-2';
 import { presentSimpleV2, understandingTime } from './tenses-v2';
+import { futureFormsV2, pastContinuousV2, pastPerfectV2, pastSimpleV2, presentContinuousV2, presentPerfectV2 } from './tenses-core';
+import { tenseMistakesV2, tensesSpeakingV2, tensesWritingV2 } from './tenses-apply';
+import { presentPerfectContinuous, tenseComparisons, tensesMixedPractice } from './tenses-new';
 import { POS_CONCEPTS, POS_LESSONS, POS_PLANNED, POS_UNITS } from './pos-units';
 
 export const LEVELS: Level[] = [
   {
     id: 1,
-    title: { en: 'IELTS Foundation', bn: 'IELTS Foundation' },
+    title: { en: 'Foundation Grammar', bn: 'Foundation Grammar' },
     description: { en: 'The English you need before IELTS: sentences, tenses, grammar and vocabulary habits.', bn: 'IELTS শুরুর আগে যে English লাগে: sentence, tense, grammar আর vocabulary-র অভ্যাস।' },
   },
   {
     id: 2,
-    title: { en: 'IELTS Core', bn: 'IELTS Core' },
+    title: { en: 'IELTS Basics', bn: 'IELTS Basics' },
     description: { en: 'How IELTS works: the test, Band Scores, and each skill explained.', bn: 'IELTS কীভাবে কাজ করে: test, Band Score আর প্রতিটা skill।' },
   },
   {
@@ -63,9 +66,11 @@ export const MODULES: Module[] = [
     ieltsLink: t('Task 1 past data, Speaking about experiences, time changes in Listening and Reading.', 'Task 1-এর past data, Speaking-এ অভিজ্ঞতার কথা, Listening আর Reading-এ সময়ের পরিবর্তন।'),
     skill: 'grammar',
     tags: ['tense'],
-    lessons: [understandingTime, presentSimpleV2, ...tensesLessons, ...tensesLessons2],
-    // New stages from the curriculum map (docs/TENSES_CURRICULUM.md), not written yet.
-    planned: [t('Present Perfect Continuous', 'Present Perfect Continuous'), t('Tense Comparisons', 'Tense Comparisons'), t('Mixed Practice', 'Mixed Practice')],
+    lessons: [
+      understandingTime, presentSimpleV2, presentContinuousV2, pastSimpleV2, pastContinuousV2, presentPerfectV2, presentPerfectContinuous,
+      pastPerfectV2, futureFormsV2, tenseComparisons, tenseMistakesV2, tensesWritingV2, tensesSpeakingV2, tensesMixedPractice,
+      ...tensesLessons, ...tensesLessons2,
+    ],
   },
   {
     id: 'parts-of-speech',

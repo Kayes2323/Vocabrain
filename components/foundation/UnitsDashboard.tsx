@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader, Panel, ProgressBar, ScreenSkeleton, Section, StatusChip, type Tone } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  FINAL_PARTS, FINAL_PER_PART, moduleProgress, POS_NAMED_PATTERNS, posPatterns, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type PosPattern, type Unit, type UnitStatus,
+  FINAL_PARTS, FINAL_PER_PART, moduleProgress, patternsFor, POS_NAMED_PATTERNS, unitLessonsDone, unitLessonTotal, unitNextLesson, unitProgress, unitStatus, type Module, type PosPattern, type Unit, type UnitStatus,
 } from '@/lib/foundation';
 import type { FoundationProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
@@ -97,7 +97,7 @@ export function UnitsDashboard({ module }: { module: Module }) {
   const statuses = units.map((u) => unitStatus(module, u, fp));
   const started = statuses.filter((s) => s !== 'new').length;
   const mastered = statuses.filter((s) => s === 'mastered').length;
-  const patterns = posPatterns(fp);
+  const patterns = patternsFor(fp, module.id);
   const top = patterns[0];
   // Recommended next lesson: first unit (in order) with a lesson still to do.
   const nextUnit = units.find((u) => unitNextLesson(module, u, fp));

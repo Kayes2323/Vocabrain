@@ -220,7 +220,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -230,6 +230,8 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       send(t('foundation.askPrompt', { lesson: params.get('lesson') ?? '' }), 'ielts-coach');
     } else if (ask === 'pos-final') {
       send(t('foundation.final.askPrompt'), 'ielts-coach');
+    } else if (ask === 'final') {
+      send(t(params.get('challenge') === 'tenses' ? 'foundation.final.askPromptTenses' : 'foundation.final.askPrompt'), 'ielts-coach');
     } else if (ask === 'foundation-review') {
       send(t('foundation.askReview'), 'ielts-coach');
     } else if (ask === 'foundation') {

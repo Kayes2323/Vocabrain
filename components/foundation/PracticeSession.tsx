@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  expectedAnswer, findLesson, fixQuestions, getConcept, isNamedPattern, nextAction, ownMistakeQuestions, PASS_SCORE, POS_FIX_GUIDE, POS_NAMED_PATTERNS, posPatterns,
+  expectedAnswer, findLesson, fixQuestions, patternModules, getConcept, isNamedPattern, nextAction, ownMistakeQuestions, PASS_SCORE, POS_FIX_GUIDE, POS_NAMED_PATTERNS, posPatterns,
   quizQuestions, recentConceptMistakes, recordAnswer, recordFix, recordQuiz, recordReview, reviewQuestions, unitCheckQuestions, type Exercise, type Module, type Unit,
 } from '@/lib/foundation';
 import type { FoundationProgress } from '@/lib/models';
@@ -81,7 +81,7 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
           : t('foundation.quiz.title', { module: text(mode.module.title) });
   const exitHref =
     mode.kind === 'fix'
-      ? '/ielts/foundation/parts-of-speech'
+      ? `/ielts/foundation/${patternModules(mode.pair)[0]}`
       : mode.kind === 'unit'
         ? `/ielts/foundation/${mode.module.id}/${mode.unit.id}`
         : mode.kind === 'mine'

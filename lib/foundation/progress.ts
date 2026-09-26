@@ -4,7 +4,7 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
-import { CONCEPT_PATTERN, POS_NAMED_PATTERNS } from './content/pos-patterns';
+import { CONCEPT_PATTERN, patternModules, POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { expectedAnswer, posPairs } from './grade';
 import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module, Pos, Unit } from './model';
 
@@ -622,7 +622,7 @@ export function nextAction(fp: FoundationProgress, now = new Date()): NextAction
 export function foundationSummaryLines(fp: FoundationProgress, now = new Date()): string[] {
   const lines: string[] = [];
   const done = Object.keys(fp.lessons).length;
-  if (!fp.diagnostic && done === 0 && fp.mistakes.length === 0) {
+  if (!fp.diagnostic && done === 0 && fp.mistakes.length === 0 && !fp.posFinal && !Object.keys(fp.finals ?? {}).length) {
     return ['- IELTS Foundation: not started (no foundation check, no lessons). For beginners or students unsure where to start, suggest the Foundation check.'];
   }
   const d = fp.diagnostic;
@@ -653,8 +653,20 @@ export function foundationSummaryLines(fp: FoundationProgress, now = new Date())
   const t = fp.days[today(now)];
   lines.push(`- Foundation today: ${t ? `${t.lessons} lessons, ${t.questions} questions (${t.correct} correct)` : 'nothing yet'}.`);
   lines.push(...posSummaryLines(fp, now));
+  for (const p of patternsFor(fp, 'tenses', now).filter((x) => !x.modules.includes('parts-of-speech')).slice(0, 2)) {
+    lines.push(
+      `- Open Tenses pattern: ${POS_NAMED_PATTERNS[p.pair].title.en} ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
+    );
+  }
+  if (fp.finals?.tenses) {
+    const f = fp.finals.tenses;
+    lines.push(`- Tenses Final Mastery Challenge: last ${f.score}% (best ${f.best}%, ${f.attempts} attempt${f.attempts > 1 ? 's' : ''}, level reached ${f.level}/3, ${f.at.slice(0, 10)}).`);
+  }
   return lines;
 }
+
+/** Open patterns whose fix belongs on a module's page. */
+export const patternsFor = (fp: FoundationProgress, moduleId: string, now = new Date()) => posPatterns(fp, now).filter((p) => p.modules.includes(moduleId));
 
 export { LEVELS };
 
@@ -682,6 +694,8 @@ export interface PosPattern {
   chosen?: Pos;
   /** Named patterns only: the unit that teaches it. */
   unit?: string;
+  /** Module pages that offer this fix; the first is its home. */
+  modules: string[];
   count: number;
   /** The latest mistake with this pair (the student's own sentence). */
   latest: FoundationMistake;
@@ -715,9 +729,9 @@ export function posPatterns(fp: FoundationProgress, now = new Date()): PosPatter
     // Only confusions a full 5-question fix can practise (e.g. not jobs without a unit).
     .filter(([key]) => fixQuestions(fp, key, now).length >= FIX_QUESTIONS)
     .map(([pair, v]): PosPattern => {
-      if (isNamedPattern(pair)) return { pair, unit: POS_NAMED_PATTERNS[pair].unit, count: v.count, latest: v.latest };
+      if (isNamedPattern(pair)) return { pair, unit: POS_NAMED_PATTERNS[pair].unit, modules: patternModules(pair), count: v.count, latest: v.latest };
       const [expected, chosen] = pair.split('>') as [Pos, Pos];
-      return { pair, expected, chosen, count: v.count, latest: v.latest };
+      return { pair, expected, chosen, modules: patternModules(pair), count: v.count, latest: v.latest };
     })
     .sort((a, b) => b.count - a.count || b.latest.at.localeCompare(a.latest.at));
 }
@@ -733,7 +747,8 @@ const posExercises = () =>
 export function fixQuestions(fp: FoundationProgress, pair: string, now = new Date()): Exercise[] {
   const pool = posExercises();
   if (isNamedPattern(pair)) {
-    const own = pool.filter((e) => exercisePattern(e) === pair);
+    // Named patterns are taught across modules (e.g. verb form in Parts of Speech and Tenses).
+    const own = allExercises(MODULES.flatMap((m) => m.lessons)).filter((e) => graded(e) && exercisePattern(e) === pair);
     return shuffle(own, `${pair}:${today(now)}`).slice(0, FIX_QUESTIONS);
   }
   const [expected, chosen] = pair.split('>');
@@ -860,15 +875,19 @@ export function posSummaryLines(fp: FoundationProgress, now = new Date()): strin
 export const FINAL_PER_PART = 3;
 export type FinalLevel = 1 | 2 | 3;
 
-/** Where the adaptive challenge starts: from the student's Parts of Speech accuracy so far. */
-export function finalStartLevel(fp: FoundationProgress): FinalLevel {
+/** Where the adaptive challenge starts: from the student's accuracy on the challenge's concepts (default: Parts of Speech). */
+export function finalStartLevel(fp: FoundationProgress, concepts?: string[]): FinalLevel {
   const module = MODULES.find((m) => m.units);
-  const stats = (module?.units ?? []).flatMap((u) => (u.concept && fp.concepts[u.concept] ? [fp.concepts[u.concept]] : []));
+  const ids = concepts ?? (module?.units ?? []).flatMap((u) => (u.concept ? [u.concept] : []));
+  const stats = ids.flatMap((c) => (fp.concepts[c] ? [fp.concepts[c]] : []));
   const attempts = stats.reduce((n, s) => n + s.attempts, 0);
   if (attempts < 20) return 2;
   const acc = stats.reduce((n, s) => n + s.correct, 0) / attempts;
   return acc >= 0.85 ? 3 : acc < 0.6 ? 1 : 2;
 }
+
+/** The latest result of a challenge ("pos" lives in posFinal, others in finals). */
+export const finalRecord = (fp: FoundationProgress, id = 'pos') => (id === 'pos' ? fp.posFinal : fp.finals?.[id]);
 
 /** Right → one level harder, wrong → one level easier. */
 export const nextFinalLevel = (level: FinalLevel, correct: boolean): FinalLevel => (correct ? Math.min(3, level + 1) : Math.max(1, level - 1)) as FinalLevel;
@@ -883,13 +902,12 @@ export function recordFinal(
   fp: FoundationProgress,
   r: { score: number; level: FinalLevel; parts: Record<string, { correct: number; total: number }> },
   now = new Date(),
+  id = 'pos',
 ): FoundationProgress {
-  const prev = fp.posFinal;
-  return {
-    ...fp,
-    days: bumpDay(fp, now, { quizzes: 1 }),
-    posFinal: { at: now.toISOString(), score: r.score, best: Math.max(prev?.best ?? 0, r.score), attempts: (prev?.attempts ?? 0) + 1, level: r.level, parts: r.parts },
-  };
+  const prev = finalRecord(fp, id);
+  const rec = { at: now.toISOString(), score: r.score, best: Math.max(prev?.best ?? 0, r.score), attempts: (prev?.attempts ?? 0) + 1, level: r.level, parts: r.parts };
+  const days = bumpDay(fp, now, { quizzes: 1 });
+  return id === 'pos' ? { ...fp, days, posFinal: rec } : { ...fp, days, finals: { ...(fp.finals ?? {}), [id]: rec } };
 }
 
 // ---------------------------------------------------------------- lab: your own mistakes first

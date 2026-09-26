@@ -1,5 +1,5 @@
 import { CONCEPTS, MODULES } from './content';
-import { FINAL_PARTS } from './content/pos-final';
+import { CHALLENGES } from './content/challenges';
 import { POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { DIAGNOSTIC_ITEMS } from './diagnostic';
 import { canonicalAnswer, gradeExercise, normaliseAnswer, spotCorrected } from './grade';
@@ -139,18 +139,26 @@ export function validateFoundation(): string[] {
     const pool = MODULES.flatMap((m) => m.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : []))));
     if (pool.filter((e) => e.concept === c.id && e.type !== 'write').length < 5) errors.push(`concept ${c.id}: needs 5+ auto-graded questions for review`);
   }
-  for (const part of FINAL_PARTS) {
-    if (!filled(part.title) || !filled(part.intro)) errors.push(`final ${part.id}: title/intro need en and bn`);
-    if (part.items.length < 4) errors.push(`final ${part.id}: needs 4+ items (3 are served adaptively)`);
-    for (const lv of [1, 2, 3]) if (!part.items.some((i) => i.level === lv)) errors.push(`final ${part.id}: needs a level ${lv} item`);
-    for (const item of part.items) {
-      seen(item.id);
-      checkExercise(item, `final ${part.id}`, errors);
-      if (item.type === 'write') errors.push(`final ${item.id}: must be auto-graded`);
+  for (const ch of CHALLENGES) {
+    if (!MODULES.some((m) => m.id === ch.moduleId)) errors.push(`challenge ${ch.id}: unknown module ${ch.moduleId}`);
+    for (const c of ch.concepts) if (!CONCEPTS.some((x) => x.id === c)) errors.push(`challenge ${ch.id}: unknown concept ${c}`);
+    for (const part of ch.parts) {
+      const at = `final ${ch.id} ${part.id}`;
+      if (!filled(part.title) || !filled(part.intro)) errors.push(`${at}: title/intro need en and bn`);
+      if (part.items.length < 4) errors.push(`${at}: needs 4+ items (3 are served adaptively)`);
+      for (const lv of [1, 2, 3]) if (!part.items.some((i) => i.level === lv)) errors.push(`${at}: needs a level ${lv} item`);
+      for (const item of part.items) {
+        seen(item.id);
+        checkExercise(item, at, errors);
+        if (item.type === 'write') errors.push(`final ${item.id}: must be auto-graded`);
+        if (ch.areas === 'concept' && !ch.concepts.includes(item.concept ?? '')) errors.push(`final ${item.id}: concept must be one the challenge covers`);
+      }
     }
+    const items = ch.parts.flatMap((p) => p.items);
+    const free = items.filter((e) => e.type === 'gap' || e.type === 'correct' || (e.type === 'spot' && !e.fixOptions)).length;
+    if (free < items.length * 0.3) errors.push(`final ${ch.id}: needs 30%+ free-recall items (${free}/${items.length})`);
   }
-  const finalAll = FINAL_PARTS.flatMap((p) => p.items);
-  if (finalAll.filter((e) => e.type === 'gap' || e.type === 'correct' || (e.type === 'spot' && !e.fixOptions)).length < 12) errors.push('final: needs 12+ free-recall items');
+  const finalAll = CHALLENGES.flatMap((c) => c.parts.flatMap((p) => p.items));
   const allExercises = [...MODULES.flatMap((m) => m.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])))), ...finalAll];
   for (const e of allExercises) if (e.pattern && !(e.pattern in POS_NAMED_PATTERNS)) errors.push(`${e.id}: unknown pattern ${e.pattern}`);
   for (const item of DIAGNOSTIC_ITEMS) {
