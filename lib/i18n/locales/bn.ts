@@ -1,3 +1,4 @@
+import { saBn } from './sa.bn';
 import type { LocaleDictionary } from './types';
 
 /**
@@ -6,6 +7,7 @@ import type { LocaleDictionary } from './types';
  * in English. See docs/LOCALIZATION.md.
  */
 export const bn: LocaleDictionary = {
+  sa: saBn,
   common: {
     back: 'পেছনে',
     continue: 'এগিয়ে যাও',

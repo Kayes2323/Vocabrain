@@ -15,11 +15,13 @@
     "test:plan": "npx -y tsx scripts/test-study-plan.ts",
     "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:abroad": "npx -y tsx scripts/test-country-match.ts",
+    "test:study-abroad": "npx -y tsx scripts/test-study-abroad.ts",
     "test:mino": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"npx -y tsx scripts/test-mino-api.mts\"",
     "emulators": "npx -y firebase-tools@15 emulators:start --only auth,firestore --project demo-vocabbrain",
     "test:e2e:tenses": "bash scripts/e2e/run.sh tenses",
     "test:e2e:articles": "bash scripts/e2e/run.sh articles",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles"
+    "test:e2e:abroad": "bash scripts/e2e/run.sh abroad",
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles abroad"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

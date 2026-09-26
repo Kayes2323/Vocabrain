@@ -221,7 +221,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -245,6 +245,8 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       send(t('foundation.askReview'), 'ielts-coach');
     } else if (ask === 'foundation') {
       send(t('foundation.askPattern', { tag: t(`foundation.tags.${params.get('tag') ?? 'sentence-structure'}`) }), 'ielts-coach');
+    } else if (ask === 'abroad-next') {
+      send(t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad') {
       send(t('match.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'feedback') {

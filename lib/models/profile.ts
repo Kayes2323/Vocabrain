@@ -55,7 +55,33 @@ export interface StudyAbroadProfile {
   annualBudget?: Money;
   /** Weights sum to 100. Personalised in Country Match. */
   priorities?: Partial<Record<PriorityFactor, number>>;
+  /** Shortlisted countries (the dream country may be one of them). */
   preferredCountryCodes?: string[];
+  /** The one country the active journey is for. */
+  dreamCountryCode?: string;
+  /** The student's own progress on journey stages/steps; computed rules never live here. */
+  journey?: StudentJourneyState;
+}
+
+/**
+ * What the student has told us about their journey. Only manual facts are
+ * stored (a step marked done, a personal due date); statuses that follow from
+ * data (e.g. IELTS ready, a shortlist exists) are always computed.
+ */
+export interface StudentJourneyState {
+  /** Stage/step id → the student's own mark. */
+  marks: Record<string, JourneyMark>;
+  updatedAt?: ISODate;
+}
+
+export interface JourneyMark {
+  status: 'done' | 'in-progress';
+  updatedAt: ISODate;
+  /** A personal due date for this step. */
+  dueAt?: ISODate;
+  note?: string;
+  /** The dream country when the mark was made (marks belong to one journey). */
+  countryCode?: string;
 }
 
 /** Per-word learning signals. Keyed by a stable word key. */

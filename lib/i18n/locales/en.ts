@@ -2,7 +2,10 @@
  * English copy. Simple, international English. Keys are shared with bn.ts;
  * this file is the fallback for any key missing in another locale.
  */
+import { saEn } from './sa.en';
+
 export const en = {
+  sa: saEn,
   common: {
     back: 'Back',
     continue: 'Continue',

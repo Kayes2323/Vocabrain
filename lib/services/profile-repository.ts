@@ -27,7 +27,11 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
     ...migrated,
     userId,
     ielts: { ...base.ielts, ...stored.ielts, currentBands: { ...stored.ielts?.currentBands } },
-    abroad: { ...base.abroad, ...stored.abroad },
+    abroad: {
+      ...base.abroad,
+      ...stored.abroad,
+      ...(stored.abroad?.journey ? { journey: { ...stored.abroad.journey, marks: { ...stored.abroad.journey.marks } } } : {}),
+    },
     vocabulary: { ...base.vocabulary, ...stored.vocabulary, words: { ...stored.vocabulary?.words } },
     study: {
       ...base.study,
