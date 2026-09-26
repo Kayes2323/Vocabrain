@@ -85,22 +85,56 @@ export interface CorrectExercise extends ExerciseBase {
 export interface WriteExercise extends ExerciseBase {
   type: 'write';
   model: string;
+  /** Ask Mino to check the student's own sentences (personal use). */
+  mino?: {
+    /** What Mino checks, in English (sent to the model). */
+    task: string;
+    /** The target structure, shown to the student. */
+    target: L;
+  };
   /** Simple checklist the student ticks against their own answer. */
   checklist: L[];
 }
 
 export type Exercise = ChoiceExercise | GapExercise | OrderExercise | CorrectExercise | WriteExercise;
 
+/** The time picture a sentence has; drawn as a small timeline. */
+export type TimePicture = 'finished' | 'now' | 'habit' | 'past-to-now' | 'future' | 'earlier-past';
+
 export type LessonStep =
-  /** What is this? */
-  | { kind: 'concept'; title: L; body: L; points?: L[] }
-  /** How do I use it? */
+  /** 1. Hook: a real situation; the student answers BEFORE any teaching. Not graded. */
+  | {
+      kind: 'hook';
+      title: L;
+      situation: L;
+      question: L;
+      options: string[];
+      answer: string;
+      /** 2. Diagnose: "If you chose X, here's why you may be confused." One per option. */
+      diagnose: Record<string, L>;
+    }
+  /** 3. Discover: examples first; the student notices the pattern, then it is revealed. */
+  | {
+      kind: 'discover';
+      title: L;
+      items: { en: string; note: L }[];
+      question: L;
+      options: L[];
+      /** Index of the option that states the pattern. */
+      answer: number;
+      pattern: L;
+    }
+  /** 4. Explain (what is it?). Optional timeline cards make time visible. */
+  | { kind: 'concept'; title: L; body: L; points?: L[]; timeline?: { sentence: string; picture: TimePicture; label: L }[] }
+  /** 5. Real life / examples (how do I use it?). */
   | { kind: 'examples'; title: L; items: { en: string; note: L }[] }
-  /** Why and where in IELTS? At least one skill per lesson. */
+  /** 6. IELTS connection (only skills where it naturally applies). */
   | { kind: 'ielts'; title: L; uses: { skill: Exclude<FoundationSkill, 'grammar' | 'vocabulary'>; example: string; note: L }[] }
-  /** Can I use it myself? */
-  | { kind: 'practice'; title: L; exercises: Exercise[] }
-  /** Remember it. */
+  /** 7. Common Mistake Lab: wrong → why → right, tap to reveal. */
+  | { kind: 'mistakes'; title: L; items: { wrong: string; right: string; why: L }[] }
+  /** 8–10. Practice (easy → hard), active recall (no options) or personal use (Mino feedback). */
+  | { kind: 'practice'; title: L; mode?: 'practice' | 'recall' | 'personal'; exercises: Exercise[] }
+  /** Remember: the key points to keep. */
   | { kind: 'recall'; title: L; points: L[] };
 
 export interface Lesson {
@@ -113,6 +147,8 @@ export interface Lesson {
   skill: FoundationSkill;
   /** 'test' lessons are practice-only (module review tests). Default 'lesson'. */
   kind?: 'lesson' | 'test';
+  /** 'v2' = problem-first format (hook → diagnose → discover → … → personal use). */
+  format?: 'v2';
   /** The concept this lesson teaches; its concept step is reused for review. */
   concept?: string;
   /** Lessons that should come first (defaults to the previous lesson in the module). */

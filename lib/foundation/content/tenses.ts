@@ -1,7 +1,7 @@
 import type { Concept, Exercise, L, Lesson } from '../model';
 
 /**
- * Module 2 — Tenses for IELTS. Original Vocab Brain lessons. Tenses are taught
+ * Module 2 — Tenses for IELTS, lessons 3–6 (v1 format; 1–2 are in tenses-v2.ts). Original Vocab Brain lessons. Tenses are taught
  * through IELTS tasks (Task 1 data, Speaking about experience, time changes in
  * Listening and Reading), not memorised tables.
  */
@@ -9,6 +9,7 @@ import type { Concept, Exercise, L, Lesson } from '../model';
 const l = (en: string, bn: string): L => ({ en, bn });
 
 export const TENSE_CONCEPTS: Concept[] = [
+  { id: 'time', title: l('Understanding Time', 'সময় বোঝা'), lessonId: 't-1', tag: 'tense' },
   { id: 'present-simple', title: l('Present Simple', 'Present Simple'), lessonId: 't-2', tag: 'tense' },
   { id: 'present-continuous', title: l('Present Continuous', 'Present Continuous'), lessonId: 't-3', tag: 'tense' },
   { id: 'past-simple', title: l('Past Simple', 'Past Simple'), lessonId: 't-4', tag: 'tense' },
@@ -27,180 +28,6 @@ const ielts = (uses: Extract<Lesson['steps'][number], { kind: 'ielts' }>['uses']
 });
 
 export const tensesLessons: Lesson[] = [
-  // ------------------------------------------------------------------ 1
-  {
-    id: 't-1',
-    title: l('Why tenses matter in IELTS', 'IELTS-এ Tense কেন জরুরি'),
-    why: l(
-      'Tense errors are among the most common reasons for a lower Grammatical Range & Accuracy score — and they change meaning in Listening and Reading.',
-      'Grammatical Range & Accuracy-তে নম্বর কমার সবচেয়ে common কারণগুলোর একটা tense-এর ভুল — আর Listening ও Reading-এ tense বদলালে অর্থও বদলে যায়।',
-    ),
-    minutes: 5,
-    difficulty: 'easy',
-    skill: 'grammar',
-    steps: [
-      {
-        kind: 'concept',
-        title: l('Tense = time + meaning', 'Tense = সময় + অর্থ'),
-        body: l(
-          'A tense tells the reader WHEN something happens and HOW we see it: finished, still happening, or connected to now. In IELTS you do not need grammar names; you need to choose the right form for the time you are talking about.',
-          'Tense পাঠককে বলে কাজটা কখন হচ্ছে আর আমরা সেটাকে কীভাবে দেখছি: শেষ হয়ে গেছে, এখনো চলছে, নাকি এখনকার সাথে যুক্ত। IELTS-এ grammar-এর নাম মুখস্থ লাগে না; যে সময়ের কথা বলছ, তার জন্য ঠিক form বাছতে পারাটাই আসল।',
-        ),
-        points: [
-          l('Finished time (in 2010, last year) → past.', 'শেষ হয়ে যাওয়া সময় (in 2010, last year) → past।'),
-          l('Always / usually / facts → present simple.', 'সবসময় / সাধারণত / সত্য তথ্য → present simple।'),
-          l('From the past until now (since, for) → present perfect.', 'অতীত থেকে এখন পর্যন্ত (since, for) → present perfect।'),
-          l('Predictions (by 2040) → future forms.', 'ভবিষ্যদ্বাণী (by 2040) → future form।'),
-        ],
-      },
-      {
-        kind: 'examples',
-        title: l('One idea, three times', 'এক idea, তিন সময়'),
-        items: [
-          { en: 'The city had 2 million people in 1990.', note: l('Finished year → past simple "had".', 'শেষ হয়ে যাওয়া বছর → past simple "had"।') },
-          { en: 'The city has grown a lot since 1990.', note: l('From 1990 until now → present perfect "has grown".', '১৯৯০ থেকে এখন পর্যন্ত → present perfect "has grown"।') },
-          { en: 'The city will probably reach 5 million by 2040.', note: l('Prediction → "will".', 'ভবিষ্যদ্বাণী → "will"।') },
-        ],
-      },
-      ielts([
-        { skill: 'writing', example: 'In 2000, 20% of households owned a car.', note: l('Task 1: a graph with past years needs past tenses.', 'Task 1: অতীতের বছরের graph-এ past tense লাগে।') },
-        { skill: 'speaking', example: 'I grew up in Barishal, but now I live in Dhaka.', note: l('Part 1 and 2: moving between past and present correctly shows control.', 'Part 1 আর 2: ঠিকভাবে past থেকে present-এ যাওয়া grammar-এর নিয়ন্ত্রণ দেখায়।') },
-        { skill: 'listening', example: 'The museum used to open on Mondays, but now it’s closed.', note: l('Tense changes often tell you which information is the answer (now, not before).', 'Tense বদলানো প্রায়ই বলে দেয় কোন তথ্যটা answer (আগেরটা না, এখনকারটা)।') },
-        { skill: 'reading', example: 'Scientists had believed this for years before new evidence appeared.', note: l('TRUE/FALSE/NOT GIVEN can depend on whether something is still true.', 'কোনো কিছু এখনো সত্য কিনা — TRUE/FALSE/NOT GIVEN প্রায়ই এর উপর নির্ভর করে।') },
-      ]),
-      practice([
-        {
-          id: 't-1-e1', type: 'choice', tag: 'tense', concept: 'past-simple',
-          prompt: l('Choose the correct form for a Task 1 graph.', 'Task 1 graph-এর জন্য সঠিক form বাছো।'),
-          sentence: 'In 2005, the company ___ 300 employees.',
-          options: ['has', 'had', 'will have'], answer: 'had',
-          explanation: l('2005 is finished → past simple "had".', '2005 শেষ হয়ে গেছে → past simple "had"।'),
-          why: { has: l('"has" is present; the year 2005 is in the past.', '"has" present; 2005 সাল অতীতে।'), 'will have': l('"will" is for the future, not 2005.', '"will" ভবিষ্যতের জন্য, 2005-এর জন্য না।') },
-        },
-        {
-          id: 't-1-e2', type: 'choice', tag: 'tense', concept: 'present-simple',
-          prompt: l('Which sentence is a general fact?', 'কোন sentence একটা সাধারণ সত্য?'),
-          options: ['Water boils at 100°C.', 'Water boiled at 100°C.', 'Water is boiling at 100°C.'], answer: 'Water boils at 100°C.',
-          explanation: l('Facts that are always true → present simple.', 'সবসময় সত্য তথ্য → present simple।'),
-          why: { 'Water boiled at 100°C.': l('Past simple describes one finished event, not a fact.', 'Past simple একটা শেষ হওয়া ঘটনা বোঝায়, সাধারণ সত্য না।'), 'Water is boiling at 100°C.': l('Continuous = happening right now, not a general fact.', 'Continuous = এই মুহূর্তে হচ্ছে, সাধারণ সত্য না।') },
-        },
-        {
-          id: 't-1-e3', type: 'choice', tag: 'tense', concept: 'present-perfect',
-          prompt: l('Choose the best form.', 'সবচেয়ে ভালো form বাছো।'),
-          sentence: 'Prices ___ steadily since 2015.',
-          options: ['rose', 'have risen', 'rise'], answer: 'have risen',
-          explanation: l('"since 2015" = from then until now → present perfect.', '"since 2015" = তখন থেকে এখন পর্যন্ত → present perfect।'),
-          why: { rose: l('Past simple does not connect to now; "since" needs present perfect.', 'Past simple এখনকার সাথে যুক্ত না; "since"-এর সাথে present perfect লাগে।'), rise: l('Present simple is for habits and facts, not "since 2015".', 'Present simple অভ্যাস আর সত্যের জন্য, "since 2015"-এর জন্য না।') },
-        },
-        {
-          id: 't-1-e4', type: 'choice', tag: 'tense', concept: 'future',
-          prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
-          sentence: 'By 2050, the population ___ to 10 billion.',
-          options: ['increased', 'will increase', 'has increased'], answer: 'will increase',
-          explanation: l('2050 is in the future → a future form.', '2050 ভবিষ্যতে → future form।'),
-          why: { increased: l('Past tense cannot describe 2050.', 'Past tense দিয়ে 2050 বোঝানো যায় না।'), 'has increased': l('Present perfect looks back from now, not forward.', 'Present perfect এখন থেকে পেছনে দেখে, সামনে না।') },
-        },
-      ]),
-      recall(
-        l('Look for time words first: in 2010, since, now, by 2050.', 'আগে সময়ের শব্দ খোঁজো: in 2010, since, now, by 2050।'),
-        l('The time decides the tense.', 'সময়ই ঠিক করে tense।'),
-      ),
-    ],
-  },
-
-  // ------------------------------------------------------------------ 2
-  {
-    id: 't-2',
-    concept: 'present-simple',
-    title: l('Present Simple', 'Present Simple'),
-    why: l('Facts, habits and opinions — the most used tense in Speaking Part 1 and Task 2.', 'তথ্য, অভ্যাস আর মতামত — Speaking Part 1 আর Task 2-এ সবচেয়ে বেশি ব্যবহৃত tense।'),
-    minutes: 8,
-    difficulty: 'easy',
-    skill: 'grammar',
-    steps: [
-      {
-        kind: 'concept',
-        title: l('What is it and when do we use it?', 'এটা কী, কখন ব্যবহার করি?'),
-        body: l(
-          'Use the present simple for things that are generally true, habits and routines, and opinions. With he / she / it (and singular nouns) the verb takes -s or -es.',
-          'যা সাধারণভাবে সত্য, অভ্যাস বা রুটিন, আর মতামত — এগুলোর জন্য present simple। he / she / it (আর singular noun)-এর সাথে verb-এ -s বা -es যোগ হয়।',
-        ),
-        points: [
-          l('I / you / we / they + work · He / she / it + works', 'I / you / we / they + work · He / she / it + works'),
-          l('Negative: do not / does not + base verb ("She doesn’t work").', 'Negative: do not / does not + base verb ("She doesn’t work")।'),
-          l('Question: Do / Does + subject + base verb ("Does she work?").', 'Question: Do / Does + subject + base verb ("Does she work?")।'),
-          l('Signal words: usually, often, every day, always, never.', 'Signal word: usually, often, every day, always, never।'),
-        ],
-      },
-      {
-        kind: 'examples',
-        title: l('Examples', 'উদাহরণ'),
-        items: [
-          { en: 'She goes to university every day.', note: l('Habit + "she" → "goes".', 'অভ্যাস + "she" → "goes"।') },
-          { en: 'Many people believe that technology makes life easier.', note: l('Opinion and general idea → present simple.', 'মতামত আর সাধারণ ধারণা → present simple।') },
-          { en: 'The diagram shows how paper is recycled.', note: l('Describing what a chart shows → present simple.', 'Chart কী দেখায় বলতে → present simple।') },
-        ],
-      },
-      ielts([
-        { skill: 'speaking', example: 'I usually study in the evening because I work in the morning.', note: l('Part 1 questions about routines ("Do you…?") need present simple.', 'রুটিন নিয়ে Part 1 প্রশ্নে ("Do you…?") present simple লাগে।') },
-        { skill: 'writing', example: 'The line graph shows the number of visitors to three museums.', note: l('Task 1 first sentence: "The graph shows…" (not "showed").', 'Task 1-এর প্রথম sentence: "The graph shows…" ("showed" না)।') },
-        { skill: 'reading', example: 'Bees communicate by dancing.', note: l('Passages state facts in the present simple; questions paraphrase them.', 'Passage-এ তথ্য present simple-এ থাকে; প্রশ্ন সেটাকে paraphrase করে।') },
-        { skill: 'listening', example: 'The library opens at nine and closes at six.', note: l('Part 1 forms: times and routines in present simple.', 'Part 1 form: সময় আর রুটিন present simple-এ।') },
-      ]),
-      practice([
-        {
-          id: 't-2-e1', type: 'choice', tag: 'agreement', concept: 'present-simple',
-          prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
-          sentence: 'She ___ to university every day.',
-          options: ['go', 'goes', 'going'], answer: 'goes',
-          explanation: l('"She" is third-person singular, so the verb takes "-es": goes.', '"She" third-person singular, তাই verb-এ "-es": goes।'),
-          why: { go: l('"go" is for I / you / we / they, not "she".', '"go" হয় I / you / we / they-এর সাথে, "she"-এর সাথে না।'), going: l('"going" alone is not a full verb; it needs "is".', 'শুধু "going" full verb না; "is" লাগে।') },
-        },
-        {
-          id: 't-2-e2', type: 'correct', tag: 'agreement', concept: 'present-simple',
-          prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
-          sentence: 'My brother work in a bank.',
-          accepted: ['My brother works in a bank.'],
-          explanation: l('"My brother" = he → "works".', '"My brother" = he → "works"।'),
-        },
-        {
-          id: 't-2-e3', type: 'gap', tag: 'tense', concept: 'present-simple',
-          prompt: l('Complete with the correct form of "show".', '"show"-এর সঠিক form বসাও।'),
-          sentence: 'The bar chart ___ the amount of rice exported by five countries.',
-          accepted: ['shows'],
-          explanation: l('Task 1 describes what the chart shows now → "shows".', 'Task 1-এ chart এখন কী দেখায় → "shows"।'),
-          why: { showed: l('The chart shows the data now; use the present, even if the data is past.', 'Chart data-টা এখন দেখাচ্ছে; data অতীতের হলেও এখানে present।'), show: l('"The bar chart" is singular → "shows".', '"The bar chart" singular → "shows"।') },
-        },
-        {
-          id: 't-2-e4', type: 'choice', tag: 'agreement', concept: 'present-simple',
-          prompt: l('Choose the correct question.', 'সঠিক প্রশ্ন বাছো।'),
-          options: ['Does your sister likes cooking?', 'Does your sister like cooking?', 'Do your sister like cooking?'], answer: 'Does your sister like cooking?',
-          explanation: l('After "does", use the base verb (like, not likes).', '"does"-এর পরে base verb (like, likes না)।'),
-          why: { 'Does your sister likes cooking?': l('"does" already carries the -s, so the verb stays "like".', '"does"-এই -s আছে, তাই verb "like" থাকবে।'), 'Do your sister like cooking?': l('"your sister" = she → "Does".', '"your sister" = she → "Does"।') },
-        },
-        {
-          id: 't-2-e5', type: 'correct', tag: 'agreement', concept: 'present-simple',
-          prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
-          sentence: 'He don’t like crowded places.',
-          accepted: ["He doesn't like crowded places.", 'He does not like crowded places.'],
-          explanation: l('"he" → "doesn’t" (does not).', '"he" → "doesn’t" (does not)।'),
-        },
-        {
-          id: 't-2-e6', type: 'write', tag: 'tense', concept: 'present-simple',
-          prompt: l('Speaking Part 1: "What do you do in your free time?" Answer in 1–2 sentences.', 'Speaking Part 1: "What do you do in your free time?" ১–২ sentence-এ answer দাও।'),
-          model: 'I usually play football with my friends, and sometimes I watch documentaries.',
-          checklist: [l('Present simple for habits', 'অভ্যাসের জন্য present simple'), l('-s with he/she/it', 'he/she/it-এর সাথে -s'), l('A frequency word (usually, often…)', 'একটা frequency word (usually, often…)')],
-          explanation: l('Routines + a frequency word make a natural Part 1 answer.', 'রুটিন + frequency word দিলে Part 1-এর answer স্বাভাবিক হয়।'),
-        },
-      ]),
-      recall(
-        l('He / she / it → verb + s (goes, works, shows).', 'He / she / it → verb + s (goes, works, shows)।'),
-        l('does / doesn’t + base verb (does like, doesn’t work).', 'does / doesn’t + base verb (does like, doesn’t work)।'),
-        l('Task 1: "The graph shows…"', 'Task 1: "The graph shows…"'),
-      ),
-    ],
-  },
-
   // ------------------------------------------------------------------ 3
   {
     id: 't-3',

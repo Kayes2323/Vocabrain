@@ -1,11 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Check, RotateCcw, X } from 'lucide-react';
+import { Check, RotateCcw, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { foundationFeedback } from '@/lib/ai/client';
+import type { FoundationFeedback } from '@/lib/ai/server/assess/foundation';
 import { expectedAnswer, gradeExercise, normaliseAnswer, shuffledWords, type Exercise, type L } from '@/lib/foundation';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
@@ -34,6 +36,8 @@ export function ExerciseView({
   onDone,
   doneLabel,
   initial,
+  lessonId,
+  onApplied,
 }: {
   exercise: Exercise;
   feedback?: boolean;
@@ -43,8 +47,21 @@ export function ExerciseView({
   doneLabel: string;
   /** An answer already given (resuming a lesson): shown as checked. */
   initial?: ExerciseResult;
+  /** With a lesson id, personal-use writing tasks are checked by Mino. */
+  lessonId?: string;
+  onApplied?: (feedback: FoundationFeedback, text: string) => void;
 }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const [mino, setMino] = useState<{ status: 'loading' | 'failed' | 'guest' } | { status: 'done'; feedback: FoundationFeedback } | null>(null);
+  const withMino = exercise.type === 'write' && Boolean(exercise.mino) && Boolean(lessonId);
+  const askMino = async (text: string) => {
+    setMino({ status: 'loading' });
+    const res = await foundationFeedback(lessonId!, exercise.id, text, locale === 'bn' ? 'bn' : 'en');
+    if (res.ok) {
+      setMino({ status: 'done', feedback: res.feedback });
+      onApplied?.(res.feedback, text);
+    } else setMino({ status: res.error === 'unauthenticated' ? 'guest' : 'failed' });
+  };
   const text = useText();
   const [answer, setAnswer] = useState(initial?.answer ?? (exercise.type === 'correct' ? (exercise.sentence ?? '') : ''));
   const [picked, setPicked] = useState<number[]>([]);
@@ -59,6 +76,7 @@ export function ExerciseView({
     onAnswer?.(result);
     if (feedback) setChecked(result);
     else onDone(result);
+    if (withMino) void askMino(value);
   };
 
   const locked = checked !== null;
@@ -186,6 +204,12 @@ export function ExerciseView({
 
       {exercise.type === 'write' && (
         <div className="space-y-3">
+          {exercise.mino && (
+            <p className="rounded-lg bg-brand-soft px-3 py-2 text-sm">
+              <span className="font-semibold">{t('foundation.lesson.target')}: </span>
+              {text(exercise.mino.target)}
+            </p>
+          )}
           <Textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
@@ -196,6 +220,48 @@ export function ExerciseView({
             rows={3}
             className="text-base"
           />
+          {locked && withMino && mino && (
+            <div role="status" className={cn('space-y-2 rounded-xl p-4 text-sm', mino.status === 'done' ? (mino.feedback.verdict === 'needs-work' ? 'bg-amber-500/10' : 'bg-success/10') : 'bg-muted/60')}>
+              <p className="flex items-center gap-1.5 font-semibold">
+                <Sparkles className={cn('size-4 text-brand', mino.status === 'loading' && 'animate-pulse')} aria-hidden />
+                {mino.status === 'loading'
+                  ? t('foundation.lesson.minoChecking')
+                  : mino.status === 'guest'
+                    ? t('foundation.lesson.minoSignIn')
+                    : mino.status === 'failed'
+                      ? t('foundation.lesson.minoBusy')
+                      : mino.status === 'done'
+                        ? t(`foundation.lesson.minoVerdict.${mino.feedback.verdict}`)
+                        : ''}
+              </p>
+              {mino.status === 'done' && (
+                <>
+                  <p>{mino.feedback.feedback}</p>
+                  {mino.feedback.fixes.length > 0 && (
+                    <ul className="space-y-1" lang="en">
+                      {mino.feedback.fixes.map((f, i) => (
+                        <li key={i}>
+                          <span className="line-through decoration-destructive/60">{f.quote}</span> → <span className="font-medium">{f.fix}</span>
+                          <span className="block text-muted-foreground">{f.why}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {mino.feedback.verdict !== 'correct' && (
+                    <p>
+                      <span className="font-semibold">{t('foundation.lesson.minoCorrected')}: </span>
+                      <span lang="en">{mino.feedback.corrected}</span>
+                    </p>
+                  )}
+                </>
+              )}
+              {mino.status === 'failed' && (
+                <Button size="sm" variant="outline" onClick={() => void askMino(value)}>
+                  {t('foundation.lesson.minoRetry')}
+                </Button>
+              )}
+            </div>
+          )}
           {locked && (
             <div className="space-y-3 rounded-xl border p-4 text-sm">
               <p>
@@ -247,12 +313,12 @@ export function ExerciseView({
 
       <div className="flex justify-end">
         {checked ? (
-          <Button size="lg" onClick={() => onDone(checked)}>
+          <Button size="lg" disabled={mino?.status === 'loading'} onClick={() => onDone(checked)}>
             {doneLabel}
           </Button>
         ) : (
           <Button size="lg" disabled={!ready} onClick={check}>
-            {!feedback ? doneLabel : exercise.type === 'write' ? t('foundation.lesson.compare') : t('foundation.lesson.check')}
+            {!feedback ? doneLabel : withMino ? t('foundation.lesson.getMino') : exercise.type === 'write' ? t('foundation.lesson.compare') : t('foundation.lesson.check')}
           </Button>
         )}
       </div>

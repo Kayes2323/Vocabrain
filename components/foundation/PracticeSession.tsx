@@ -34,7 +34,13 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
   }, [round]);
   const source = mode.kind === 'review' ? `review:${mode.concept}` : `quiz:${mode.module.id}`;
   const concept = mode.kind === 'review' ? getConcept(mode.concept) : undefined;
-  const conceptStep = concept ? findLesson(concept.lessonId)?.lesson.steps.find((s) => s.kind === 'concept') : undefined;
+  const conceptLesson = concept ? findLesson(concept.lessonId)?.lesson : undefined;
+  const conceptStep = conceptLesson?.steps.find((s) => s.kind === 'concept');
+  // Three short examples to refresh the idea (real-life examples, else the discovery examples).
+  const examples = (() => {
+    const st = conceptLesson?.steps.find((s) => s.kind === 'examples') ?? conceptLesson?.steps.find((s) => s.kind === 'discover');
+    return st && (st.kind === 'examples' || st.kind === 'discover') ? st.items.slice(0, 3) : [];
+  })();
   const recent = mode.kind === 'review' ? recentConceptMistakes(fp, mode.concept).length : 0;
 
   const [phase, setPhase] = useState<'learn' | 'questions' | 'result'>(mode.kind === 'review' ? 'learn' : 'questions');
@@ -59,7 +65,9 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <Header title={title} exitHref={exitHref} progress={0} />
-        {recent > 0 && <p className="text-sm text-muted-foreground">{t('foundation.review.why', { n: recent, topic: text(concept!.title) })}</p>}
+        <p className="text-sm text-muted-foreground">
+          {recent >= 3 ? t('foundation.review.why', { n: recent, topic: text(concept!.title) }) : t('foundation.review.scheduledWhy', { topic: text(concept!.title) })}
+        </p>
         <Panel className="space-y-3">
           <p className="font-semibold">{text(conceptStep.title)}</p>
           <p className="leading-7">{text(conceptStep.body)}</p>
@@ -73,6 +81,17 @@ export function PracticeSession({ mode, fp }: { mode: Mode; fp: FoundationProgre
             </ul>
           )}
         </Panel>
+        {examples.length > 0 && (
+          <div className="space-y-2">
+            <p className="px-1 text-sm font-semibold text-muted-foreground">{t('foundation.review.examples')}</p>
+            {examples.map((e, i) => (
+              <Panel key={i} className="space-y-1 p-3.5">
+                <p lang="en">{e.en}</p>
+                <p className="text-sm text-muted-foreground">{text(e.note)}</p>
+              </Panel>
+            ))}
+          </div>
+        )}
         <div className="flex justify-end">
           <Button size="lg" onClick={() => setPhase('questions')}>
             {t('foundation.review.start', { n: questions.length })} <ArrowRight />

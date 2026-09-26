@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  completeLesson, expectedAnswer, getConcept, lessonOutcome, nextAction, PASS_SCORE, recordAnswer, saveInProgress,
+  completeLesson, conceptMastery, expectedAnswer, getConcept, lessonOutcome, nextAction, PASS_SCORE, recordAnswer, recordApplication, saveInProgress,
   type Exercise, type Lesson, type LessonStep, type Module,
 } from '@/lib/foundation';
+import { DiscoverStep, HookStep, MistakeLab, TimelineCards } from './LessonSteps';
 import type { FoundationInProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { ExerciseView, type ExerciseResult } from './ExerciseView';
@@ -49,6 +50,8 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
   const [answers, setAnswers] = useState<Answers>(() => resume?.answers ?? {});
   const [attempt, setAttempt] = useState(() => resume?.attempt ?? (fp?.lessons[lesson.id]?.attempts ?? 0) + 1);
   const [finished, setFinished] = useState<ReturnType<typeof scoreOf> | null>(null);
+  // Hook / discover choices (not graded), by page.
+  const [picks, setPicks] = useState<Record<number, string | number>>({});
   const answersRef = useRef(answers);
   answersRef.current = answers;
 
@@ -115,6 +118,8 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           )}
           <p className="text-sm text-muted-foreground">{t(`foundation.lesson.resultBody.${outcome}`)}</p>
         </Panel>
+
+        {lesson.concept && fp && <MasteryPanel concept={lesson.concept} />}
 
         {missed.length > 0 && (
           <Panel className="space-y-3">
@@ -227,6 +232,13 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           )}
         </h2>
 
+        {step.kind === 'hook' && <HookStep step={step} picked={picks[index] as string | undefined} onPick={(o) => setPicks((p) => ({ ...p, [index]: o }))} />}
+        {step.kind === 'discover' && <DiscoverStep step={step} picked={picks[index] as number | undefined} onPick={(i) => setPicks((p) => ({ ...p, [index]: i }))} />}
+        {step.kind === 'mistakes' && <MistakeLab step={step} />}
+        {step.kind === 'practice' && step.mode && step.mode !== 'practice' && (
+          <p className="text-sm text-muted-foreground">{t(`foundation.lesson.mode.${step.mode}`)}</p>
+        )}
+
         {step.kind === 'concept' && (
           <Panel className="space-y-3">
             <p className="leading-7">{text(step.body)}</p>
@@ -241,6 +253,7 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
             )}
           </Panel>
         )}
+        {step.kind === 'concept' && step.timeline && <TimelineCards items={step.timeline} />}
 
         {step.kind === 'examples' && (
           <div className="space-y-3">
@@ -286,6 +299,10 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
               key={`${page.exercise.id}-${attempt}`}
               exercise={page.exercise}
               initial={answers[page.exercise.id]}
+              lessonId={lesson.id}
+              onApplied={(fb, text) =>
+                update((p) => recordApplication(p, { source: lesson.id, exercise: page.exercise!, text, verdict: fb.verdict, corrected: fb.corrected, attempt }))
+              }
               doneLabel={last ? t('foundation.lesson.complete') : t('foundation.lesson.next')}
               onAnswer={(r) => onAnswer(page.exercise!, r)}
               onDone={() => (last ? finish() : goTo(index + 1))}
@@ -301,11 +318,51 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
               <ArrowLeft /> {t('foundation.lesson.back')}
             </Button>
           )}
-          <Button size="lg" onClick={() => (last ? finish() : goTo(index + 1))}>
-            {last ? t('foundation.lesson.complete') : t('foundation.lesson.continue')} <ArrowRight />
+          <Button
+            size="lg"
+            disabled={(step.kind === 'hook' || step.kind === 'discover') && picks[index] === undefined}
+            onClick={() => (last ? finish() : goTo(index + 1))}
+          >
+            {(step.kind === 'hook' || step.kind === 'discover') && picks[index] === undefined
+              ? t('foundation.lesson.pickFirst')
+              : last
+                ? t('foundation.lesson.complete')
+                : t('foundation.lesson.continue')}{' '}
+            <ArrowRight />
           </Button>
         </div>
       )}
     </div>
+  );
+}
+
+/** Evidence of mastery for a concept (not just "lesson completed") and when it comes back for review. */
+function MasteryPanel({ concept }: { concept: string }) {
+  const { t } = useLocale();
+  const text = useText();
+  const { fp } = useFoundation();
+  if (!fp) return null;
+  const m = conceptMastery(fp, concept);
+  const srs = fp.concepts[concept]?.srs;
+  const hours = srs ? (Date.parse(srs.dueAt) - Date.now()) / 3_600_000 : undefined;
+  const when = hours === undefined ? undefined : hours < 20 ? t('foundation.lesson.when.soon') : hours < 36 ? t('foundation.lesson.when.tomorrow') : t('foundation.lesson.when.days', { n: Math.round(hours / 24) });
+  return (
+    <Panel className="space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-semibold">{t('foundation.lesson.masteryTitle', { topic: text(getConcept(concept)!.title) })}</p>
+        <span className="rounded-full bg-brand-soft px-2.5 py-0.5 text-xs font-medium">{t(`foundation.lesson.masteryLevel.${m.level}`)}</span>
+      </div>
+      <ul className="space-y-1.5 text-sm">
+        {(['recognition', 'recall', 'application', 'consistency'] as const).map((k) => (
+          <li key={k} className="flex items-center gap-2">
+            <span className={cn('flex size-4 items-center justify-center rounded-full border', m[k] ? 'border-success bg-success text-white' : 'border-border')} aria-hidden>
+              {m[k] && <span className="text-[10px]">✓</span>}
+            </span>
+            <span className={cn(!m[k] && 'text-muted-foreground')}>{t(`foundation.lesson.mastery.${k}`)}</span>
+          </li>
+        ))}
+      </ul>
+      {when && <p className="text-sm text-muted-foreground">{t('foundation.lesson.nextReview', { when })}</p>}
+    </Panel>
   );
 }

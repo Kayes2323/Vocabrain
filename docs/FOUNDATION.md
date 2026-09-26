@@ -109,3 +109,29 @@ next step) and snapshot lines built only from stored data; `/mino?ask=foundation
 **Storage fix:** the profile is saved with `mergeFields` so removed nested
 fields (e.g. a finished lesson's resume point) are really removed. No Firestore
 rules change.
+
+## v3: problem-first lessons (Tenses 1–2), spaced review, mastery
+
+See `docs/TENSES_CURRICULUM.md` for the full 15-stage Tenses map.
+
+- **New step kinds** (`lib/foundation/model.ts`): `hook` (the student answers a
+  real situation before any teaching; every option has a diagnosis),
+  `discover` (examples → the student names the pattern → notes + pattern
+  revealed), `mistakes` (Common Mistake Lab, tap to reveal), timeline cards on
+  `concept`, and practice `mode`: `practice` (easy → hard), `recall` (no
+  options) and `personal` (a `write` task with `mino`). `format: 'v2'` lessons
+  are validated for all of these.
+- **Content:** `content/tenses-v2.ts` — Understanding Time (t-1) and Present
+  Simple (t-2). Ids unchanged, so existing progress stays valid.
+- **Mino feedback:** `POST /api/mino/foundation-feedback` (signed-in, rate
+  limited, fast model, JSON validated with zod; quotes must exist in the
+  student's text; the student's text is isolated as data). Busy / signed-out →
+  model answer + checklist, with "Ask Mino again".
+- **Spaced review:** `completeLesson` schedules the lesson concept (same day,
+  3 h); `recordReview` moves it through 1, 3, 7, 14, 30 days; a miss → tomorrow.
+  `dueReviews` = repeated-mistake reviews first, then scheduled ones.
+- **Mastery:** `conceptMastery` = recognition (≥80% on 3+ choice answers),
+  recall (2+ typed answers right), application (a personal sentence Mino judged
+  correct), consistency (2+ passed spaced reviews). Shown after each lesson.
+- **Error memory:** Mino-judged sentences that need work are stored as
+  mistakes (`questionType: 'write'`, the student's text and Mino's correction).

@@ -3,7 +3,7 @@
 // stored FoundationProgress, so every number shown comes from real data.
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
-import { CONCEPTS, LEVELS, MODULES } from './content';
+import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
 import { expectedAnswer } from './grade';
 import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module } from './model';
 
@@ -158,7 +158,20 @@ export function recordAnswer(fp: FoundationProgress, e: AnswerEvent): Foundation
   const c = e.exercise.concept;
   if (c && graded) {
     const prev = fp.concepts[c] ?? { attempts: 0, correct: 0, lastAt: at };
-    next = { ...next, concepts: { ...fp.concepts, [c]: { ...prev, attempts: prev.attempts + 1, correct: prev.correct + (e.correct ? 1 : 0), lastAt: at } } };
+    const recall = e.exercise.type === 'gap' || e.exercise.type === 'correct';
+    next = {
+      ...next,
+      concepts: {
+        ...fp.concepts,
+        [c]: {
+          ...prev,
+          attempts: prev.attempts + 1,
+          correct: prev.correct + (e.correct ? 1 : 0),
+          lastAt: at,
+          ...(recall ? { recallAttempts: (prev.recallAttempts ?? 0) + 1, recallCorrect: (prev.recallCorrect ?? 0) + (e.correct ? 1 : 0) } : {}),
+        },
+      },
+    };
   }
   if (e.correct === false) {
     const ex = e.exercise;
@@ -201,12 +214,17 @@ export function saveInProgress(
   return { ...fp, inProgress: { lessonId, page, answers, attempt, updatedAt: now.toISOString() } };
 }
 
-/** Finishes a lesson: score, attempts, today's count; clears the resume point. */
+/** Finishes a lesson: score, attempts, today's count; clears the resume point; schedules spaced review. */
 export function completeLesson(fp: FoundationProgress, lessonId: string, score: number, now = new Date()): FoundationProgress {
   const prev = fp.lessons[lessonId];
   const { inProgress, ...rest } = fp;
+  const concept = findLesson(lessonId)?.lesson.concept;
+  const stats = concept ? fp.concepts[concept] : undefined;
+  // First review the same day; a weak score restarts the schedule.
+  const srs = concept && (!stats?.srs || score < 60) ? { stage: 0, dueAt: addDays(now, STAGE_DAYS[0]), passes: stats?.srs?.passes ?? 0 } : stats?.srs;
   return {
     ...rest,
+    ...(concept && srs ? { concepts: { ...fp.concepts, [concept]: { ...(stats ?? { attempts: 0, correct: 0, lastAt: now.toISOString() }), srs } } } : {}),
     ...(inProgress && inProgress.lessonId !== lessonId ? { inProgress } : {}),
     lessons: {
       ...fp.lessons,
@@ -265,14 +283,92 @@ export function topicSummary(fp: FoundationProgress, now = new Date()): TopicSum
   });
 }
 
-/** Records a finished review: a pass clears the concept's recent mistakes. */
+/**
+ * Records a finished review. A pass clears the concept's recent mistakes and
+ * moves the spaced-review schedule forward (same day → 1 → 3 → 7 → 14 → 30
+ * days); a miss brings it back to tomorrow.
+ */
 export function recordReview(fp: FoundationProgress, concept: string, score: number, now = new Date()): FoundationProgress {
   const prev = fp.concepts[concept] ?? { attempts: 0, correct: 0, lastAt: now.toISOString() };
+  const passed = score >= PASS_SCORE;
+  const stage = prev.srs?.stage ?? 0;
+  const nextStage = passed ? Math.min(stage + 1, STAGE_DAYS.length - 1) : 0;
+  const srs = { stage: nextStage, dueAt: addDays(now, passed ? STAGE_DAYS[nextStage] : 1), passes: (prev.srs?.passes ?? 0) + (passed ? 1 : 0) };
   return {
     ...fp,
-    concepts: { ...fp.concepts, [concept]: { ...prev, lastReviewScore: score, ...(score >= PASS_SCORE ? { reviewedAt: now.toISOString() } : {}) } },
+    concepts: { ...fp.concepts, [concept]: { ...prev, lastReviewScore: score, srs, ...(passed ? { reviewedAt: now.toISOString() } : {}) } },
     days: bumpDay(fp, now, { reviews: 1 }),
   };
+}
+
+/** Spaced-review intervals in days: same day (3 h), 1, 3, 7, 14, 30. */
+export const STAGE_DAYS = [0.125, 1, 3, 7, 14, 30];
+const addDays = (now: Date, days: number) => new Date(now.getTime() + days * 86_400_000).toISOString();
+
+export type DueReview = { concept: string; reason: 'mistakes'; count: number } | { concept: string; reason: 'scheduled'; stage: number };
+
+/** Everything due for review: repeated mistakes first, then scheduled spaced reviews. */
+export function dueReviews(fp: FoundationProgress, now = new Date()): DueReview[] {
+  const mistakes = reviewDue(fp, now).map((d): DueReview => ({ concept: d.concept, reason: 'mistakes', count: d.count }));
+  const taken = new Set(mistakes.map((m) => m.concept));
+  const scheduled = CONCEPTS.flatMap((c): DueReview[] => {
+    const srs = fp.concepts[c.id]?.srs;
+    return srs && !taken.has(c.id) && Date.parse(srs.dueAt) <= now.getTime() ? [{ concept: c.id, reason: 'scheduled', stage: srs.stage }] : [];
+  });
+  return [...mistakes, ...scheduled];
+}
+
+/** Records Mino's check of a personal sentence (application). A "needs work" result is stored as a mistake. */
+export function recordApplication(
+  fp: FoundationProgress,
+  e: { source: string; exercise: Exercise; text: string; verdict: 'correct' | 'minor' | 'needs-work'; corrected: string; attempt: number; now?: Date },
+): FoundationProgress {
+  const now = e.now ?? new Date();
+  const at = now.toISOString();
+  const c = e.exercise.concept;
+  let next = fp;
+  if (c) {
+    const prev = fp.concepts[c] ?? { attempts: 0, correct: 0, lastAt: at };
+    next = { ...next, concepts: { ...fp.concepts, [c]: { ...prev, applied: (prev.applied ?? 0) + 1, appliedCorrect: (prev.appliedCorrect ?? 0) + (e.verdict === 'needs-work' ? 0 : 1), lastAt: at } } };
+  }
+  if (e.verdict === 'needs-work') {
+    const mistake: FoundationMistake = {
+      at, source: e.source, questionId: e.exercise.id, questionType: 'write',
+      prompt: e.exercise.prompt.en.slice(0, 160), answer: e.text.slice(0, 160), correctAnswer: e.corrected.slice(0, 160),
+      tag: e.exercise.tag, ...(c ? { concept: c } : {}), attempt: e.attempt,
+    };
+    next = { ...next, mistakes: [...next.mistakes, mistake].slice(-MAX_MISTAKES), errors: addErrors(next.errors, [e.exercise.tag], at) };
+  }
+  return next;
+}
+
+export type MasteryLevel = 'new' | 'learning' | 'practising' | 'mastered';
+
+export interface Mastery {
+  level: MasteryLevel;
+  /** The four kinds of evidence, each from stored answers. */
+  recognition: boolean;
+  recall: boolean;
+  application: boolean;
+  consistency: boolean;
+}
+
+/**
+ * Mastery is not "lesson completed": recognition (≥80% on 3+ choice answers),
+ * recall (2+ correct typed answers), application (a personal sentence Mino
+ * judged correct) and consistency (2+ passed spaced reviews).
+ */
+export function conceptMastery(fp: FoundationProgress, concept: string): Mastery {
+  const s = fp.concepts[concept];
+  if (!s || (s.attempts === 0 && !s.applied)) return { level: 'new', recognition: false, recall: false, application: false, consistency: false };
+  const recN = s.attempts - (s.recallAttempts ?? 0);
+  const recC = s.correct - (s.recallCorrect ?? 0);
+  const recognition = recN >= 3 && recC / recN >= 0.8;
+  const recall = (s.recallCorrect ?? 0) >= 2;
+  const application = (s.appliedCorrect ?? 0) >= 1;
+  const consistency = (s.srs?.passes ?? 0) >= 2;
+  const level: MasteryLevel = recognition && recall && application && consistency ? 'mastered' : recognition && recall ? 'practising' : 'learning';
+  return { level, recognition, recall, application, consistency };
 }
 
 export function recordQuiz(fp: FoundationProgress, now = new Date()): FoundationProgress {
@@ -436,8 +532,8 @@ export function foundationDailyPlan(profile: Pick<UserProfile, 'ielts' | 'founda
   const studyDone = new Set(profile.study.days[key]?.done ?? []);
   const budget = Math.max(20, Math.min(60, Math.round(((profile.ielts.weeklyStudyHours ?? 5) * 60) / 6)));
   const items: PlanItem[] = [];
-  const due = reviewDue(fp, now)[0];
-  if (due) items.push({ kind: 'review', minutes: 5, href: `/ielts/foundation/review/${due.concept}`, done: (d?.reviews ?? 0) > 0, ref: due.concept });
+  const due = dueReviews(fp, now)[0];
+  if (due) items.push({ kind: 'review', minutes: due.reason === 'mistakes' ? 5 : 3, href: `/ielts/foundation/review/${due.concept}`, done: false, ref: due.concept });
   const next = nextLesson(fp);
   if (next) items.push({ kind: 'lesson', minutes: next.lesson.minutes, href: `/ielts/foundation/lesson/${next.lesson.id}`, done: Boolean(fp.lessons[next.lesson.id]) && localDateKey(new Date(fp.lessons[next.lesson.id].completedAt)) === key, ref: next.lesson.id });
   items.push(
@@ -465,7 +561,7 @@ export function foundationDailyPlan(profile: Pick<UserProfile, 'ielts' | 'founda
 export type NextAction =
   | { kind: 'check' }
   | { kind: 'resume'; lessonId: string }
-  | { kind: 'review'; concept: string; count: number }
+  | { kind: 'review'; concept: string; count: number; reason: 'mistakes' | 'scheduled' }
   | { kind: 'lesson'; lessonId: string }
   | { kind: 'quiz'; moduleId: string }
   | { kind: 'done' };
@@ -474,8 +570,8 @@ export type NextAction =
 export function nextAction(fp: FoundationProgress, now = new Date()): NextAction {
   if (!fp.diagnostic && Object.keys(fp.lessons).length === 0 && fp.mistakes.length === 0 && !fp.inProgress) return { kind: 'check' };
   if (fp.inProgress && nextLesson(fp)) return { kind: 'resume', lessonId: fp.inProgress.lessonId };
-  const due = reviewDue(fp, now)[0];
-  if (due) return { kind: 'review', concept: due.concept, count: due.count };
+  const due = dueReviews(fp, now)[0];
+  if (due) return { kind: 'review', concept: due.concept, count: due.reason === 'mistakes' ? due.count : 0, reason: due.reason };
   const next = nextLesson(fp);
   if (next) return { kind: 'lesson', lessonId: next.lesson.id };
   const quiz = MODULES.find((m) => canQuiz(fp, m));
@@ -505,6 +601,10 @@ export function foundationSummaryLines(fp: FoundationProgress, now = new Date())
   if (topics.length) {
     lines.push(`- Foundation topics (from real answers): ${topics.map((x) => `${x.concept} ${x.accuracy}% of ${x.attempts} [${x.status}${x.recentMistakes ? `, ${x.recentMistakes} recent mistakes` : ''}]`).join('; ')}.`);
   }
+  const mastery = CONCEPTS.map((c) => [c.id, conceptMastery(fp, c.id)] as const).filter(([, m]) => m.level !== 'new');
+  if (mastery.length) lines.push(`- Foundation mastery (recognition/recall/application/consistency): ${mastery.map(([id, m]) => `${id} ${m.level} [${[m.recognition, m.recall, m.application, m.consistency].map((x) => (x ? '✓' : '·')).join('')}]`).join('; ')}.`);
+  const scheduled = dueReviews(fp, now).filter((d) => d.reason === 'scheduled');
+  if (scheduled.length) lines.push(`- Spaced review due now: ${scheduled.map((d) => d.concept).join(', ')}.`);
   const due = reviewDue(fp, now);
   if (due.length) lines.push(`- Review due: ${due.map((x) => `${x.concept} (${x.count} mistakes in the last ${REVIEW_WINDOW_DAYS} days)`).join(', ')}. Suggest the 5-minute review at /ielts/foundation/review/<concept>.`);
   const errs = topErrors(fp, 4);

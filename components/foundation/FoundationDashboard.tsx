@@ -37,7 +37,7 @@ function useNextStep(fp: FoundationProgress, action: NextAction) {
       const topic = text(getConcept(action.concept)!.title);
       return {
         title: t('foundation.next.review', { topic }),
-        mino: t('foundation.mino.review', { n: action.count, topic }),
+        mino: action.reason === 'scheduled' ? t('foundation.mino.scheduled', { topic }) : t('foundation.mino.review', { n: action.count, topic }),
         cta: t('foundation.action.review', { topic }),
         href: `/ielts/foundation/review/${action.concept}`,
       };

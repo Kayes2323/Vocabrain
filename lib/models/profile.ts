@@ -146,9 +146,18 @@ export interface FoundationMistake {
 
 /** Per-concept accuracy: drives weak/strong topics and review. */
 export interface FoundationConceptStats {
+  /** All graded answers on this concept (recognition + recall). */
   attempts: number;
   correct: number;
   lastAt: ISODate;
+  /** Typed answers without options (active recall). */
+  recallAttempts?: number;
+  recallCorrect?: number;
+  /** Personal sentences checked by Mino, and how many were correct. */
+  applied?: number;
+  appliedCorrect?: number;
+  /** Spaced review: stage 0–5 (same day, 1, 3, 7, 14, 30 days) and when it is due. */
+  srs?: { stage: number; dueAt: ISODate; passes: number };
   /** Last passed review; mistakes before it no longer trigger a review. */
   reviewedAt?: ISODate;
   lastReviewScore?: number;

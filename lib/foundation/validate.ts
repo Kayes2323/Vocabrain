@@ -31,14 +31,44 @@ export function validateLesson(lesson: Lesson, errors: string[]) {
   if (lesson.concept && !CONCEPTS.some((c) => c.id === lesson.concept)) errors.push(`${lesson.id}: unknown concept ${lesson.concept}`);
   if (!filled(lesson.title) || !filled(lesson.why)) errors.push(`${lesson.id}: title/why need en and bn`);
   if (lesson.minutes < 3 || lesson.minutes > 15) errors.push(`${lesson.id}: lessons are 3–15 minutes`);
+  if (lesson.format === 'v2') validateV2(lesson, errors);
   for (const step of lesson.steps) {
     if (!filled(step.title)) errors.push(`${lesson.id}: step title needs en and bn`);
     if (step.kind === 'ielts' && step.uses.length === 0) errors.push(`${lesson.id}: needs at least one IELTS use`);
     if (step.kind === 'practice') {
-      if (step.exercises.length < 3) errors.push(`${lesson.id}: practice needs 3+ exercises`);
+      if (step.mode !== 'personal' && step.exercises.length < 3) errors.push(`${lesson.id}: practice needs 3+ exercises`);
       for (const ex of step.exercises) checkExercise(ex, lesson.id, errors);
     }
   }
+}
+
+/** The problem-first format: every stage must be present and well-formed. */
+function validateV2(lesson: Lesson, errors: string[]) {
+  const at = (m: string) => errors.push(`${lesson.id} (v2): ${m}`);
+  const kinds = lesson.steps.map((s) => s.kind);
+  for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'practice', 'recall'] as const) if (!kinds.includes(k)) at(`missing ${k}`);
+  if (kinds[0] !== 'hook') at('must start with the hook (student answers first)');
+  for (const step of lesson.steps) {
+    if (step.kind === 'hook') {
+      if (!step.options.includes(step.answer)) at('hook answer is not an option');
+      if (!filled(step.situation) || !filled(step.question)) at('hook text needs en and bn');
+      for (const o of step.options) if (!filled(step.diagnose[o])) at(`hook needs a diagnosis for "${o}"`);
+    }
+    if (step.kind === 'discover') {
+      if (step.items.length < 3) at('discover needs 3+ examples');
+      if (!step.options[step.answer] || !filled(step.pattern)) at('discover needs a valid answer and a pattern');
+    }
+    if (step.kind === 'mistakes' && step.items.length < 3) at('mistake lab needs 3+ items');
+  }
+  const practice = lesson.steps.filter((s): s is Extract<Lesson['steps'][number], { kind: 'practice' }> => s.kind === 'practice');
+  const byMode = (m: string) => practice.filter((s) => (s.mode ?? 'practice') === m).flatMap((s) => s.exercises);
+  if (byMode('practice').length < 4) at('needs 4+ practice questions');
+  const recall = byMode('recall');
+  if (recall.length < 3) at('needs 3+ active recall questions');
+  if (recall.some((e) => e.type === 'choice' || e.type === 'order')) at('active recall must have no options');
+  const personal = byMode('personal');
+  if (!personal.some((e) => e.type === 'write' && e.mino)) at('needs a personal-use task with Mino feedback');
+  if (lesson.concept && [...byMode('practice'), ...recall].some((e) => e.concept && e.concept !== lesson.concept && e.tag === 'tense' && lesson.concept !== 'time')) at('practice should stay on the lesson concept');
 }
 
 export function validateFoundation(): string[] {

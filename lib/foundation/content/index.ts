@@ -5,6 +5,7 @@ import type { Concept, L, Lesson, Level, Module } from '../model';
 import { sentenceBasicsLessons } from './sentence-basics';
 import { TENSE_CONCEPTS, tensesLessons } from './tenses';
 import { tensesLessons2 } from './tenses-2';
+import { presentSimpleV2, understandingTime } from './tenses-v2';
 
 export const LEVELS: Level[] = [
   {
@@ -60,7 +61,9 @@ export const MODULES: Module[] = [
     ieltsLink: t('Task 1 past data, Speaking about experiences, time changes in Listening and Reading.', 'Task 1-এর past data, Speaking-এ অভিজ্ঞতার কথা, Listening আর Reading-এ সময়ের পরিবর্তন।'),
     skill: 'grammar',
     tags: ['tense'],
-    lessons: [...tensesLessons, ...tensesLessons2],
+    lessons: [understandingTime, presentSimpleV2, ...tensesLessons, ...tensesLessons2],
+    // New stages from the curriculum map (docs/TENSES_CURRICULUM.md), not written yet.
+    planned: [t('Present Perfect Continuous', 'Present Perfect Continuous'), t('Tense Comparisons', 'Tense Comparisons'), t('Mixed Practice', 'Mixed Practice')],
   },
   {
     id: 'parts-of-speech',
