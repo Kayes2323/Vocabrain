@@ -7,22 +7,21 @@
 // Mastery Challenge and its report → Ask Mino → a fresh sign-in sees it all.
 // Bangla mobile: dashboard levels, module page, a new lesson (Present Perfect
 // Continuous) with Mino feedback in Bangla, the challenge — no sideways scroll.
-import type { Page } from 'playwright-core';
 import { conceptMastery, getChallenge } from '../../lib/foundation';
 import {
   BASE,
   LABELS,
   answerCurrent,
   check,
-  getDoc,
   launch,
+  makeDue,
   noHorizontalScroll,
-  patchField,
   playLesson,
   report,
   shot,
   signIn,
   signUp,
+  takeReview,
   uidOf,
   waitForFoundation,
   watchErrors,
@@ -30,23 +29,6 @@ import {
 
 const errors: string[] = [];
 const stamp = Date.now();
-
-/** Makes a concept's spaced review due now, as if the waiting time had passed. */
-async function makeDue(uid: string, concept: string) {
-  const f = (await getDoc(`users/${uid}`)).app.foundation;
-  const c = f.concepts[concept];
-  c.srs.dueAt = new Date(Date.now() - 60_000).toISOString();
-  await patchField(`users/${uid}`, 'app.foundation.concepts', f.concepts);
-}
-
-async function takeReview(p: Page, concept: string) {
-  await p.goto(`${BASE}/ielts/foundation/review/${concept}`, {
-    waitUntil: 'load',
-  });
-  await p.getByRole('button', { name: LABELS.en.reviewStart }).click({ timeout: 60_000 });
-  for (let i = 0; i < 12 && (await p.locator('[data-exercise-id]').count()); i++) await answerCurrent(p);
-  await p.getByText('Well done — review complete!').waitFor({ timeout: 15_000 });
-}
 
 async function main() {
   const browser = await launch();

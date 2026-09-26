@@ -62,10 +62,11 @@ collection, no rules change; works for guests on-device):
 
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
-Vocabulary Foundation. Articles, Subject–Verb Agreement, Prepositions,
-Connectors, Complex Sentences, Punctuation and Common Errors show "Soon".
+Articles (9 lessons + the Articles Final Mastery Challenge), Vocabulary
+Foundation. Subject–Verb Agreement, Prepositions, Connectors, Complex
+Sentences, Punctuation and Common Errors show "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
-shows "Soon". See `docs/TENSES_CURRICULUM.md` for the Tenses map.
+shows "Soon". See `docs/TENSES_CURRICULUM.md` and `docs/ARTICLES_CURRICULUM.md`.
 
 ## Tests
 
@@ -226,4 +227,21 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   presents "Soon" modules as available. Snapshot adds open Tenses patterns and the challenge result.
 - **E2E** (committed): `scripts/e2e/` — `run.sh` (emulators + mock Gemini + `next dev`),
   `helpers.ts` (answers from the real content), `tenses.e2e.ts`. Run `pnpm test:e2e:tenses`.
+
+## Phase B: Articles
+
+- **Module 4 Articles** (`articles.ts` ar-1…ar-4, `articles-apply.ts` ar-5…ar-9): 8 taught
+  v2 lessons + the review test. Four concepts (`article-a-an`, `article-a`, `article-the`,
+  `article-zero`); application lessons keep each question on its own concept.
+  "No article" is an option `(no article)` or, when typed, `-` / `no article` / `x`.
+- **Patterns.** `missing-article`, `general-the`, `a-an-sound` (+ fix guides); `noun-count`
+  now belongs to Parts of Speech and Articles. The snapshot lists open Articles patterns.
+- **Challenge.** `articles` in `CHALLENGES` (6 parts, 18 of 24 items, `finals.articles`).
+  Every challenge now has a short `name`: the report groups "Topic by topic" (Tenses keep
+  "Tense by tense"), and Ask Mino says "Ask Mino about my {name} report".
+- **Mino.** Article tasks add article rules to the sentence check (the noun, the deciding
+  question, a/an by sound, uncountables, one follow-up). The guide lists the module and the
+  challenge; the snapshot shows every challenge result.
+- **E2E.** `scripts/e2e/articles.e2e.ts`; `pnpm test:e2e` runs Tenses and Articles on one
+  server start (`pnpm test:e2e:articles` for one).
 

@@ -5,7 +5,9 @@
 //   yesterday" gets the tense-specific feedback ONLY when the server's prompt
 //   carried the tense rules, so the test proves the prompt, not just the mock.
 // - Mino chat: calls getFoundationProgress first, then answers and quotes the
-//   Tenses challenge line from the student snapshot in the system prompt.
+//   challenge result lines from the student snapshot in the system prompt.
+// - Article tasks ("I am student at an university") get article feedback only
+//   when the prompt carried the article rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -45,6 +47,20 @@ http
             practice: { sentence: 'Last week we ___ (visit) Sylhet.', answers: ['visited'] },
           }) }]);
         }
+        const articleRules = /Article feedback \(target: /.test(system);
+        if (articleRules && /\bam student\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bam student\b/i, 'am a student').replace(/\ban university\b/i, 'a university'),
+            feedback: bn ? 'ভালো চেষ্টা! দুটো article ঠিক করতে হবে।' : 'Good try! Two articles need fixing.',
+            fixes: [
+              { quote: 'am student', fix: 'am a student', why: bn ? "'student' গোনা যায় এমন একটা জিনিস, তাই আগে 'a' লাগবে।" : "'student' is one countable thing, so it needs 'a'." },
+              ...(/\ban university\b/i.test(student) ? [{ quote: 'an university', fix: 'a university', why: bn ? "'university' শুরু হয় 'ইউ' sound দিয়ে — consonant sound, তাই 'a'।" : "'university' starts with a 'yoo' sound — a consonant sound, so 'a'." }] : []),
+            ],
+            practice: { sentence: 'My uncle is ___ engineer.', answers: ['an'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',
@@ -59,8 +75,8 @@ http
       const last = b.contents.at(-1);
       const fr = last.parts.find((p) => p.functionResponse);
       if (!fr) return reply([{ functionCall: { name: 'getFoundationProgress', args: {} } }]);
-      const line = system.match(/Tenses Final Mastery Challenge: [^\n]*/)?.[0];
-      return reply([{ text: `Mock Mino: ${line ?? 'no Tenses challenge in the snapshot'}` }]);
+      const lines = system.match(/[A-Za-z ]*Final Mastery Challenge: [^\n]*/g);
+      return reply([{ text: `Mock Mino: ${lines ? lines.map((x) => x.trim()).join(' | ') : 'no challenge result in the snapshot'}` }]);
     });
   })
   .listen(PORT, () => console.log(`mock gemini on ${PORT}`));

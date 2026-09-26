@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Inside the emulators: start the mock AI and the app, run the spec, stop both.
 set -euo pipefail
-SPEC="$1"
+SPECS=("$@")
 PORT="${E2E_PORT:-3105}"
 LOGS="${E2E_LOGS:-.e2e-logs}"
 mkdir -p "$LOGS"
@@ -32,4 +32,9 @@ for i in $(seq 1 120); do
 done
 curl -s -o /dev/null -w "%{http_code}" "http://localhost:$PORT/" | grep -q "^[23]" || { echo "app did not start"; tail -40 "$LOGS/next.log"; exit 1; }
 
-npx -y tsx "scripts/e2e/$SPEC.e2e.ts"
+STATUS=0
+for SPEC in "${SPECS[@]}"; do
+  echo "=== $SPEC"
+  npx -y tsx "scripts/e2e/$SPEC.e2e.ts" || STATUS=1
+done
+exit $STATUS
