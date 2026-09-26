@@ -24,6 +24,15 @@ export interface CountryData {
   intakes?: SourcedValue<string[]>;
   applicationPatterns?: SourcedValue<string>[];
   sources?: SourceRef[];
+  /** Structured, sourced numbers used by Country Match (never estimated). */
+  metrics?: CountryMetrics;
+}
+
+export interface CountryMetrics {
+  /** Post-study work permission in months (range when it depends on the degree or date). */
+  postStudyWorkMonths?: SourcedValue<{ min: number; max: number }>;
+  /** Work allowed during term, hours per week. */
+  termWorkHoursPerWeek?: SourcedValue<number>;
 }
 
 export interface University {

@@ -29,9 +29,9 @@ ${[...IELTS_SECTIONS, ...IELTS_TOOLS].map(sectionLine).join('\n')}
 Mino [AVAILABLE] /mino: your next 3 actions, chat, "what Mino knows about you".
 Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
-  - Country Explorer lists destinations by name only; no fees, visa or requirement data yet.
+  - Verified official data (with source + date) so far: United Kingdom, Canada, Australia, Germany (living-cost money to show, work while studying, post-study work where confirmed). Other countries and tuition/scholarship/visa details: not verified yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, grammar, country match, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
+Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, grammar, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
 }
 
 export interface AppGuide {
@@ -156,6 +156,17 @@ export const APP_GUIDES: AppGuide[] = [
     notes: ['No tuition, visa or requirement figures yet; they will only appear with an official source and a date.'],
   },
   {
+    id: 'country-match',
+    status: 'AVAILABLE',
+    title: 'Country Match (find destinations that fit you)',
+    where: 'Study Abroad → Country Match (/abroad/country-match)',
+    steps: [
+      'Choose up to 3 priorities (e.g. post-study work, affordability, career), optionally countries you like and a yearly living budget.',
+      'See destinations compared on those priorities using only official, dated information, with a fit score, how much of your priorities could be checked, and links to the official pages.',
+      'Your budget is compared only with official figures in the same currency; nothing is converted. Priorities without verified data are listed as not verified yet.',
+    ],
+  },
+  {
     id: 'progress',
     status: 'PLANNED',
     title: 'Progress dashboard, test history and mistake notebook',
@@ -194,7 +205,7 @@ export const APP_GUIDES: AppGuide[] = [
   {
     id: 'study-abroad-tools',
     status: 'PLANNED',
-    title: 'Country match, universities, costs, scholarships, applications, documents, visa',
+    title: 'Universities, cost calculator, scholarships, deadlines, applications, documents, visa',
     where: 'Not in the app yet (shown as "Soon" in Study Abroad)',
     steps: ['Mino can explain general concepts (what an SOP is, how intakes work) but not current fees, deadlines or rules.'],
   },

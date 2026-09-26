@@ -1,4 +1,5 @@
 import type { ToolDeclaration } from '../../types';
+import { getCountryData, getCountryMatch, getStudyAbroadProfile } from './abroad';
 import { suggestActions } from './actions';
 import { getAppGuide, getIELTSGuide } from './knowledge';
 import { rememberAboutStudent } from './memory';
@@ -24,6 +25,9 @@ const TOOLS: MinoTool[] = [
   getQuestionPerformance,
   getWeakAreas,
   getStudyPlan,
+  getStudyAbroadProfile,
+  getCountryData,
+  getCountryMatch,
   suggestActions,
 ];
 

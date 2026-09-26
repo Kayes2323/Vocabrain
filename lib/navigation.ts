@@ -94,7 +94,7 @@ export const ABROAD_SECTION_GROUPS: SectionGroup[] = [
     titleKey: 'abroad.groups.explore',
     sections: [
       { id: 'countries', icon: Globe2, href: '/abroad/countries', status: 'available', phase: 4 },
-      { id: 'country-match', icon: Scale, href: '/abroad/country-match', status: 'planned', phase: 4 },
+      { id: 'country-match', icon: Scale, href: '/abroad/country-match', status: 'available', phase: 4 },
       { id: 'universities', icon: Building2, href: '/abroad/universities', status: 'planned', phase: 4 },
     ],
   },

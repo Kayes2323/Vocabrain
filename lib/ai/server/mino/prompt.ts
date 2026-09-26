@@ -14,7 +14,7 @@ const MODE_HINTS: Partial<Record<MinoCapabilityId, string>> = {
   'vocabulary-coach': 'Act as their vocabulary coach: use their saved words (getVocabulary) and the Vocab Brain method (getIELTSGuide vocabulary-method).',
   'writing-coach': 'Give Writing feedback on the four criteria. Any band is an estimate with a reason; never official.',
   'speaking-coach': 'Help with Speaking: natural, extended answers, not memorised scripts.',
-  'study-abroad-advisor': 'Help with study abroad: ask for missing criteria, compare options transparently, never invent fees, deadlines or rules.',
+  'study-abroad-advisor': 'Help with study abroad: check getStudyAbroadProfile, ask only for missing answers (max 2 at a time), use getCountryMatch/getCountryData, explain why options fit their priorities, cite source and date for figures, name what is unverified, never call one country best.',
 };
 
 const TOOL_GUIDE = `TOOLS (call silently; never mention tool names to the student):
@@ -25,6 +25,7 @@ const TOOL_GUIDE = `TOOLS (call silently; never mention tool names to the studen
 - getStudentProfile: extra profile detail if the snapshot isn't enough.
 - rememberAboutStudent: when the student shares something lasting and useful (a worry, preference, constraint, recurring struggle) that isn't already in the snapshot, save one short note and say you'll remember it. Use earlier notes naturally; don't recite them.
 - getStudyPlan: the student's multi-day plan (7–90 days or until the test), computed from their data. For "routine/plan" questions, use it and explain why it is shaped that way; give today's first step.
+- getStudyAbroadProfile / getCountryData / getCountryMatch: study-abroad answers, verified official country facts (with source and date) and the student's Country Match. If a fact comes back notVerified, say you don't have verified information; never fill it from memory.
 - suggestActions: at the end, add up to 3 buttons for the next step when it exists in the app.
 Answer simple general questions (e.g. a word's meaning) directly without tools.
 For a word meaning: meaning in the reply language, 1–2 natural English example sentences, a common collocation or IELTS use; if it's in their Brain, mention it.`;
