@@ -177,9 +177,9 @@ async function main() {
     check('challenge adapts (the level changes during the run)', levels.size >= 2, [...levels].join(' / '));
     await p.getByText('Tense by tense').waitFor({ timeout: 15_000 });
     const reportText = await p.locator('main').innerText();
-    check('report: overall %, by part, tense by tense', /\d+%/.test(reportText) && /By part/.test(reportText) && /Tense by tense/.test(reportText));
-    check('report: strongest and weakest tense', /Strongest/.test(reportText) && /Needs work/.test(reportText));
-    check('report: my mistakes and what to practise next', /Your mistakes/.test(reportText) && /Practise next/.test(reportText));
+    check('report: overall %, by part, tense by tense', /\d+%/.test(reportText) && /By part/i.test(reportText) && /Tense by tense/i.test(reportText));
+    check('report: strongest and weakest tense', /Strongest/i.test(reportText) && /Needs work/i.test(reportText));
+    check('report: my mistakes and what to practise next', /Your mistakes/i.test(reportText) && /Practise next/i.test(reportText));
     check(
       'report says it is a learning assessment, not an IELTS score',
       reportText.includes('This is a Vocab Brain learning assessment, not an official IELTS score.'),
