@@ -4,6 +4,7 @@
 import type { FoundationArea, FoundationDiagnosticRecord, FoundationLevel } from '@/lib/models';
 import { MODULES } from './content';
 import { gradeExercise } from './grade';
+import { adaptiveStart } from './progress';
 import type { ChoiceExercise, ErrorTag, GapExercise, L, OrderExercise } from './model';
 
 export type DiagnosticItem = (ChoiceExercise | GapExercise | OrderExercise) & {
@@ -25,12 +26,12 @@ const noExplain = q('', '');
 
 export const DIAGNOSTIC_ITEMS: DiagnosticItem[] = [
   // Grammar
-  { id: 'd-g1', area: 'grammar', type: 'choice', tag: 'tense', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'Last year, the company ___ 500 new workers.', options: ['hires', 'hired', 'has hired'], answer: 'hired', explanation: q('"Last year" is finished time → Past Simple.', '"Last year" শেষ হয়ে যাওয়া সময় → Past Simple।') },
+  { id: 'd-g1', area: 'grammar', type: 'choice', tag: 'tense', concept: 'past-simple', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'Last year, the company ___ 500 new workers.', options: ['hires', 'hired', 'has hired'], answer: 'hired', explanation: q('"Last year" is finished time → Past Simple.', '"Last year" শেষ হয়ে যাওয়া সময় → Past Simple।') },
   { id: 'd-g2', area: 'grammar', type: 'choice', tag: 'article', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'My sister is ___ university student.', options: ['a', 'an', 'the'], answer: 'a', explanation: q('"university" starts with a "yoo" sound → "a".', '"university" "ইউ" শব্দে শুরু → "a"।') },
-  { id: 'd-g3', area: 'grammar', type: 'choice', tag: 'agreement', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'The number of cars in big cities ___ growing.', options: ['is', 'are'], answer: 'is', explanation: q('The head word is "number" (singular).', 'মূল শব্দ "number" (singular)।') },
+  { id: 'd-g3', area: 'grammar', type: 'choice', tag: 'agreement', concept: 'present-simple', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'She ___ to university every day.', options: ['go', 'goes', 'going'], answer: 'goes', explanation: q('"She" + a habit → "goes".', '"She" + অভ্যাস → "goes"।') },
   { id: 'd-g4', area: 'grammar', type: 'choice', tag: 'preposition', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'Sales increased ___ 20% in 2021.', options: ['by', 'with', 'on'], answer: 'by', explanation: q('The size of a change: "increased by 20%".', 'পরিবর্তনের পরিমাণ: "increased by 20%"।') },
   { id: 'd-g5', area: 'grammar', type: 'choice', tag: 'word-form', prompt: q('Choose the correct word.', 'সঠিক শব্দ বাছো।'), sentence: 'There was a ___ increase in prices.', options: ['significant', 'significantly', 'significance'], answer: 'significant', explanation: q('Before a noun ("increase") we need an adjective.', 'Noun ("increase")-এর আগে adjective লাগে।') },
-  { id: 'd-g6', area: 'grammar', type: 'choice', tag: 'tense', prompt: q('Choose the correct words.', 'সঠিক শব্দ বাছো।'), sentence: 'I ___ in Dhaka since 2019.', options: ['live', 'have lived', 'am living'], answer: 'have lived', explanation: q('"since 2019" up to now → Present Perfect.', '"since 2019" থেকে এখন পর্যন্ত → Present Perfect।') },
+  { id: 'd-g6', area: 'grammar', type: 'choice', tag: 'tense', concept: 'present-perfect', prompt: q('Choose the correct words.', 'সঠিক শব্দ বাছো।'), sentence: 'I ___ in Dhaka since 2019.', options: ['live', 'have lived', 'am living'], answer: 'have lived', explanation: q('"since 2019" up to now → Present Perfect.', '"since 2019" থেকে এখন পর্যন্ত → Present Perfect।') },
   // Vocabulary
   { id: 'd-v1', area: 'vocabulary', type: 'choice', tag: 'vocabulary', prompt: q('What does "reduce" mean here?', 'এখানে "reduce" মানে কী?'), sentence: 'The government plans to reduce air pollution.', options: ['make smaller', 'make bigger', 'measure'], answer: 'make smaller', explanation: noExplain },
   { id: 'd-v2', area: 'vocabulary', type: 'choice', tag: 'vocabulary', prompt: q('Which word is closest in meaning to "similar"?', '"similar"-এর সবচেয়ে কাছাকাছি অর্থের শব্দ কোনটা?'), sentence: 'The two results were similar.', options: ['alike', 'different', 'surprising'], answer: 'alike', explanation: noExplain },
@@ -57,11 +58,14 @@ export const levelFor = (percent: number): FoundationLevel => (percent >= 80 ? '
 export function scoreDiagnostic(answers: Record<string, string>, now = new Date()): FoundationDiagnosticRecord & { wrongTags: ErrorTag[] } {
   const areas = {} as Record<FoundationArea, number>;
   const wrongTags: ErrorTag[] = [];
+  const concepts: Record<string, boolean> = {};
   for (const area of DIAGNOSTIC_AREAS) {
     const items = DIAGNOSTIC_ITEMS.filter((i) => i.area === area);
     let right = 0;
     for (const item of items) {
-      if (gradeExercise(item, answers[item.id])) right++;
+      const ok = Boolean(gradeExercise(item, answers[item.id]));
+      if (item.concept) concepts[item.concept] = ok;
+      if (ok) right++;
       else wrongTags.push(item.tag);
     }
     areas[area] = Math.round((right / items.length) * 100);
@@ -76,5 +80,15 @@ export function scoreDiagnostic(answers: Record<string, string>, now = new Date(
   const order = (id: string) => MODULES.findIndex((m) => m.id === id);
   const focusModules = [...counts.entries()].sort((a, b) => b[1] - a[1] || order(a[0]) - order(b[0])).map(([id]) => id);
 
-  return { completedAt: now.toISOString(), level: levelFor(percent), percent, areas, focusModules, wrongTags };
+  const level = levelFor(percent);
+  return { completedAt: now.toISOString(), level, percent, areas, focusModules, concepts, ...adaptiveStart({ level, areas, concepts }), wrongTags };
+}
+
+/** Strong and weak areas for the result screen (≥75% strong, <50% needs work). */
+export function diagnosticAreas(record: Pick<FoundationDiagnosticRecord, 'areas'>) {
+  const entries = DIAGNOSTIC_AREAS.map((a) => [a, record.areas[a]] as const);
+  return {
+    strong: entries.filter(([, p]) => p >= 75).map(([a]) => a),
+    weak: entries.filter(([, p]) => p < 50).map(([a]) => a),
+  };
 }

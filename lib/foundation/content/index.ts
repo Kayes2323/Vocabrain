@@ -1,8 +1,10 @@
 // The IELTS Foundation course catalogue. Levels 1–2 are taught here; levels
 // 3–5 hand over to features that already exist (practice, tests, mock tests).
 // A module with only `planned` lessons shows as "coming soon".
-import type { L, Lesson, Level, Module } from '../model';
+import type { Concept, L, Lesson, Level, Module } from '../model';
 import { sentenceBasicsLessons } from './sentence-basics';
+import { TENSE_CONCEPTS, tensesLessons } from './tenses';
+import { tensesLessons2 } from './tenses-2';
 
 export const LEVELS: Level[] = [
   {
@@ -58,17 +60,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Task 1 past data, Speaking about experiences, time changes in Listening and Reading.', 'Task 1-এর past data, Speaking-এ অভিজ্ঞতার কথা, Listening আর Reading-এ সময়ের পরিবর্তন।'),
     skill: 'grammar',
     tags: ['tense'],
-    lessons: [],
-    planned: [
-      t('Present Simple', 'Present Simple'),
-      t('Present Continuous', 'Present Continuous'),
-      t('Past Simple', 'Past Simple'),
-      t('Past Continuous', 'Past Continuous'),
-      t('Present Perfect', 'Present Perfect'),
-      t('Past Perfect', 'Past Perfect'),
-      t('Future forms', 'Future forms'),
-      t('Common IELTS tense mistakes', 'IELTS-এর common tense mistakes'),
-    ],
+    lessons: [...tensesLessons, ...tensesLessons2],
   },
   {
     id: 'parts-of-speech',
@@ -248,6 +240,11 @@ export const MODULES: Module[] = [
     planned: [t('How Speaking works', 'Speaking কীভাবে চলে'), t('Part 1: answer and extend', 'Part 1: answer আর বাড়ানো'), t('Part 2: the long turn', 'Part 2: long turn'), t('Part 3: opinions, comparing, speculating', 'Part 3: মতামত, তুলনা, অনুমান')],
   },
 ];
+
+/** Reviewable concepts across the course. */
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS];
+
+export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 
 export function getModule(id: string): Module | undefined {
   return MODULES.find((m) => m.id === id);

@@ -73,3 +73,39 @@ Readiness Check (STEP 20).
 focus, progress, test-out). Browser e2e covered: intro, diagnostic with audio,
 module, lesson (right/wrong/rewrite/order/write), result, persistence after
 reload, Bangla onboarding on mobile, no horizontal scroll.
+
+## v2: learning engine + Tenses module
+
+**Routes:** `/ielts/foundation/review/{concept}` (5-minute review + 5-question
+retest), `/ielts/foundation/quiz/{moduleId}` (quiz over finished lessons).
+
+**Engine (`lib/foundation/progress.ts`)**
+- `recordAnswer`: every answer updates today's counters and per-concept
+  accuracy; a wrong answer is stored in full (source, question id/type, prompt,
+  student answer, correct answer, error category, concept, attempt, time).
+  Last 150 mistakes kept.
+- `saveInProgress` / `completeLesson`: resume point (page, answers, attempt),
+  lesson score / best / attempts.
+- `lessonState`: lessons open in order (or by `prerequisites`); lessons skipped
+  after the check stay open for review; locked lessons redirect to the next one.
+- `adaptiveStart`: needs → first lesson, nothing skipped; developing → skip
+  Sentence Basics when sentence construction ≥ 75%, skip tense lessons whose
+  concept was answered right (grammar ≥ 67%); strong → skip basics, the tenses
+  intro and every proven tense.
+- `reviewDue`: 3+ mistakes on a concept in 14 days since its last passed review.
+  `reviewQuestions` retests up to 2 missed questions. Pass = 80%.
+- `topicSummary` (strong / weak / review / learning), `foundationJourney`
+  (done / current / locked), `dailyGoal`, `foundationDailyPlan` (trimmed to
+  the student's daily minutes), `nextAction` (one button), and
+  `foundationSummaryLines` (Mino's data).
+
+**Content:** Module 2 Tenses (`content/tenses.ts`, `tenses-2.ts`): 12 lessons,
+7 concepts, 67 exercises; choice/gap/correct items carry `why` for common
+wrong answers. The last lesson is a `kind: 'test'` review test.
+
+**Mino:** `getFoundationProgress` tool (topics, review due, recent mistakes,
+next step) and snapshot lines built only from stored data; `/mino?ask=foundation-review`.
+
+**Storage fix:** the profile is saved with `mergeFields` so removed nested
+fields (e.g. a finished lesson's resume point) are really removed. No Firestore
+rules change.

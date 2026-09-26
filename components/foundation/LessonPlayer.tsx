@@ -1,20 +1,22 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, BookOpen, Clock, Headphones, Mic, PenLine, RotateCcw, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  expectedAnswer, lessonOutcome, nextLesson, recordLesson,
-  type ErrorTag, type Exercise, type Lesson, type LessonStep, type Module,
+  completeLesson, expectedAnswer, getConcept, lessonOutcome, nextAction, PASS_SCORE, recordAnswer, saveInProgress,
+  type Exercise, type Lesson, type LessonStep, type Module,
 } from '@/lib/foundation';
+import type { FoundationInProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { ExerciseView, type ExerciseResult } from './ExerciseView';
 import { useFoundation, useText } from './useFoundation';
 
 type Page = { step: LessonStep; exercise?: Exercise; exerciseIndex?: number; exerciseCount?: number };
+type Answers = FoundationInProgress['answers'];
 
 const SKILL_ICON = { listening: Headphones, reading: BookOpen, writing: PenLine, speaking: Mic } as const;
 
@@ -27,57 +29,90 @@ function pagesOf(lesson: Lesson): Page[] {
   );
 }
 
+/** Score over auto-graded answers (writing is self-checked and not counted). */
+function scoreOf(exercises: Exercise[], answers: Answers) {
+  const graded = exercises.filter((e) => answers[e.id] && answers[e.id].correct !== null);
+  const correct = graded.filter((e) => answers[e.id].correct).length;
+  return { correct, total: graded.length, score: graded.length ? Math.round((correct / graded.length) * 100) : 100 };
+}
+
 export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesson }) {
   const { t } = useLocale();
   const text = useText();
   const { fp, update } = useFoundation();
   const pages = useMemo(() => pagesOf(lesson), [lesson]);
-  const [index, setIndex] = useState(0);
-  const [results, setResults] = useState<Record<string, ExerciseResult>>({});
-  const [finished, setFinished] = useState<{ score: number; correct: number; total: number } | null>(null);
-  const [attempt, setAttempt] = useState(0);
+  const exercises = useMemo(() => pages.flatMap((p) => (p.exercise ? [p.exercise] : [])), [pages]);
 
-  const exercises = pages.flatMap((p) => (p.exercise ? [p.exercise] : []));
+  // Resume where the student left this lesson (on any device), else start a new attempt.
+  const resume = fp?.inProgress?.lessonId === lesson.id ? fp.inProgress : undefined;
+  const [index, setIndex] = useState(() => Math.min(resume?.page ?? 0, pages.length - 1));
+  const [answers, setAnswers] = useState<Answers>(() => resume?.answers ?? {});
+  const [attempt, setAttempt] = useState(() => resume?.attempt ?? (fp?.lessons[lesson.id]?.attempts ?? 0) + 1);
+  const [finished, setFinished] = useState<ReturnType<typeof scoreOf> | null>(null);
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
+
   const page = pages[index];
   const last = index === pages.length - 1;
+  const isTest = lesson.kind === 'test';
 
-  const finish = (all: Record<string, ExerciseResult>) => {
-    const graded = exercises.filter((e) => all[e.id]?.correct !== null && all[e.id] !== undefined);
-    const correct = graded.filter((e) => all[e.id].correct).length;
-    const score = graded.length ? Math.round((correct / graded.length) * 100) : 100;
-    const wrongTags = graded.filter((e) => !all[e.id].correct).map((e) => e.tag as ErrorTag);
-    update((p) => recordLesson(p, lesson.id, score, wrongTags));
-    setFinished({ score, correct, total: graded.length });
+  const goTo = (i: number) => {
+    setIndex(i);
+    update((p) => saveInProgress(p, lesson.id, i, answersRef.current, attempt));
     window.scrollTo({ top: 0 });
   };
 
-  const advance = (all = results) => {
-    if (last) finish(all);
-    else {
-      setIndex((i) => i + 1);
-      window.scrollTo({ top: 0 });
-    }
+  const finish = () => {
+    const result = scoreOf(exercises, answersRef.current);
+    update((p) => completeLesson(p, lesson.id, result.score));
+    setFinished(result);
+    window.scrollTo({ top: 0 });
+  };
+
+  const onAnswer = (exercise: Exercise, r: ExerciseResult) => {
+    const next = { ...answersRef.current, [exercise.id]: r };
+    answersRef.current = next;
+    setAnswers(next);
+    update((p) => saveInProgress(recordAnswer(p, { source: lesson.id, exercise, answer: r.answer, correct: r.correct, attempt }), lesson.id, index, next, attempt));
   };
 
   const restart = () => {
-    setResults({});
+    const nextAttempt = attempt + 1;
+    answersRef.current = {};
+    setAnswers({});
     setFinished(null);
     setIndex(0);
-    setAttempt((a) => a + 1);
+    setAttempt(nextAttempt);
+    update((p) => saveInProgress(p, lesson.id, 0, {}, nextAttempt));
   };
 
   const askHref = `/mino?${new URLSearchParams({ ask: 'lesson', lesson: text(lesson.title) })}`;
 
   if (finished) {
     const outcome = lessonOutcome(finished.score);
-    const next = fp ? nextLesson(fp) : undefined;
-    const missed = exercises.filter((e) => results[e.id]?.correct === false);
+    const missed = exercises.filter((e) => answers[e.id]?.correct === false);
+    const missedConcepts = [...new Set(missed.map((e) => e.concept).filter(Boolean) as string[])];
+    const action = fp ? nextAction(fp) : undefined;
+    const primary =
+      outcome === 'practice'
+        ? { href: undefined, label: t('foundation.lesson.tryAgain') }
+        : action?.kind === 'review'
+          ? { href: `/ielts/foundation/review/${action.concept}`, label: t('foundation.action.review', { topic: text(getConcept(action.concept)!.title) }) }
+          : action?.kind === 'lesson' || action?.kind === 'resume'
+            ? { href: `/ielts/foundation/lesson/${action.lessonId}`, label: t('foundation.lesson.nextLesson') }
+            : { href: '/ielts/foundation', label: t('foundation.action.continueJourney') };
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <Panel variant={outcome === 'practice' ? 'muted' : 'brand'} className="space-y-3 text-center">
           <p className="text-sm text-muted-foreground">{text(lesson.title)}</p>
-          <h1 className="text-2xl font-semibold">{t(`foundation.lesson.resultTitle.${outcome}`)}</h1>
-          {finished.total > 0 && <p className="text-lg font-semibold tabular-nums">{t('foundation.lesson.score', { correct: finished.correct, total: finished.total })}</p>}
+          <h1 className="text-2xl font-semibold">
+            {isTest ? t(finished.score >= PASS_SCORE ? 'foundation.lesson.testPassed' : 'foundation.lesson.testNotYet') : t(`foundation.lesson.resultTitle.${outcome}`)}
+          </h1>
+          {finished.total > 0 && (
+            <p className="text-lg font-semibold tabular-nums">
+              {t('foundation.lesson.score', { correct: finished.correct, total: finished.total })} · {finished.score}%
+            </p>
+          )}
           <p className="text-sm text-muted-foreground">{t(`foundation.lesson.resultBody.${outcome}`)}</p>
         </Panel>
 
@@ -88,40 +123,54 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
               {missed.map((e) => (
                 <li key={e.id} className="space-y-1 border-l-2 border-amber-500/60 pl-3">
                   {e.sentence && <p lang="en" className="text-muted-foreground">{e.sentence}</p>}
-                  <p lang="en" className="font-medium">→ {expectedAnswer(e)}</p>
+                  <p lang="en">
+                    <span className="text-muted-foreground line-through decoration-destructive/60">{answers[e.id].answer}</span>{' '}
+                    <span className="font-medium">→ {expectedAnswer(e)}</span>
+                  </p>
                   <p className="text-foreground/80">{text(e.explanation)}</p>
                 </li>
               ))}
             </ul>
+            {isTest && missedConcepts.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {missedConcepts.map((c) => (
+                  <Button key={c} asChild size="sm" variant="outline">
+                    <Link href={`/ielts/foundation/review/${c}`}>{t('foundation.action.review', { topic: text(getConcept(c)!.title) })}</Link>
+                  </Button>
+                ))}
+              </div>
+            )}
           </Panel>
         )}
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          {outcome === 'practice' ? (
-            <Button size="lg" className="flex-1" onClick={restart}>
-              <RotateCcw /> {t('foundation.lesson.tryAgain')}
-            </Button>
-          ) : next ? (
+          {primary.href ? (
             <Button asChild size="lg" className="flex-1">
-              <Link href={`/ielts/foundation/lesson/${next.lesson.id}`}>
-                {t('foundation.lesson.nextLesson')} <ArrowRight />
+              <Link href={primary.href}>
+                {primary.label} <ArrowRight />
               </Link>
             </Button>
-          ) : null}
-          {outcome !== 'practice' && (
+          ) : (
+            <Button size="lg" className="flex-1" onClick={restart}>
+              <RotateCcw /> {primary.label}
+            </Button>
+          )}
+          {primary.href && (
             <Button size="lg" variant="outline" className="flex-1" onClick={restart}>
               <RotateCcw /> {t('foundation.lesson.tryAgain')}
             </Button>
           )}
-          <Button asChild size="lg" variant="outline" className="flex-1">
+        </div>
+        <div className="flex justify-center gap-2">
+          <Button asChild variant="ghost">
             <Link href={askHref}>
               <Sparkles /> {t('foundation.lesson.askMino')}
             </Link>
           </Button>
+          <Button asChild variant="ghost">
+            <Link href={`/ielts/foundation/${module.id}`}>{t('foundation.lesson.exit')}</Link>
+          </Button>
         </div>
-        <Button asChild variant="ghost" className="w-full">
-          <Link href={`/ielts/foundation/${module.id}`}>{t('foundation.lesson.exit')}</Link>
-        </Button>
       </div>
     );
   }
@@ -236,12 +285,10 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
             <ExerciseView
               key={`${page.exercise.id}-${attempt}`}
               exercise={page.exercise}
+              initial={answers[page.exercise.id]}
               doneLabel={last ? t('foundation.lesson.complete') : t('foundation.lesson.next')}
-              onDone={(r) => {
-                const all = { ...results, [page.exercise!.id]: r };
-                setResults(all);
-                advance(all);
-              }}
+              onAnswer={(r) => onAnswer(page.exercise!, r)}
+              onDone={() => (last ? finish() : goTo(index + 1))}
             />
           </Panel>
         )}
@@ -250,11 +297,11 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
       {!page.exercise && (
         <div className={cn('flex gap-2', index > 0 ? 'justify-between' : 'justify-end')}>
           {index > 0 && (
-            <Button variant="ghost" size="lg" onClick={() => setIndex((i) => i - 1)}>
+            <Button variant="ghost" size="lg" onClick={() => goTo(index - 1)}>
               <ArrowLeft /> {t('foundation.lesson.back')}
             </Button>
           )}
-          <Button size="lg" onClick={() => advance()}>
+          <Button size="lg" onClick={() => (last ? finish() : goTo(index + 1))}>
             {last ? t('foundation.lesson.complete') : t('foundation.lesson.continue')} <ArrowRight />
           </Button>
         </div>

@@ -20,11 +20,12 @@ export function createFirestoreProfileRepository(db: Firestore): ProfileReposito
       latest = null;
       const { userId, ...app } = profile;
       try {
-        await setDoc(
-          doc(db, 'users', userId),
-          { ...summaryFields(profile), app: JSON.parse(JSON.stringify(app)), updatedAt: serverTimestamp() },
-          { merge: true },
-        );
+        const data = { ...summaryFields(profile), app: JSON.parse(JSON.stringify(app)), updatedAt: serverTimestamp() };
+        // mergeFields replaces `app` as a whole (so fields removed from the profile, like a
+        // finished lesson's resume point, are really removed) and leaves other fields
+        // (uid, name, email, createdAt) untouched. A plain `merge: true` would keep
+        // deleted nested keys forever.
+        await setDoc(doc(db, 'users', userId), data, { mergeFields: Object.keys(data) });
       } catch (error) {
         console.error('[profile] Save failed', error);
       }

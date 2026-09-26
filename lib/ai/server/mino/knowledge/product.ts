@@ -108,13 +108,15 @@ export const APP_GUIDES: AppGuide[] = [
     title: 'IELTS Foundation course (for beginners)',
     where: 'IELTS → IELTS Foundation (/ielts/foundation); check at /ielts/foundation/diagnostic',
     steps: [
-      'Start with the Foundation check: 20 short questions (grammar, vocabulary, sentences, a short reading, a little listening). Result: Strong / Developing / Needs Foundation, plus modules to focus on. It is not an IELTS band.',
-      'Lessons are 5–10 minutes: concept → examples → where it is used in IELTS (Writing, Speaking, Reading, Listening) → practice with instant feedback → recall. Available now: Module 1 Sentence Basics (9 lessons).',
-      'Levels: 1 Foundation, 2 IELTS Core, 3 Skill Builder (plan), 4 Practice (tests), 5 Mock. Strong students can skip Level 1.',
+      'Start with the Foundation check: 20 short questions (grammar incl. 3 tense items, vocabulary, sentences, a short reading, a little listening). Result: Strong / Developing / Needs Foundation, strong and weak areas, and an adaptive start: lessons the check proved are skipped (still open for review).',
+      'Lessons are 5–12 minutes: learn → examples → IELTS connection (Writing, Speaking, Reading, Listening) → practice with instant feedback (correct answer + why the student’s answer was wrong) → recall. Lessons open in order; an unfinished lesson resumes where the student left it, on any device.',
+      'Available now: Module 1 Sentence Basics (9 lessons) and Module 2 Tenses for IELTS (12 lessons: why tenses matter, present simple, present continuous, past simple, past continuous, present perfect, past perfect, future forms, common mistakes, tenses in Writing, tenses in Speaking, review test).',
+      'Every wrong answer is stored. 3+ mistakes on one topic in 14 days → a 5-minute review (key points + 5 questions, a retest that includes missed questions) at /ielts/foundation/review/<topic>. Module quiz at /ielts/foundation/quiz/<module> after finishing lessons.',
+      'The Foundation dashboard shows one next step, Mino’s reason, today’s goal (lessons + practice questions) and a short daily plan.',
     ],
     notes: [
-      'Tenses, Parts of Speech, Articles, Subject–Verb Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors, Vocabulary Foundation and the Level 2 modules are listed but their lessons are still being written (shown as "Soon"). Never say they are available.',
-      'Mistake patterns from Foundation practice are in the snapshot; use them to suggest a short revision.',
+      'Parts of Speech, Articles, Subject–Verb Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors, Vocabulary Foundation and all Level 2 modules are listed but not written yet ("Soon"). Never say they are available.',
+      'For the student’s grammar performance use the snapshot or getFoundationProgress. Never invent scores, counts or mistakes.',
     ],
   },
   {

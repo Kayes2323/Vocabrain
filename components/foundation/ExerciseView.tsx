@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { expectedAnswer, gradeExercise, shuffledWords, type Exercise } from '@/lib/foundation';
+import { expectedAnswer, gradeExercise, normaliseAnswer, shuffledWords, type Exercise, type L } from '@/lib/foundation';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
 
@@ -20,29 +20,43 @@ export interface ExerciseResult {
  * One exercise. With `feedback`, the student checks their answer and sees the
  * explanation before moving on (lessons); without it, they just move on (diagnostic).
  */
+/** Why the student's specific wrong answer is wrong, when the content explains it. */
+function whyWrong(exercise: Exercise, answer: string): L | undefined {
+  if (exercise.type === 'choice') return exercise.why?.[answer];
+  if (exercise.type === 'gap' || exercise.type === 'correct') return exercise.why?.[normaliseAnswer(answer)];
+  return undefined;
+}
+
 export function ExerciseView({
   exercise,
   feedback = true,
+  onAnswer,
   onDone,
   doneLabel,
+  initial,
 }: {
   exercise: Exercise;
   feedback?: boolean;
+  /** Called as soon as the answer is checked (so it is saved even if the student leaves). */
+  onAnswer?: (result: ExerciseResult) => void;
   onDone: (result: ExerciseResult) => void;
   doneLabel: string;
+  /** An answer already given (resuming a lesson): shown as checked. */
+  initial?: ExerciseResult;
 }) {
   const { t } = useLocale();
   const text = useText();
-  const [answer, setAnswer] = useState(exercise.type === 'correct' ? (exercise.sentence ?? '') : '');
+  const [answer, setAnswer] = useState(initial?.answer ?? (exercise.type === 'correct' ? (exercise.sentence ?? '') : ''));
   const [picked, setPicked] = useState<number[]>([]);
-  const [checked, setChecked] = useState<ExerciseResult | null>(null);
+  const [checked, setChecked] = useState<ExerciseResult | null>(initial ?? null);
   const words = useMemo(() => (exercise.type === 'order' ? shuffledWords(exercise.id, exercise.answer) : []), [exercise]);
 
-  const value = exercise.type === 'order' ? picked.map((i) => words[i]).join(' ') : answer;
+  const value = exercise.type === 'order' ? (initial && picked.length === 0 ? initial.answer : picked.map((i) => words[i]).join(' ')) : answer;
   const ready = exercise.type === 'order' ? picked.length === words.length : value.trim().length > 0;
 
   const check = () => {
     const result = { answer: value, correct: gradeExercise(exercise, value) };
+    onAnswer?.(result);
     if (feedback) setChecked(result);
     else onDone(result);
   };
@@ -50,7 +64,7 @@ export function ExerciseView({
   const locked = checked !== null;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" data-exercise-id={exercise.id}>
       <p className="text-[15px] font-medium">{text(exercise.prompt)}</p>
       {exercise.sentence && exercise.type !== 'correct' && (
         <p className="rounded-xl bg-muted/60 px-4 py-3 text-lg leading-relaxed" lang="en">
@@ -205,12 +219,26 @@ export function ExerciseView({
       {checked && exercise.type !== 'write' && (
         <div
           role="status"
-          className={cn('space-y-1.5 rounded-xl p-4 text-sm', checked.correct ? 'bg-success/10' : 'bg-amber-500/10')}
+          className={cn('space-y-2 rounded-xl p-4 text-sm', checked.correct ? 'bg-success/10' : 'bg-amber-500/10')}
         >
-          <p className="font-semibold">{checked.correct ? t('foundation.lesson.correct') : t('foundation.lesson.notQuite')}</p>
+          <p className="flex items-center gap-1.5 font-semibold">
+            {checked.correct ? <Check className="size-4 text-success" aria-hidden /> : <X className="size-4 text-destructive" aria-hidden />}
+            {checked.correct ? t('foundation.lesson.correct') : t('foundation.lesson.notQuite')}
+          </p>
           {!checked.correct && (
-            <p lang="en" className="font-medium">
-              {t('foundation.lesson.answer', { answer: expectedAnswer(exercise) })}
+            <div className="space-y-1" lang="en">
+              {exercise.type !== 'choice' && checked.answer && (
+                <p className="text-muted-foreground">
+                  ✗ <span className="line-through decoration-destructive/60">{checked.answer}</span>
+                </p>
+              )}
+              <p className="font-medium">✓ {expectedAnswer(exercise)}</p>
+            </div>
+          )}
+          {!checked.correct && whyWrong(exercise, checked.answer) && (
+            <p>
+              <span className="font-medium">{t('foundation.lesson.whyWrong')} </span>
+              {text(whyWrong(exercise, checked.answer)!)}
             </p>
           )}
           {text(exercise.explanation) && <p className="text-foreground/80">{text(exercise.explanation)}</p>}

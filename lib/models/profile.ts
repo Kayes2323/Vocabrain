@@ -109,6 +109,12 @@ export interface FoundationDiagnosticRecord {
   areas: Record<FoundationArea, number>;
   /** Module ids to focus on, most needed first. */
   focusModules: string[];
+  /** Concepts the check tested: true = answered correctly. (v2) */
+  concepts?: Record<string, boolean>;
+  /** Lessons the student may skip; they stay open for review. (v2) */
+  skippedLessons?: string[];
+  /** Where the adaptive path starts. (v2) */
+  startLessonId?: string;
 }
 
 export interface FoundationLessonRecord {
@@ -119,12 +125,66 @@ export interface FoundationLessonRecord {
   attempts: number;
 }
 
-/** IELTS Foundation course progress. Error counts feed Mino's pattern spotting. */
+/** One wrong answer, kept so Mino and the review system work from real data. */
+export interface FoundationMistake {
+  at: ISODate;
+  /** Lesson id, or "diagnostic" / "review:<concept>" / "quiz:<module>". */
+  source: string;
+  questionId: string;
+  questionType: string;
+  /** The question text (short) and the sentence it was about. */
+  prompt: string;
+  answer: string;
+  correctAnswer: string;
+  /** Error category (tense, article, agreement…). */
+  tag: string;
+  /** Finer concept (present-perfect…), when known. */
+  concept?: string;
+  /** Attempt number of this lesson/session. */
+  attempt: number;
+}
+
+/** Per-concept accuracy: drives weak/strong topics and review. */
+export interface FoundationConceptStats {
+  attempts: number;
+  correct: number;
+  lastAt: ISODate;
+  /** Last passed review; mistakes before it no longer trigger a review. */
+  reviewedAt?: ISODate;
+  lastReviewScore?: number;
+}
+
+/** What the student did on one local day (YYYY-MM-DD). */
+export interface FoundationDay {
+  lessons: number;
+  questions: number;
+  correct: number;
+  reviews?: number;
+  quizzes?: number;
+}
+
+/** A lesson the student left part-way: resumes on any device. */
+export interface FoundationInProgress {
+  lessonId: string;
+  page: number;
+  /** Exercise id → answer and whether it was right (null = self-checked writing). */
+  answers: Record<string, { answer: string; correct: boolean | null }>;
+  attempt: number;
+  updatedAt: ISODate;
+}
+
+/** IELTS Foundation course progress. Stored in the profile (users/{uid}.app). */
 export interface FoundationProgress {
   introSeenAt?: ISODate;
   diagnostic?: FoundationDiagnosticRecord;
   lessons: Record<string, FoundationLessonRecord>;
+  /** Mistake counts per error category, all time. */
   errors: Record<string, { count: number; lastAt: ISODate }>;
+  concepts: Record<string, FoundationConceptStats>;
+  /** Most recent mistakes, newest last (capped). */
+  mistakes: FoundationMistake[];
+  days: Record<string, FoundationDay>;
+  inProgress?: FoundationInProgress;
 }
 
 export interface UserProfile {
@@ -148,7 +208,7 @@ export function emptyProfile(userId: ID): UserProfile {
     abroad: {},
     vocabulary: { savedWordIds: [], words: {} },
     study: { completedTasks: {}, mockTestsCompleted: 0, days: {} },
-    foundation: { lessons: {}, errors: {} },
+    foundation: { lessons: {}, errors: {}, concepts: {}, mistakes: [], days: {} },
     updatedAt: new Date().toISOString(),
   };
 }

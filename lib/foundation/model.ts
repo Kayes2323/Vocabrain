@@ -44,6 +44,8 @@ interface ExerciseBase {
   explanation: L;
   /** What a wrong answer says about the student. */
   tag: ErrorTag;
+  /** Finer concept this question checks (e.g. "present-perfect"); feeds review. */
+  concept?: string;
 }
 
 /** Pick one option. Answers are option texts. */
@@ -51,12 +53,16 @@ export interface ChoiceExercise extends ExerciseBase {
   type: 'choice';
   options: string[];
   answer: string;
+  /** Why a specific wrong option is wrong (shown when the student picks it). */
+  why?: Record<string, L>;
 }
 
 /** Type a word or phrase into the gap. Case/space-insensitive. */
 export interface GapExercise extends ExerciseBase {
   type: 'gap';
   accepted: string[];
+  /** Why a common wrong answer is wrong, keyed by that answer (normalised). */
+  why?: Record<string, L>;
 }
 
 /** Tap words into the right order. */
@@ -72,6 +78,7 @@ export interface OrderExercise extends ExerciseBase {
 export interface CorrectExercise extends ExerciseBase {
   type: 'correct';
   accepted: string[];
+  why?: Record<string, L>;
 }
 
 /** Free production: the student writes their own sentence and compares with a model. Not auto-graded. */
@@ -104,7 +111,21 @@ export interface Lesson {
   minutes: number;
   difficulty: Difficulty;
   skill: FoundationSkill;
+  /** 'test' lessons are practice-only (module review tests). Default 'lesson'. */
+  kind?: 'lesson' | 'test';
+  /** The concept this lesson teaches; its concept step is reused for review. */
+  concept?: string;
+  /** Lessons that should come first (defaults to the previous lesson in the module). */
+  prerequisites?: string[];
   steps: LessonStep[];
+}
+
+/** A reviewable concept: its name and the lesson that teaches it. */
+export interface Concept {
+  id: string;
+  title: L;
+  lessonId: string;
+  tag: ErrorTag;
 }
 
 export interface Module {

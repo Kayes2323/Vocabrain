@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Play, X } from 'lucide-react';
+import { ArrowRight, Check, Play, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, ScreenSkeleton, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  addErrors, DIAGNOSTIC_AREAS, DIAGNOSTIC_ITEMS, DIAGNOSTIC_READING, getModule, recommendedModule, scoreDiagnostic,
+  DIAGNOSTIC_AREAS, DIAGNOSTIC_ITEMS, DIAGNOSTIC_READING, diagnosticAreas, findLesson, getModule, gradeExercise, recordAnswer, scoreDiagnostic,
 } from '@/lib/foundation';
-import type { FoundationDiagnosticRecord } from '@/lib/models';
+import type { FoundationDiagnosticRecord, FoundationProgress } from '@/lib/models';
 import { ExerciseView } from './ExerciseView';
 import { canSpeak, speak } from './speak';
 import { useFoundation, useText } from './useFoundation';
@@ -121,8 +121,16 @@ export function FoundationDiagnostic() {
                 setIndex((i) => i + 1);
                 return;
               }
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const { wrongTags, ...record } = scoreDiagnostic(all);
-              update((p) => ({ ...p, diagnostic: record, introSeenAt: p.introSeenAt ?? record.completedAt, errors: addErrors(p.errors, wrongTags, record.completedAt) }));
+              update((p) => {
+                // Every answer is recorded (wrong ones become mistakes with their concept) like any practice.
+                let next: FoundationProgress = { ...p, diagnostic: record, introSeenAt: p.introSeenAt ?? record.completedAt };
+                for (const it of DIAGNOSTIC_ITEMS) {
+                  next = recordAnswer(next, { source: 'diagnostic', exercise: it, answer: all[it.id] ?? '', correct: Boolean(gradeExercise(it, all[it.id])), attempt: 1 });
+                }
+                return next;
+              });
               setResult(record);
               setPhase('result');
               window.scrollTo({ top: 0 });
@@ -134,15 +142,30 @@ export function FoundationDiagnostic() {
   }
 
   const record = result!;
-  const rec = recommendedModule({ ...fp, diagnostic: record });
-  const focus = record.focusModules.map(getModule).filter((m) => m && m.level === 1).slice(0, 4);
+  const { strong, weak } = diagnosticAreas(record);
+  const skipped = new Set(record.skippedLessons ?? []);
+  const start = record.startLessonId ? findLesson(record.startLessonId) : undefined;
+  // The first lessons on the adaptive path.
+  const path = start
+    ? [...start.module.lessons.slice(start.index), ...(getModule('tenses')!.id !== start.module.id ? getModule('tenses')!.lessons : [])].filter((l) => !skipped.has(l.id)).slice(0, 3)
+    : [];
+  const focus = record.focusModules.map(getModule).filter((m) => m && m.level === 1 && m.lessons.length > 0).slice(0, 2);
+  const weakNames = [...focus.map((m) => text(m!.title)), ...weak.map((a) => t(`foundation.areas.${a}`))].slice(0, 3);
+  const strongNames = strong.map((a) => t(`foundation.areas.${a}`)).slice(0, 2);
+  const and = t('foundation.mino.and');
+  const minoText =
+    record.level === 'strong' && start
+      ? t('foundation.diag.minoStrong', { lesson: text(start.lesson.title) })
+      : strongNames.length && weakNames.length
+        ? t('foundation.diag.minoMixed', { strong: strongNames.join(and), weak: weakNames.join(and) })
+        : t('foundation.diag.minoNeeds', { lesson: start ? text(start.lesson.title) : '' });
+
   return (
     <div className="mx-auto w-full max-w-2xl space-y-6 py-2">
       <Panel variant="brand" className="space-y-2 text-center">
         <p className="text-sm text-muted-foreground">{t('foundation.diag.resultTitle')}</p>
         <h1 className="text-2xl font-semibold">{t(`foundation.level.${record.level}`)}</h1>
         <p className="text-sm font-medium tabular-nums">{t('foundation.diag.percent', { n: record.percent })}</p>
-        <p className="text-sm text-muted-foreground">{t(`foundation.levelBody.${record.level}`)}</p>
       </Panel>
 
       <Panel className="space-y-4">
@@ -157,31 +180,51 @@ export function FoundationDiagnostic() {
         ))}
       </Panel>
 
-      {focus.length > 0 && (
-        <div className="space-y-2">
-          <p className="px-1 text-[15px] font-semibold text-muted-foreground">{t('foundation.focusTitle')}</p>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Panel className="space-y-2">
+          <p className="text-sm font-semibold text-muted-foreground">{t('foundation.diag.strongTitle')}</p>
           <div className="flex flex-wrap gap-2">
-            {focus.map((m) => (
-              <StatusChip key={m!.id} tone="warning">{text(m!.title)}</StatusChip>
-            ))}
+            {strongNames.length ? strongNames.map((n) => <StatusChip key={n} tone="success">{n}</StatusChip>) : <span className="text-sm text-muted-foreground">—</span>}
           </div>
+        </Panel>
+        <Panel className="space-y-2">
+          <p className="text-sm font-semibold text-muted-foreground">{t('foundation.diag.weakTitle')}</p>
+          <div className="flex flex-wrap gap-2">
+            {weakNames.length ? weakNames.map((n) => <StatusChip key={n} tone="warning">{n}</StatusChip>) : <span className="text-sm text-muted-foreground">—</span>}
+          </div>
+        </Panel>
+      </div>
+
+      <Panel variant="brand" className="flex gap-2.5">
+        <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
+        <p>
+          <span className="font-semibold">{t('foundation.diag.minoTitle')}: </span>
+          {minoText}
+        </p>
+      </Panel>
+
+      {path.length > 0 && (
+        <div className="space-y-2">
+          <p className="px-1 text-[15px] font-semibold text-muted-foreground">{t('foundation.diag.recommendedLessons')}</p>
+          <ol className="divide-y rounded-2xl border bg-card">
+            {path.map((l, i) => (
+              <li key={l.id} className="flex items-center gap-3 px-4 py-3 text-[15px]">
+                <span className="flex size-6 items-center justify-center rounded-full bg-muted text-xs font-semibold tabular-nums">{i + 1}</span>
+                {text(l.title)}
+              </li>
+            ))}
+          </ol>
+          {skipped.size > 0 && <p className="px-1 text-sm text-muted-foreground">{t('foundation.diag.skippedNote', { n: skipped.size })}</p>}
         </div>
       )}
 
       <Callout>{t('foundation.diag.estimateNote')}</Callout>
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        {rec && (
+        {start && (
           <Button asChild size="lg" className="flex-1">
-            <Link href={`/ielts/foundation/${rec.id}`}>
-              {t('foundation.diag.startModule', { module: text(rec.title) })} <ArrowRight />
-            </Link>
-          </Button>
-        )}
-        {record.level === 'strong' && !rec && (
-          <Button asChild size="lg" className="flex-1">
-            <Link href="/ielts/tests">
-              {t('tests.libraryTitle')} <ArrowRight />
+            <Link href={`/ielts/foundation/lesson/${start.lesson.id}`}>
+              {t('foundation.diag.startLesson', { lesson: text(start.lesson.title) })} <ArrowRight />
             </Link>
           </Button>
         )}

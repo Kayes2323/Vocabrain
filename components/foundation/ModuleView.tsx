@@ -1,9 +1,11 @@
 'use client';
 
-import { CheckCircle2, Circle, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { CheckCircle2, Circle, ClipboardCheck, Clock, Lock, SkipForward } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { lessonOutcome, moduleProgress, nextLesson, type Module } from '@/lib/foundation';
+import { canQuiz, lessonOutcome, lessonState, moduleProgress, nextLesson, type Module } from '@/lib/foundation';
 import { useFoundation, useText } from './useFoundation';
 
 export function ModuleView({ module }: { module: Module }) {
@@ -13,16 +15,12 @@ export function ModuleView({ module }: { module: Module }) {
   if (!fp) return <ScreenSkeleton />;
 
   const pct = moduleProgress(module, fp);
-  const next = module.lessons.find((l) => !fp.lessons[l.id]) ?? (nextLesson(fp)?.module.id === module.id ? nextLesson(fp)?.lesson : undefined);
+  const next = nextLesson(fp);
+  const nextHere = next?.module.id === module.id ? next.lesson.id : module.lessons.find((l) => lessonState(module, l, fp) === 'available')?.id;
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title={`${module.number}. ${text(module.title)}`}
-        subtitle={text(module.description)}
-        backHref="/ielts/foundation"
-        backLabel={t('foundation.title')}
-      />
+      <PageHeader title={`${module.number}. ${text(module.title)}`} subtitle={text(module.description)} backHref="/ielts/foundation" backLabel={t('foundation.title')} />
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
@@ -36,21 +34,34 @@ export function ModuleView({ module }: { module: Module }) {
         {text(module.ieltsLink)}
       </Callout>
 
-      <Section title={t('foundation.module.lessons')}>
+      <Section
+        title={t('foundation.module.lessons')}
+        action={
+          canQuiz(fp, module) ? (
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/ielts/foundation/quiz/${module.id}`}>{t('foundation.action.takeQuiz')}</Link>
+            </Button>
+          ) : undefined
+        }
+      >
         <RowGroup>
           {module.lessons.map((l, i) => {
+            const state = lessonState(module, l, fp);
             const done = fp.lessons[l.id];
             const needsPractice = done && lessonOutcome(done.best) === 'practice';
+            const locked = state === 'locked';
             return (
               <ListRow
                 key={l.id}
-                href={`/ielts/foundation/lesson/${l.id}`}
-                icon={done ? CheckCircle2 : Circle}
-                iconTone={done ? (needsPractice ? 'warning' : 'success') : l.id === next?.id ? 'brand' : 'neutral'}
+                href={locked ? undefined : `/ielts/foundation/lesson/${l.id}`}
+                muted={locked}
+                icon={locked ? Lock : state === 'done' ? CheckCircle2 : state === 'skipped' ? SkipForward : l.kind === 'test' ? ClipboardCheck : Circle}
+                iconTone={state === 'done' ? (needsPractice ? 'warning' : 'success') : l.id === nextHere ? 'brand' : 'neutral'}
                 title={`${i + 1}. ${text(l.title)}`}
                 description={
                   <span className="flex items-center gap-1">
-                    <Clock className="size-3.5" /> {t('foundation.lesson.minutes', { n: l.minutes })} · {t(`foundation.lesson.difficulty.${l.difficulty}`)}
+                    <Clock className="size-3.5" /> {t('foundation.lesson.minutes', { n: l.minutes })}
+                    {l.kind === 'test' ? ` · ${t('foundation.lesson.test')}` : ` · ${t(`foundation.lesson.difficulty.${l.difficulty}`)}`}
                   </span>
                 }
                 trailing={
@@ -60,15 +71,17 @@ export function ModuleView({ module }: { module: Module }) {
                     ) : (
                       <StatusChip tone="success">{t('foundation.module.done', { score: done.best })}</StatusChip>
                     )
-                  ) : l.id === next?.id ? (
-                    <StatusChip tone="brand">{t('foundation.startHere')}</StatusChip>
+                  ) : state === 'skipped' ? (
+                    <StatusChip>{t('foundation.lesson.skipped')}</StatusChip>
+                  ) : l.id === nextHere ? (
+                    <StatusChip tone="brand">{fp.inProgress?.lessonId === l.id ? t('foundation.action.continueLesson') : t('foundation.startHere')}</StatusChip>
                   ) : undefined
                 }
               />
             );
           })}
           {(module.planned ?? []).map((p, i) => (
-            <ListRow key={`p-${i}`} muted icon={Circle} title={`${module.lessons.length + i + 1}. ${text(p)}`} trailing={<StatusChip>{t('foundation.soon')}</StatusChip>} />
+            <ListRow key={`p-${i}`} muted icon={Lock} title={`${module.lessons.length + i + 1}. ${text(p)}`} trailing={<StatusChip>{t('foundation.soon')}</StatusChip>} />
           ))}
         </RowGroup>
       </Section>

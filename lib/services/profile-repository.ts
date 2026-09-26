@@ -40,6 +40,9 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       ...stored.foundation,
       lessons: { ...stored.foundation?.lessons },
       errors: { ...stored.foundation?.errors },
+      concepts: { ...stored.foundation?.concepts },
+      mistakes: [...(stored.foundation?.mistakes ?? [])],
+      days: { ...stored.foundation?.days },
     },
   };
 }
