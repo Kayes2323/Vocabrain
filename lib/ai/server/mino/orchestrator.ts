@@ -1,14 +1,17 @@
-import type { AIMessage, AIProvider, MinoContext, MinoResponseMetadata, ModelTier } from '../../types';
+import type { AIMessage, AIProvider, MinoCapabilityId, MinoResponseMetadata, ModelTier } from '../../types';
 import { LIMITS } from '../config';
 import { runTool, toolDeclarations } from '../tools';
 import { buildSystemPrompt } from './prompt';
+import { buildStudentSnapshot } from './snapshot';
 
 export interface MinoTurn {
   student: { uid: string; idToken: string };
   message: string;
   history: AIMessage[];
   language: 'en' | 'bn';
-  userContext?: MinoContext;
+  capability?: MinoCapabilityId;
+  /** Student's UTC offset in minutes, for "today" and days-to-test. */
+  tzOffsetMinutes?: number;
 }
 
 /** Keeps only the most recent turns within the short-term memory budget. */
@@ -32,8 +35,15 @@ export async function runMino(provider: AIProvider, turn: MinoTurn): Promise<{ r
   const started = Date.now();
   const ctx = { uid: turn.student.uid, idToken: turn.student.idToken };
 
+  // Facts come from the database, never from the browser. If the read fails,
+  // Mino is told plainly that it has no data rather than guessing.
+  const snapshot = await buildStudentSnapshot(turn.student, turn.tzOffsetMinutes).catch((error) => {
+    console.warn('[mino] snapshot failed', (error as Error).message);
+    return 'STUDENT SNAPSHOT: unavailable right now. You do not know this student\'s data; do not guess it.';
+  });
+
   const result = await provider.run({
-    system: buildSystemPrompt(turn.language, turn.userContext),
+    system: buildSystemPrompt({ language: turn.language, snapshot, capability: turn.capability }),
     messages: [...trimHistory(turn.history), { role: 'user', content: turn.message }],
     tier,
     maxOutputTokens: LIMITS.maxOutputTokens,

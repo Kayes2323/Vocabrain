@@ -1,4 +1,5 @@
 import type { ToolDeclaration } from '../../types';
+import { getAppGuide, getIELTSGuide } from './knowledge';
 import { getMinoMemory } from './memory';
 import { getStudentProfile } from './profile';
 import type { MinoTool, ToolContext } from './types';
@@ -6,11 +7,11 @@ import { getVocabulary } from './vocabulary';
 
 /**
  * Mino's tool registry. Add a capability by writing a MinoTool and listing it
- * here. Planned next: getTodayPlan, getIELTSResults, getWeakAreas,
- * scheduleReview, createStudyTask, saveVocabulary, getStudyAbroadProfile.
+ * here. Planned next (M2+): getTestHistory, getQuestionPerformance, getWeakAreas,
+ * getProgress, createStudyPlan, createPractice, startRecall, saveVocabulary.
  * Write tools will need explicit confirmation rules before they are enabled.
  */
-const TOOLS: MinoTool[] = [getStudentProfile, getVocabulary, getMinoMemory];
+const TOOLS: MinoTool[] = [getStudentProfile, getVocabulary, getMinoMemory, getAppGuide, getIELTSGuide];
 
 export const toolDeclarations: ToolDeclaration[] = TOOLS.map((t) => t.declaration);
 

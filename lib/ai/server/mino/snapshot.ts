@@ -1,0 +1,103 @@
+// Layers 6, 7 (summary) and 9: the student snapshot, built on the server from
+// the student's own Firestore data (read with their ID token, so rules apply).
+// Browser-sent context is never trusted for facts.
+import { IELTS_SKILLS } from '@/lib/constants';
+import { brainSummary, buildDailyPlan, daysUntil, formatBand, ieltsJourney, overallBand } from '@/lib/engine';
+import { getTranslator } from '@/lib/i18n';
+import { QUESTION_TYPE_LABELS, type SectionResult } from '@/lib/ielts';
+import { getTest } from '@/lib/ielts/content';
+import type { BrainWord } from '@/lib/models';
+import { withProfileDefaults } from '@/lib/services/profile-repository';
+import { listOwnCollection, readOwnDoc } from '../firestore-rest';
+
+export interface StudentRef {
+  uid: string;
+  idToken: string;
+}
+
+/** Bangladesh time by default; the client may send its UTC offset in minutes. */
+export function studentNow(tzOffsetMinutes = 360, now = Date.now()): Date {
+  // Engine date helpers read local fields; on the server local = UTC, so shift.
+  return new Date(now + tzOffsetMinutes * 60_000);
+}
+
+const pct = (c: number, t: number) => (t ? Math.round((c / t) * 100) : 0);
+
+export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?: number): Promise<string> {
+  const now = studentNow(tzOffsetMinutes);
+  const [doc, words, sessions] = await Promise.all([
+    readOwnDoc(student.uid, student.idToken),
+    listOwnCollection(student.uid, student.idToken, 'vocabulary').catch(() => []),
+    listOwnCollection(student.uid, student.idToken, 'testSessions').catch(() => []),
+  ]);
+
+  const today = now.toISOString().slice(0, 10);
+  const lines: string[] = [`TODAY: ${today} (${now.toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'UTC' })}).`];
+  if (!doc) {
+    lines.push('STUDENT SNAPSHOT: no profile found yet (new account or onboarding not finished).');
+    return lines.join('\n');
+  }
+
+  const profile = withProfileDefaults(student.uid, (doc.app ?? {}) as never);
+  const t = getTranslator('en').t;
+  const { ielts, abroad, study } = profile;
+  const name = profile.displayName || (doc.name as string) || undefined;
+
+  lines.push('STUDENT SNAPSHOT (from the app database; this is everything you know unless a tool returns more):');
+  lines.push(`- Name: ${name ?? 'not given'}. Goal: ${profile.goal ?? 'not set'}. Language: ${profile.language ?? doc.preferredLanguage ?? 'not set'}.`);
+
+  // IELTS
+  const target = ielts.targetBand !== undefined ? formatBand(ielts.targetBand) : ielts.targetUnsure ? 'not sure yet' : 'not set';
+  const source = ielts.diagnostic ? 'estimates from the self-assessment diagnostic' : 'self-reported estimates';
+  const skills = IELTS_SKILLS.map((s) => `${s} ${ielts.currentBands[s] !== undefined ? formatBand(ielts.currentBands[s]) : 'no data'}`).join(', ');
+  const overall = overallBand(ielts.currentBands);
+  lines.push(`- IELTS target: ${target}. Current bands (${source}): ${skills}${overall !== undefined ? `; overall ≈ ${formatBand(overall)}` : ''}.`);
+  if (ielts.takenBefore) lines.push(`- Took IELTS before${ielts.previousOverall !== undefined ? `, overall ${formatBand(ielts.previousOverall)} (reported by student)` : ''}.`);
+  const testIn = ielts.testDate ? daysUntil(ielts.testDate, now) : undefined;
+  lines.push(`- Test date: ${ielts.testDate ? `${ielts.testDate.slice(0, 10)} (${testIn} days left)` : ielts.testDateUnknown ? 'not booked yet' : 'not given'}. Study time: ${ielts.weeklyStudyHours !== undefined ? `${ielts.weeklyStudyHours} h/week` : 'not given'}.`);
+  const journey = ieltsJourney(profile);
+  lines.push(`- IELTS journey stage: ${t(`journey.stages.${journey.current}`)} (${journey.percent}% of the journey).`);
+
+  // Practice tests (deterministic results)
+  const submitted = (sessions as { status?: string; submittedAt?: string; testId?: string; skill?: string; result?: SectionResult }[])
+    .filter((s) => s.status === 'submitted' && s.result)
+    .sort((a, b) => (b.submittedAt ?? '').localeCompare(a.submittedAt ?? ''));
+  if (submitted.length === 0) {
+    lines.push('- Practice tests: none completed yet (no Listening/Reading/Writing/Speaking test data).');
+  } else {
+    const last = submitted[0];
+    const r = last.result!;
+    const weakest = [...r.byType].filter((x) => x.total >= 2).sort((a, b) => a.correct / a.total - b.correct / b.total)[0];
+    lines.push(
+      `- Practice tests completed: ${submitted.length}. Latest: ${getTest(last.testId ?? '')?.title ?? last.testId} ${last.skill} ${r.correct}/${r.total} (${pct(r.correct, r.total)}%) on ${last.submittedAt?.slice(0, 10)}` +
+        (weakest ? `; lowest question type: ${QUESTION_TYPE_LABELS[weakest.type] ?? weakest.type} ${weakest.correct}/${weakest.total}` : '') +
+        '. No Listening, Writing or Speaking test data yet.',
+    );
+  }
+
+  // Vocabulary (Brain)
+  const brain = brainSummary(words as unknown as BrainWord[], now);
+  lines.push(
+    brain.total === 0
+      ? '- Vocabulary (Brain): no saved words yet.'
+      : `- Vocabulary (Brain): ${brain.total} saved, ${brain.due} due for review today, ${brain.failedLastTime} missed last time; by status ${Object.entries(brain.byStatus).filter(([, n]) => n).map(([k, n]) => `${k} ${n}`).join(', ')}.`,
+  );
+
+  // Today's plan (same engine as the Home screen)
+  const plan = buildDailyPlan(profile, brain, now);
+  const tasks = plan.tasks.map((task) => `${t(task.titleKey)}${task.done ? ' ✓' : ''} (${task.minutes} min, ${task.href})`).join('; ');
+  lines.push(`- Today's plan (${plan.mode}): ${tasks}.`);
+  lines.push(`- Study streak data: last active ${study.lastActiveDate ?? 'never'}; readings finished ${study.readPassages?.length ?? 0}.`);
+
+  // Study abroad
+  const abroadBits = [
+    abroad.degreeLevel && `degree ${abroad.degreeLevel}`,
+    abroad.subject && `subject ${abroad.subject}`,
+    abroad.targetIntake && `intake ${abroad.targetIntake.month}/${abroad.targetIntake.year}`,
+    abroad.annualBudget && `budget ${abroad.annualBudget.amount} ${abroad.annualBudget.currency}/year`,
+    abroad.preferredCountryCodes?.length && `countries ${abroad.preferredCountryCodes.join(', ')}`,
+  ].filter(Boolean);
+  lines.push(`- Study abroad: ${abroadBits.length ? abroadBits.join('; ') : 'nothing set yet'}.`);
+
+  return lines.join('\n');
+}

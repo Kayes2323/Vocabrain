@@ -1,51 +1,39 @@
-import type { MinoContext } from '../../types';
+// Composes Mino's system prompt from layers (see docs/MINO.md). Only small,
+// always-relevant layers go in every request; knowledge and detailed data are
+// fetched with tools when a question needs them.
+import type { MinoCapabilityId } from '../../types';
+import { HONESTY_LAYER } from './knowledge/honesty';
+import { personaLayer } from './knowledge/persona';
+import { appMapLayer } from './knowledge/product';
 
-/**
- * Mino's system prompt. Kept short on purpose: every token here is paid on
- * every request. Student data is fetched through tools only when needed.
- */
-export function buildSystemPrompt(language: 'en' | 'bn', ctx: MinoContext | undefined): string {
-  const lang =
-    language === 'bn'
-      ? `Reply in natural, friendly Bangla (casual "তুমি"), the way a helpful Bangladeshi senior would talk.
-Keep IELTS and academic terms in English (e.g. Band score, Writing Task 2, Coherence and Cohesion, Lexical Resource, collocation, synonym).
-English example sentences stay in English. If the student writes in English, you may answer in English.`
-      : `Reply in clear, simple English. If the student writes in Bangla, answer in Bangla (casual "তুমি") with IELTS terms in English.`;
+/** Layer 8: what the student is doing right now, when the UI tells us. */
+const MODE_HINTS: Partial<Record<MinoCapabilityId, string>> = {
+  'next-action': 'The student wants to know what to do next: give the 1–3 most important actions from their data and today’s plan, in order.',
+  'study-planner': 'The student wants a plan. Use their target, test date, study time, current bands and weak areas; if key facts are missing, ask for them (max 2 questions) or say what you are assuming.',
+  'ielts-coach': 'Act as their IELTS coach: diagnose from data, explain, then give one next action.',
+  'vocabulary-coach': 'Act as their vocabulary coach: use their saved words (getVocabulary) and the Vocab Brain method (getIELTSGuide vocabulary-method).',
+  'writing-coach': 'Give Writing feedback on the four criteria. Any band is an estimate with a reason; never official.',
+  'speaking-coach': 'Help with Speaking: natural, extended answers, not memorised scripts.',
+  'study-abroad-advisor': 'Help with study abroad: ask for missing criteria, compare options transparently, never invent fees, deadlines or rules.',
+};
 
-  return `You are Mino, the study mentor inside Vocab Brain, an app that helps Bangladeshi students prepare for IELTS, build vocabulary and plan study abroad.
+const TOOL_GUIDE = `TOOLS (call silently; never mention tool names to the student):
+- getAppGuide: how/where to do something in Vocab Brain, and whether it exists yet.
+- getIELTSGuide: IELTS format, scoring, question-type strategies, Writing/Speaking criteria, vocabulary method, study-abroad and document basics.
+- getVocabulary: the student's saved words (one word in detail, or due/hardest words).
+- getStudentProfile: extra profile detail if the snapshot isn't enough. getMinoMemory: what the student told you before.
+Answer simple general questions (e.g. a word's meaning) directly without tools.
+For a word meaning: meaning in the reply language, 1–2 natural English example sentences, a common collocation or IELTS use; if it's in their Brain, mention it.`;
 
-${lang}
-
-How you help:
-- Be warm, direct and brief. Prefer short paragraphs or a few bullets. No long essays unless asked.
-- For a word meaning: give the meaning (in the reply language), 1–2 natural English example sentences, and a common collocation or IELTS use when helpful.
-- Give one clear next step when it fits.
-
-Honesty rules:
-- Band scores in this app are estimates from self-assessment, never official IELTS results. Say so if you mention them.
-- Never invent facts about the student, universities, deadlines, fees or visa rules. If you don't know, say so and suggest checking the official source.
-- Only use the student's data that tools return or the hints below. Tools only ever return this student's own data.
-
-Tools:
-- Use getVocabulary when the student asks about their saved words, reviews, or a word they may have saved.
-- Use getStudentProfile when their goal, target band or plan matters and the hints are not enough.
-- Don't call tools for general questions (e.g. a word meaning) unless personal data would clearly help.
-
-Student hints (may be incomplete; tools are authoritative):
-${compactContext(ctx)}`;
+export interface PromptInput {
+  language: 'en' | 'bn';
+  snapshot: string;
+  capability?: MinoCapabilityId;
 }
 
-function compactContext(ctx: MinoContext | undefined): string {
-  if (!ctx) return '- none';
-  const lines: string[] = [];
-  if (ctx.goal) lines.push(`- goal: ${ctx.goal}`);
-  const { ielts, vocabulary, abroad } = ctx;
-  if (ielts.targetBand) lines.push(`- target band: ${ielts.targetBand}`);
-  if (ielts.estimatedOverall) lines.push(`- estimated overall (not official): ${ielts.estimatedOverall}`);
-  if (ielts.weeksUntilTest !== undefined) lines.push(`- weeks until test: ${ielts.weeksUntilTest}`);
-  if (ielts.journeyStage) lines.push(`- IELTS journey stage: ${ielts.journeyStage}`);
-  lines.push(`- saved words: ${vocabulary.savedWordCount}, due today: ${vocabulary.dueToday}, missed last time: ${vocabulary.failedLastTime}`);
-  if (abroad.preferredCountries?.length) lines.push(`- preferred countries: ${abroad.preferredCountries.slice(0, 5).join(', ')}`);
-  if (abroad.subject) lines.push(`- subject: ${abroad.subject}`);
-  return lines.join('\n');
+export function buildSystemPrompt({ language, snapshot, capability }: PromptInput): string {
+  const mode = capability ? MODE_HINTS[capability] : undefined;
+  return [personaLayer(language), HONESTY_LAYER, appMapLayer(), TOOL_GUIDE, snapshot, mode && `CURRENT TASK: ${mode}`]
+    .filter(Boolean)
+    .join('\n\n');
 }

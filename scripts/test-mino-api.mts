@@ -68,6 +68,30 @@ const check = (name: string, ok: boolean, extra?: unknown) => {
 const a = await signUp(`a${Date.now()}@test.com`);
 const b = await signUp(`b${Date.now()}@test.com`);
 await seedWord(a.uid, 'substantial');
+// Profile + one submitted Reading test for A: the snapshot must come from here, not from the browser.
+const put = (path: string, fields: unknown) =>
+  realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/${path}`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner' }, body: JSON.stringify({ fields }),
+  });
+const num = (n: number) => ({ doubleValue: n });
+const str = (s: string) => ({ stringValue: s });
+await put(`users/${a.uid}`, {
+  uid: str(a.uid), name: str('Rafi'), preferredLanguage: str('bn'),
+  app: { mapValue: { fields: {
+    goal: str('ielts'), language: str('bn'),
+    ielts: { mapValue: { fields: { targetBand: num(7), currentBands: { mapValue: { fields: { reading: num(6.5), listening: num(6) } } } } } },
+  } } },
+});
+await put(`users/${a.uid}/testSessions/s1`, {
+  id: str('s1'), testId: str('vb-practice-1'), skill: str('reading'), status: str('submitted'), submittedAt: str('2026-09-20T10:00:00Z'),
+  result: { mapValue: { fields: {
+    correct: { integerValue: '10' }, total: { integerValue: '24' },
+    byType: { arrayValue: { values: [
+      { mapValue: { fields: { type: str('matching-headings'), correct: { integerValue: '1' }, total: { integerValue: '4' } } } },
+      { mapValue: { fields: { type: str('true-false-not-given'), correct: { integerValue: '3' }, total: { integerValue: '4' } } } },
+    ] } },
+  } } },
+});
 await seedWord(b.uid, 'secretword');
 
 const msg = { message: 'substantial মানে কী?', language: 'bn', history: [] };
@@ -87,7 +111,13 @@ check('ok response', res.status === 200 && body.ok === true, body);
 check('tool read own word', body.response?.includes('meaning of substantial'), body.response);
 check('body uid ignored (no other student data)', !JSON.stringify(body).includes('secretword'));
 check('metadata (usage summed over tool rounds)', body.metadata?.toolCalls?.[0]?.name === 'getVocabulary' && body.metadata.usage?.totalTokens === 240 && body.metadata.model, body.metadata);
-check('system prompt Bangla + tools sent', geminiBodies[0].systemInstruction.parts[0].text.includes('Bangla') && geminiBodies[0].tools[0].functionDeclarations.length >= 3);
+const system: string = geminiBodies[0].systemInstruction.parts[0].text;
+if (process.env.PRINT_PROMPT) console.log(system);
+check('system prompt Bangla + tools sent', system.includes('Bangla') && geminiBodies[0].tools[0].functionDeclarations.length >= 5);
+check('snapshot from database: target, bands, missing skills', system.includes('IELTS target: 7.0') && system.includes('reading 6.5') && system.includes('speaking no data'), system.slice(system.indexOf('STUDENT SNAPSHOT'), system.indexOf('STUDENT SNAPSHOT') + 600));
+check('snapshot: test result and weakest question type', system.includes('Practice tests completed: 1') && system.includes('lowest question type: Matching Headings 1/4'));
+check('snapshot: vocabulary and today', system.includes('Vocabulary (Brain): 1 saved') && /TODAY: \d{4}-\d{2}-\d{2}/.test(system));
+check('snapshot never includes another student', !system.includes('secretword'));
 
 // Rules still protect other students even with a valid token.
 const cross = await realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/users/${b.uid}/vocabulary/secretword`, { headers: { Authorization: `Bearer ${a.token}` } });

@@ -8,7 +8,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { askMino } from '@/lib/ai/client';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
-import type { AIMessage, MinoContext } from '@/lib/ai/types';
+import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
 import { setPlanMode } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +17,13 @@ interface ChatMessage extends AIMessage {
   notice?: boolean;
 }
 
+/** Quick prompts tell Mino what kind of help is wanted (layer 8). */
+const PROMPT_CAPABILITY: Partial<Record<MinoPromptId, MinoCapabilityId>> = {
+  today: 'next-action',
+  next: 'next-action',
+  writingStuck: 'writing-coach',
+};
+
 export function MinoChat({ context }: { context: MinoContext }) {
   const { t, locale } = useLocale();
   const { updateProfile } = useProfile();
@@ -24,7 +31,7 @@ export function MinoChat({ context }: { context: MinoContext }) {
   const [draft, setDraft] = useState('');
   const [pending, setPending] = useState(false);
 
-  const send = async (text: string) => {
+  const send = async (text: string, capability?: MinoCapabilityId) => {
     const content = text.trim();
     if (!content || pending) return;
     const history: ChatMessage[] = [...messages, { role: 'user', content }];
@@ -36,6 +43,8 @@ export function MinoChat({ context }: { context: MinoContext }) {
       language: locale === 'bn' ? 'bn' : 'en',
       history: messages.filter((m) => !m.notice).map(({ role, content }) => ({ role, content })),
       userContext: context,
+      tzOffsetMinutes: -new Date().getTimezoneOffset(),
+      capability,
     });
     setMessages((prev) => [
       ...prev,
@@ -54,7 +63,7 @@ export function MinoChat({ context }: { context: MinoContext }) {
       setMessages((prev) => [...prev, { role: 'user', content: text }, { role: 'assistant', content: t('mino.minimumDayReply') }]);
       return;
     }
-    send(text);
+    send(text, PROMPT_CAPABILITY[id]);
   };
 
   return (

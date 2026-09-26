@@ -6,7 +6,8 @@ import { HTTP_STATUS, MinoError } from '@/lib/ai/server/errors';
 import { runMino } from '@/lib/ai/server/mino/orchestrator';
 import { getProvider } from '@/lib/ai/server/providers';
 import { checkRateLimit } from '@/lib/ai/server/rate-limit';
-import type { MinoAskResponse, MinoContext, MinoErrorCode } from '@/lib/ai/types';
+import { MINO_CAPABILITIES } from '@/lib/ai/capabilities';
+import type { MinoAskResponse, MinoCapabilityId, MinoErrorCode } from '@/lib/ai/types';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -18,9 +19,14 @@ const requestSchema = z.object({
     .array(z.object({ role: z.enum(['user', 'assistant']), content: z.string().max(LIMITS.messageChars * 2) }))
     .max(40)
     .default([]),
-  // Hints only: authoritative student data is read by tools as the verified user.
+  // Accepted for compatibility but not used for facts: the server reads the
+  // student's data itself (see lib/ai/server/mino/snapshot.ts).
   userContext: z.record(z.string(), z.unknown()).optional(),
-  capability: z.string().max(40).optional(),
+  capability: z
+    .string()
+    .refine((c) => MINO_CAPABILITIES.some((m) => m.id === c))
+    .optional(),
+  tzOffsetMinutes: z.number().int().min(-720).max(840).optional(),
 });
 
 function fail(code: MinoErrorCode) {
@@ -43,13 +49,14 @@ export async function POST(request: NextRequest) {
     const provider = getProvider();
     if (!provider) throw new MinoError('not_configured', 'no provider key');
 
-    const { message, language, history, userContext } = parsed.data;
+    const { message, language, history, capability, tzOffsetMinutes } = parsed.data;
     const { response, metadata } = await runMino(provider, {
       student,
       message,
       language,
       history,
-      userContext: userContext as unknown as MinoContext | undefined,
+      capability: capability as MinoCapabilityId | undefined,
+      tzOffsetMinutes,
     });
 
     // Log usage only: never the key, message text or reply.

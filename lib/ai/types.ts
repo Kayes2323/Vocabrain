@@ -112,6 +112,8 @@ export interface MinoAskRequest {
   /** Client-side summary. Treated as hints only; tools read authoritative data. */
   userContext: MinoContext;
   capability?: MinoCapabilityId;
+  /** Student's UTC offset in minutes (Bangladesh = 360). */
+  tzOffsetMinutes?: number;
 }
 
 /** Stable error codes the UI turns into friendly, localised messages. */
