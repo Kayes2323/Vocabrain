@@ -1,21 +1,23 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Check, Circle, Headphones, Layers, Lock, Mic, PenLine, Sparkles } from 'lucide-react';
+import {
+  AlignLeft, ArrowRight, BookOpen, BookText, Check, Clock3, Equal, GitMerge, Headphones, Info, Link2, MapPin, Mic, PenLine, Quote, Shapes, Sparkles,
+  SpellCheck, Type, type LucideIcon,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, ScreenSkeleton, Section, StatusChip, useGuideReminder, type Tint } from '@/components/ds';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  dailyGoal, findLesson, foundationDailyPlan, foundationJourney, getConcept, getModule, isComingSoon, LEVELS, lessonsDone, lessonTotal,
-  levelProgress, modulesForLevel, moduleProgress, nextAction, recommendedModule, skillProgress, topicSummary,
-  type NextAction, type PlanItem,
+  dailyGoal, findLesson, foundationDailyPlan, getConcept, getModule, isComingSoon, lessonsDone, lessonTotal, levelProgress, modulesForLevel,
+  moduleProgress, nextAction, nextLesson, skillProgress, stepBeforeModule, topicSummary,
+  type Module, type NextAction, type PlanItem,
 } from '@/lib/foundation';
 import type { FoundationProgress, UserProfile } from '@/lib/models';
+import { FOUNDATION_WORDS } from '@/lib/vocab-foundation/words';
 import { cn } from '@/lib/utils';
 import { useFoundation, useText } from './useFoundation';
-
-const SKILL_ICON = { grammar: Layers, vocabulary: BookOpen, listening: Headphones, reading: BookOpen, writing: PenLine, speaking: Mic } as const;
 
 /** The one next step: title, Mino's message and the button. */
 function useNextStep(fp: FoundationProgress, action: NextAction) {
@@ -91,188 +93,175 @@ function PlanRow({ item }: { item: PlanItem }) {
   );
 }
 
+const MODULE_ICON: Record<string, LucideIcon> = {
+  'sentence-basics': AlignLeft,
+  tenses: Clock3,
+  'parts-of-speech': Shapes,
+  articles: Type,
+  agreement: Equal,
+  prepositions: MapPin,
+  connectors: Link2,
+  'complex-sentences': GitMerge,
+  punctuation: Quote,
+  'common-errors': SpellCheck,
+  'vocabulary-foundation': BookOpen,
+  'ielts-intro': Info,
+  'listening-foundation': Headphones,
+  'reading-foundation': BookText,
+  'writing-foundation': PenLine,
+  'speaking-foundation': Mic,
+};
+
 function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationProgress }) {
   const { t } = useLocale();
   const text = useText();
   const { update } = useFoundation();
   const brain = useBrainContext();
+  const { intercept, dialog } = useGuideReminder();
   const action = nextAction(fp);
   const step = useNextStep(fp, action);
   const progress = levelProgress(1, fp);
   const completed = Object.keys(fp.lessons).length;
   const goal = dailyGoal(profile);
   const plan = foundationDailyPlan(profile, brain);
-  const journey = foundationJourney(fp);
   const topics = topicSummary(fp).filter((x) => x.status !== 'learning');
-  const rec = recommendedModule(fp);
+  const next = nextLesson(fp);
+  const wordsFound = Object.keys(profile.vocabFoundation?.discovered ?? {}).length;
+  const vocabPct = Math.round((wordsFound / FOUNDATION_WORDS.length) * 100);
+
+  const grammar = modulesForLevel(1).filter((m) => m.skill === 'grammar');
+  const vocabulary = modulesForLevel(1).filter((m) => m.skill === 'vocabulary');
+  const basics = modulesForLevel(2);
+
+  const card = (m: Module, tint: Tint) => {
+    const soon = isComingSoon(m);
+    const pct = m.href ? vocabPct : moduleProgress(m, fp);
+    const before = stepBeforeModule(m, fp);
+    const href = m.href ?? `/ielts/foundation/${m.id}`;
+    return (
+      <ModuleCard
+        key={m.id}
+        icon={MODULE_ICON[m.id] ?? BookOpen}
+        tint={tint}
+        title={text(m.short ?? m.title)}
+        subtitle={
+          soon
+            ? t('foundation.soon')
+            : m.href
+              ? t('foundation.wordsCount', { done: wordsFound, total: FOUNDATION_WORDS.length })
+              : pct > 0
+                ? t('foundation.lessonsCount', { done: lessonsDone(m, fp), total: lessonTotal(m) })
+                : t('foundation.lessonsN', { n: lessonTotal(m) })
+        }
+        progress={!soon && pct > 0 ? pct : undefined}
+        highlight={next?.module.id === m.id}
+        href={href}
+        onClick={(e) => intercept(href, before && `/ielts/foundation/lesson/${before.lesson.id}`, `module:${m.id}`) && e.preventDefault()}
+      />
+    );
+  };
+
+  const skills = skillProgress(fp).map((s) => (s.skill === 'vocabulary' ? { ...s, percent: vocabPct } : s));
 
   return (
     <div className="space-y-8">
       <PageHeader
         title={t('foundation.title')}
-        subtitle={t('foundation.currentLevel', { n: 1, title: text(LEVELS[0].title) })}
+        subtitle={t('foundation.subtitle')}
         backHref="/ielts"
         backLabel="IELTS"
         action={fp.diagnostic ? <StatusChip tone={fp.diagnostic.level === 'strong' ? 'success' : 'brand'}>{t(`foundation.level.${fp.diagnostic.level}`)}</StatusChip> : undefined}
       />
 
-      {/* Where am I? */}
-      <div className="space-y-2">
-        <div className="flex items-baseline justify-between gap-3 text-sm">
-          <span className="font-medium">{t('foundation.progressLabel')}</span>
-          <span className="text-muted-foreground">
-            <span className="font-semibold text-foreground tabular-nums">{progress}%</span> · {t('foundation.completedLessons', { n: completed })}
-          </span>
-        </div>
-        <ProgressBar value={progress} label={t('foundation.progressLabel')} />
+      {/* Where am I? One thin bar. */}
+      <div className="-mt-2 flex items-center gap-3">
+        <ProgressBar value={progress} label={t('foundation.progressLabel')} size="sm" className="flex-1" />
+        <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+          <span className="font-semibold text-foreground">{progress}%</span> · {t('foundation.lessonsN', { n: completed })}
+        </span>
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        {/* What should I do next? One obvious action, with Mino's reason. */}
-        <Panel variant="brand" className="space-y-4">
-          {!fp.introSeenAt && action.kind === 'check' && (
-            <p className="leading-7">{t('foundation.introBody')}</p>
-          )}
-          <p className="text-xl font-semibold tracking-tight">{step.title}</p>
-          <div className="flex gap-2.5 rounded-xl bg-background/70 p-3 text-[15px]">
-            <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
-            <p>
-              <span className="font-semibold">{t('foundation.mino.says')}: </span>
-              {step.mino}
-            </p>
-          </div>
-          <Button asChild size="lg" className="w-full sm:w-auto" onClick={() => !fp.introSeenAt && update((p) => ({ ...p, introSeenAt: new Date().toISOString() }))}>
-            <Link href={step.href}>
-              {step.cta} <ArrowRight />
-            </Link>
-          </Button>
-        </Panel>
+      {/* What next? One card, one button. */}
+      <Panel variant="brand" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0 space-y-1">
+          <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.nextLabel')}</p>
+          <p className="text-lg font-semibold tracking-tight text-balance">{step.title}</p>
+          <p className="flex gap-1.5 text-sm text-muted-foreground">
+            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-brand" aria-hidden />
+            <span className="line-clamp-2">{step.mino}</span>
+          </p>
+        </div>
+        <Button asChild size="lg" className="h-12 shrink-0" onClick={() => !fp.introSeenAt && update((p) => ({ ...p, introSeenAt: new Date().toISOString() }))}>
+          <Link href={step.href}>
+            {step.cta} <ArrowRight />
+          </Link>
+        </Button>
+      </Panel>
 
-        {/* Today */}
-        <Panel className="space-y-4 p-0">
-          <div className="space-y-3 px-5 pt-5">
-            <p className="font-semibold">{t('foundation.today.title')}</p>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                [t('foundation.today.lessons', { done: Math.min(goal.doneLessons, goal.lessons), total: goal.lessons }), goal.doneLessons / goal.lessons],
-                [t('foundation.today.questions', { done: Math.min(goal.doneQuestions, goal.questions), total: goal.questions }), goal.doneQuestions / goal.questions],
-              ].map(([label, ratio]) => (
-                <div key={label as string} className="space-y-1.5">
-                  <ProgressBar value={Math.min(1, ratio as number) * 100} label={label as string} size="sm" tone={(ratio as number) >= 1 ? 'success' : 'brand'} />
-                  <p className="text-xs text-muted-foreground tabular-nums">{label}</p>
+      <Section title={t('foundation.groups.grammar')} variant="label">
+        <CardGrid>{grammar.map((m) => card(m, 'lavender'))}</CardGrid>
+      </Section>
+
+      <Section title={t('foundation.groups.vocabulary')} variant="label">
+        <CardGrid>{vocabulary.map((m) => card(m, 'green'))}</CardGrid>
+      </Section>
+
+      <Section title={t('foundation.groups.basics')} variant="label">
+        <CardGrid>{basics.map((m) => card(m, 'blue'))}</CardGrid>
+      </Section>
+
+      <Section title={t('foundation.groups.progress')} variant="label">
+        <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-2 lg:items-start">
+          <Panel className="grid gap-x-6 gap-y-3.5 sm:grid-cols-2">
+            {skills.map((s) => (
+              <div key={s.skill} className="space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span>{t(`foundation.skills.${s.skill}`)}</span>
+                  <span className="text-xs text-muted-foreground tabular-nums">{s.percent === null ? t('foundation.soon') : `${s.percent}%`}</span>
                 </div>
-              ))}
+                <ProgressBar value={s.percent ?? 0} label={t(`foundation.skills.${s.skill}`)} size="sm" tone={s.percent === null ? 'neutral' : 'brand'} />
+              </div>
+            ))}
+          </Panel>
+
+          <Panel className="p-0">
+            <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
+              <p className="font-medium">{t('foundation.today.title')}</p>
+              <p className="text-xs text-muted-foreground tabular-nums">
+                {t('foundation.today.lessons', { done: Math.min(goal.doneLessons, goal.lessons), total: goal.lessons })} ·{' '}
+                {t('foundation.today.questions', { done: Math.min(goal.doneQuestions, goal.questions), total: goal.questions })}
+              </p>
             </div>
-          </div>
-          <div>
-            <p className="px-5 pb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t('foundation.today.plan')}</p>
             <div className="divide-y border-t">
               {plan.map((item) => (
                 <PlanRow key={`${item.kind}-${item.ref ?? ''}`} item={item} />
               ))}
             </div>
-          </div>
-        </Panel>
-      </div>
+          </Panel>
+        </div>
 
-      {/* The guided journey */}
-      <Section title={t('foundation.journeyTitle')}>
-        <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          {journey.map((s, i) => (
-            <li
-              key={s.id}
-              aria-current={s.state === 'current' ? 'step' : undefined}
-              className={cn(
-                'flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-sm',
-                s.state === 'done' && 'border-success/40 bg-success/10',
-                s.state === 'current' && 'border-brand bg-brand-soft',
-                s.state === 'locked' && 'text-muted-foreground',
-              )}
-            >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full border text-xs tabular-nums" aria-hidden>
-                {s.state === 'done' ? <Check className="size-3.5 text-success" /> : s.state === 'locked' ? <Lock className="size-3" /> : i + 1}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className={cn('block truncate', s.state === 'current' && 'font-semibold')}>{t(`foundation.stage.${s.id}`)}</span>
-                <span className="block text-xs text-muted-foreground">
-                  {s.soon && s.state !== 'locked' ? t('foundation.soon') : t(`foundation.stageState.${s.state}`)}
-                  {s.state === 'current' && s.progress !== undefined && !s.soon ? ` · ${s.progress}%` : ''}
-                </span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      {topics.length > 0 && (
-        <Section title={t('foundation.topics.title')}>
-          <div className="flex flex-wrap gap-2">
+        {topics.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-1">
             {topics.map((x) => (
               <Link key={x.concept} href={x.status === 'strong' ? `/ielts/foundation/lesson/${getConcept(x.concept)!.lessonId}` : `/ielts/foundation/review/${x.concept}`}>
                 <StatusChip tone={x.status === 'strong' ? 'success' : 'warning'} className="h-8 px-3 text-sm">
-                  {text(getConcept(x.concept)!.title)} · {t(`foundation.topics.${x.status}`)} · {x.accuracy}%
+                  {text(getConcept(x.concept)!.title)} · {x.accuracy}%
                 </StatusChip>
               </Link>
             ))}
           </div>
-        </Section>
-      )}
+        )}
+      </Section>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-        <Section title={t('foundation.allModules')}>
-          <RowGroup>
-            {[...modulesForLevel(1), ...modulesForLevel(2)].map((m) => {
-              const soon = isComingSoon(m);
-              const pct = moduleProgress(m, fp);
-              return (
-                <ListRow
-                  key={m.id}
-                  href={soon ? undefined : (m.href ?? `/ielts/foundation/${m.id}`)}
-                  icon={soon ? Lock : SKILL_ICON[m.skill]}
-                  iconTone={soon ? 'neutral' : 'brand'}
-                  muted={soon}
-                  title={text(m.title)}
-                  description={soon ? t('foundation.soon') : m.href ? text(m.description) : t('foundation.lessonsCount', { done: lessonsDone(m, fp), total: lessonTotal(m) })}
-                  trailing={
-                    soon ? undefined : m.id === rec?.id && pct < 100 ? (
-                      <StatusChip tone="brand">{t('foundation.recommended')}</StatusChip>
-                    ) : pct >= 100 && lessonsDone(m, fp) === 0 ? (
-                      <StatusChip>{t('foundation.testedOut')}</StatusChip>
-                    ) : pct > 0 ? (
-                      <StatusChip tone={pct >= 100 ? 'success' : 'neutral'}>{pct}%</StatusChip>
-                    ) : (
-                      <Circle className="size-4 text-muted-foreground" aria-hidden />
-                    )
-                  }
-                />
-              );
-            })}
-          </RowGroup>
-        </Section>
-
-        <div className="space-y-8">
-          <Section title={t('foundation.skillsTitle')}>
-            <Panel className="space-y-3">
-              {skillProgress(fp).map((s) => (
-                <div key={s.skill} className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>{t(`foundation.skills.${s.skill}`)}</span>
-                    <span className="text-xs text-muted-foreground tabular-nums">{s.percent === null ? t('foundation.soon') : `${s.percent}%`}</span>
-                  </div>
-                  <ProgressBar value={s.percent ?? 0} label={t(`foundation.skills.${s.skill}`)} size="sm" tone={s.percent === null ? 'neutral' : 'brand'} />
-                </div>
-              ))}
-            </Panel>
-          </Section>
-          {fp.diagnostic && (
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/ielts/foundation/diagnostic">{t('foundation.diagnosticRetake')}</Link>
-            </Button>
-          )}
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-xs text-muted-foreground">{t('foundation.honesty')}</p>
+        {fp.diagnostic && (
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/ielts/foundation/diagnostic">{t('foundation.diagnosticRetake')}</Link>
+          </Button>
+        )}
       </div>
-
-      <p className="text-xs text-muted-foreground">{t('foundation.honesty')}</p>
+      {dialog}
     </div>
   );
 }

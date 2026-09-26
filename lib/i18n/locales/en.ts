@@ -35,7 +35,7 @@ export const en = {
   },
   vocabFoundation: {
     title: 'Vocabulary Foundation',
-    subtitle: 'Build your vocabulary, one meaningful word at a time.',
+    subtitle: 'One meaningful word at a time.',
     stats: { brain: 'My Brain', mastered: 'Mastered', reviewing: 'Reviewing', due: 'Review today', streak: 'Streak', days: '{n} days' },
     mission: {
       title: 'Today’s mission',
@@ -130,9 +130,19 @@ export const en = {
     entryBody: 'Learn 5 useful IELTS words today — discover, save, recall and use them.',
     entryCta: 'Start',
   },
+  guide: {
+    title: 'You’re jumping ahead',
+    body: 'We recommend finishing the step before this one first. It makes this part easier.',
+    back: 'Go to the previous step',
+    continue: 'I want to go here',
+  },
   foundation: {
     title: 'IELTS Foundation',
-    subtitle: 'From English Foundation → IELTS Ready',
+    subtitle: 'Build your IELTS foundation.',
+    groups: { grammar: 'Grammar', vocabulary: 'Vocabulary', basics: 'IELTS Basics', progress: 'Your progress', today: 'Today' },
+    nextLabel: 'Next step',
+    lessonsN: '{n} lessons',
+    wordsCount: '{done}/{total} words',
     introTitle: 'Hi, I’m Mino 👋',
     introBody: 'Before you start IELTS, let’s fix a few important English foundations. We won’t study English like at school again. We’ll learn, step by step, only what really helps in IELTS.',
     introCta: 'Let’s start',
@@ -384,7 +394,7 @@ export const en = {
   },
   tests: {
     libraryTitle: 'Practice Tests',
-    librarySubtitle: 'Computer-based IELTS practice: timed, auto-scored, with explanations.',
+    librarySubtitle: 'Timed, auto-scored, with explanations.',
     libraryNote: 'More tests are on the way. Cambridge IELTS books will be added only with a licence.',
     library: 'All tests',
     rowMeta: '{n} questions · {minutes} min',
@@ -526,7 +536,7 @@ export const en = {
   },
   studyPlan: {
     title: 'My IELTS Plan',
-    subtitle: 'Built from your target, test date, study time and practice results. It adapts as your data changes.',
+    subtitle: 'Built from your goal and results. It adapts as you go.',
     days: '{n} days',
     untilTest: 'Until test',
     perDay: '{n} min a day',
@@ -901,7 +911,19 @@ export const en = {
     },
   },
   ielts: {
-    subtitle: 'Your plan, skills and practice in one place.',
+    subtitle: 'Learn, practise and track your progress.',
+    groups: { learn: 'Learn', practice: 'Practice', test: 'Test', plan: 'My plan' },
+    cards: {
+      foundation: 'Build your IELTS foundation',
+      vocabulary: 'Learn words that stay',
+      listening: 'Parts 1–4 practice',
+      reading: 'Daily passages',
+      writing: 'Task 1 & 2 with Mino',
+      speaking: 'Parts 1–3, out loud',
+      'mock-tests': 'Timed tests with scores',
+      'band-calculator': 'Work out your overall band',
+      plan: 'Your day-by-day plan',
+    },
     target: 'Target',
     estimated: 'Estimated',
     testIn: 'Test in',
@@ -963,7 +985,7 @@ export const en = {
     },
     foundation: {
       title: 'IELTS Foundation',
-      description: 'Start here if you are new: the English IELTS needs, step by step.',
+      description: 'Build your IELTS foundation.',
       highlights: ['A short check finds your starting point', 'Short lessons with IELTS examples and practice', 'Mino spots your mistake patterns'],
     },
     'mock-tests': {
@@ -1056,7 +1078,7 @@ export const en = {
     comingNext: 'Coming next',
     findWords: 'Find new words',
     notebookTitle: 'Read and save words',
-    notebookDesc: 'Tap any word in a passage to save it with its sentence.',
+    notebookDesc: 'Tap a word in a passage to save it.',
     unlockTitle: 'Unlock every lesson and band',
     unlockDesc: 'Premium opens all topic lessons and Bands 7–9.',
     seePremium: 'See Premium',

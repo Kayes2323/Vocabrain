@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle2, Circle, ClipboardCheck, Clock, Lock, SkipForward } from 'lucide-react';
+import { CheckCircle2, Circle, CircleDashed, ClipboardCheck, Clock, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Callout, ListRow, PageHeader, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { Callout, ListRow, PageHeader, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { canQuiz, lessonOutcome, lessonState, moduleProgress, nextLesson, type Module } from '@/lib/foundation';
+import { canQuiz, lessonOutcome, lessonState, moduleProgress, nextLesson, stepBeforeLesson, type Module } from '@/lib/foundation';
 import { useFoundation, useText } from './useFoundation';
 
 export function ModuleView({ module }: { module: Module }) {
   const { t } = useLocale();
   const text = useText();
   const { fp } = useFoundation();
+  const { intercept, dialog } = useGuideReminder();
   if (!fp) return <ScreenSkeleton />;
 
   const pct = moduleProgress(module, fp);
@@ -20,7 +21,7 @@ export function ModuleView({ module }: { module: Module }) {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={`${module.number}. ${text(module.title)}`} subtitle={text(module.description)} backHref="/ielts/foundation" backLabel={t('foundation.title')} />
+      <PageHeader title={text(module.title)} subtitle={text(module.description)} backHref="/ielts/foundation" backLabel={t('foundation.title')} />
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
@@ -36,6 +37,7 @@ export function ModuleView({ module }: { module: Module }) {
 
       <Section
         title={t('foundation.module.lessons')}
+        variant="label"
         action={
           canQuiz(fp, module) ? (
             <Button asChild size="sm" variant="outline">
@@ -49,13 +51,14 @@ export function ModuleView({ module }: { module: Module }) {
             const state = lessonState(module, l, fp);
             const done = fp.lessons[l.id];
             const needsPractice = done && lessonOutcome(done.best) === 'practice';
-            const locked = state === 'locked';
+            const href = `/ielts/foundation/lesson/${l.id}`;
+            const before = stepBeforeLesson(module, l, fp);
             return (
               <ListRow
                 key={l.id}
-                href={locked ? undefined : `/ielts/foundation/lesson/${l.id}`}
-                muted={locked}
-                icon={locked ? Lock : state === 'done' ? CheckCircle2 : state === 'skipped' ? SkipForward : l.kind === 'test' ? ClipboardCheck : Circle}
+                href={href}
+                onNavigate={(e) => intercept(href, before && `/ielts/foundation/lesson/${before.id}`, `lesson:${l.id}`) && e.preventDefault()}
+                icon={state === 'done' ? CheckCircle2 : state === 'skipped' ? SkipForward : l.kind === 'test' ? ClipboardCheck : Circle}
                 iconTone={state === 'done' ? (needsPractice ? 'warning' : 'success') : l.id === nextHere ? 'brand' : 'neutral'}
                 title={`${i + 1}. ${text(l.title)}`}
                 description={
@@ -81,12 +84,13 @@ export function ModuleView({ module }: { module: Module }) {
             );
           })}
           {(module.planned ?? []).map((p, i) => (
-            <ListRow key={`p-${i}`} muted icon={Lock} title={`${module.lessons.length + i + 1}. ${text(p)}`} trailing={<StatusChip>{t('foundation.soon')}</StatusChip>} />
+            <ListRow key={`p-${i}`} icon={CircleDashed} title={`${module.lessons.length + i + 1}. ${text(p)}`} trailing={<StatusChip>{t('foundation.soon')}</StatusChip>} />
           ))}
         </RowGroup>
       </Section>
 
       {module.lessons.length === 0 && <Callout>{t('foundation.module.comingSoon')}</Callout>}
+      {dialog}
     </div>
   );
 }

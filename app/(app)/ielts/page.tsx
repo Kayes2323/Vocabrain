@@ -5,14 +5,22 @@ import { ArrowRight, Compass } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { ListRow, PageHeader, Panel, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { CardGrid, ModuleCard, PageHeader, Panel, ScreenSkeleton, Section, StatusChip, type Tint } from '@/components/ds';
 import { JourneyStages } from '@/components/home/JourneyStages';
 import { IELTS_SKILLS, type IELTSSkill } from '@/lib/constants';
 import { formatBand, ieltsJourney, overallBand, weeksUntilTest } from '@/lib/engine';
 import { IELTS_SECTIONS, IELTS_TOOLS, sectionKey, type SectionDef } from '@/lib/navigation';
 import type { UserProfile } from '@/lib/models';
 
-function SectionRow({ section, profile }: { section: SectionDef; profile: UserProfile }) {
+const byId = (id: string) => [...IELTS_SECTIONS, ...IELTS_TOOLS].find((s) => s.id === id)!;
+
+const GROUPS: { key: string; tint: Tint; ids: string[] }[] = [
+  { key: 'learn', tint: 'lavender', ids: ['foundation', 'vocabulary'] },
+  { key: 'practice', tint: 'blue', ids: ['listening', 'reading', 'writing', 'speaking'] },
+  { key: 'test', tint: 'yellow', ids: ['mock-tests', 'band-calculator'] },
+];
+
+function SectionCard({ section, profile, tint }: { section: SectionDef; profile: UserProfile; tint: Tint }) {
   const { t } = useLocale();
   let trailing: React.ReactNode;
   if ((IELTS_SKILLS as readonly string[]).includes(section.id)) {
@@ -22,14 +30,14 @@ function SectionRow({ section, profile }: { section: SectionDef; profile: UserPr
       trailing = <StatusChip tone={behind ? 'warning' : 'success'}>{formatBand(band)}</StatusChip>;
     }
   }
-  if (!trailing && section.status === 'planned') trailing = <StatusChip>{t('common.soon')}</StatusChip>;
+  const planned = section.status === 'planned';
   return (
-    <ListRow
+    <ModuleCard
       href={section.href}
       icon={section.icon}
-      iconTone={section.status === 'available' ? 'brand' : 'neutral'}
+      tint={tint}
       title={t(sectionKey(section.id, 'title'))}
-      description={t(sectionKey(section.id, 'description'))}
+      subtitle={planned ? t('common.soon') : t(`ielts.cards.${section.id}`)}
       trailing={trailing}
     />
   );
@@ -49,7 +57,7 @@ export default function IELTSPage() {
     <div className="space-y-8">
       <PageHeader title="IELTS" subtitle={t('ielts.subtitle')} />
 
-      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+      <div>
         {ielts.targetBand === undefined ? (
           <Panel variant="muted" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -76,45 +84,37 @@ export default function IELTSPage() {
             ))}
           </Panel>
         )}
-
-        <RowGroup>
-          <ListRow
-            href="/ielts/diagnostic"
-            icon={Compass}
-            iconTone="brand"
-            title={t('ielts.startingPoint')}
-            description={hasStartingPoint ? t('ielts.startingPointDone') : t('ielts.startingPointTodo')}
-            trailing={hasStartingPoint ? <StatusChip tone="success">{t('ielts.estimated')}</StatusChip> : undefined}
-          />
-        </RowGroup>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-        <div className="space-y-8">
-          <Section title={t('ielts.modules')}>
-            <RowGroup>
-              {IELTS_SECTIONS.map((s) => (
-                <SectionRow key={s.id} section={s} profile={profile} />
-              ))}
-            </RowGroup>
-          </Section>
+      {GROUPS.map((g) => (
+        <Section key={g.key} title={t(`ielts.groups.${g.key}`)} variant="label">
+          <CardGrid className={g.key === 'practice' ? 'xl:grid-cols-2' : undefined}>
+            {g.ids.map((id) => (
+              <SectionCard key={id} section={byId(id)} profile={profile} tint={g.tint} />
+            ))}
+          </CardGrid>
+        </Section>
+      ))}
 
-          <Section title={t('ielts.tools')}>
-            <RowGroup>
-              {IELTS_TOOLS.map((s) => (
-                <SectionRow key={s.id} section={s} profile={profile} />
-              ))}
-            </RowGroup>
-          </Section>
-        </div>
-
-        <Section title={t('ielts.journey')}>
+      <Section title={t('ielts.groups.plan')} variant="label">
+        <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-2 lg:items-start">
+          <div className="grid min-w-0 grid-cols-1 gap-2.5">
+            <SectionCard section={byId('plan')} profile={profile} tint="green" />
+            <ModuleCard
+              href="/ielts/diagnostic"
+              icon={Compass}
+              tint="green"
+              title={t('ielts.startingPoint')}
+              subtitle={hasStartingPoint ? t('ielts.startingPointDone') : t('ielts.startingPointTodo')}
+            />
+          </div>
           <Panel className="space-y-4">
+            <p className="text-sm font-medium">{t('ielts.journey')}</p>
             <JourneyStages stages={journey.stages} />
             <p className="text-xs text-muted-foreground">{t('journey.howCalculated')}</p>
           </Panel>
-        </Section>
-      </div>
+        </div>
+      </Section>
     </div>
   );
 }

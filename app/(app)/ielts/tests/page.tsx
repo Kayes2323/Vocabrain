@@ -25,7 +25,7 @@ export default function TestLibraryPage() {
       <PageHeader title={t('tests.libraryTitle')} subtitle={t('tests.librarySubtitle')} backHref="/ielts" backLabel="IELTS" />
 
       {BOOKS.map((book) => (
-        <Section key={book.id} title={book.title}>
+        <Section key={book.id} title={book.title} variant="label">
           <RowGroup>
             {book.tests.flatMap((test) => {
               const meta = (skill: IELTSSkillId) => {

@@ -4,7 +4,7 @@ import {
   CONCEPTS, DIAGNOSTIC_ITEMS, MODULES, adaptiveStart, completeLesson, dailyGoal, diagnosticAreas, findLesson, foundationDailyPlan,
   foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
-  skillProgress, topicSummary, validateFoundation, MAX_MISTAKES, type Exercise,
+  skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
@@ -238,6 +238,19 @@ test('mastery needs recognition, recall, application and consistency', () => {
   fp = recordReview(fp, 'present-simple', 100, NOW);
   fp = recordReview(fp, 'present-simple', 100, NOW);
   assert.equal(conceptMastery(fp, 'present-simple').level, 'mastered');
+});
+
+test('guide, don’t block: reminders only when jumping ahead, never for empty modules', () => {
+  const fp = empty();
+  const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
+  const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
+  const articles = MODULES.find((m) => m.id === 'articles')!;
+  assert.equal(stepBeforeModule(basics, fp), undefined);
+  assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
+  assert.equal(stepBeforeModule(articles, fp), undefined);
+  assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
+  assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
+  assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
 });
 
 const asyncTests: [string, () => Promise<void>][] = [];

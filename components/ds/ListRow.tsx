@@ -12,11 +12,13 @@ interface ListRowProps {
   trailing?: React.ReactNode;
   href?: string;
   onClick?: () => void;
+  /** For links: runs before navigating; call preventDefault() to stay. */
+  onNavigate?: React.MouseEventHandler<HTMLAnchorElement>;
   muted?: boolean;
 }
 
 /** A tappable row. Use inside <RowGroup> for grouped lists. */
-export function ListRow({ title, description, icon, iconTone = 'neutral', trailing, href, onClick, muted }: ListRowProps) {
+export function ListRow({ title, description, icon, iconTone = 'neutral', trailing, href, onClick, onNavigate, muted }: ListRowProps) {
   const content = (
     <>
       {icon && <IconBadge icon={icon} tone={iconTone} />}
@@ -33,7 +35,7 @@ export function ListRow({ title, description, icon, iconTone = 'neutral', traili
 
   if (href) {
     return (
-      <Link href={href} className={className}>
+      <Link href={href} onClick={onNavigate} className={className}>
         {content}
       </Link>
     );

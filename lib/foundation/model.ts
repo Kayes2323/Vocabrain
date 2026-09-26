@@ -179,6 +179,8 @@ export interface Module {
   lessons: Lesson[];
   /** The module lives in its own experience (e.g. Vocabulary Foundation). */
   href?: string;
+  /** Short card title, when the full title is long. */
+  short?: L;
   /** Lessons not written yet: shown as "coming soon" and counted in progress totals. */
   planned?: L[];
 }

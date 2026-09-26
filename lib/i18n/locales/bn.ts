@@ -38,7 +38,7 @@ export const bn: LocaleDictionary = {
   },
   vocabFoundation: {
     title: 'Vocabulary Foundation',
-    subtitle: 'একটা একটা করে অর্থপূর্ণ word দিয়ে তোমার vocabulary গড়ে তোলো।',
+    subtitle: 'একটা একটা করে, অর্থ বুঝে শব্দ শেখো।',
     stats: { brain: 'My Brain', mastered: 'আয়ত্তে', reviewing: 'Review চলছে', due: 'আজকের review', streak: 'Streak', days: '{n} দিন' },
     mission: {
       title: 'আজকের mission',
@@ -133,9 +133,19 @@ export const bn: LocaleDictionary = {
     entryBody: 'আজ ৫টা কাজের IELTS word শেখো — discover, save, recall আর ব্যবহার।',
     entryCta: 'শুরু করো',
   },
+  guide: {
+    title: 'তুমি এখন এই অংশে যেতে চাচ্ছো',
+    body: 'আমরা recommend করি আগে আগের ধাপটা শেষ করতে, কারণ এতে শেখাটা আরও সহজ হবে।',
+    back: 'আগের ধাপে যাই',
+    continue: 'আমি এখানেই যেতে চাই',
+  },
   foundation: {
     title: 'IELTS Foundation',
-    subtitle: 'English Foundation থেকে IELTS Ready',
+    subtitle: 'IELTS-এর জন্য দরকারি English গুছিয়ে নাও।',
+    groups: { grammar: 'Grammar', vocabulary: 'Vocabulary', basics: 'IELTS Basics', progress: 'তোমার progress', today: 'আজ' },
+    nextLabel: 'পরের ধাপ',
+    lessonsN: '{n}টা lesson',
+    wordsCount: '{done}/{total} শব্দ',
     introTitle: 'হাই, আমি Mino 👋',
     introBody: 'IELTS শুরু করার আগে তোমার English-এর কিছু গুরুত্বপূর্ণ foundation ঠিক করে নিই। এখানে আমরা আবার স্কুলের মতো English পড়ব না। IELTS-এ যেগুলো সত্যিই কাজে লাগে, সেগুলোই step by step শিখব।',
     introCta: 'চলো শুরু করি',
@@ -387,7 +397,7 @@ export const bn: LocaleDictionary = {
   },
   tests: {
     libraryTitle: 'Practice Tests',
-    librarySubtitle: 'Computer-based IELTS practice: সময় ধরে, automatic score আর explanation সহ।',
+    librarySubtitle: 'সময় ধরে, automatic score আর explanation সহ।',
     libraryNote: 'আরও test আসছে। Cambridge IELTS বইগুলো শুধু licence পাওয়ার পরই যোগ হবে।',
     library: 'সব test',
     rowMeta: '{n}টা question · {minutes} মিনিট',
@@ -529,7 +539,7 @@ export const bn: LocaleDictionary = {
   },
   studyPlan: {
     title: 'আমার IELTS Plan',
-    subtitle: 'তোমার target, test date, পড়ার সময় আর practice result থেকে বানানো। Data বদলালে plan-ও বদলায়।',
+    subtitle: 'তোমার goal আর result থেকে বানানো। তুমি এগোলে plan-ও বদলায়।',
     days: '{n} দিন',
     untilTest: 'Test পর্যন্ত',
     perDay: 'দিনে {n} মিনিট',
@@ -901,7 +911,19 @@ export const bn: LocaleDictionary = {
     },
   },
   ielts: {
-    subtitle: 'তোমার plan, skill আর practice সব এক জায়গায়।',
+    subtitle: 'শেখো, practice করো, progress দেখো।',
+    groups: { learn: 'শেখো', practice: 'Practice', test: 'Test', plan: 'আমার plan' },
+    cards: {
+      foundation: 'IELTS-এর জন্য দরকারি English',
+      vocabulary: 'মনে থাকে এমনভাবে শব্দ শেখো',
+      listening: 'Part 1–4 practice',
+      reading: 'প্রতিদিনের passage',
+      writing: 'Mino-র সাথে Task 1 ও 2',
+      speaking: 'কথা বলে Part 1–3',
+      'mock-tests': 'সময় ধরে test, score সহ',
+      'band-calculator': 'Overall band হিসাব করো',
+      plan: 'প্রতিদিনের plan',
+    },
     target: 'Target',
     estimated: 'Estimated',
     testIn: 'Test বাকি',
@@ -963,7 +985,7 @@ export const bn: LocaleDictionary = {
     },
     foundation: {
       title: 'IELTS Foundation',
-      description: 'নতুন হলে এখান থেকে শুরু করো: IELTS-এর জন্য দরকারি English, step by step।',
+      description: 'IELTS-এর জন্য দরকারি English গুছিয়ে নাও।',
       highlights: ['ছোট একটা check তোমার starting point খুঁজে দেয়', 'IELTS উদাহরণ আর practice সহ ছোট lesson', 'Mino তোমার ভুলের pattern ধরে ফেলে'],
     },
     'mock-tests': {
@@ -1056,7 +1078,7 @@ export const bn: LocaleDictionary = {
     comingNext: 'এরপর আসছে',
     findWords: 'নতুন শব্দ খুঁজো',
     notebookTitle: 'পড়ো আর শব্দ save করো',
-    notebookDesc: 'Passage-এর যেকোনো শব্দে tap করলেই sentence সহ save হবে।',
+    notebookDesc: 'Passage-এর শব্দে tap করে save করো।',
     unlockTitle: 'সব lesson আর band unlock করো',
     unlockDesc: 'Premium-এ সব topic lesson আর Band 7–9 খুলে যাবে।',
     seePremium: 'Premium দেখো',

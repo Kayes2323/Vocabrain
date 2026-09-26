@@ -1,13 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BookOpenCheck, BookText, Layers, Lock } from 'lucide-react';
+import { BookOpenCheck, BookText, Layers, Lock, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
-import { ListRow, PageHeader, Panel, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { CardGrid, ListRow, ModuleCard, PageHeader, Panel, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { BrainSummaryPanel } from '@/components/brain/BrainSummaryPanel';
 import { FREE_BAND_LEVEL } from '@/lib/constants';
 import { getAllBands, getVocabularyByBand } from '@/lib/ielts-vocabulary';
@@ -27,22 +27,22 @@ export default function VocabularyPage() {
     <div className="space-y-8">
       <PageHeader title={t('skills.vocabulary')} subtitle={t('vocabulary.subtitle')} backHref="/ielts" backLabel={t('nav.ielts')} />
 
-      <Panel variant="brand" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-semibold">{t('vocabFoundation.entryTitle')}</p>
-          <p className="text-sm text-muted-foreground">{t('vocabFoundation.entryBody')}</p>
-        </div>
-        <Button asChild size="lg">
-          <Link href="/ielts/vocabulary/foundation">
-            {t('vocabFoundation.entryCta')} <ArrowRight />
-          </Link>
-        </Button>
-      </Panel>
+      <CardGrid className="xl:grid-cols-2">
+        <ModuleCard
+          href="/ielts/vocabulary/foundation"
+          icon={Sparkles}
+          tint="green"
+          highlight
+          title={t('vocabFoundation.title')}
+          subtitle={t('vocabFoundation.subtitle')}
+        />
+        <ModuleCard href="/ielts/reading" icon={BookText} tint="green" title={t('vocabulary.notebookTitle')} subtitle={t('vocabulary.notebookDesc')} />
+      </CardGrid>
 
       <BrainSummaryPanel />
 
       <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
-        <Section title={t('vocabulary.topicLessons')} description={t('vocabulary.topicLessonsDesc')}>
+        <Section title={t('vocabulary.topicLessons')} variant="label">
           <RowGroup>
             {VOCABULARY_DATA.map((lesson) => {
               const locked = lesson.lessonId > maxLessonAccess;
@@ -65,7 +65,7 @@ export default function VocabularyPage() {
         </Section>
 
         <div className="space-y-8">
-          <Section title={t('vocabulary.wordBank')} description={t('vocabulary.wordBankDesc')}>
+          <Section title={t('vocabulary.wordBank')} variant="label">
             <RowGroup>
               {getAllBands().map((band) => {
                 const locked = band > FREE_BAND_LEVEL && !isPremium;
@@ -86,17 +86,6 @@ export default function VocabularyPage() {
             </RowGroup>
           </Section>
 
-          <Section title={t('vocabulary.findWords')}>
-            <RowGroup>
-              <ListRow
-                icon={BookText}
-                iconTone="brand"
-                title={t('vocabulary.notebookTitle')}
-                description={t('vocabulary.notebookDesc')}
-                href="/ielts/reading"
-              />
-            </RowGroup>
-          </Section>
         </div>
       </div>
 

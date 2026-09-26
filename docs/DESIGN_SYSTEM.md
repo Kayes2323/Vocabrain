@@ -61,6 +61,21 @@ list rows `px-4 py-3`, min height 64px. Screen gutter 16px mobile, 32px desktop.
 Buttons (`components/ui/button.tsx`): `default` (navy) for the primary action, `brand` for
 Mino actions, `outline`/`ghost` for secondary. Default height is 40px and `lg` is 48px for primary mobile CTAs.
 
+## Cards, sections and guidance
+
+- **Section label** (`<Section variant="label">`): small uppercase heading for
+  grouped navigation (LEARN, PRACTICE, TEST, MY PLAN; GRAMMAR, VOCABULARY, IELTS BASICS).
+- **ModuleCard / CardGrid**: compact tappable card with an icon, a title, a
+  one-line subtitle, an optional thin progress bar and a chevron. One column on
+  phones, 2–3 on wider screens. The recommended next card gets `highlight`.
+- **Tints** (`--tint-lavender|blue|green|yellow`): one tint per section, never
+  one per card. Brand indigo stays the primary accent.
+- **Copy**: one short line per card. No paragraphs on navigation screens.
+- **Guide, don't block** (`useGuideReminder`): nothing in the Foundation is
+  locked. Jumping ahead of the recommended path shows one friendly dialog
+  ("Go to the previous step" / "I want to go here"); "go anyway" is remembered
+  on the device. Premium paywalls are a separate thing and stay.
+
 ## Navigation
 
 - Mobile: fixed `BottomNav` with icons and labels: Home · IELTS · Mino · Abroad · Profile. Mino has an indigo icon and label; when active it gets a solid indigo pill.

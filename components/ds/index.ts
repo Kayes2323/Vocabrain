@@ -10,3 +10,5 @@ export * from './Callout';
 export * from './States';
 export * from './ChoiceGrid';
 export * from './StepFlow';
+export * from './ModuleCard';
+export * from './GuideReminder';

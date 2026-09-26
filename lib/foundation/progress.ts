@@ -126,6 +126,32 @@ export function nextLesson(fp: FoundationProgress): { module: Module; lesson: Le
   return undefined;
 }
 
+// ---------------------------------------------------------------- guidance
+// "Guide, don't block": nothing is locked. These only say which recommended
+// step comes first, so the UI can show a friendly reminder.
+
+/**
+ * The recommended lesson to do before opening `target`, when the student is
+ * jumping ahead of the path. Modules with nothing to study yet never ask.
+ */
+export function stepBeforeModule(target: Module, fp: FoundationProgress): { module: Module; lesson: Lesson } | undefined {
+  if (isComingSoon(target)) return undefined;
+  const next = nextLesson(fp);
+  if (!next || next.module.id === target.id) return undefined;
+  return MODULES.indexOf(target) > MODULES.indexOf(next.module) ? next : undefined;
+}
+
+/** The recommended lesson to do before `lesson`, when its prerequisites are not done yet. */
+export function stepBeforeLesson(module: Module, lesson: Lesson, fp: FoundationProgress): Lesson | undefined {
+  if (lessonState(module, lesson, fp) !== 'locked') return undefined;
+  const skipped = skippedSet(fp);
+  const index = module.lessons.indexOf(lesson);
+  const prereqs = lesson.prerequisites ?? (index > 0 ? [module.lessons[index - 1].id] : []);
+  const missing = prereqs.find((id) => !fp.lessons[id] && !skipped.has(id));
+  const first = module.lessons.find((l) => lessonState(module, l, fp) === 'available');
+  return first ?? (missing ? findLesson(missing)?.lesson : undefined);
+}
+
 // ---------------------------------------------------------------- answers
 
 const today = (now: Date) => localDateKey(now);
