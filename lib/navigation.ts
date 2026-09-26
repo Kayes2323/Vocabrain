@@ -21,6 +21,7 @@ import {
   PenLine,
   Plane,
   Scale,
+  Columns3,
   Sparkles,
   Target,
   Timer,
@@ -95,6 +96,7 @@ export const ABROAD_SECTION_GROUPS: SectionGroup[] = [
     sections: [
       { id: 'countries', icon: Globe2, href: '/abroad/countries', status: 'available', phase: 4 },
       { id: 'country-match', icon: Scale, href: '/abroad/country-match', status: 'available', phase: 4 },
+      { id: 'compare', icon: Columns3, href: '/abroad/compare', status: 'available', phase: 4 },
       { id: 'universities', icon: Building2, href: '/abroad/universities', status: 'available', phase: 4 },
     ],
   },

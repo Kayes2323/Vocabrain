@@ -1,4 +1,7 @@
 import { COUNTRIES, getCountry } from '@/lib/content/countries';
+import { countrySections } from '@/lib/abroad/sections';
+import { abroadSummary } from '@/lib/abroad/summary';
+import { visaParts } from '@/lib/abroad/visa';
 import { matchCountries } from '@/lib/engine';
 import { getTranslator, type Message } from '@/lib/i18n';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
@@ -12,7 +15,7 @@ export const getStudyAbroadProfile: MinoTool = {
   declaration: {
     name: 'getStudyAbroadProfile',
     description:
-      "The student's study-abroad profile: degree level, subject, intake, budget, priorities and preferred countries, plus which answers are missing. Use before discussing destinations so you only ask for what's missing.",
+      "The student's study-abroad profile and progress: degree level, subject, intake, budget, priorities, dream country and shortlist, the 10-stage journey (current stage, what needs attention), their country roadmap step, upcoming dates, document readiness and their own university list, plus which answers are missing. Use before advising so the next step fits where they are.",
     parameters: { type: 'object', properties: {} },
   },
   async run({ uid, idToken }) {
@@ -25,11 +28,14 @@ export const getStudyAbroadProfile: MinoTool = {
       !abroad.annualBudget && 'yearly budget',
       !Object.keys(abroad.priorities ?? {}).length && 'priorities',
     ].filter(Boolean);
+    const { journey: _stored, universities: _u, deadlines: _d, documents: _docs, ...answers } = abroad;
+    void _stored; void _u; void _d; void _docs;
     return {
-      ...abroad,
+      ...answers,
+      progress: abroadSummary(withProfileDefaults(uid, (doc?.app ?? {}) as never)),
       preferredCountries: (abroad.preferredCountryCodes ?? []).map((c) => getCountry(c)?.name ?? c),
       missing,
-      whereToSet: 'Study Abroad profile (abroad-profile button) for degree/subject/intake; Country Match (country-match button) for priorities, countries and budget.',
+      whereToSet: 'Study Abroad profile (abroad-profile button) for degree/subject/intake; Country Match (country-match button) for priorities, countries and budget; the dream country is chosen on a country page or Study Abroad home.',
     };
   },
 };
@@ -62,7 +68,11 @@ export const getCountryData: MinoTool = {
       tuition: facts(d.tuition),
       scholarships: facts(d.scholarshipInformation),
       visa: facts(d.visaInformation),
-      rule: 'Quote figures with their source and date; rules change, so tell the student to confirm on the official page.',
+      // Which parts of the country guide and visa guide have verified facts (anything else: say it is not verified yet).
+      sectionStatus: Object.fromEntries(countrySections(country).map((sec) => [sec.id, sec.status === 'not-yet' ? 'notVerified' : sec.status])),
+      visaPartStatus: Object.fromEntries(visaParts(country).map((p) => [p.id, p.status === 'not-yet' ? 'notVerified' : p.status])),
+      officialPages: [...new Set(countrySections(country).flatMap((sec) => [...sec.facts.map((f) => f.fact.source.url), ...(sec.links ?? []).map((l) => l.url)]).filter(Boolean))],
+      rule: 'Quote figures with their source and date; rules change, so tell the student to confirm on the official page. For notVerified parts give only general guidance, clearly labelled as general, and point to the official page.',
     };
   },
 };

@@ -29,9 +29,11 @@ ${[...IELTS_SECTIONS, ...IELTS_TOOLS].map(sectionLine).join('\n')}
 Mino [AVAILABLE] /mino: your next 3 actions, chat, "what Mino knows about you".
 Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
+  - Journey: 10 stages for ONE dream country (+ a shortlist); each country page (/abroad/countries/<code>) has 24 sections marked Verified / Partly verified / Not verified yet, and a 16-step roadmap (/abroad/countries/<code>/roadmap) the student ticks and dates.
+  - Universities = the student's own list (no verified university profiles yet); Scholarships and official Deadlines: none verified yet; Documents: readiness + general preparation guides; Visa: 12-part guide per country, mostly not verified yet.
   - Verified official data (with source + date) so far: United Kingdom, Canada, Australia, Germany (living-cost money to show, work while studying, post-study work where confirmed). Other countries and tuition/scholarship/visa details: not verified yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
+Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, study-abroad cost calculator, applications tracker, pre-departure checklist, SOP/CV builders.`;
 }
 
 export interface AppGuide {
@@ -255,9 +257,49 @@ export const APP_GUIDES: AppGuide[] = [
     ],
   },
   {
+    id: 'abroad-journey',
+    status: 'AVAILABLE',
+    title: 'Study Abroad journey, dream country and country roadmap',
+    where: 'Study Abroad (/abroad); a country page → Build my plan / Open my roadmap',
+    steps: [
+      'Pick one dream country (on its country page or Study Abroad home); others stay on your shortlist.',
+      'The journey shows 10 stages (Discover → Prepare to travel) with your current stage and what needs attention.',
+      'Each country has a 16-step roadmap: tick steps, set your own target dates; a close or missed date is flagged.',
+    ],
+  },
+  {
+    id: 'abroad-universities',
+    status: 'AVAILABLE',
+    title: 'University shortlist',
+    where: 'Study Abroad → Universities (/abroad/universities)',
+    steps: ['Add universities you are considering (name, program, official website), mark each ambitious / good match / safer, and track its status.'],
+    notes: ['No verified university profiles yet: requirements and fees must be checked on each university’s official website.'],
+  },
+  {
+    id: 'abroad-deadlines',
+    status: 'AVAILABLE',
+    title: 'Deadlines',
+    where: 'Study Abroad → Deadlines (/abroad/deadlines)',
+    steps: ['See your own dates, roadmap target dates and your IELTS test date by This week / This month / Later; add a date from an official page; mark it done.'],
+  },
+  {
+    id: 'abroad-documents',
+    status: 'AVAILABLE',
+    title: 'Documents (CV, SOP, recommendation letters, transcripts…)',
+    where: 'Study Abroad → Documents (/abroad/documents)',
+    steps: ['See the documents your plan needs, set each to Not started / In progress / Ready, and read general guidance on what to include and common mistakes.'],
+  },
+  {
+    id: 'abroad-scholarships-visa',
+    status: 'AVAILABLE',
+    title: 'Scholarships, student visa guide and country comparison',
+    where: 'Study Abroad → Scholarships (/abroad/scholarships), Visa (/abroad/visa), Compare (/abroad/compare)',
+    steps: ['Scholarships and visa parts appear only with an official source and date; everything else is marked not verified yet. Compare puts up to three countries side by side.'],
+  },
+  {
     id: 'study-abroad-tools',
     status: 'PLANNED',
-    title: 'Universities, cost calculator, scholarships, deadlines, applications, documents, visa',
+    title: 'Cost calculator, applications tracker, pre-departure checklist, SOP/CV builders',
     where: 'Not in the app yet (shown as "Soon" in Study Abroad)',
     steps: ['Mino can explain general concepts (what an SOP is, how intakes work) but not current fees, deadlines or rules.'],
   },

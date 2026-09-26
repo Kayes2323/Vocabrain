@@ -10,6 +10,7 @@ import { foundationSummaryLines } from '@/lib/foundation/progress';
 import { vocabSummaryLines } from '@/lib/vocab-foundation/mission';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
+import { abroadSnapshotLine } from '@/lib/abroad/summary';
 import { listOwnCollection, readOwnDoc } from '../firestore-rest';
 import { readMemory } from '../tools/memory';
 
@@ -113,6 +114,7 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
     abroad.preferredCountryCodes?.length && `countries ${abroad.preferredCountryCodes.join(', ')}`,
   ].filter(Boolean);
   lines.push(`- Study abroad: ${abroadBits.length ? abroadBits.join('; ') : 'nothing set yet'}.`);
+  lines.push(abroadSnapshotLine(profile, now));
 
   // Long-term memory (notes the student shared earlier; they can delete them)
   const notes = memory?.notes ?? [];

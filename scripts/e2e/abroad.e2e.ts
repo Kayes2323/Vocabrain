@@ -343,6 +343,49 @@ async function main() {
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('home tools: centres no longer "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0, String(await p.locator('main').getByText('Soon', { exact: true }).count()));
 
+    // ============================================================ 3N · Next action on home
+    console.log('\n[3N] Next action');
+    check('home: next action is the roadmap date due this week', /Your next action: Write your SOP and CV · In 5 days/.test(await p.getByTestId('abroad-next-action').innerText()), await p.getByTestId('abroad-next-action').innerText());
+    check('Continue goes to the roadmap', (await p.getByTestId('abroad-continue').getAttribute('href')) === '/abroad/countries/de/roadmap');
+
+    // ============================================================ 3K · Country Match v2
+    console.log('\n[3K] Country Match');
+    await p.goto(`${BASE}/abroad/country-match`, { waitUntil: 'load' });
+    await p.getByRole('button', { name: 'Post-study work' }).waitFor({ timeout: 60_000 });
+    await p.getByRole('button', { name: 'Post-study work' }).click();
+    await p.getByRole('button', { name: 'Show my matches' }).click();
+    await p.locator('[data-match="CA"]').waitFor({ timeout: 10_000 });
+    x = await ab((y) => Boolean((y as { priorities?: object }).priorities));
+    check('dream country stays on the shortlist after saving answers', ((x.preferredCountryCodes as string[]) ?? []).includes('DE'), JSON.stringify(x.preferredCountryCodes));
+    check('each match leads to an action (Explore)', (await p.locator('[data-match="CA"]').getByRole('link', { name: 'Explore' }).getAttribute('href')) === '/abroad/countries/ca');
+    check('Germany (no verified post-study data) is listed as not enough data, not ranked', (await p.locator('[data-match="DE"]').count()) === 0 && /Not enough verified data yet/.test(await p.locator('main').innerText()));
+    await p.locator('[data-match="CA"]').getByRole('button', { name: 'Add to compare' }).click();
+    await p.locator('[data-match="GB"]').getByRole('button', { name: 'Add to compare' }).click();
+    check('compare bar appears with 2', (await p.getByTestId('match-compare').innerText()).includes('Compare 2'));
+    check('match desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3k-01-match');
+    await p.getByTestId('match-compare').click();
+    await p.waitForURL('**/abroad/compare?c=ca,gb');
+
+    // ============================================================ 3L · Compare
+    console.log('\n[3L] Compare');
+    await p.getByTestId('compare-table').waitFor({ timeout: 60_000 });
+    check('two countries side by side', (await p.locator('[data-compare-country]').count()) === 2);
+    check('work row: Canada verified, facts sourced', (await p.locator('[data-row="work"] [data-cell="CA"]').getAttribute('data-status')) === 'verified' && (await p.locator('[data-row="work"] [data-cell="CA"] a[href^="https://www.canada.ca"]').count()) === 1);
+    check('tuition row: not verified for both (nothing invented)', (await p.locator('[data-row="tuition"] [data-status="not-yet"]').count()) === 2 && /Not verified yet/.test(await p.locator('[data-row="tuition"]').innerText()));
+    await p.getByLabel('Country 3').selectOption('DE');
+    await p.waitForURL('**c=ca,gb,de');
+    check('third country added via picker → URL', (await p.locator('[data-compare-country]').count()) === 3);
+    check('compare desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-3l-01-compare');
+
+    // ============================================================ 3M · Mino
+    console.log('\n[3M] Mino');
+    await p.getByRole('link', { name: 'Ask Mino to compare these' }).click();
+    await p.waitForURL('**/mino**');
+    await p.getByText(/Compare Canada, United Kingdom, Germany for my Study Abroad plan/).first().waitFor({ timeout: 30_000 });
+    check('Mino gets the comparison question with the verified-only rule', true);
+
     await p.goto(`${BASE}/abroad/countries/xx`, { waitUntil: 'load' });
     await p.getByTestId('hub-not-found').waitFor({ timeout: 60_000 });
     check('unknown country → clear message + way back', (await p.getByRole('link', { name: 'Countries' }).count()) >= 1);
@@ -400,6 +443,12 @@ async function main() {
     }
     check('bn documents in Bangla', /তোমার Australia plan-এর জন্য/.test(await (async () => { await q.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' }); await q.getByTestId('docs-required').waitFor({ timeout: 60_000 }); return q.locator('main').innerText(); })()));
     await shot(q, 'sa-3i-02-documents-mobile-bn', false);
+    await q.goto(`${BASE}/abroad/visa/au`, { waitUntil: 'load' });
+    await q.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
+    await q.goto(`${BASE}/abroad/compare?c=au,gb,ca`, { waitUntil: 'load' });
+    await q.getByTestId('compare-table').waitFor({ timeout: 60_000 });
+    check('bn compare mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-3l-02-compare-mobile-bn', false);
     await q.goto(`${BASE}/abroad/visa/au`, { waitUntil: 'load' });
     await q.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
     await setDark(q, true);

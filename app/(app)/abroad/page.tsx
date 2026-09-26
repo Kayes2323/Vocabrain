@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Building2, CalendarClock, ChevronDown, Compass, FileText, Globe2, Landmark, Plane, Sparkles, Star } from 'lucide-react';
+import { ArrowRight, Building2, CalendarClock, ChevronDown, ClipboardCheck, Columns3, Compass, FileText, Globe2, Landmark, Plane, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -11,7 +11,9 @@ import { HubBar } from '@/components/abroad/HubBar';
 import { JourneyBars, JourneyTimeline, STAGE_TONE } from '@/components/abroad/JourneyTimeline';
 import { TrustNote } from '@/components/abroad/TrustNote';
 import { countVerifiedDataPoints, getCountry } from '@/lib/content/countries';
-import { abroadJourney, formatIntake, hasAbroadGoal, markStage, setDreamCountry, type AbroadStage } from '@/lib/engine';
+import { abroadJourney, abroadNextAction, formatIntake, hasAbroadGoal, markStage, setDreamCountry, type AbroadStage } from '@/lib/engine';
+import { useBilingual } from '@/components/abroad/useBilingual';
+import { daysUntil } from '@/lib/abroad/status';
 import { findSection, ABROAD_SECTIONS } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 
@@ -23,16 +25,24 @@ const TOOLS = [
   { id: 'scholarships', section: 'scholarships', icon: Landmark },
   { id: 'deadlines', section: 'deadlines', icon: CalendarClock },
   { id: 'documents', section: 'documents', icon: FileText },
+  { id: 'compare', section: 'compare', icon: Columns3 },
+  { id: 'visa', section: 'visa', icon: ClipboardCheck },
 ] as const;
 
 export default function AbroadPage() {
   const { t } = useLocale();
+  const text = useBilingual();
   const { profile, updateProfile } = useProfile();
   const [showStages, setShowStages] = useState(false);
   if (!profile) return <ScreenSkeleton />;
 
   const { abroad } = profile;
   const journey = abroadJourney(profile);
+  const next = abroadNextAction(profile);
+  const dueWhen = (date: string) => {
+    const n = daysUntil(date);
+    return n === 0 ? t('sa.dl.today') : n > 0 ? t('sa.dl.inDays', { n }) : t('sa.dl.ago', { n: -n });
+  };
   const dream = abroad.dreamCountryCode ? getCountry(abroad.dreamCountryCode) : undefined;
   const shortlist = (abroad.preferredCountryCodes ?? []).map(getCountry).filter((c): c is NonNullable<typeof c> => Boolean(c));
   const others = shortlist.filter((c) => c.code !== dream?.code);
@@ -77,12 +87,20 @@ export default function AbroadPage() {
                   {[dream ? `${dream.flag} ${dream.name}` : undefined, ...goalParts].filter(Boolean).join(' · ') || t('sa.home.notSet')}
                 </p>
               </div>
+              {!journey.complete && next.kind !== 'stage' && (
+                <p className="rounded-xl bg-muted/60 px-3.5 py-2.5 text-sm" data-testid="abroad-next-action">
+                  <span className="text-muted-foreground">{t('sa.next.label')}: </span>
+                  {next.kind === 'date'
+                    ? t('sa.next.date', { title: typeof next.title === 'string' ? next.title : text(next.title), when: dueWhen(next.date) })
+                    : t('sa.next.step', { title: text(next.title) })}
+                </p>
+              )}
               {journey.complete ? (
                 <p className="text-sm text-muted-foreground">{t('sa.home.completeBody')}</p>
               ) : (
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <Button asChild size="lg" className="h-12">
-                    <Link href={journey.current.href} data-testid="abroad-continue">
+                    <Link href={next.href} data-testid="abroad-continue">
                       {t('sa.home.continue')} <ArrowRight />
                     </Link>
                   </Button>

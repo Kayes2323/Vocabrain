@@ -176,7 +176,7 @@ export const IELTS_CARDS: KnowledgeCard[] = [
     points: [
       v('No country is "best" for everyone. Compare options on the student’s own criteria and explain why each may fit.'),
       v('Ask only what the app doesn’t already know, a few questions at a time: degree level, subject, academic background, yearly budget (tuition + living), career goal, scholarship need, preferred intake, lifestyle/safety preferences, target IELTS band.'),
-      v('Save answers in Study Abroad (profile) so Mino and the planned Country Match can use them.'),
+      v('Save answers in Study Abroad (profile), choose a dream country and follow its roadmap; Country Match compares destinations on your priorities.'),
       t('Useful comparison factors: total yearly cost, IELTS/academic requirements, post-study work options, scholarship availability, language of daily life, distance from home and community.'),
     ],
     verify: 'Fees, living costs, visa rules, work rights, deadlines and scholarship terms change every year: always point to the official government, university or scholarship website.',

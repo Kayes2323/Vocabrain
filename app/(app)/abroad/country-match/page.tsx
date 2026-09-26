@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ExternalLink, Sparkles } from 'lucide-react';
+import { ArrowRight, Bookmark, BookmarkCheck, Columns3, ExternalLink, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Callout, PageHeader, Panel, ProgressBar, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { COUNTRIES } from '@/lib/content/countries';
-import { matchCountries, PRIORITY_FACTORS, prioritiesFrom } from '@/lib/engine';
+import { matchCountries, PRIORITY_FACTORS, prioritiesFrom, setDreamCountry, toggleShortlist } from '@/lib/engine';
+import { HubBar } from '@/components/abroad/HubBar';
+import { countryHref } from '@/lib/abroad/countries';
+import { MAX_COMPARE } from '@/lib/abroad/compare';
 import type { Money, PriorityFactor, StudyAbroadProfile } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
@@ -89,7 +92,8 @@ function Questions({ abroad, onSave }: { abroad: StudyAbroadProfile; onSave: (a:
           onSave({
             ...abroad,
             priorities: prioritiesFrom(picked),
-            preferredCountryCodes: countries,
+            // The dream country always stays on the shortlist.
+            preferredCountryCodes: abroad.dreamCountryCode && !countries.includes(abroad.dreamCountryCode) ? [abroad.dreamCountryCode, ...countries] : countries,
             ...(amount ? { annualBudget: { amount: Number(amount), currency } } : { annualBudget: undefined }),
           })
         }
@@ -104,11 +108,17 @@ export default function CountryMatchPage() {
   const { t, m } = useLocale();
   const { profile, updateProfile } = useProfile();
   const [editing, setEditing] = useState(false);
+  const [compare, setCompare] = useState<string[]>([]);
   if (!profile) return <ScreenSkeleton />;
 
   const abroad = profile.abroad;
   const hasPriorities = Object.keys(abroad.priorities ?? {}).length > 0;
-  const header = <PageHeader title={t('match.title')} subtitle={t('match.subtitle')} backHref="/abroad" backLabel={t('nav.abroad')} />;
+  const header = (
+    <>
+      <PageHeader title={t('match.title')} subtitle={t('match.subtitle')} />
+      <HubBar />
+    </>
+  );
 
   if (!hasPriorities || editing) {
     return (
@@ -126,6 +136,7 @@ export default function CountryMatchPage() {
   }
 
   const result = matchCountries(COUNTRIES, abroad);
+  const shortlist = abroad.preferredCountryCodes ?? [];
   const budget = abroad.annualBudget;
 
   return (
@@ -145,7 +156,7 @@ export default function CountryMatchPage() {
 
       <div className="space-y-4">
         {result.matches.map((c) => (
-          <Panel key={c.code} className="space-y-4">
+          <Panel key={c.code} className="space-y-4" data-match={c.code}>
             <div className="flex items-center gap-3">
               <span className="text-2xl" aria-hidden>
                 {c.flag}
@@ -193,6 +204,40 @@ export default function CountryMatchPage() {
             {c.unknownPriorities.length > 0 && (
               <p className="text-xs text-muted-foreground">{t('match.unknown', { list: c.unknownPriorities.map((p) => t(`match.priorities.${p}`)).join(', ') })}</p>
             )}
+            <div className="flex flex-wrap gap-2 border-t pt-3">
+              <Button asChild size="sm">
+                <Link href={countryHref(c.code)}>
+                  {t('sa.match.explore')} <ArrowRight />
+                </Link>
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                aria-pressed={shortlist.includes(c.code)}
+                onClick={() => updateProfile((p) => ({ ...p, abroad: toggleShortlist(p.abroad, c.code) }))}
+              >
+                {shortlist.includes(c.code) ? <BookmarkCheck /> : <Bookmark />}
+                {shortlist.includes(c.code) ? t('sa.card.shortlisted') : t('sa.card.shortlist')}
+              </Button>
+              {abroad.dreamCountryCode === c.code ? (
+                <StatusChip tone="brand" className="h-8">
+                  <Star className="size-3.5" aria-hidden /> {t('sa.match.dream')}
+                </StatusChip>
+              ) : (
+                <Button size="sm" variant="ghost" onClick={() => updateProfile((p) => ({ ...p, abroad: setDreamCountry(p.abroad, c.code) }))}>
+                  {t('sa.match.makeDream')}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                aria-pressed={compare.includes(c.code)}
+                disabled={!compare.includes(c.code) && compare.length >= MAX_COMPARE}
+                onClick={() => setCompare((l) => (l.includes(c.code) ? l.filter((x) => x !== c.code) : [...l, c.code]))}
+              >
+                <Columns3 /> {compare.includes(c.code) ? t('sa.compare.added') : t('sa.compare.add')}
+              </Button>
+            </div>
           </Panel>
         ))}
       </div>
@@ -204,6 +249,16 @@ export default function CountryMatchPage() {
       )}
 
       <Callout tone="warning">{t('match.disclaimer')}</Callout>
+
+      {compare.length >= 2 && (
+        <div className="sticky bottom-20 z-10 md:bottom-4">
+          <Button asChild size="lg" className="h-12 w-full shadow-lg" data-testid="match-compare">
+            <Link href={`/abroad/compare?c=${compare.join(',').toLowerCase()}`}>
+              <Columns3 /> {t('sa.compare.compareN', { n: compare.length })}
+            </Link>
+          </Button>
+        </div>
+      )}
 
       <Button asChild variant="brand">
         <Link href="/mino?ask=abroad">

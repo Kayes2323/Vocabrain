@@ -23,6 +23,13 @@ export const MINO_ACTIONS = {
   'abroad-profile': '/setup/abroad',
   countries: '/abroad/countries',
   'country-match': '/abroad/country-match',
+  'abroad-journey': '/abroad',
+  compare: '/abroad/compare',
+  universities: '/abroad/universities',
+  scholarships: '/abroad/scholarships',
+  deadlines: '/abroad/deadlines',
+  documents: '/abroad/documents',
+  visa: '/abroad/visa',
 } as const;
 
 export type MinoActionId = keyof typeof MINO_ACTIONS;

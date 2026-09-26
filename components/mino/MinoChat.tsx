@@ -225,7 +225,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa' && ask !== 'abroad-compare') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -261,6 +261,9 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       const step = roadmapDefs(country).find((d) => d.id === params.get('step'));
       if (country && step) send(t('sa.roadmap.stepPrompt', { country: country.name, step: step.title[locale === 'bn' ? 'bn' : 'en'] }), 'study-abroad-advisor');
       else send(t('sa.home.askPrompt'), 'study-abroad-advisor');
+    } else if (ask === 'abroad-compare') {
+      const names = (params.get('c') ?? '').split(',').map((c) => getCountry(c)?.name).filter(Boolean).slice(0, 3);
+      send(names.length >= 2 ? t('sa.compare.askPrompt', { list: names.join(', ') }) : t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad-unis') {
       send(t('sa.unis.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad-doc') {

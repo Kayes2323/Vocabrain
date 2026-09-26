@@ -12,7 +12,7 @@ import type {
   StudyAbroadProfile,
   UserProfile,
 } from '@/lib/models';
-import { stepMarks } from './abroad-journey';
+import { abroadJourney, countryRoadmap, stepMarks } from './abroad-journey';
 
 /**
  * The student's own Study Abroad lists: universities they consider, dates
@@ -170,4 +170,28 @@ export function requiredDocuments(abroad: StudyAbroadProfile): DocumentKind[] {
   const kinds: DocumentKind[] = [];
   for (const d of defs) for (const k of d.documents ?? []) if (!kinds.includes(k)) kinds.push(k);
   return kinds;
+}
+
+// ------------------------------------------------------------------ next action
+
+export type AbroadNextAction =
+  | { kind: 'date'; title: string | Bilingual; date: string; bucket: DeadlineBucket; href: string }
+  | { kind: 'step'; title: Bilingual; stepId: string; href: string }
+  | { kind: 'stage'; stageId: string; href: string };
+
+/**
+ * The single most useful thing to do next, used by Study Abroad home and Mino:
+ * a date that is missed or due this week first, then the current roadmap step
+ * of the dream country, else the current journey stage.
+ */
+export function abroadNextAction(profile: UserProfile, now = new Date()): AbroadNextAction {
+  const urgent = allDeadlines(profile, now).find((d) => !d.done && (d.bucket === 'missed' || d.bucket === 'this-week'));
+  if (urgent) return { kind: 'date', title: urgent.title, date: urgent.date, bucket: urgent.bucket, href: urgent.href ?? '/abroad/deadlines' };
+  const dream = profile.abroad.dreamCountryCode;
+  if (dream) {
+    const step = countryRoadmap(profile, dream, now).current;
+    if (step) return { kind: 'step', title: step.title, stepId: step.id, href: `/abroad/countries/${dream.toLowerCase()}/roadmap` };
+  }
+  const journey = abroadJourney(profile, now);
+  return { kind: 'stage', stageId: journey.current.id, href: journey.current.href };
 }
