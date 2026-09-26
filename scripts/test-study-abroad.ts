@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
 import { emptyProfile, type UserProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
-import { ABROAD_STAGE_IDS, abroadJourney, markStage, setDreamCountry, toggleShortlist } from '../lib/engine';
+import { ABROAD_STAGE_IDS, abroadJourney, countryRoadmap, markStage, markStep, setDreamCountry, setStepDue, toggleShortlist } from '../lib/engine';
+import { roadmapDefs } from '../lib/abroad/roadmap';
+import { ROADMAP_TEMPLATE } from '../lib/content/roadmap';
 import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
 import { countryHref, countryIndicators } from '../lib/abroad/countries';
 import { actionHref, countrySections, factNeedsReview, HUB_TABS, SECTION_DEFS, sectionsOfTab } from '../lib/abroad/sections';
@@ -190,6 +192,98 @@ test('status: scholarship open / opening soon / closed / passed, and deadline bu
   assert.equal(deadlineBucket('2027-01-10', now), 'upcoming');
   assert.equal(deadlineBucket('2026-09-20', now), 'missed');
   assert.equal(deadlineBucket('2026-09-20', now, true), 'completed');
+});
+
+// ---------------------------------------------------------------- 3E roadmap
+const dreamDE = () => withAbroad(base(), { degreeLevel: 'masters', dreamCountryCode: 'DE', preferredCountryCodes: ['DE'] });
+
+test('roadmap: 16 template steps, each tied to one of the 10 stages, in stage order', () => {
+  assert.equal(ROADMAP_TEMPLATE.length, 16);
+  const order = ROADMAP_TEMPLATE.map((s) => ABROAD_STAGE_IDS.indexOf(s.stage as never));
+  assert.ok(order.every((i) => i >= 0));
+  assert.deepEqual(order, [...order].sort((a, b) => a - b));
+  assert.equal(new Set(ROADMAP_TEMPLATE.map((s) => s.id)).size, 16);
+  assert.ok(ABROAD_STAGE_IDS.every((id) => ROADMAP_TEMPLATE.some((s) => s.stage === id)), 'every stage has a step');
+});
+
+test('roadmap: country overrides skip, rename and add (with source); no override = template', () => {
+  assert.equal(roadmapDefs(getCountry('DE')).length, 16);
+  const defs = roadmapDefs({
+    roadmap: {
+      skip: ['lor'],
+      rename: { visa: { en: 'Apply for a study permit', bn: 'Study permit-এর জন্য apply করো' } },
+      add: [{ after: 'passport', step: { id: 'extra', stage: 'documents', title: { en: 'X', bn: 'X' }, description: { en: 'x', bn: 'x' } }, source: { name: 'Official', url: 'https://example.gov', sourceType: 'official-government' } }],
+    },
+  });
+  assert.equal(defs.length, 16);
+  assert.ok(!defs.some((d) => d.id === 'lor'));
+  assert.equal(defs.find((d) => d.id === 'visa')?.title.en, 'Apply for a study permit');
+  assert.equal(defs[defs.findIndex((d) => d.id === 'passport') + 1].id, 'extra');
+  assert.equal(defs.find((d) => d.id === 'extra')?.source?.name, 'Official');
+});
+
+test('roadmap: goal and country are automatic; the first open step is current and "in progress"', () => {
+  const r = countryRoadmap(dreamDE(), 'de', NOW);
+  assert.equal(r.active, true);
+  assert.equal(r.total, 16);
+  assert.equal(r.steps[0].status, 'done');
+  assert.equal(r.steps[1].status, 'done');
+  assert.equal(r.current?.id, 'eligibility');
+  assert.equal(r.current?.status, 'in-progress');
+  assert.equal(r.steps.filter((s) => s.current).length, 1);
+  assert.equal(r.steps[3].status, 'upcoming');
+  const other = countryRoadmap(dreamDE(), 'KR', NOW);
+  assert.equal(other.active, false);
+  assert.equal(other.steps[1].status, 'upcoming', 'Korea is not the chosen country');
+});
+
+test('roadmap: ticking every step of a stage completes the stage; un-ticking re-opens it without losing the others', () => {
+  let p = dreamDE();
+  p = { ...p, abroad: markStep(p.abroad, 'DE', 'eligibility', true, NOW) };
+  assert.equal(abroadJourney(p, NOW).stages[2].status, 'in-progress');
+  p = { ...p, abroad: markStep(p.abroad, 'DE', 'budget', true, NOW) };
+  assert.equal(abroadJourney(p, NOW).stages[2].status, 'done');
+  assert.equal(abroadJourney(p, NOW).current.id, 'program');
+  p = { ...p, abroad: markStep(p.abroad, 'DE', 'budget', false, NOW) };
+  assert.equal(abroadJourney(p, NOW).stages[2].status, 'in-progress');
+  assert.equal(p.abroad.journey?.steps?.DE.eligibility.status, 'done');
+  // Automatic steps can't be ticked by hand.
+  assert.equal(markStep(p.abroad, 'DE', 'goal', false, NOW), p.abroad);
+});
+
+test('roadmap: a stage marked done elsewhere shows its steps done; un-ticking one keeps the rest', () => {
+  let p = dreamDE();
+  p = { ...p, abroad: markStage(p.abroad, 'documents', true, NOW) };
+  const r = countryRoadmap(p, 'DE', NOW);
+  assert.ok(r.steps.filter((s) => s.stage === 'documents').every((s) => s.status === 'done'));
+  p = { ...p, abroad: markStep(p.abroad, 'DE', 'lor', false, NOW) };
+  const r2 = countryRoadmap(p, 'DE', NOW);
+  assert.deepEqual(
+    r2.steps.filter((s) => s.stage === 'documents').map((s) => [s.id, s.status === 'done']),
+    [['academic-docs', true], ['sop-cv', true], ['lor', false], ['passport', true]],
+  );
+  assert.equal(abroadJourney(p, NOW).stages.find((s) => s.id === 'documents')?.status, 'in-progress');
+});
+
+test('roadmap: a target date close or missed needs attention (step and stage); marks are kept per country', () => {
+  let p = dreamDE();
+  p = { ...p, abroad: setStepDue(p.abroad, 'DE', 'sop-cv', '2026-10-01', NOW) };
+  const step = countryRoadmap(p, 'DE', NOW).steps.find((s) => s.id === 'sop-cv')!;
+  assert.equal(step.status, 'attention');
+  assert.equal(step.attention?.key, 'sa.attention.dueSoon');
+  assert.equal(abroadJourney(p, NOW).stages.find((s) => s.id === 'documents')?.status, 'attention');
+  p = { ...p, abroad: setStepDue(p.abroad, 'DE', 'sop-cv', '2026-09-01', NOW) };
+  assert.equal(countryRoadmap(p, 'DE', NOW).steps.find((s) => s.id === 'sop-cv')?.attention?.key, 'sa.attention.missed');
+  p = { ...p, abroad: setStepDue(p.abroad, 'DE', 'sop-cv', undefined, NOW) };
+  assert.equal(p.abroad.journey?.steps?.DE['sop-cv'].dueAt, undefined);
+  // Switching to Korea and back keeps Germany's roadmap.
+  p = { ...p, abroad: markStep(p.abroad, 'DE', 'eligibility', true, NOW) };
+  p = { ...p, abroad: setDreamCountry(p.abroad, 'KR') };
+  assert.equal(abroadJourney(p, NOW).stages[2].status, 'upcoming');
+  p = { ...p, abroad: setDreamCountry(p.abroad, 'DE') };
+  assert.equal(countryRoadmap(p, 'DE', NOW).steps.find((s) => s.id === 'eligibility')?.status, 'done');
+  const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify(p)) as UserProfile);
+  assert.equal(loaded.abroad.journey?.steps?.DE.eligibility.status, 'done');
 });
 
 console.log(`\n${passed} passed`);

@@ -14,7 +14,7 @@ import { useBilingual } from '@/components/abroad/useBilingual';
 import { countryHref } from '@/lib/abroad/countries';
 import { actionHref, countrySections, HUB_TABS, SECTION_DEFS, tabProgress, type HubTab, type ResolvedSection } from '@/lib/abroad/sections';
 import { getCountry } from '@/lib/content/countries';
-import { abroadJourney, markStage, setDreamCountry, toggleShortlist } from '@/lib/engine';
+import { abroadJourney, countryRoadmap, markStage, setDreamCountry, toggleShortlist } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
 function CountryHub() {
@@ -48,6 +48,7 @@ function CountryHub() {
   const isDream = a.dreamCountryCode === country.code;
   const shortlisted = (a.preferredCountryCodes ?? []).includes(country.code);
   const journey = abroadJourney(profile);
+  const roadmap = countryRoadmap(profile, country.code);
   const eligibilityDone = isDream && journey.stages.find((s) => s.id === 'eligibility')?.status === 'done';
   const lower = country.code.toLowerCase();
   const list = sections.filter((s) => s.tab === tab);
@@ -175,9 +176,25 @@ function CountryHub() {
           </Panel>
 
           {tab === 'roadmap' && (
-            <p className="text-sm text-muted-foreground">
-              {isDream ? t('sa.hub.roadmapIntro', { country: country.name }) : t('sa.hub.roadmapNotDream', { country: country.name })}
-            </p>
+            <Panel className="space-y-3" data-testid="hub-roadmap">
+              <p className="text-sm text-muted-foreground">
+                {isDream ? t('sa.hub.roadmapIntro', { country: country.name }) : t('sa.hub.roadmapNotDream', { country: country.name })}
+              </p>
+              {isDream && roadmap.current && (
+                <p className="text-sm font-medium">{t('sa.roadmap.summary', { done: roadmap.done, total: roadmap.total, step: text(roadmap.current.title) })}</p>
+              )}
+              {isDream ? (
+                <Button asChild>
+                  <Link href={`${countryHref(country.code)}/roadmap`}>
+                    <Map /> {t('sa.actions.roadmap')}
+                  </Link>
+                </Button>
+              ) : (
+                <Button onClick={buildPlan}>
+                  {t('sa.hub.buildPlan', { country: country.name })} <ArrowRight />
+                </Button>
+              )}
+            </Panel>
           )}
         </div>
 

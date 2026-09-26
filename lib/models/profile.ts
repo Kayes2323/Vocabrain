@@ -71,6 +71,8 @@ export interface StudyAbroadProfile {
 export interface StudentJourneyState {
   /** Stage/step id → the student's own mark. */
   marks: Record<string, JourneyMark>;
+  /** Roadmap steps per country (country code → step id → mark). Kept per country so switching back never loses work. */
+  steps?: Record<string, Record<string, JourneyMark>>;
   updatedAt?: ISODate;
 }
 
