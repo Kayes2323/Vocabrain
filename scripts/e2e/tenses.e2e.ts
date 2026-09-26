@@ -100,7 +100,7 @@ async function main() {
     check('Firestore: lesson t-4 completed', Boolean(f?.lessons?.['t-4']));
     const ps = f?.concepts?.['past-simple'] ?? {};
     check('Firestore: free recall recorded for past-simple', (ps.recallAttempts ?? 0) >= 3 && (ps.recallCorrect ?? 0) >= 2, JSON.stringify(ps).slice(0, 160));
-    const miss = (f?.mistakes ?? []).find((m: { exerciseId: string }) => m.exerciseId === 't-4-r1');
+    const miss = (f?.mistakes ?? []).find((m: { questionId: string }) => m.questionId === 't-4-r1');
     check('Firestore: the mistake is saved with its pattern (past-vs-perfect)', miss?.pattern === 'past-vs-perfect', JSON.stringify(miss ?? {}).slice(0, 160));
     const wrote = (f?.mistakes ?? []).find((m: { questionType: string; answer: string }) => m.questionType === 'write' && /have went/.test(m.answer));
     check('Firestore: the wrong personal sentence is saved as a mistake', Boolean(wrote));
