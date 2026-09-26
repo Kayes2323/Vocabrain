@@ -204,17 +204,23 @@ function DiscoverStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }
                 {t('vocabFoundation.session.next')} <ArrowRight />
               </Button>
             ) : (
-              <Button
-                size="lg"
-                variant="brand"
-                className="h-13 w-full text-base shadow-lg"
-                onClick={async () => {
-                  await brain.save(toWordInfo(fw), SOURCE, fw.context);
-                  setJustSaved(true);
-                }}
-              >
-                <Plus /> {t('vocabFoundation.session.save')}
-              </Button>
+              // Saving is the student's choice: they can move on without it.
+              <div className="grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-2">
+                <Button
+                  size="lg"
+                  variant="brand"
+                  className="h-13 text-base shadow-lg"
+                  onClick={async () => {
+                    await brain.save(toWordInfo(fw), SOURCE, fw.context);
+                    setJustSaved(true);
+                  }}
+                >
+                  <Plus /> {t('vocabFoundation.session.save')}
+                </Button>
+                <Button size="lg" variant="outline" className="h-13 bg-background text-base shadow-lg" onClick={onNext}>
+                  {t('vocabFoundation.session.next')} <ArrowRight />
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -245,8 +251,8 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
   const record = (correct: boolean) => {
     if (recorded.current) return;
     recorded.current = true;
-    if (!brain.has(fw.id)) void brain.save(toWordInfo(fw), SOURCE, fw.context);
-    void brain.recordRecall(fw.id, exercise, correct, answer);
+    // Only words the student chose to save go into the Brain's review schedule.
+    if (brain.has(fw.id)) void brain.recordRecall(fw.id, exercise, correct, answer);
     update((v) => bumpDay(recordSessionResult(v, `recall:${kind}:${fw.id}`, correct, answer), { recalls: 1, recallCorrect: correct ? 1 : 0 }));
   };
 
@@ -413,7 +419,7 @@ function UseStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }) {
     }
     setResult(r);
     setLoading(false);
-    void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct: r.correct, feedback: r.source === 'fallback' ? r.keys : [] });
+    if (brain.has(fw.id)) void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct: r.correct, feedback: r.source === 'fallback' ? r.keys : [] });
     update((v) => bumpDay(recordSessionResult(v, `use:${fw.id}`, r.correct, sentence.trim()), { sentences: 1, sentencesCorrect: r.correct ? 1 : 0 }));
   };
 
