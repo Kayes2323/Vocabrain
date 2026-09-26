@@ -31,7 +31,7 @@ Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
   - Verified official data (with source + date) so far: United Kingdom, Canada, Australia, Germany (living-cost money to show, work while studying, post-study work where confirmed). Other countries and tuition/scholarship/visa details: not verified yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, grammar, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
+Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
 }
 
 export interface AppGuide {
@@ -101,6 +101,21 @@ export const APP_GUIDES: AppGuide[] = [
       'Results: score, per passage, per question type, where to focus, and every answer with an explanation and the evidence sentence.',
     ],
     notes: ['Currently one original Reading practice test (24 questions). Listening, Writing and Speaking tests are planned. Not an official IELTS test.'],
+  },
+  {
+    id: 'ielts-foundation',
+    status: 'AVAILABLE',
+    title: 'IELTS Foundation course (for beginners)',
+    where: 'IELTS → IELTS Foundation (/ielts/foundation); check at /ielts/foundation/diagnostic',
+    steps: [
+      'Start with the Foundation check: 20 short questions (grammar, vocabulary, sentences, a short reading, a little listening). Result: Strong / Developing / Needs Foundation, plus modules to focus on. It is not an IELTS band.',
+      'Lessons are 5–10 minutes: concept → examples → where it is used in IELTS (Writing, Speaking, Reading, Listening) → practice with instant feedback → recall. Available now: Module 1 Sentence Basics (9 lessons).',
+      'Levels: 1 Foundation, 2 IELTS Core, 3 Skill Builder (plan), 4 Practice (tests), 5 Mock. Strong students can skip Level 1.',
+    ],
+    notes: [
+      'Tenses, Parts of Speech, Articles, Subject–Verb Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors, Vocabulary Foundation and the Level 2 modules are listed but their lessons are still being written (shown as "Soon"). Never say they are available.',
+      'Mistake patterns from Foundation practice are in the snapshot; use them to suggest a short revision.',
+    ],
   },
   {
     id: 'starting-point',

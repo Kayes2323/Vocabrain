@@ -1,4 +1,5 @@
 import type { UserProfile } from '@/lib/models';
+import { levelProgress, testedOutOfFoundation } from '@/lib/foundation/progress';
 import { knownSkillCount, overallBand } from './ielts';
 
 /**
@@ -43,9 +44,13 @@ function stageProgress(id: JourneyStageId, profile: UserProfile): number {
   const tasks = totalTasks(profile);
   switch (id) {
     case 'starting-point':
-      return ielts.diagnostic ? 1 : knownSkillCount(ielts.currentBands) / 4;
-    case 'foundation':
-      return Math.min(1, tasks / JOURNEY_RULES.foundationTasks);
+      return ielts.diagnostic || profile.foundation?.diagnostic ? 1 : knownSkillCount(ielts.currentBands) / 4;
+    case 'foundation': {
+      // Daily-plan tasks, or the IELTS Foundation course (a strong diagnostic counts as done).
+      const fp = profile.foundation;
+      const course = fp ? (testedOutOfFoundation(fp) ? 1 : levelProgress(1, fp) / 100) : 0;
+      return Math.min(1, Math.max(tasks / JOURNEY_RULES.foundationTasks, course));
+    }
     case 'skill-building': {
       const perSkill = JOURNEY_RULES.skillBuildingKinds.map((s) =>
         Math.min(1, (study.completedTasks[s] ?? 0) / JOURNEY_RULES.skillBuildingPerSkill),

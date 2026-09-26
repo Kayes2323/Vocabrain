@@ -44,6 +44,13 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
         </div>
         <ProgressBar value={journey.percent} label={t('journey.preparation')} />
       </div>
+      {(journey.current === 'starting-point' || journey.current === 'foundation') && (
+        <Button asChild variant="outline" className="w-full sm:w-auto">
+          <Link href="/ielts/foundation">
+            {t('foundation.homeCta')} <ArrowRight />
+          </Link>
+        </Button>
+      )}
       <Collapsible>
         <CollapsibleTrigger className="group flex w-full items-center justify-between gap-3 text-left text-[15px]">
           <span>{t('home.currentStage', { stage: t(`journey.stages.${journey.current}`) })}</span>

@@ -97,6 +97,36 @@ export interface StudyProgress {
   readPassages?: string[];
 }
 
+/** Areas the Foundation diagnostic checks. */
+export type FoundationArea = 'grammar' | 'vocabulary' | 'sentence' | 'reading' | 'listening';
+export type FoundationLevel = 'strong' | 'developing' | 'needs';
+
+export interface FoundationDiagnosticRecord {
+  completedAt: ISODate;
+  level: FoundationLevel;
+  /** 0-100 overall and per area. */
+  percent: number;
+  areas: Record<FoundationArea, number>;
+  /** Module ids to focus on, most needed first. */
+  focusModules: string[];
+}
+
+export interface FoundationLessonRecord {
+  completedAt: ISODate;
+  /** 0-100, last attempt. */
+  score: number;
+  best: number;
+  attempts: number;
+}
+
+/** IELTS Foundation course progress. Error counts feed Mino's pattern spotting. */
+export interface FoundationProgress {
+  introSeenAt?: ISODate;
+  diagnostic?: FoundationDiagnosticRecord;
+  lessons: Record<string, FoundationLessonRecord>;
+  errors: Record<string, { count: number; lastAt: ISODate }>;
+}
+
 export interface UserProfile {
   userId: ID;
   displayName?: string;
@@ -107,6 +137,7 @@ export interface UserProfile {
   abroad: StudyAbroadProfile;
   vocabulary: VocabularyProgress;
   study: StudyProgress;
+  foundation: FoundationProgress;
   updatedAt: ISODate;
 }
 
@@ -117,6 +148,7 @@ export function emptyProfile(userId: ID): UserProfile {
     abroad: {},
     vocabulary: { savedWordIds: [], words: {} },
     study: { completedTasks: {}, mockTestsCompleted: 0, days: {} },
+    foundation: { lessons: {}, errors: {} },
     updatedAt: new Date().toISOString(),
   };
 }

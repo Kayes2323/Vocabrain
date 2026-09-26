@@ -6,6 +6,7 @@ import { brainSummary, buildDailyPlan, daysUntil, formatBand, ieltsJourney, over
 import { getTranslator } from '@/lib/i18n';
 import { analyseTests, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
+import { levelProgress, nextLesson, topErrors } from '@/lib/foundation/progress';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
 import { listOwnCollection, readOwnDoc } from '../firestore-rest';
@@ -58,6 +59,21 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
   lines.push(`- Test date: ${ielts.testDate ? `${ielts.testDate.slice(0, 10)} (${testIn} days left)` : ielts.testDateUnknown ? 'not booked yet' : 'not given'}. Study time: ${ielts.weeklyStudyHours !== undefined ? `${ielts.weeklyStudyHours} h/week` : 'not given'}.`);
   const journey = ieltsJourney(profile);
   lines.push(`- IELTS journey stage: ${t(`journey.stages.${journey.current}`)} (${journey.percent}% of the journey).`);
+
+  // IELTS Foundation course
+  const fp = profile.foundation;
+  const done = Object.keys(fp.lessons).length;
+  if (!fp.diagnostic && done === 0) {
+    lines.push('- IELTS Foundation: not started (no foundation check, no lessons). Suggest the Foundation check if the student is a beginner or unsure where to start.');
+  } else {
+    const d = fp.diagnostic;
+    const errs = topErrors(fp, 3).map((e) => `${e.tag} ×${e.count}`).join(', ');
+    const nl = nextLesson(fp);
+    lines.push(
+      `- IELTS Foundation: ${d ? `check ${d.completedAt.slice(0, 10)} → ${d.level} (${d.percent}%; ${Object.entries(d.areas).map(([a, p]) => `${a} ${p}%`).join(', ')})` : 'no foundation check yet'}; lessons completed ${done}; Level 1 progress ${levelProgress(1, fp)}%${nl ? `; next lesson "${nl.lesson.title.en}" (${nl.module.title.en})` : ''}.`,
+    );
+    if (errs) lines.push(`- Foundation mistake patterns (counts from real answers): ${errs}. If a pattern repeats, suggest a short revision of that topic.`);
+  }
 
   // Practice tests (deterministic analysis of real answers)
   const analysis = analyseTests(sessions as unknown as TestSession[], getTest);

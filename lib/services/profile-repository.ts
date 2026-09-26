@@ -35,6 +35,12 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       completedTasks: { ...stored.study?.completedTasks },
       days: { ...stored.study?.days },
     },
+    foundation: {
+      ...base.foundation,
+      ...stored.foundation,
+      lessons: { ...stored.foundation?.lessons },
+      errors: { ...stored.foundation?.errors },
+    },
   };
 }
 
