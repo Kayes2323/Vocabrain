@@ -162,8 +162,19 @@ res = await call({ ...msg, message: 'আমার জন্য একটা 14 �
 const plan = await res.json();
 check('plan request uses the smart model', plan.metadata?.tier === 'smart' && plan.metadata?.model === 'gemini-3.5-flash', plan.metadata);
 check('getStudyPlan returns a data-based plan', plan.response.includes('"horizonDays":14') && plan.response.includes('Vocabulary Review') && plan.response.includes('/ielts/plan'), plan.response?.slice(0, 300));
+toolName = 'rememberAboutStudent';
+toolArgs = { category: 'concern', note: 'Freezes in Speaking Part 2 after 30 seconds' };
+res = await call(msg, a.token);
+const mem = await (await realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/users/${a.uid}/mino/memory`, { headers: { Authorization: 'Bearer owner' } })).json();
+check('rememberAboutStudent writes the note as the student', res.status === 200 && JSON.stringify(mem).includes('Freezes in Speaking Part 2'), JSON.stringify(mem).slice(0, 200));
+toolArgs = { category: 'context', note: 'My bkash password is 1234' };
+res = await call(msg, a.token);
+check('sensitive notes are refused', (await res.json()).response.includes('Sensitive information is never stored'));
 toolArgs = null;
 toolName = 'getVocabulary';
+geminiBodies.length = 0;
+await call(msg, a.token);
+check('memory notes appear in the next snapshot', geminiBodies[0].systemInstruction.parts[0].text.includes('[concern] Freezes in Speaking Part 2'));
 
 geminiMode = 'retired';
 res = await call(msg, a.token);

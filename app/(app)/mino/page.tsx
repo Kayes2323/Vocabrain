@@ -5,6 +5,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { ScreenSkeleton, Section } from '@/components/ds';
 import { MinoChat } from '@/components/mino/MinoChat';
 import { MinoContextSummary } from '@/components/mino/MinoContextSummary';
+import { MinoMemoryList } from '@/components/mino/MinoMemoryList';
 import { NextActionList } from '@/components/mino/NextActionList';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { useBrainContext } from '@/components/brain/useBrainContext';
@@ -43,7 +44,10 @@ export default function MinoPage() {
           </Section>
         </div>
         <Section title={t('mino.knows')}>
-          <MinoContextSummary context={context} />
+          <div className="space-y-6">
+            <MinoContextSummary context={context} />
+            <MinoMemoryList />
+          </div>
         </Section>
       </div>
     </div>

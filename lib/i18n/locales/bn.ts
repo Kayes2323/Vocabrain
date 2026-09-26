@@ -294,6 +294,13 @@ export const bn: LocaleDictionary = {
       countries: 'Country Explorer',
       'country-match': 'Country Match',
     },
+    newChat: 'নতুন chat',
+    memory: {
+      title: 'Mino যা মনে রেখেছে',
+      empty: 'এখনো কিছু নেই। তুমি কাজের কিছু বললে (দুশ্চিন্তা, পছন্দ, রুটিন) Mino এখানে ছোট করে লিখে রাখবে।',
+      forget: 'এটা ভুলে যাও',
+      note: 'শুধু তোমার বলা ছোট ছোট note। যেকোনো সময় মুছে দিতে পারো। Chat ৭ দিন রাখা হয়।',
+    },
     askResult: 'আমার {test} {skill} test ({date})-এর result analyse করো। কোথায় নম্বর হারাচ্ছি, কেন, আর এরপর কী practice করব?',
     thinking: 'ভাবছি…',
     errors: {

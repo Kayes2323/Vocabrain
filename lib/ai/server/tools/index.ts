@@ -1,7 +1,7 @@
 import type { ToolDeclaration } from '../../types';
 import { suggestActions } from './actions';
 import { getAppGuide, getIELTSGuide } from './knowledge';
-import { getMinoMemory } from './memory';
+import { rememberAboutStudent } from './memory';
 import { getStudyPlan } from './plan';
 import { getStudentProfile } from './profile';
 import { getQuestionPerformance, getTestHistory, getWeakAreas } from './tests';
@@ -17,7 +17,7 @@ import { getVocabulary } from './vocabulary';
 const TOOLS: MinoTool[] = [
   getStudentProfile,
   getVocabulary,
-  getMinoMemory,
+  rememberAboutStudent,
   getAppGuide,
   getIELTSGuide,
   getTestHistory,

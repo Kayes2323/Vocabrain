@@ -291,6 +291,13 @@ export const en = {
       countries: 'Country Explorer',
       'country-match': 'Country Match',
     },
+    newChat: 'New chat',
+    memory: {
+      title: 'Mino remembers',
+      empty: 'Nothing yet. When you share something useful (a worry, a preference, your schedule), Mino notes it here.',
+      forget: 'Forget this',
+      note: 'Only short notes you shared. Remove any of them at any time. Chats are kept for 7 days.',
+    },
     askResult: 'Analyse my {test} {skill} result from {date}. Where am I losing marks, why, and what should I practise next?',
     thinking: 'Thinking…',
     errors: {

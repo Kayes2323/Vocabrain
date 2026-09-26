@@ -44,6 +44,13 @@ await expect('A submits session', () => setDoc(ts(A.db, ua, 's1'), session(ua, '
 await expect('A edits submitted session', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1', { status: 'submitted', result: { correct: 24, total: 24 } })), false);
 await expect('A reads B test session', () => getDoc(ts(A.db, ub, 's1')), false);
 await expect('A writes B test session', () => setDoc(ts(A.db, ub, 'x'), session(ub, 'x')), false);
+const mino = (db, u, id) => doc(db, 'users', u.uid, 'mino', id);
+await expect('A saves Mino memory', () => setDoc(mino(A.db, ua, 'memory'), { notes: [{ id: 'n1', category: 'concern', text: 'Afraid of Speaking', at: 'x' }], updatedAt: 'x' }), true);
+await expect('A memory over 15 notes', () => setDoc(mino(A.db, ua, 'memory'), { notes: Array.from({ length: 16 }, (_, i) => ({ id: `n${i}` })), updatedAt: 'x' }), false);
+await expect('A saves conversation', () => setDoc(mino(A.db, ua, 'conversation'), { messages: [{ role: 'user', content: 'hi' }], updatedAt: 'x' }), true);
+await expect('A other doc under mino', () => setDoc(mino(A.db, ua, 'secrets'), { x: 1 }), false);
+await expect('A reads B Mino memory', () => getDoc(mino(A.db, ub, 'memory')), false);
+await expect('A writes B Mino memory', () => setDoc(mino(A.db, ub, 'memory'), { notes: [], updatedAt: 'x' }), false);
 await signOut(A.auth);
 await expect('Signed-out reads A profile', () => getDoc(doc(A.db, 'users', ua.uid)), false);
 console.table(results);

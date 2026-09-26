@@ -6,6 +6,7 @@ import { findKnowledge, IELTS_CARDS } from '../lib/ai/server/mino/knowledge/ielt
 import { CREATOR, personaLayer } from '../lib/ai/server/mino/knowledge/persona';
 import { APP_GUIDES, appMapLayer, findGuide } from '../lib/ai/server/mino/knowledge/product';
 import { buildSystemPrompt } from '../lib/ai/server/mino/prompt';
+import { addNote, MEMORY_LIMITS } from '../lib/ai/memory';
 import { IELTS_SECTIONS } from '../lib/navigation';
 
 let passed = 0;
@@ -73,6 +74,18 @@ test('composed prompt stays small and includes every always-on layer', () => {
   for (const marker of ['You are MINO', 'TRUTH RULES', 'APP MAP', 'TOOLS', 'STUDENT SNAPSHOT', 'CURRENT TASK']) assert.ok(prompt.includes(marker), marker);
   assert.ok(prompt.length < 14000, `prompt is ${prompt.length} chars`);
   console.log(`  prompt ≈ ${Math.round(prompt.length / 4)} tokens`);
+});
+
+test('memory notes: trimmed, de-duplicated, capped', () => {
+  let { doc, added } = addNote(null, 'concern', '  Afraid of   Speaking Part 2 ');
+  assert.ok(added);
+  assert.equal(doc.notes[0].text, 'Afraid of Speaking Part 2');
+  ({ doc, added } = addNote(doc, 'concern', 'afraid of speaking part 2!'));
+  assert.equal(added, false, 'near-duplicate skipped');
+  for (let i = 0; i < 20; i++) ({ doc } = addNote(doc, 'context', `note ${i}`));
+  assert.equal(doc.notes.length, MEMORY_LIMITS.notes);
+  assert.equal(doc.notes.at(-1)!.text, 'note 19', 'oldest dropped first');
+  assert.equal(addNote(null, 'goal', 'x'.repeat(500)).doc.notes[0].text.length, MEMORY_LIMITS.noteChars);
 });
 
 console.log(`\n${passed} passed`);

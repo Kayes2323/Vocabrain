@@ -61,3 +61,29 @@ export async function listOwnCollection(uid: string, idToken: string, collection
     ...decodeFields(d.fields ?? {}),
   }));
 }
+
+export function encodeValue(v: unknown): FirestoreValue {
+  if (v === null || v === undefined) return { nullValue: null };
+  if (Array.isArray(v)) return { arrayValue: { values: v.map(encodeValue) } };
+  if (typeof v === 'object') {
+    return { mapValue: { fields: Object.fromEntries(Object.entries(v as object).filter(([, x]) => x !== undefined).map(([k, x]) => [k, encodeValue(x)])) } };
+  }
+  if (typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  return { stringValue: String(v) };
+}
+
+/**
+ * Replaces one document under the student's own users/{uid} tree, as the
+ * student (their token), so the same Security Rules as the app apply.
+ */
+export async function writeOwnDoc(uid: string, idToken: string, subPath: string, data: Record<string, unknown>): Promise<void> {
+  const fields = (encodeValue(data) as { mapValue: { fields: Record<string, FirestoreValue> } }).mapValue.fields;
+  const res = await fetch(`${base()}/users/${encodeURIComponent(uid)}/${subPath}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${idToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields }),
+    signal: AbortSignal.timeout(6000),
+  });
+  if (!res.ok) throw new Error(`firestore write ${res.status}`);
+}

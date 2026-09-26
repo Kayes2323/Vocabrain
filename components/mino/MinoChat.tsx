@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -13,6 +13,8 @@ import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
 import { setPlanMode } from '@/lib/engine';
 import { cn } from '@/lib/utils';
+import { isMinoAction } from '@/lib/ai/actions';
+import { useMinoRepository } from './useMinoRepository';
 
 interface ChatMessage extends AIMessage {
   /** Buttons Mino attached to this reply. */
@@ -34,6 +36,27 @@ export function MinoChat({ context }: { context: MinoContext }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const [pending, setPending] = useState(false);
+  const repo = useMinoRepository();
+  const [loaded, setLoaded] = useState(!repo);
+
+  // Continue the recent conversation (kept for a week) after a refresh or a new visit.
+  useEffect(() => {
+    if (!repo) return setLoaded(true);
+    repo
+      .loadConversation()
+      .then((stored) => setMessages(stored.map((m) => ({ role: m.role, content: m.content, actions: m.actions?.filter(isMinoAction) }))))
+      .catch(() => {})
+      .finally(() => setLoaded(true));
+  }, [repo]);
+
+  const remember = (list: ChatMessage[]) => {
+    if (repo) void repo.saveConversation(list.filter((m) => !m.notice)).catch(() => {});
+  };
+
+  const newChat = () => {
+    setMessages([]);
+    if (repo) void repo.clearConversation().catch(() => {});
+  };
 
   const send = async (text: string, capability?: MinoCapabilityId) => {
     const content = text.trim();
@@ -50,19 +73,19 @@ export function MinoChat({ context }: { context: MinoContext }) {
       tzOffsetMinutes: -new Date().getTimezoneOffset(),
       capability,
     });
-    setMessages((prev) => [
-      ...prev,
-      res.ok
-        ? { role: 'assistant', content: res.response, actions: res.metadata.actions }
-        : { role: 'assistant', content: t(`mino.errors.${res.error}`), notice: true },
-    ]);
+    const reply: ChatMessage = res.ok
+      ? { role: 'assistant', content: res.response, actions: res.metadata.actions }
+      : { role: 'assistant', content: t(`mino.errors.${res.error}`), notice: true };
+    const next = [...history, reply];
+    setMessages(next);
+    if (res.ok) remember(next);
     setPending(false);
   };
 
   // Opened from another screen (/mino?ask=result|plan&…): ask Mino once.
   const asked = useRef(false);
   useEffect(() => {
-    if (asked.current) return;
+    if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
     if (ask !== 'result' && ask !== 'plan') return;
@@ -75,14 +98,16 @@ export function MinoChat({ context }: { context: MinoContext }) {
       send(t('studyPlan.askPrompt', { days: Number(params.get('days')) || 30 }), 'study-planner');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loaded]);
 
   const pickPrompt = (id: MinoPromptId) => {
     const text = t(`mino.prompts.${id}`);
     if (id === 'minimumDay') {
       // Handled without AI: switch today's plan to the 15-minute version.
       updateProfile((p) => setPlanMode(p, 'minimum'));
-      setMessages((prev) => [...prev, { role: 'user', content: text }, { role: 'assistant', content: t('mino.minimumDayReply') }]);
+      const next: ChatMessage[] = [...messages, { role: 'user', content: text }, { role: 'assistant', content: t('mino.minimumDayReply') }];
+      setMessages(next);
+      remember(next);
       return;
     }
     send(text, PROMPT_CAPABILITY[id]);
@@ -90,6 +115,18 @@ export function MinoChat({ context }: { context: MinoContext }) {
 
   return (
     <div className="space-y-4">
+      {messages.length > 0 && (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={newChat}
+            disabled={pending}
+            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs text-muted-foreground hover:bg-muted"
+          >
+            <RotateCcw className="size-3.5" /> {t('mino.newChat')}
+          </button>
+        </div>
+      )}
       {messages.length === 0 ? (
         <div className="flex flex-wrap gap-2">
           {MINO_PROMPT_IDS.map((id) => (

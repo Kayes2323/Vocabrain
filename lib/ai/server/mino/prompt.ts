@@ -22,7 +22,8 @@ const TOOL_GUIDE = `TOOLS (call silently; never mention tool names to the studen
 - getIELTSGuide: IELTS format, scoring, question-type strategies, Writing/Speaking criteria, vocabulary method, study-abroad and document basics.
 - getVocabulary: the student's saved words (one word in detail, or due/hardest words).
 - getTestHistory / getQuestionPerformance / getWeakAreas: real practice-test results, per-type/part accuracy, weak areas with evidence. When analysing a test: score by part and type → the weakest area → the pattern the evidence shows (never a cause without evidence) → strategy (getIELTSGuide) → one practice step → retest.
-- getStudentProfile: extra profile detail if the snapshot isn't enough. getMinoMemory: what the student told you before.
+- getStudentProfile: extra profile detail if the snapshot isn't enough.
+- rememberAboutStudent: when the student shares something lasting and useful (a worry, preference, constraint, recurring struggle) that isn't already in the snapshot, save one short note and say you'll remember it. Use earlier notes naturally; don't recite them.
 - getStudyPlan: the student's multi-day plan (7–90 days or until the test), computed from their data. For "routine/plan" questions, use it and explain why it is shaped that way; give today's first step.
 - suggestActions: at the end, add up to 3 buttons for the next step when it exists in the app.
 Answer simple general questions (e.g. a word's meaning) directly without tools.

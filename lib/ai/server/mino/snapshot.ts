@@ -9,6 +9,7 @@ import { getTest } from '@/lib/ielts/content';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
 import { listOwnCollection, readOwnDoc } from '../firestore-rest';
+import { readMemory } from '../tools/memory';
 
 export interface StudentRef {
   uid: string;
@@ -24,10 +25,11 @@ export function studentNow(tzOffsetMinutes = 360, now = Date.now()): Date {
 
 export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?: number): Promise<string> {
   const now = studentNow(tzOffsetMinutes);
-  const [doc, words, sessions] = await Promise.all([
+  const [doc, words, sessions, memory] = await Promise.all([
     readOwnDoc(student.uid, student.idToken),
     listOwnCollection(student.uid, student.idToken, 'vocabulary').catch(() => []),
     listOwnCollection(student.uid, student.idToken, 'testSessions').catch(() => []),
+    readMemory(student.uid, student.idToken).catch(() => null),
   ]);
 
   const today = now.toISOString().slice(0, 10);
@@ -96,6 +98,10 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
     abroad.preferredCountryCodes?.length && `countries ${abroad.preferredCountryCodes.join(', ')}`,
   ].filter(Boolean);
   lines.push(`- Study abroad: ${abroadBits.length ? abroadBits.join('; ') : 'nothing set yet'}.`);
+
+  // Long-term memory (notes the student shared earlier; they can delete them)
+  const notes = memory?.notes ?? [];
+  lines.push(notes.length ? `- Mino's notes from earlier chats: ${notes.map((n) => `[${n.category}] ${n.text}`).join(' | ')}` : "- Mino's notes: none yet.");
 
   return lines.join('\n');
 }

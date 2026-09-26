@@ -64,10 +64,25 @@ service cloud.firestore {
           && request.resource.data.startedAt == resource.data.startedAt;
       }
 
+      // users/{uid}/mino/{memory|conversation}: Mino's short notes and the
+      // recent chat. Small by design; the student can read and delete both.
+      match /mino/{docId} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && (
+          (docId == 'memory'
+            && request.resource.data.keys().hasOnly(['notes', 'updatedAt'])
+            && request.resource.data.notes is list
+            && request.resource.data.notes.size() <= 15)
+          || (docId == 'conversation'
+            && request.resource.data.keys().hasOnly(['messages', 'updatedAt'])
+            && request.resource.data.messages is list
+            && request.resource.data.messages.size() <= 20));
+      }
+
       // Any future private sub-collection (results, plans, mistakes) stays owner-only.
       // (Collections with their own rules above are excluded so they can't be bypassed.)
       match /{collection}/{docId} {
-        allow read, write: if isOwner(uid) && !(collection in ['vocabulary', 'testSessions']);
+        allow read, write: if isOwner(uid) && !(collection in ['vocabulary', 'testSessions', 'mino']);
       }
     }
 
