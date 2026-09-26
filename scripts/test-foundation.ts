@@ -4,7 +4,8 @@ import {
   CONCEPTS, DIAGNOSTIC_ITEMS, MODULES, adaptiveStart, completeLesson, dailyGoal, diagnosticAreas, findLesson, foundationDailyPlan,
   foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
-  skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation, MAX_MISTAKES, type Exercise,
+  skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
+  canonicalAnswer, fixQuestions, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
@@ -29,7 +30,7 @@ test('all Foundation content validates (incl. 12 Tenses lessons)', () => {
   assert.deepEqual(validateFoundation(), []);
   assert.equal(tenses.lessons.length, 12);
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 8);
+  assert.equal(CONCEPTS.length, 12);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -251,6 +252,72 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
+});
+
+// ---------------------------------------------------------------- parts of speech
+const pos = getModule('parts-of-speech')!;
+const unit = (id: string) => pos.units!.find((u) => u.id === id)!;
+const allEx = pos.lessons.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'practice' ? s.exercises : [])));
+const exById = (id: string) => allEx.find((e) => e.id === id)!;
+const wrongAt = (fp: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(fp, { source: 'x', exercise: exById(id), answer, correct: false, attempt: 1, now: new Date(at) });
+
+test('Parts of Speech: 12 units, 14 written lessons, every exercise grades its own answer', () => {
+  assert.equal(pos.units!.length, 12);
+  assert.equal(pos.lessons.length, 14);
+  for (const e of allEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+  assert.ok(pos.lessons.every((l) => l.steps.some((s) => s.kind === 'identify')), 'every lesson starts with discovery by tagging');
+});
+
+test('tag and spot grading; expected → chosen pairs', () => {
+  const tag = allEx.find((e) => e.type === 'tag')!;
+  assert.equal(grade2(tag, 'nonsense'), false);
+  const spotEx = exById('pv-2-r3');
+  assert.equal(grade2(spotEx, `${(spotEx as { wrong: number }).wrong}:effective`), true);
+  assert.equal(grade2(spotEx, '0:effective'), false, 'tapping the wrong word is wrong');
+  assert.deepEqual(posPairs(exById('pv-2-p3'), 'effectively'), [{ expected: 'adjective', chosen: 'adverb' }]);
+  assert.deepEqual(posPairs(exById('pv-2-p3'), 'effective'), []);
+});
+
+test('patterns: 3 of the same pair in 14 days (or 2 in a row) → open; a passed fix closes it', () => {
+  let fp = empty();
+  fp = wrongAt(fp, 'pv-2-p3', 'effectively', '2026-09-20T10:00:00');
+  assert.equal(posPatterns(fp, NOW).length, 0, 'one mistake is never a pattern');
+  fp = wrongAt(fp, 'pv-2-p1', 'qualifiedly', '2026-09-21T10:00:00');
+  assert.deepEqual(posPatterns(fp, NOW).map((p) => p.pair), ['adjective>adverb'], 'two in a row');
+  fp = wrongAt(fp, 'pv-2-p4', 'badly', '2026-09-22T10:00:00');
+  const [p] = posPatterns(fp, NOW);
+  assert.equal(p.count, 3);
+  assert.match(posSummaryLines(fp, NOW).join('\n'), /chose an adverb where an adjective was needed ×3/);
+  assert.equal(unitStatus(pos, unit('adverb'), fp, NOW), 'review', 'an open pattern puts the unit into review');
+  const qs = fixQuestions(fp, 'adjective>adverb', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => q.type === 'tag' || q.pos === 'adjective' || q.pos === 'adverb'), 'fix stays on the pair');
+  assert.equal(posPatterns(recordFix(fp, 'adjective>adverb', 60, NOW), NOW).length, 1, 'a failed fix keeps it open');
+  const fixed = recordFix(fp, 'adjective>adverb', 100, NOW);
+  assert.equal(posPatterns(fixed, NOW).length, 0);
+  const again = wrongAt(wrongAt(fixed, 'pv-2-p3', 'effectively', '2026-09-26T10:30:00'), 'pv-2-p1', 'qualifiedly', '2026-09-26T10:40:00');
+  assert.equal(posPatterns(again, new Date('2026-09-26T11:00:00')).length, 1, 'it reopens if the mistakes come back');
+  // Old mistakes (older than 14 days) do not count.
+  const old = wrongAt(wrongAt(wrongAt(empty(), 'pv-2-p3', 'effectively', '2026-08-01T10:00:00'), 'pv-2-p1', 'qualifiedly', '2026-08-02T10:00:00'), 'pv-2-p4', 'badly', '2026-08-03T10:00:00');
+  assert.equal(posPatterns(old, NOW).filter((x) => x.count >= 3).length, 0);
+});
+
+test('fix sessions have 5 questions for the main confusions', () => {
+  for (const pair of ['adjective>adverb', 'adverb>adjective', 'noun>verb', 'noun>adjective', 'adjective>noun', 'verb>noun']) {
+    assert.equal(fixQuestions(empty(), pair, NOW).length, 5, pair);
+  }
+});
+
+test('unit status comes from answers: new → learning → mastered; units have their own lesson order', () => {
+  let fp = empty();
+  assert.equal(unitStatus(pos, unit('noun'), fp, NOW), 'new');
+  fp = completeLesson(fp, 'pn-1', 90, NOW);
+  assert.equal(unitStatus(pos, unit('noun'), fp, NOW), 'learning');
+  fp = { ...fp, concepts: { ...fp.concepts, 'pos-noun': { attempts: 10, correct: 9, lastAt: NOW.toISOString(), recallAttempts: 3, recallCorrect: 3, applied: 1, appliedCorrect: 1, srs: { stage: 3, dueAt: '2026-10-05T00:00:00Z', passes: 2 } } } };
+  assert.equal(unitStatus(pos, unit('noun'), fp, NOW), 'mastered');
+  const adj = pos.lessons.find((l) => l.id === 'pa-1')!;
+  assert.equal(lessonState(pos, adj, empty()), 'available', 'the first lesson of every unit is open');
+  assert.equal(lessonState(pos, pos.lessons.find((l) => l.id === 'pa-2')!, empty()), 'locked', 'inside a unit the order is recommended');
 });
 
 const asyncTests: [string, () => Promise<void>][] = [];

@@ -135,3 +135,24 @@ See `docs/TENSES_CURRICULUM.md` for the full 15-stage Tenses map.
   correct), consistency (2+ passed spaced reviews). Shown after each lesson.
 - **Error memory:** Mino-judged sentences that need work are stored as
   mistakes (`questionType: 'write'`, the student's text and Mino's correction).
+
+## v4: Parts of Speech (module 3), phase 1
+
+Route: `/ielts/foundation/parts-of-speech` (units dashboard), `/ielts/foundation/parts-of-speech/<unit>`,
+targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
+
+- **Units.** `Module.units` groups lessons (`Lesson.unit`). 12 units in the recommended order
+  (`content/pos-units.ts`); 14 lessons written: Noun 1–4, Adjective 1–4, Adverb 1–4, Word Forms 1–2.
+  Everything is open; inside a unit, the previous lesson is the recommended step (guide reminder).
+- **Lesson loop.** hook → identify (tag each word's job, no rule yet) → concept → examples → IELTS →
+  mistakes → guided practice → practice without options → mini challenge → own sentence (Mino) → remember.
+- **Question types.** `tag` (tap words, choose jobs), `spot` (tap the wrong word, then fix it),
+  transform (`gap` with `base`). Builders in `content/pos-kit.ts`.
+- **Error pairs.** Exercises carry `pos` (job needed) and `wrongPos` (job of each wrong answer).
+  Mistakes store `pos: [{expected, chosen}]` and `family`. `posPatterns()`: the same pair 3× in 14 days
+  (or 2 in a row) is a pattern; `fixQuestions()` builds a 5-question fix; `recordFix()` at 80%+ closes it.
+- **Status.** `unitStatus()`: new / learning / practising / review / mastered, from concept stats
+  (the four mastery checks), open patterns, failed or overdue reviews. Spaced review reuses the
+  concepts `pos-noun`, `pos-adjective`, `pos-adverb`, `pos-forms`.
+- **Mino.** `posSummaryLines()` adds unit status with accuracy, open patterns with the student's own
+  sentence, and weak word families to the snapshot; product guide `parts-of-speech`; action `parts-of-speech`.

@@ -4,8 +4,8 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
-import { expectedAnswer } from './grade';
-import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module } from './model';
+import { expectedAnswer, posPairs } from './grade';
+import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module, Pos, Unit } from './model';
 
 export const MAX_MISTAKES = 150;
 /** Mistakes on one concept within this window (since its last passed review) that trigger a review. */
@@ -89,12 +89,18 @@ export type LessonState = 'done' | 'skipped' | 'available' | 'locked';
  * module) are done or were skipped after the check. Completed and skipped
  * lessons always stay open for review.
  */
+/** The previous lesson in the module, or in the same unit when the module has units. */
+function defaultPrereqs(module: Module, lesson: Lesson): string[] {
+  const pool = lesson.unit ? module.lessons.filter((l) => l.unit === lesson.unit) : module.lessons;
+  const index = pool.indexOf(lesson);
+  return index > 0 ? [pool[index - 1].id] : [];
+}
+
 export function lessonState(module: Module, lesson: Lesson, fp: FoundationProgress): LessonState {
   if (fp.lessons[lesson.id]) return 'done';
   const skipped = skippedSet(fp);
   if (skipped.has(lesson.id)) return 'skipped';
-  const index = module.lessons.indexOf(lesson);
-  const prereqs = lesson.prerequisites ?? (index > 0 ? [module.lessons[index - 1].id] : []);
+  const prereqs = lesson.prerequisites ?? defaultPrereqs(module, lesson);
   const open = prereqs.every((id) => fp.lessons[id] || skipped.has(id));
   return open || fp.inProgress?.lessonId === lesson.id ? 'available' : 'locked';
 }
@@ -148,7 +154,7 @@ export function stepBeforeLesson(module: Module, lesson: Lesson, fp: FoundationP
   const index = module.lessons.indexOf(lesson);
   const prereqs = lesson.prerequisites ?? (index > 0 ? [module.lessons[index - 1].id] : []);
   const missing = prereqs.find((id) => !fp.lessons[id] && !skipped.has(id));
-  const first = module.lessons.find((l) => lessonState(module, l, fp) === 'available');
+  const first = module.lessons.find((l) => (!lesson.unit || l.unit === lesson.unit) && lessonState(module, l, fp) === 'available');
   return first ?? (missing ? findLesson(missing)?.lesson : undefined);
 }
 
@@ -184,7 +190,7 @@ export function recordAnswer(fp: FoundationProgress, e: AnswerEvent): Foundation
   const c = e.exercise.concept;
   if (c && graded) {
     const prev = fp.concepts[c] ?? { attempts: 0, correct: 0, lastAt: at };
-    const recall = e.exercise.type === 'gap' || e.exercise.type === 'correct';
+    const recall = e.exercise.type === 'gap' || e.exercise.type === 'correct' || (e.exercise.type === 'spot' && !e.exercise.fixOptions);
     next = {
       ...next,
       concepts: {
@@ -201,6 +207,7 @@ export function recordAnswer(fp: FoundationProgress, e: AnswerEvent): Foundation
   }
   if (e.correct === false) {
     const ex = e.exercise;
+    const pairs = posPairs(ex, e.answer);
     const mistake: FoundationMistake = {
       at,
       source: e.source,
@@ -211,6 +218,8 @@ export function recordAnswer(fp: FoundationProgress, e: AnswerEvent): Foundation
       correctAnswer: expectedAnswer(ex).slice(0, 160),
       tag: ex.tag,
       ...(c ? { concept: c } : {}),
+      ...(pairs.length ? { pos: pairs } : {}),
+      ...(ex.family ? { family: ex.family } : {}),
       attempt: e.attempt,
     };
     next = {
@@ -641,7 +650,158 @@ export function foundationSummaryLines(fp: FoundationProgress, now = new Date())
   }
   const t = fp.days[today(now)];
   lines.push(`- Foundation today: ${t ? `${t.lessons} lessons, ${t.questions} questions (${t.correct} correct)` : 'nothing yet'}.`);
+  lines.push(...posSummaryLines(fp, now));
   return lines;
 }
 
 export { LEVELS };
+
+// ---------------------------------------------------------------- parts of speech
+
+export const PATTERN_THRESHOLD = 3;
+export const FIX_QUESTIONS = 5;
+
+export const pairKey = (expected: string, chosen: string) => `${expected}>${chosen}`;
+
+export interface PosPattern {
+  pair: string;
+  expected: Pos;
+  chosen: Pos;
+  count: number;
+  /** The latest mistake with this pair (the student's own sentence). */
+  latest: FoundationMistake;
+}
+
+/**
+ * Open mistake patterns: the same "expected → chosen" pair 3+ times in the
+ * last 14 days (after the last passed fix), or in the last two such mistakes.
+ * One mistake is never a pattern.
+ */
+export function posPatterns(fp: FoundationProgress, now = new Date()): PosPattern[] {
+  const since = now.getTime() - REVIEW_WINDOW_DAYS * 86_400_000;
+  const withPairs = fp.mistakes.filter((m) => m.pos?.length);
+  const found = new Map<string, { count: number; latest: FoundationMistake }>();
+  for (const m of withPairs) {
+    const t = new Date(m.at).getTime();
+    if (t < since) continue;
+    for (const p of m.pos!) {
+      const key = pairKey(p.expected, p.chosen);
+      const fixedAt = fp.posFixes?.[key];
+      if (fixedAt && t <= new Date(fixedAt).getTime()) continue;
+      const cur = found.get(key);
+      found.set(key, { count: (cur?.count ?? 0) + 1, latest: m });
+    }
+  }
+  // Two in a row (the last two mistakes that had a pair) also count.
+  const lastTwo = withPairs.slice(-2);
+  const inRow =
+    lastTwo.length === 2 ? lastTwo[0].pos!.map((p) => pairKey(p.expected, p.chosen)).filter((k) => lastTwo[1].pos!.some((q) => pairKey(q.expected, q.chosen) === k)) : [];
+  return [...found.entries()]
+    .filter(([key, v]) => v.count >= PATTERN_THRESHOLD || (inRow.includes(key) && v.count >= 2))
+    .map(([pair, v]) => {
+      const [expected, chosen] = pair.split('>') as [Pos, Pos];
+      return { pair, expected, chosen, count: v.count, latest: v.latest };
+    })
+    .sort((a, b) => b.count - a.count || b.latest.at.localeCompare(a.latest.at));
+}
+
+const posExercises = () =>
+  MODULES.filter((m) => m.units).flatMap((m) => allExercises(m.lessons)).filter(graded);
+
+/**
+ * A targeted fix: 5 questions on one confusion. First questions where the
+ * wrong job is exactly the one the student keeps choosing, then the reverse
+ * contrast, then any question on the expected job.
+ */
+export function fixQuestions(fp: FoundationProgress, pair: string, now = new Date()): Exercise[] {
+  const [expected, chosen] = pair.split('>');
+  const pool = posExercises();
+  const exact = pool.filter((e) => e.pos === expected && Object.values(e.wrongPos ?? {}).includes(chosen as Pos));
+  const tagged = pool.filter((e) => e.type === 'tag' && e.tokens.some((t) => t.pos === expected) && e.tokens.some((t) => t.pos === chosen));
+  const reverse = pool.filter((e) => e.pos === chosen && Object.values(e.wrongPos ?? {}).includes(expected as Pos));
+  const same = pool.filter((e) => e.pos === expected);
+  const seen = new Set<string>();
+  const out: Exercise[] = [];
+  for (const group of [exact, tagged, reverse, same]) {
+    for (const e of shuffle(group, `${pair}:${today(now)}`)) {
+      if (out.length >= FIX_QUESTIONS) break;
+      if (!seen.has(e.id)) {
+        seen.add(e.id);
+        out.push(e);
+      }
+    }
+  }
+  return shuffle(out, `${pair}:${today(now)}:order`);
+}
+
+/** A passed fix (80%+) closes the pattern; older mistakes with that pair no longer count. */
+export function recordFix(fp: FoundationProgress, pair: string, score: number, now = new Date()): FoundationProgress {
+  const days = bumpDay(fp, now, { reviews: 1 });
+  if (score < PASS_SCORE) return { ...fp, days };
+  return { ...fp, days, posFixes: { ...(fp.posFixes ?? {}), [pair]: now.toISOString() } };
+}
+
+export type UnitStatus = 'new' | 'learning' | 'practising' | 'review' | 'mastered';
+
+export const unitLessons = (module: Module, unit: Unit) => module.lessons.filter((l) => l.unit === unit.id);
+export const unitLessonTotal = (module: Module, unit: Unit) => unitLessons(module, unit).length + (unit.planned?.length ?? 0);
+export const unitLessonsDone = (module: Module, unit: Unit, fp: FoundationProgress) => unitLessons(module, unit).filter((l) => fp.lessons[l.id]).length;
+export function unitProgress(module: Module, unit: Unit, fp: FoundationProgress): number {
+  const total = unitLessonTotal(module, unit);
+  return total ? Math.round((unitLessonsDone(module, unit, fp) / total) * 100) : 0;
+}
+
+/**
+ * Status from real answers, never from opening a lesson:
+ * review = an open mistake pattern on this job, a failed or overdue review;
+ * mastered / practising come from the concept's four mastery checks.
+ */
+export function unitStatus(module: Module, unit: Unit, fp: FoundationProgress, now = new Date()): UnitStatus {
+  const lessons = unitLessons(module, unit);
+  const started = lessons.some((l) => fp.lessons[l.id] || fp.inProgress?.lessonId === l.id);
+  const stats = unit.concept ? fp.concepts[unit.concept] : undefined;
+  if (!started && !stats) return 'new';
+  const patterns = posPatterns(fp, now);
+  const inPattern = unit.pos ? patterns.some((p) => p.expected === unit.pos || p.chosen === unit.pos) : false;
+  const overdue = stats?.srs && new Date(stats.srs.dueAt).getTime() < now.getTime() - 3 * 86_400_000;
+  const failedReview = stats?.lastReviewScore !== undefined && stats.lastReviewScore < PASS_SCORE;
+  const needsReview = unit.concept ? reviewDue(fp, now).some((r) => r.concept === unit.concept) : false;
+  if (inPattern || overdue || failedReview || needsReview) return 'review';
+  const mastery = unit.concept ? conceptMastery(fp, unit.concept) : undefined;
+  if (mastery?.level === 'mastered') return 'mastered';
+  if (mastery?.level === 'practising') return 'practising';
+  return 'learning';
+}
+
+/** The next lesson in a unit: unfinished one in progress, else the first not done. */
+export function unitNextLesson(module: Module, unit: Unit, fp: FoundationProgress): Lesson | undefined {
+  const lessons = unitLessons(module, unit);
+  return lessons.find((l) => fp.inProgress?.lessonId === l.id) ?? lessons.find((l) => !fp.lessons[l.id]);
+}
+
+const withArticle = (w: string) => `${/^[aeiou]/.test(w) ? 'an' : 'a'} ${w}`;
+
+/** Lines for Mino: unit status with accuracy, open patterns with the student's own example, weak word families. */
+export function posSummaryLines(fp: FoundationProgress, now = new Date()): string[] {
+  const module = MODULES.find((m) => m.units);
+  if (!module?.units) return [];
+  const started = module.units.filter((u) => unitStatus(module, u, fp, now) !== 'new');
+  if (started.length === 0) return [];
+  const lines: string[] = [];
+  const unitText = started.map((u) => {
+    const s = u.concept ? fp.concepts[u.concept] : undefined;
+    const acc = s && s.attempts ? ` (${Math.round((s.correct / s.attempts) * 100)}% of ${s.attempts})` : '';
+    return `${u.title.en} ${unitStatus(module, u, fp, now)}${acc}`;
+  });
+  lines.push(`- Parts of Speech: ${started.length}/${module.units.length} units started; ${unitText.join('; ')}.`);
+  for (const p of posPatterns(fp, now).slice(0, 3)) {
+    lines.push(
+      `- Open Parts of Speech pattern: chose ${withArticle(p.chosen)} where ${withArticle(p.expected)} was needed ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
+    );
+  }
+  const since = now.getTime() - 30 * 86_400_000;
+  const families = new Map<string, number>();
+  for (const m of fp.mistakes) if (m.family && new Date(m.at).getTime() >= since) families.set(m.family, (families.get(m.family) ?? 0) + 1);
+  if (families.size) lines.push(`- Word families missed (30 days): ${[...families.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([f, n]) => `${f} ×${n}`).join(', ')}.`);
+  return lines;
+}

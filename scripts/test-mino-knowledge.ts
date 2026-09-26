@@ -1,6 +1,6 @@
 /** Mino knowledge-layer checks (no network). Run: pnpm test:mino-knowledge */
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { findKnowledge, IELTS_CARDS } from '../lib/ai/server/mino/knowledge/ielts';
 import { CREATOR, personaLayer } from '../lib/ai/server/mino/knowledge/persona';
@@ -23,7 +23,18 @@ const test = (name: string, fn: () => void) => {
 
 const pageExists = (route: string) => {
   const base = join(__dirname, '..', 'app', '(app)');
-  return existsSync(join(base, route, 'page.tsx')) || (route === '/' && existsSync(join(base, 'page.tsx')));
+  if (route === '/') return existsSync(join(base, 'page.tsx'));
+  // Walk the segments; a missing folder may be served by a dynamic [param] folder.
+  let dir = base;
+  for (const seg of route.split('/').filter(Boolean)) {
+    if (existsSync(join(dir, seg))) dir = join(dir, seg);
+    else {
+      const dynamic = readdirSync(dir).find((d) => /^\[[^.\]]+\]$/.test(d));
+      if (!dynamic) return false;
+      dir = join(dir, dynamic);
+    }
+  }
+  return existsSync(join(dir, 'page.tsx'));
 };
 
 test('every route in an AVAILABLE guide is a real page', () => {

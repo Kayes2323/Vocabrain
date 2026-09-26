@@ -6,6 +6,7 @@ import { sentenceBasicsLessons } from './sentence-basics';
 import { TENSE_CONCEPTS, tensesLessons } from './tenses';
 import { tensesLessons2 } from './tenses-2';
 import { presentSimpleV2, understandingTime } from './tenses-v2';
+import { POS_CONCEPTS, POS_LESSONS, POS_PLANNED, POS_UNITS } from './pos-units';
 
 export const LEVELS: Level[] = [
   {
@@ -70,21 +71,15 @@ export const MODULES: Module[] = [
     id: 'parts-of-speech',
     level: 1,
     number: 3,
-    title: t('Parts of Speech & Word Forms', 'Parts of Speech ও Word Forms'),
+    title: t('Parts of Speech', 'Parts of Speech'),
     short: t('Parts of Speech', 'Parts of Speech'),
-    description: t('Noun, verb, adjective, adverb — and how words change form.', 'Noun, verb, adjective, adverb — আর শব্দের form কীভাবে বদলায়।'),
+    description: t('Words have different jobs. Learn those jobs, and English becomes easier.', 'প্রতিটা word-এর আলাদা কাজ আছে। কাজগুলো শিখে নাও, English অনেক সহজ হয়ে যাবে।'),
     ieltsLink: t('significant → significantly → significance: word forms affect Lexical Resource and completion answers.', 'significant → significantly → significance: word form Lexical Resource আর completion answer-এ প্রভাব ফেলে।'),
     skill: 'grammar',
-    tags: ['word-form'],
-    lessons: [],
-    planned: [
-      t('Nouns and verbs', 'Noun আর verb'),
-      t('Adjectives and adverbs', 'Adjective আর adverb'),
-      t('Pronouns and determiners', 'Pronoun আর determiner'),
-      t('Prepositions and conjunctions', 'Preposition আর conjunction'),
-      t('Word forms: noun → verb → adjective → adverb', 'Word forms: noun → verb → adjective → adverb'),
-      t('Word forms in IELTS answers', 'IELTS answer-এ word forms'),
-    ],
+    tags: ['word-form', 'part-of-speech', 'countable', 'plural'],
+    units: POS_UNITS,
+    lessons: POS_LESSONS,
+    planned: POS_PLANNED,
   },
   {
     id: 'articles',
@@ -252,7 +247,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

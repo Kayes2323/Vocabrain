@@ -10,7 +10,7 @@ import {
   completeLesson, conceptMastery, expectedAnswer, getConcept, lessonOutcome, nextAction, PASS_SCORE, recordAnswer, recordApplication, saveInProgress,
   type Exercise, type Lesson, type LessonStep, type Module,
 } from '@/lib/foundation';
-import { DiscoverStep, HookStep, MistakeLab, TimelineCards } from './LessonSteps';
+import { DiscoverStep, HookStep, IdentifyStep, MistakeLab, TimelineCards } from './LessonSteps';
 import type { FoundationInProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { ExerciseView, type ExerciseResult } from './ExerciseView';
@@ -234,6 +234,7 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
 
         {step.kind === 'hook' && <HookStep step={step} picked={picks[index] as string | undefined} onPick={(o) => setPicks((p) => ({ ...p, [index]: o }))} />}
         {step.kind === 'discover' && <DiscoverStep step={step} picked={picks[index] as number | undefined} onPick={(i) => setPicks((p) => ({ ...p, [index]: i }))} />}
+        {step.kind === 'identify' && <IdentifyStep step={step} done={picks[index] !== undefined} onDone={() => setPicks((p) => ({ ...p, [index]: 1 }))} />}
         {step.kind === 'mistakes' && <MistakeLab step={step} />}
         {step.kind === 'practice' && step.mode && step.mode !== 'practice' && (
           <p className="text-sm text-muted-foreground">{t(`foundation.lesson.mode.${step.mode}`)}</p>
@@ -320,10 +321,10 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           )}
           <Button
             size="lg"
-            disabled={(step.kind === 'hook' || step.kind === 'discover') && picks[index] === undefined}
+            disabled={(step.kind === 'hook' || step.kind === 'discover' || step.kind === 'identify') && picks[index] === undefined}
             onClick={() => (last ? finish() : goTo(index + 1))}
           >
-            {(step.kind === 'hook' || step.kind === 'discover') && picks[index] === undefined
+            {(step.kind === 'hook' || step.kind === 'discover' || step.kind === 'identify') && picks[index] === undefined
               ? t('foundation.lesson.pickFirst')
               : last
                 ? t('foundation.lesson.complete')

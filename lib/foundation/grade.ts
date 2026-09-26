@@ -1,4 +1,4 @@
-import type { Exercise } from './model';
+import type { Exercise, Pos, SpotExercise } from './model';
 
 /** Case-, space- and final-punctuation-insensitive; curly quotes count as straight. */
 export function normaliseAnswer(s: string): string {
@@ -43,7 +43,63 @@ export function gradeExercise(ex: Exercise, answer: string | undefined): boolean
       return ex.accepted.some((x) => normaliseAnswer(x) === a);
     case 'order':
       return [ex.answer, ...(ex.alsoAccepted ?? [])].some((x) => normaliseAnswer(x) === a);
+    case 'tag': {
+      const tags = parseTags(answer);
+      return ex.tokens.every((tk, i) => !tk.pos || tags[i] === tk.pos);
+    }
+    case 'spot': {
+      const { index, fix } = parseSpot(answer);
+      return index === ex.wrong && ex.accepted.some((x) => normaliseAnswer(x) === normaliseAnswer(fix));
+    }
   }
+}
+
+/** Tag answers are "index=pos|index=pos". */
+export function parseTags(answer: string): Record<number, Pos> {
+  const out: Record<number, Pos> = {};
+  for (const part of answer.split('|')) {
+    const [i, pos] = part.split('=');
+    if (i !== undefined && pos) out[Number(i)] = pos as Pos;
+  }
+  return out;
+}
+export const formatTags = (tags: Record<number, Pos>) =>
+  Object.entries(tags)
+    .map(([i, p]) => `${i}=${p}`)
+    .join('|');
+
+/** Spot answers are "index:fix". */
+export function parseSpot(answer: string): { index: number; fix: string } {
+  const at = answer.indexOf(':');
+  return at < 0 ? { index: -1, fix: '' } : { index: Number(answer.slice(0, at)), fix: answer.slice(at + 1) };
+}
+
+/** An answer string that grades as correct (content checks and tests). */
+export function canonicalAnswer(ex: Exercise): string {
+  if (ex.type === 'tag') return formatTags(Object.fromEntries(ex.tokens.flatMap((tk, i) => (tk.pos ? [[i, tk.pos]] : []))));
+  if (ex.type === 'spot') return `${ex.wrong}:${ex.accepted[0]}`;
+  return expectedAnswer(ex);
+}
+
+/** The sentence with the wrong word replaced (keeps the original word's final punctuation). */
+export function spotCorrected(ex: SpotExercise, fix = ex.accepted[0]): string {
+  const punct = ex.words[ex.wrong].match(/[.,;:!?]+$/)?.[0] ?? '';
+  return ex.words.map((w, i) => (i === ex.wrong ? `${fix}${/[.,;:!?]$/.test(fix) ? '' : punct}` : w)).join(' ');
+}
+
+/**
+ * Parts of Speech pairs from a wrong answer: the job expected and the job the
+ * student chose. Empty when the content does not say (or the answer was right).
+ */
+export function posPairs(ex: Exercise, answer: string): { expected: Pos; chosen: Pos }[] {
+  if (ex.type === 'tag') {
+    const tags = parseTags(answer);
+    return ex.tokens.flatMap((tk, i) => (tk.pos && tags[i] && tags[i] !== tk.pos ? [{ expected: tk.pos, chosen: tags[i] }] : []));
+  }
+  if (!ex.pos || !ex.wrongPos) return [];
+  const key = ex.type === 'choice' ? answer : ex.type === 'spot' ? normaliseAnswer(parseSpot(answer).fix) : normaliseAnswer(answer);
+  const chosen = ex.wrongPos[key];
+  return chosen && chosen !== ex.pos ? [{ expected: ex.pos, chosen }] : [];
 }
 
 /** The answer to show after checking. */
@@ -55,6 +111,10 @@ export function expectedAnswer(ex: Exercise): string {
     case 'gap':
     case 'correct':
       return ex.accepted[0];
+    case 'tag':
+      return ex.tokens.flatMap((tk) => (tk.pos ? [`${tk.w.replace(/[.,;:!?]+$/, '')}: ${tk.pos}`] : [])).join(' · ');
+    case 'spot':
+      return spotCorrected(ex);
     case 'write':
       return ex.model;
   }

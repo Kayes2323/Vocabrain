@@ -6,9 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { canQuiz, lessonOutcome, lessonState, moduleProgress, nextLesson, stepBeforeLesson, type Module } from '@/lib/foundation';
+import { UnitsDashboard } from './UnitsDashboard';
 import { useFoundation, useText } from './useFoundation';
 
 export function ModuleView({ module }: { module: Module }) {
+  if (module.units) return <UnitsDashboard module={module} />;
+  return <LessonsView module={module} />;
+}
+
+function LessonsView({ module }: { module: Module }) {
   const { t } = useLocale();
   const text = useText();
   const { fp } = useFoundation();

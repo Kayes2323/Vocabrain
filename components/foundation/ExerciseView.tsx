@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { foundationFeedback } from '@/lib/ai/client';
 import type { FoundationFeedback } from '@/lib/ai/server/assess/foundation';
-import { expectedAnswer, gradeExercise, normaliseAnswer, shuffledWords, type Exercise, type L } from '@/lib/foundation';
+import { expectedAnswer, formatTags, gradeExercise, normaliseAnswer, parseSpot, parseTags, shuffledWords, type Exercise, type L, type Pos } from '@/lib/foundation';
+import { TagBoard } from './TagBoard';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
 
@@ -26,6 +27,7 @@ export interface ExerciseResult {
 function whyWrong(exercise: Exercise, answer: string): L | undefined {
   if (exercise.type === 'choice') return exercise.why?.[answer];
   if (exercise.type === 'gap' || exercise.type === 'correct') return exercise.why?.[normaliseAnswer(answer)];
+  if (exercise.type === 'spot' && parseSpot(answer).index !== exercise.wrong) return undefined;
   return undefined;
 }
 
@@ -65,11 +67,30 @@ export function ExerciseView({
   const text = useText();
   const [answer, setAnswer] = useState(initial?.answer ?? (exercise.type === 'correct' ? (exercise.sentence ?? '') : ''));
   const [picked, setPicked] = useState<number[]>([]);
+  const [tags, setTags] = useState<Record<number, Pos>>(() => (exercise.type === 'tag' && initial ? parseTags(initial.answer) : {}));
+  const [spotAt, setSpotAt] = useState<number | null>(() => (exercise.type === 'spot' && initial ? parseSpot(initial.answer).index : null));
+  const [fix, setFix] = useState(() => (exercise.type === 'spot' && initial ? parseSpot(initial.answer).fix : ''));
   const [checked, setChecked] = useState<ExerciseResult | null>(initial ?? null);
   const words = useMemo(() => (exercise.type === 'order' ? shuffledWords(exercise.id, exercise.answer) : []), [exercise]);
 
-  const value = exercise.type === 'order' ? (initial && picked.length === 0 ? initial.answer : picked.map((i) => words[i]).join(' ')) : answer;
-  const ready = exercise.type === 'order' ? picked.length === words.length : value.trim().length > 0;
+  const value =
+    exercise.type === 'order'
+      ? initial && picked.length === 0
+        ? initial.answer
+        : picked.map((i) => words[i]).join(' ')
+      : exercise.type === 'tag'
+        ? formatTags(tags)
+        : exercise.type === 'spot'
+          ? `${spotAt ?? -1}:${fix}`
+          : answer;
+  const ready =
+    exercise.type === 'order'
+      ? picked.length === words.length
+      : exercise.type === 'tag'
+        ? exercise.tokens.every((tk, i) => !tk.pos || tags[i])
+        : exercise.type === 'spot'
+          ? spotAt !== null && fix.trim().length > 0
+          : value.trim().length > 0;
 
   const check = () => {
     const result = { answer: value, correct: gradeExercise(exercise, value) };
@@ -120,6 +141,93 @@ export function ExerciseView({
               </button>
             );
           })}
+        </div>
+      )}
+
+      {exercise.type === 'gap' && exercise.base && (
+        <p className="text-sm text-muted-foreground">
+          <span className="rounded-md bg-brand-soft px-2 py-1 font-semibold text-foreground" lang="en">
+            {exercise.base}
+          </span>{' '}
+          → {t('foundation.lesson.rightForm')}
+        </p>
+      )}
+
+      {exercise.type === 'tag' && (
+        <TagBoard
+          tokens={exercise.tokens}
+          choices={exercise.choices}
+          mode="exercise"
+          tags={tags}
+          onTag={(i, p) => setTags((cur) => ({ ...cur, [i]: p }))}
+          result={checked ? Boolean(checked.correct) : undefined}
+        />
+      )}
+
+      {exercise.type === 'spot' && (
+        <div className="space-y-3">
+          <p className="flex flex-wrap gap-x-1 gap-y-1.5 rounded-2xl border bg-card px-3 py-3 text-lg leading-relaxed" lang="en">
+            {exercise.words.map((w, i) => {
+              const chosen = spotAt === i;
+              const actual = locked && i === exercise.wrong;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  disabled={locked}
+                  onClick={() => {
+                    setSpotAt(i);
+                    setFix('');
+                  }}
+                  aria-pressed={chosen}
+                  className={cn(
+                    'rounded-md px-1 transition-colors',
+                    !locked && 'hover:bg-muted',
+                    chosen && !locked && 'bg-destructive/10 text-destructive line-through decoration-destructive/60',
+                    locked && chosen && i !== exercise.wrong && 'bg-muted',
+                    actual && 'bg-destructive/10 line-through decoration-destructive/60',
+                  )}
+                >
+                  {w}
+                </button>
+              );
+            })}
+          </p>
+          {spotAt !== null && !locked && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">{t('foundation.lesson.fixIt', { word: exercise.words[spotAt].replace(/[.,;:!?]+$/, '') })}</p>
+              {exercise.fixOptions ? (
+                <div role="radiogroup" className="grid gap-2 sm:grid-cols-3">
+                  {exercise.fixOptions.map((o) => (
+                    <button
+                      key={o}
+                      type="button"
+                      role="radio"
+                      aria-checked={fix === o}
+                      onClick={() => setFix(o)}
+                      lang="en"
+                      className={cn('min-h-11 rounded-xl border bg-card px-3 text-left transition-colors', fix === o ? 'border-brand ring-1 ring-brand' : 'hover:border-foreground/20')}
+                    >
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <Input
+                  value={fix}
+                  onChange={(e) => setFix(e.target.value)}
+                  placeholder={t('foundation.lesson.typeHere')}
+                  aria-label={t('foundation.lesson.typeHere')}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  lang="en"
+                  className="h-12 text-base"
+                  onKeyDown={(e) => e.key === 'Enter' && ready && check()}
+                />
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -293,12 +401,15 @@ export function ExerciseView({
           </p>
           {!checked.correct && (
             <div className="space-y-1" lang="en">
-              {exercise.type !== 'choice' && checked.answer && (
+              {exercise.type !== 'choice' && exercise.type !== 'tag' && exercise.type !== 'spot' && checked.answer && (
                 <p className="text-muted-foreground">
                   ✗ <span className="line-through decoration-destructive/60">{checked.answer}</span>
                 </p>
               )}
               <p className="font-medium">✓ {expectedAnswer(exercise)}</p>
+              {exercise.type === 'spot' && parseSpot(checked.answer).index !== exercise.wrong && (
+                <p className="text-muted-foreground">{t('foundation.lesson.spotWrongWord', { word: exercise.words[exercise.wrong].replace(/[.,;:!?]+$/, '') })}</p>
+              )}
             </div>
           )}
           {!checked.correct && whyWrong(exercise, checked.answer) && (

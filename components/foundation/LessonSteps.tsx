@@ -5,7 +5,8 @@ import { Check, Lightbulb, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import type { LessonStep, TimePicture } from '@/lib/foundation';
+import type { LessonStep, Pos, TimePicture } from '@/lib/foundation';
+import { TagBoard } from './TagBoard';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
 
@@ -189,6 +190,39 @@ export function TimelineCards({ items }: { items: NonNullable<Step<'concept'>['t
           </div>
         </Panel>
       ))}
+    </div>
+  );
+}
+
+/** Identify: tag each word's job before any rule is shown. Each tag is checked at once; the pattern appears at the end. */
+export function IdentifyStep({ step, done, onDone }: { step: Extract<LessonStep, { kind: 'identify' }>; done: boolean; onDone: () => void }) {
+  const text = useText();
+  const [tags, setTags] = useState<Record<number, Pos>>(() => (done ? Object.fromEntries(step.tokens.flatMap((tk, i) => (tk.pos ? [[i, tk.pos]] : []))) : {}));
+  const total = step.tokens.filter((tk) => tk.pos).length;
+  const right = step.tokens.filter((tk, i) => tk.pos && tags[i] === tk.pos).length;
+  const complete = Object.keys(tags).length === total;
+  return (
+    <div className="space-y-4">
+      <p className="text-[15px] text-muted-foreground">{text(step.question)}</p>
+      <TagBoard
+        tokens={step.tokens}
+        choices={step.choices}
+        mode="discover"
+        tags={tags}
+        onTag={(i, p) => {
+          const next = { ...tags, [i]: p };
+          setTags(next);
+          if (Object.keys(next).length === total) onDone();
+        }}
+      />
+      {complete && (
+        <div role="status" className="space-y-1 rounded-xl bg-brand-soft p-4 text-[15px] animate-in fade-in slide-in-from-bottom-1">
+          <p className="font-semibold tabular-nums">
+            {right}/{total}
+          </p>
+          <p>{text(step.pattern)}</p>
+        </div>
+      )}
     </div>
   );
 }

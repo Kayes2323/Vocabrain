@@ -140,6 +140,10 @@ export interface FoundationMistake {
   tag: string;
   /** Finer concept (present-perfect…), when known. */
   concept?: string;
+  /** Parts of Speech: the job the answer needed and the job the student chose (one per word for tagging). */
+  pos?: { expected: string; chosen: string }[];
+  /** Word family of the answer, when known. */
+  family?: string;
   /** Attempt number of this lesson/session. */
   attempt: number;
 }
@@ -194,6 +198,8 @@ export interface FoundationProgress {
   mistakes: FoundationMistake[];
   days: Record<string, FoundationDay>;
   inProgress?: FoundationInProgress;
+  /** Parts of Speech mistake patterns ("adjective>adverb") fixed in a targeted session, and when. */
+  posFixes?: Record<string, ISODate>;
 }
 
 /** One local day of Vocabulary Foundation work (YYYY-MM-DD). */

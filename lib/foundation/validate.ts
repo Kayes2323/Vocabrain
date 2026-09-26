@@ -1,6 +1,6 @@
 import { CONCEPTS, MODULES } from './content';
 import { DIAGNOSTIC_ITEMS } from './diagnostic';
-import { gradeExercise, expectedAnswer, normaliseAnswer } from './grade';
+import { canonicalAnswer, gradeExercise, normaliseAnswer } from './grade';
 import type { Exercise, L, Lesson } from './model';
 
 const filled = (l: L | undefined) => Boolean(l && l.en.trim() && l.bn.trim());
@@ -12,7 +12,25 @@ function checkExercise(ex: Exercise, where: string, errors: string[]) {
   if (ex.type === 'gap' && !ex.sentence?.includes('___')) errors.push(`${at}: gap sentence needs ___`);
   if (ex.type === 'order' && ex.answer.split(/\s+/).length < 3) errors.push(`${at}: order needs 3+ words`);
   if (ex.type === 'write' && ex.checklist.length === 0) errors.push(`${at}: write needs a checklist`);
-  if (ex.type !== 'write' && gradeExercise(ex, expectedAnswer(ex)) !== true) errors.push(`${at}: its own answer does not grade as correct`);
+  if (ex.type !== 'write' && gradeExercise(ex, canonicalAnswer(ex)) !== true) errors.push(`${at}: its own answer does not grade as correct`);
+  if (ex.type === 'tag') {
+    if (!ex.tokens.some((t) => t.pos)) errors.push(`${at}: tag needs at least one word to tag`);
+    for (const t of ex.tokens) if (t.pos && !ex.choices.includes(t.pos)) errors.push(`${at}: "${t.w}" job ${t.pos} is not a choice`);
+  }
+  if (ex.type === 'spot') {
+    if (!ex.words[ex.wrong]) errors.push(`${at}: spot wrong index out of range`);
+    if (ex.fixOptions && !ex.fixOptions.includes(ex.accepted[0])) errors.push(`${at}: spot fix options must include the answer`);
+    if (ex.accepted.some((a) => normaliseAnswer(a) === normaliseAnswer(ex.words[ex.wrong]))) errors.push(`${at}: spot fix equals the wrong word`);
+  }
+  if (ex.wrongPos) {
+    if (!ex.pos) errors.push(`${at}: wrongPos needs pos`);
+    for (const [k, p] of Object.entries(ex.wrongPos)) {
+      if (p === ex.pos) errors.push(`${at}: wrongPos "${k}" has the same job as the answer`);
+      if (ex.type === 'choice' && (!ex.options.includes(k) || k === ex.answer)) errors.push(`${at}: wrongPos key "${k}" is not a wrong option`);
+      if (ex.type === 'spot' && ex.fixOptions && !ex.fixOptions.includes(k)) errors.push(`${at}: wrongPos key "${k}" is not a fix option`);
+      if ((ex.type === 'gap' || ex.type === 'correct') && normaliseAnswer(k) !== k.toLowerCase().trim()) errors.push(`${at}: wrongPos key "${k}" must be normalised`);
+    }
+  }
   if (ex.concept && !CONCEPTS.some((c) => c.id === ex.concept)) errors.push(`${at}: unknown concept ${ex.concept}`);
   if ((ex.type === 'choice' || ex.type === 'gap' || ex.type === 'correct') && ex.why) {
     for (const [wrong, reason] of Object.entries(ex.why)) {
@@ -46,7 +64,8 @@ export function validateLesson(lesson: Lesson, errors: string[]) {
 function validateV2(lesson: Lesson, errors: string[]) {
   const at = (m: string) => errors.push(`${lesson.id} (v2): ${m}`);
   const kinds = lesson.steps.map((s) => s.kind);
-  for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'practice', 'recall'] as const) if (!kinds.includes(k)) at(`missing ${k}`);
+  for (const k of ['hook', 'concept', 'examples', 'ielts', 'mistakes', 'practice', 'recall'] as const) if (!kinds.includes(k)) at(`missing ${k}`);
+  if (!kinds.includes('discover') && !kinds.includes('identify')) at('missing discover (or identify)');
   if (kinds[0] !== 'hook') at('must start with the hook (student answers first)');
   for (const step of lesson.steps) {
     if (step.kind === 'hook') {
@@ -59,13 +78,18 @@ function validateV2(lesson: Lesson, errors: string[]) {
       if (!step.options[step.answer] || !filled(step.pattern)) at('discover needs a valid answer and a pattern');
     }
     if (step.kind === 'mistakes' && step.items.length < 3) at('mistake lab needs 3+ items');
+    if (step.kind === 'identify') {
+      if (step.tokens.filter((t) => t.pos).length < 3) at('identify needs 3+ words to tag');
+      for (const t of step.tokens) if (t.pos && !step.choices.includes(t.pos)) at(`identify: ${t.w} job not a choice`);
+      if (!filled(step.question) || !filled(step.pattern)) at('identify needs a question and a pattern');
+    }
   }
   const practice = lesson.steps.filter((s): s is Extract<Lesson['steps'][number], { kind: 'practice' }> => s.kind === 'practice');
   const byMode = (m: string) => practice.filter((s) => (s.mode ?? 'practice') === m).flatMap((s) => s.exercises);
   if (byMode('practice').length < 4) at('needs 4+ practice questions');
   const recall = byMode('recall');
   if (recall.length < 3) at('needs 3+ active recall questions');
-  if (recall.some((e) => e.type === 'choice' || e.type === 'order')) at('active recall must have no options');
+  if (recall.some((e) => e.type === 'choice' || e.type === 'order' || e.type === 'tag' || (e.type === 'spot' && e.fixOptions))) at('active recall must have no options');
   const personal = byMode('personal');
   if (!personal.some((e) => e.type === 'write' && e.mino)) at('needs a personal-use task with Mino feedback');
   if (lesson.concept && [...byMode('practice'), ...recall].some((e) => e.concept && e.concept !== lesson.concept && e.tag === 'tense' && lesson.concept !== 'time')) at('practice should stay on the lesson concept');

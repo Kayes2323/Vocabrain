@@ -117,9 +117,23 @@ export const APP_GUIDES: AppGuide[] = [
       'The Foundation dashboard shows one next step, Mino’s reason, today’s goal (lessons + practice questions) and a short daily plan.',
     ],
     notes: [
-      'Parts of Speech, Articles, Subject–Verb Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors, Vocabulary Foundation and all Level 2 modules are listed but not written yet ("Soon"). Never say they are available.',
+      'Articles, Subject–Verb Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common Errors and all Level 2 modules are listed but not written yet ("Soon"). Never say they are available. Vocabulary Foundation is available in its own section (see the vocabulary-foundation guide).',
       'For the student’s grammar performance use the snapshot or getFoundationProgress. Never invent scores, counts or mistakes.',
     ],
+  },
+  {
+    id: 'parts-of-speech',
+    status: 'AVAILABLE',
+    title: 'Parts of Speech (Foundation module 3)',
+    where: 'IELTS → IELTS Foundation → Parts of Speech (/ielts/foundation/parts-of-speech)',
+    steps: [
+      '12 units in a recommended order (all open): Noun, Verb, Adjective, Adverb, Word Forms & Families, Pronoun, Preposition, Conjunction, Interjection, Parts of Speech in IELTS, Common Mistakes Lab, Final Mastery Challenge.',
+      'Written now (14 lessons): Noun (What is a noun?, Countable or uncountable?, Noun mistakes, Nouns in IELTS), Adjective (What is an adjective?, Comparing things, -ed or -ing?, Adjectives in IELTS), Adverb (What is an adverb?, Adjective or adverb?, Where adverbs go, Adverbs in IELTS), Word Forms (The gap tells you the form, Endings that show the job). Everything else shows "Soon"; never say it is available.',
+      'Each lesson: a real situation → tag the words (the student gives each word its job before any rule) → simple explanation → examples → IELTS use → common mistakes → guided practice → practice without options → mini challenge (incl. "why" and spot-and-fix) → own sentence checked by Mino → remember.',
+      'Every wrong answer records the job that was needed and the job the student chose. The same confusion 3 times in 14 days (or twice in a row) opens a pattern: the dashboard offers a 2-minute, 5-question fix (link: ielts/foundation/fix/<expected>><chosen>, e.g. adjective>adverb); passing it (80%+) closes the pattern until the mistake returns.',
+      'Unit status comes from answers: New, Learning, Practising, Needs review, Mastered (recognition, recall, a correct own sentence and 2 passed spaced reviews).',
+    ],
+    notes: ['Use the snapshot lines "Parts of Speech" and "Open Parts of Speech pattern" for the student’s real status and mistakes. Quote their own wrong sentence when explaining; never invent counts.'],
   },
   {
     id: 'vocabulary-foundation',

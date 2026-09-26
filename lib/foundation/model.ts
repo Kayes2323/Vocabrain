@@ -31,7 +31,13 @@ export type ErrorTag =
   | 'vocabulary'
   | 'collocation'
   | 'reading'
-  | 'listening';
+  | 'listening'
+  | 'part-of-speech'
+  | 'countable';
+
+/** The job a word does in a sentence. Mistakes record the job expected and the job chosen. */
+export type Pos = 'noun' | 'pronoun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'conjunction' | 'interjection' | 'determiner';
+export const POS: Pos[] = ['noun', 'pronoun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction', 'interjection', 'determiner'];
 
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
@@ -46,6 +52,12 @@ interface ExerciseBase {
   tag: ErrorTag;
   /** Finer concept this question checks (e.g. "present-perfect"); feeds review. */
   concept?: string;
+  /** Parts of Speech: the job the right answer does… */
+  pos?: Pos;
+  /** …and the job each wrong answer does (keyed by option, or by the normalised typed answer). */
+  wrongPos?: Record<string, Pos>;
+  /** Word family the answer belongs to (e.g. "develop"), so weak families come back in reviews. */
+  family?: string;
 }
 
 /** Pick one option. Answers are option texts. */
@@ -61,6 +73,8 @@ export interface ChoiceExercise extends ExerciseBase {
 export interface GapExercise extends ExerciseBase {
   type: 'gap';
   accepted: string[];
+  /** Transform: the word to change into the right form (shown as "success →"). */
+  base?: string;
   /** Why a common wrong answer is wrong, keyed by that answer (normalised). */
   why?: Record<string, L>;
 }
@@ -81,6 +95,30 @@ export interface CorrectExercise extends ExerciseBase {
   why?: Record<string, L>;
 }
 
+/**
+ * Tag the words: the student taps each marked word and picks its job.
+ * Correct only when every marked word is tagged right. Answer: "i=pos|i=pos".
+ */
+export interface TagExercise extends ExerciseBase {
+  type: 'tag';
+  tokens: { w: string; pos?: Pos }[];
+  choices: Pos[];
+}
+
+/**
+ * Spot and fix: tap the word that breaks the sentence, then fix it (pick from
+ * `fixOptions`, or type when there are none). Answer: "index:fix".
+ */
+export interface SpotExercise extends ExerciseBase {
+  type: 'spot';
+  /** The sentence, one entry per tappable word (punctuation stays on its word). */
+  words: string[];
+  /** Index of the wrong word. */
+  wrong: number;
+  accepted: string[];
+  fixOptions?: string[];
+}
+
 /** Free production: the student writes their own sentence and compares with a model. Not auto-graded. */
 export interface WriteExercise extends ExerciseBase {
   type: 'write';
@@ -96,7 +134,7 @@ export interface WriteExercise extends ExerciseBase {
   checklist: L[];
 }
 
-export type Exercise = ChoiceExercise | GapExercise | OrderExercise | CorrectExercise | WriteExercise;
+export type Exercise = ChoiceExercise | GapExercise | OrderExercise | CorrectExercise | TagExercise | SpotExercise | WriteExercise;
 
 /** The time picture a sentence has; drawn as a small timeline. */
 export type TimePicture = 'finished' | 'now' | 'habit' | 'past-to-now' | 'future' | 'earlier-past';
@@ -124,6 +162,8 @@ export type LessonStep =
       answer: number;
       pattern: L;
     }
+  /** 3b. Identify: tap the words and give each its job, before any rule is shown. Not graded. */
+  | { kind: 'identify'; title: L; question: L; tokens: { w: string; pos?: Pos }[]; choices: Pos[]; pattern: L }
   /** 4. Explain (what is it?). Optional timeline cards make time visible. */
   | { kind: 'concept'; title: L; body: L; points?: L[]; timeline?: { sentence: string; picture: TimePicture; label: L }[] }
   /** 5. Real life / examples (how do I use it?). */
@@ -151,7 +191,9 @@ export interface Lesson {
   format?: 'v2';
   /** The concept this lesson teaches; its concept step is reused for review. */
   concept?: string;
-  /** Lessons that should come first (defaults to the previous lesson in the module). */
+  /** The unit this lesson belongs to (modules with units, e.g. Parts of Speech). */
+  unit?: string;
+  /** Lessons that should come first (defaults to the previous lesson in the module, or in the unit). */
   prerequisites?: string[];
   steps: LessonStep[];
 }
@@ -162,6 +204,26 @@ export interface Concept {
   title: L;
   lessonId: string;
   tag: ErrorTag;
+}
+
+/** A group of lessons inside a module (e.g. "Adverb" inside Parts of Speech). */
+export interface Unit {
+  id: string;
+  title: L;
+  /** One line: the job, in plain words. */
+  tagline: L;
+  group: 'jobs' | 'skills' | 'together';
+  /** Short text on the icon tile (e.g. "N", "Av"). */
+  mark: string;
+  /** The part of speech this unit teaches, for mistake patterns and status. */
+  pos?: Pos;
+  /** Review concept of the unit (all its exercises use it). */
+  concept?: string;
+  minutes: number;
+  /** Lessons not written yet. */
+  planned?: L[];
+  /** Where the topic continues in depth. */
+  continues?: { moduleId: string; text: L };
 }
 
 export interface Module {
@@ -179,6 +241,8 @@ export interface Module {
   lessons: Lesson[];
   /** The module lives in its own experience (e.g. Vocabulary Foundation). */
   href?: string;
+  /** Lessons grouped into units, in the recommended order. */
+  units?: Unit[];
   /** Short card title, when the full title is long. */
   short?: L;
   /** Lessons not written yet: shown as "coming soon" and counted in progress totals. */
