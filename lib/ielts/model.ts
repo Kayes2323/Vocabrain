@@ -129,6 +129,8 @@ export interface WritingTask {
   task: 1 | 2;
   prompt: string;
   image?: { src: string; alt: string };
+  /** Task 1 data shown as a table (charts can be added as `image`). */
+  data?: { caption: string; headers: string[]; rows: string[][]; note?: string };
   minWords: number;
   suggestedMinutes: number;
 }

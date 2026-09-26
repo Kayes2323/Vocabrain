@@ -1,6 +1,7 @@
 // A test attempt, stored at users/{uid}/testSessions/{sessionId}. Pure
 // functions only: the UI keeps a session in state and a repository saves it.
-import type { ObjectiveSection, ObjectiveSkill, PracticeTest } from './model';
+import type { ProductiveFeedback } from './feedback';
+import type { IELTSSkillId, ObjectiveSection, PracticeTest } from './model';
 import { answerMode } from './question-types';
 import { scoreSection, type Answers, type AnswerValue, type SectionResult } from './scoring';
 
@@ -10,7 +11,7 @@ export interface TestSession {
   id: string;
   testId: string;
   bookId: string;
-  skill: ObjectiveSkill;
+  skill: IELTSSkillId;
   status: SessionStatus;
   startedAt: string;
   updatedAt: string;
@@ -25,12 +26,25 @@ export interface TestSession {
   currentNumber: number;
   /** Submitted because the time ran out. */
   timedOut?: boolean;
+  /** Listening/Reading: deterministic score. */
   result?: SectionResult;
+  /** Writing: text per task id. Speaking: transcript per question key. */
+  responses?: Record<string, string>;
+  /** Speaking: seconds spoken per question key. */
+  durations?: Record<string, number>;
+  /** Writing/Speaking: Mino's practice feedback, added once after submission. */
+  feedback?: ProductiveFeedback;
 }
 
-export function createSession(test: PracticeTest, skill: ObjectiveSkill, now = new Date()): TestSession {
+/** Speaking has per-question timers; this caps the whole session. */
+const SPEAKING_SESSION_MINUTES = 20;
+
+export const isObjective = (skill: IELTSSkillId): skill is 'listening' | 'reading' => skill === 'listening' || skill === 'reading';
+
+export function createSession(test: PracticeTest, skill: IELTSSkillId, now = new Date()): TestSession {
   const section = test.sections[skill];
   if (!section) throw new Error(`${test.id} has no ${skill} section`);
+  const minutes = section.skill === 'speaking' ? SPEAKING_SESSION_MINUTES : section.timeLimitMinutes;
   const at = now.toISOString();
   return {
     id: `${test.id}-${skill}-${now.getTime().toString(36)}`,
@@ -40,7 +54,7 @@ export function createSession(test: PracticeTest, skill: ObjectiveSkill, now = n
     status: 'in-progress',
     startedAt: at,
     updatedAt: at,
-    timeLimitSeconds: section.timeLimitMinutes * 60,
+    timeLimitSeconds: minutes * 60,
     elapsedSeconds: 0,
     answers: {},
     flagged: [],
@@ -57,6 +71,14 @@ export function setAnswer(session: TestSession, key: string, value: AnswerValue)
   if (empty) delete answers[key];
   else answers[key] = value;
   return touch(session, { answers });
+}
+
+/** Writing text or a Speaking transcript (with seconds spoken). */
+export function setResponse(session: TestSession, key: string, text: string, seconds?: number): TestSession {
+  if (session.status !== 'in-progress') return session;
+  const responses = { ...session.responses, [key]: text };
+  const durations = seconds === undefined ? session.durations : { ...session.durations, [key]: Math.round(seconds) };
+  return touch(session, { responses, ...(durations ? { durations } : {}) });
 }
 
 export function toggleFlag(session: TestSession, number: number): TestSession {
@@ -77,13 +99,10 @@ export const remainingSeconds = (s: TestSession) => Math.max(0, s.timeLimitSecon
 
 export function submit(session: TestSession, test: PracticeTest, opts: { timedOut?: boolean } = {}): TestSession {
   if (session.status === 'submitted') return session;
+  const base = { status: 'submitted' as const, submittedAt: new Date().toISOString(), ...(opts.timedOut ? { timedOut: true } : {}) };
+  if (!isObjective(session.skill)) return touch(session, base);
   const section = test.sections[session.skill] as ObjectiveSection;
-  return touch(session, {
-    status: 'submitted',
-    submittedAt: new Date().toISOString(),
-    ...(opts.timedOut ? { timedOut: true } : {}),
-    result: scoreSection(section, session.answers, test.module),
-  });
+  return touch(session, { ...base, result: scoreSection(section, session.answers, test.module) });
 }
 
 // ---------- navigation helpers ----------

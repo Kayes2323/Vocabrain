@@ -3,7 +3,7 @@
 // Mino can never call a planned feature available. Guides describe real flows
 // and are checked against real routes in scripts/test-mino-knowledge.ts.
 import { en } from '@/lib/i18n/locales/en';
-import { BOOKS, objectiveSkills } from '@/lib/ielts/content';
+import { BOOKS, testSkills } from '@/lib/ielts/content';
 import { ABROAD_SECTION_GROUPS, IELTS_SECTIONS, IELTS_TOOLS, PRIMARY_NAV, type SectionDef } from '@/lib/navigation';
 
 export type FeatureStatus = 'AVAILABLE' | 'PLANNED';
@@ -20,7 +20,7 @@ function sectionLine(s: SectionDef): string {
 /** Compact always-on map of the app (roughly 300 tokens). */
 export function appMapLayer(): string {
   const tabs = PRIMARY_NAV.map((n) => navCopy[n.labelKey.replace('nav.', '')] ?? n.labelKey).join(' · ');
-  const tests = BOOKS.flatMap((b) => b.tests.flatMap((t) => objectiveSkills(t).map((s) => `${t.title} (${s})`))).join(', ');
+  const tests = BOOKS.flatMap((b) => b.tests.flatMap((t) => testSkills(t).map((s) => `${t.title} (${s})`))).join(', ');
   return `APP MAP (Vocab Brain, current build). Main tabs: ${tabs}.
 Home [AVAILABLE] /: goal, IELTS journey stage, Today's Learning (daily plan: Vocabulary Review → Reading → use a word in Writing → Speaking; "I only have 15 minutes" switches to a 15-minute plan), Mino's note.
 IELTS [AVAILABLE] /ielts: target/estimate/weeks left, "Find your starting point" diagnostic, journey, and sections:
@@ -31,7 +31,7 @@ Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
   - Country Explorer lists destinations by name only; no fees, visa or requirement data yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test, progress dashboard, mistake notebook, grammar, country match, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
+Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, grammar, country match, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
 }
 
 export interface AppGuide {
@@ -170,18 +170,26 @@ export const APP_GUIDES: AppGuide[] = [
     steps: ['Coming as part of the IELTS test engine.'],
   },
   {
-    id: 'writing-feedback',
-    status: 'PLANNED',
-    title: 'IELTS Writing Task 1/2 with band feedback',
-    where: 'Not in the app yet',
-    steps: ['For now, you can paste a paragraph to Mino in chat for practice feedback (an estimate, never an official score).'],
+    id: 'writing-test',
+    status: 'AVAILABLE',
+    title: 'Writing test with Mino feedback (Task 1 + Task 2)',
+    where: 'IELTS → Practice Tests → Practice Test 1 · Writing (/ielts/tests)',
+    steps: [
+      'Task 1 (data table, 150+ words) and Task 2 (essay, 250+ words); switch tasks with the tabs.',
+      'Live word count, a 60-minute timer that pauses when you leave, and automatic saving (a refresh continues where you were).',
+      'After Submit, Mino gives practice feedback for each task on the four criteria with an estimated band, strengths, mistakes with fixes, better sentences, useful vocabulary and next steps. Task 2 counts double. It is an estimate, never an official score.',
+    ],
   },
   {
-    id: 'speaking-feedback',
-    status: 'PLANNED',
-    title: 'IELTS Speaking Part 1–3 with recording and feedback',
-    where: 'Not in the app yet',
-    steps: ['For now, use Speaking word practice from Today\'s Learning, or practise answers with Mino in chat.'],
+    id: 'speaking-test',
+    status: 'AVAILABLE',
+    title: 'Speaking test with Mino feedback (Part 1–3)',
+    where: 'IELTS → Practice Tests → Practice Test 1 · Speaking (/ielts/tests)',
+    steps: [
+      'Answer aloud: Part 1 questions, a Part 2 cue card with 1 minute to prepare and up to 2 minutes to talk, then Part 3 discussion questions.',
+      'The browser records you (playback stays on your device, never uploaded) and turns speech into text; you can correct the transcript or type if speech-to-text isn’t available.',
+      'Mino then estimates Fluency & Coherence, Lexical Resource and Grammatical Range & Accuracy from the transcript. Pronunciation is not scored because it can’t be judged from text.',
+    ],
   },
   {
     id: 'study-abroad-tools',

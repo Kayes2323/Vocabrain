@@ -5,25 +5,27 @@ import { ArrowLeft, Clock, ListChecks, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { questionSlots, remainingSeconds, type ObjectiveSection, type ObjectiveSkill, type PracticeTest, type TestSession } from '@/lib/ielts';
+import { remainingSeconds, type IELTSSkillId, type PracticeTest, type TestSession } from '@/lib/ielts';
 import { formatClock } from './labels';
 
 export function TestIntro({
   test,
   skill,
-  section,
+  stats,
+  bullets,
   resumable,
   onStart,
 }: {
   test: PracticeTest;
-  skill: ObjectiveSkill;
-  section: ObjectiveSection;
+  skill: IELTSSkillId;
+  /** Three [label, value] facts shown at the top. */
+  stats: [string, string][];
+  /** How this test works; defaults to timer + review. */
+  bullets?: string[];
   resumable: TestSession | null;
   onStart: (existing?: TestSession) => void;
 }) {
   const { t } = useLocale();
-  const total = questionSlots(section).length;
-  const partKey = skill === 'reading' ? 'tests.passages' : 'tests.parts';
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 py-6">
@@ -40,11 +42,7 @@ export function TestIntro({
           </h1>
         </div>
         <Panel className="grid grid-cols-3 divide-x p-0 text-center">
-          {[
-            [t('tests.questionsLabel'), String(total)],
-            [t(partKey), String(section.parts.length)],
-            [t('tests.time'), t('common.minutes', { n: section.timeLimitMinutes })],
-          ].map(([label, value]) => (
+          {stats.map(([label, value]) => (
             <div key={label} className="px-2 py-4">
               <p className="text-xs text-muted-foreground">{label}</p>
               <p className="text-lg font-semibold tabular-nums">{value}</p>
@@ -52,8 +50,12 @@ export function TestIntro({
           ))}
         </Panel>
         <ul className="space-y-2 text-sm text-muted-foreground">
-          <li className="flex gap-2"><Clock className="mt-0.5 size-4 shrink-0" />{t('tests.introTimer')}</li>
-          <li className="flex gap-2"><ListChecks className="mt-0.5 size-4 shrink-0" />{t('tests.introReview')}</li>
+          {(bullets ?? [t('tests.introTimer'), t('tests.introReview')]).map((b, i) => (
+            <li key={i} className="flex gap-2">
+              {i === 0 ? <Clock className="mt-0.5 size-4 shrink-0" /> : <ListChecks className="mt-0.5 size-4 shrink-0" />}
+              {b}
+            </li>
+          ))}
         </ul>
         <Callout>{t('tests.notOfficial')}</Callout>
         {resumable ? (

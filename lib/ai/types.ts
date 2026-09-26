@@ -54,6 +54,8 @@ export interface AIRunRequest {
   runTool?: (name: string, args: Record<string, unknown>) => Promise<unknown>;
   /** Upper bound on tool round-trips per request (cost and latency guard). */
   maxToolRounds?: number;
+  /** Ask for a JSON object reply (structured assessment). */
+  json?: boolean;
   signal?: AbortSignal;
 }
 

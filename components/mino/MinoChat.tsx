@@ -88,12 +88,15 @@ export function MinoChat({ context }: { context: MinoContext }) {
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
       const skill = params.get('skill') ?? 'reading';
       send(t('mino.askResult', { test: params.get('test') ?? '', skill: t(`skills.${skill}`), date: params.get('date') ?? '' }), 'ielts-coach');
+    } else if (ask === 'feedback') {
+      const skill = params.get('skill') === 'speaking' ? 'speaking' : 'writing';
+      send(t('mino.askFeedback', { skill: t(`skills.${skill}`), date: params.get('date') ?? '' }), skill === 'writing' ? 'writing-coach' : 'speaking-coach');
     } else {
       send(t('studyPlan.askPrompt', { days: Number(params.get('days')) || 30 }), 'study-planner');
     }

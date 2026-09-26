@@ -77,9 +77,17 @@ export function encodeValue(v: unknown): FirestoreValue {
  * Replaces one document under the student's own users/{uid} tree, as the
  * student (their token), so the same Security Rules as the app apply.
  */
-export async function writeOwnDoc(uid: string, idToken: string, subPath: string, data: Record<string, unknown>): Promise<void> {
+export async function writeOwnDoc(
+  uid: string,
+  idToken: string,
+  subPath: string,
+  data: Record<string, unknown>,
+  /** Only update these top-level fields; others stay as they are. */
+  onlyFields?: string[],
+): Promise<void> {
   const fields = (encodeValue(data) as { mapValue: { fields: Record<string, FirestoreValue> } }).mapValue.fields;
-  const res = await fetch(`${base()}/users/${encodeURIComponent(uid)}/${subPath}`, {
+  const mask = onlyFields ? `?${onlyFields.map((f) => `updateMask.fieldPaths=${encodeURIComponent(f)}`).join('&')}` : '';
+  const res = await fetch(`${base()}/users/${encodeURIComponent(uid)}/${subPath}${mask}`, {
     method: 'PATCH',
     headers: { Authorization: `Bearer ${idToken}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ fields }),

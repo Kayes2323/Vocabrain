@@ -1,7 +1,7 @@
 // The test library. Add a book by importing it here; the engine and pages need
 // no changes. Publisher content (e.g. Cambridge IELTS 11–21) may only be added
 // with `sourceType: 'licensed-publisher'` and `licenseStatus: 'licensed'`.
-import type { ObjectiveSkill, PracticeTest, TestBook } from '../model';
+import type { IELTSSkillId, ObjectiveSkill, PracticeTest, TestBook } from '../model';
 import { isPublishable } from '../validate';
 import { practiceTest1 } from './demo/practice-test-1';
 
@@ -38,3 +38,8 @@ export function objectiveSkills(test: PracticeTest): ObjectiveSkill[] {
 }
 
 export { ALL_BOOKS };
+
+/** Every skill a test has, in test order. */
+export function testSkills(test: PracticeTest): IELTSSkillId[] {
+  return (['listening', 'reading', 'writing', 'speaking'] as const).filter((s) => test.sections[s]);
+}

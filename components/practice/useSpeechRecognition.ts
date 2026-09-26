@@ -28,13 +28,15 @@ function getRecognitionCtor(): (new () => Recognition) | undefined {
  * Speech-to-text for Speaking practice. Audio is processed by the browser's
  * speech service; nothing is recorded or uploaded by Vocab Brain.
  */
-export function useSpeechRecognition(lang = 'en-US') {
+export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { keepAlive?: boolean } = {}) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
   const recognition = useRef<Recognition | null>(null);
   const finalText = useRef('');
+  // Browsers end recognition after a pause; for long answers keep it going until stop().
+  const wanted = useRef(false);
 
   useEffect(() => setSupported(Boolean(getRecognitionCtor())), []);
 
@@ -58,18 +60,36 @@ export function useSpeechRecognition(lang = 'en-US') {
       setTranscript(`${finalText.current}${interim}`.trim());
     };
     r.onerror = (e) => setError(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'permission' : 'failed');
-    r.onend = () => setListening(false);
+    r.onend = () => {
+      if (keepAlive && wanted.current) {
+        try {
+          r.start();
+          return;
+        } catch {
+          // fall through: could not restart
+        }
+      }
+      setListening(false);
+    };
     recognition.current = r;
+    wanted.current = true;
     r.start();
     setListening(true);
-  }, [lang]);
+  }, [lang, keepAlive]);
 
   const stop = useCallback(() => {
+    wanted.current = false;
     recognition.current?.stop();
     setListening(false);
   }, []);
 
-  useEffect(() => () => recognition.current?.stop(), []);
+  useEffect(
+    () => () => {
+      wanted.current = false;
+      recognition.current?.stop();
+    },
+    [],
+  );
 
   return { supported, listening, transcript, setTranscript, error, start, stop };
 }

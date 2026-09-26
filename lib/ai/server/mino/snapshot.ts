@@ -61,8 +61,16 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
 
   // Practice tests (deterministic analysis of real answers)
   const analysis = analyseTests(sessions as unknown as TestSession[], getTest);
+  for (const p of ['writing', 'speaking'] as const) {
+    const last = analysis.productive.find((x) => x.skill === p);
+    if (last) {
+      lines.push(
+        `- Latest ${p} practice (${last.submittedAt.slice(0, 10)}): AI-estimated band ${last.overall ?? 'n/a'} (estimate, not official); lowest criterion ${last.criteria[0] ? `${last.criteria[0].criterion} ${last.criteria[0].band}` : 'n/a'}.`,
+      );
+    }
+  }
   if (analysis.attempts.length === 0) {
-    lines.push('- Practice tests: none completed yet (no Listening/Reading/Writing/Speaking test data).');
+    lines.push('- Listening/Reading practice tests: none completed yet.');
   } else {
     const last = analysis.attempts[0];
     lines.push(
@@ -70,7 +78,7 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
     );
     const weak = analysis.weakAreas[0];
     if (weak) lines.push(`- Weakest area so far: ${weak.label} (${weak.skill}) ${weak.correct}/${weak.total}, ${weak.confidence} confidence. Details: getWeakAreas.`);
-    const skillsWithTests = new Set(analysis.attempts.map((a) => a.skill));
+    const skillsWithTests = new Set<string>([...analysis.attempts.map((a) => a.skill), ...analysis.productive.map((p) => p.skill)]);
     const missing = ['listening', 'reading', 'writing', 'speaking'].filter((sk) => !skillsWithTests.has(sk as never));
     if (missing.length) lines.push(`- No practice-test data for: ${missing.join(', ')}.`);
   }

@@ -4,3 +4,4 @@ export * from './scoring';
 export * from './session';
 export * from './validate';
 export * from './analysis';
+export * from './feedback';

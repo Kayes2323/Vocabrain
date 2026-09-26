@@ -1,5 +1,5 @@
 import { collection, doc, getDoc, getDocs, query, setDoc, where, type Firestore } from 'firebase/firestore';
-import type { ObjectiveSkill, TestSession } from '@/lib/ielts';
+import type { IELTSSkillId, TestSession } from '@/lib/ielts';
 import { readJSON, writeJSON } from './local-store';
 
 /**
@@ -10,15 +10,17 @@ import { readJSON, writeJSON } from './local-store';
 export interface TestSessionRepository {
   get(userId: string, id: string): Promise<TestSession | null>;
   /** The unfinished attempt at this test/skill, to resume after a refresh. */
-  findActive(userId: string, testId: string, skill: ObjectiveSkill): Promise<TestSession | null>;
+  findActive(userId: string, testId: string, skill: IELTSSkillId): Promise<TestSession | null>;
   list(userId: string): Promise<TestSession[]>;
   save(userId: string, session: TestSession): Promise<void>;
+  /** Writes now and resolves when stored (before asking the server to read it). */
+  saveNow(userId: string, session: TestSession): Promise<void>;
 }
 
 /** Firestore rejects undefined; a JSON round-trip also drops any class instances. */
 const clean = (s: TestSession): TestSession => JSON.parse(JSON.stringify(s));
 const newestFirst = (a: TestSession, b: TestSession) => b.updatedAt.localeCompare(a.updatedAt);
-const isActive = (s: TestSession, testId: string, skill: ObjectiveSkill) => s.testId === testId && s.skill === skill && s.status === 'in-progress';
+const isActive = (s: TestSession, testId: string, skill: IELTSSkillId) => s.testId === testId && s.skill === skill && s.status === 'in-progress';
 
 const localKey = (userId: string) => `vocabbrain:testSessions:${userId}`;
 const readLocal = (userId: string) => readJSON<Record<string, TestSession>>(localKey(userId)) ?? {};
@@ -34,6 +36,9 @@ export const localTestSessionRepository: TestSessionRepository = {
     return Object.values(readLocal(userId)).sort(newestFirst);
   },
   async save(userId, session) {
+    writeJSON(localKey(userId), { ...readLocal(userId), [session.id]: clean(session) });
+  },
+  async saveNow(userId, session) {
     writeJSON(localKey(userId), { ...readLocal(userId), [session.id]: clean(session) });
   },
 };
@@ -76,6 +81,11 @@ export function createFirestoreTestSessionRepository(db: Firestore): TestSession
     async save(userId, session) {
       pending.set(session.id, session);
       void pump(userId, session.id);
+    },
+    async saveNow(userId, session) {
+      pending.delete(session.id);
+      while (writing.has(session.id)) await new Promise((r) => setTimeout(r, 50));
+      await setDoc(doc(col(userId), session.id), clean(session));
     },
   };
 }

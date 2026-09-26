@@ -78,8 +78,20 @@ export interface Attempt {
   timedOut: boolean;
 }
 
+/** A Writing or Speaking attempt with Mino's practice feedback. */
+export interface ProductiveAttempt {
+  sessionId: string;
+  testTitle: string;
+  skill: 'writing' | 'speaking';
+  submittedAt: string;
+  overall: number | null;
+  /** Mean estimated band per criterion across the attempt's tasks. */
+  criteria: { criterion: string; band: number }[];
+}
+
 export interface TestAnalysis {
   attempts: Attempt[];
+  productive: ProductiveAttempt[];
   byType: TypeStat[];
   byPart: PartStat[];
   patterns: Pattern[];
@@ -107,9 +119,11 @@ const GUIDE_FOR_TYPE: Partial<Record<QuestionType, string>> = {
 };
 export const guideForType = (type: QuestionType) => GUIDE_FOR_TYPE[type] ?? 'completion';
 
-function submittedOnly(sessions: TestSession[]): (TestSession & { result: SectionResult })[] {
+type ScoredSession = TestSession & { result: SectionResult; skill: ObjectiveSkill };
+
+function submittedOnly(sessions: TestSession[]): ScoredSession[] {
   return sessions
-    .filter((s): s is TestSession & { result: SectionResult } => s.status === 'submitted' && Boolean(s.result))
+    .filter((s): s is ScoredSession => s.status === 'submitted' && Boolean(s.result) && (s.skill === 'reading' || s.skill === 'listening'))
     .sort((a, b) => (a.submittedAt ?? '').localeCompare(b.submittedAt ?? '') || a.startedAt.localeCompare(b.startedAt));
 }
 
@@ -278,5 +292,24 @@ export function analyseTests(sessions: TestSession[], lookup: Lookup): TestAnaly
       : `${attempts.length} submitted test${attempts.length > 1 ? 's' : ''}, ${questionsSeen} questions. ` +
         (questionsSeen < 20 ? 'This is a small sample: treat patterns as early signals, not conclusions.' : 'Enough data for early patterns; more tests make them more reliable.');
 
-  return { attempts: attempts.reverse(), byType, byPart, patterns, weakAreas, dataNote };
+  const productive: ProductiveAttempt[] = sessions
+    .filter((s) => s.status === 'submitted' && s.feedback && (s.skill === 'writing' || s.skill === 'speaking'))
+    .sort((a, b) => (b.submittedAt ?? '').localeCompare(a.submittedAt ?? ''))
+    .map((s) => {
+      const byCriterion = new Map<string, number[]>();
+      for (const task of s.feedback!.tasks)
+        for (const c of task.criteria) if (c.band !== null) byCriterion.set(c.criterion, [...(byCriterion.get(c.criterion) ?? []), c.band]);
+      return {
+        sessionId: s.id,
+        testTitle: lookup(s.testId)?.title ?? s.testId,
+        skill: s.skill as 'writing' | 'speaking',
+        submittedAt: s.submittedAt ?? s.updatedAt,
+        overall: s.feedback!.overall,
+        criteria: [...byCriterion.entries()]
+          .map(([criterion, bands]) => ({ criterion, band: Math.round((bands.reduce((a, b) => a + b, 0) / bands.length) * 2) / 2 }))
+          .sort((a, b) => a.band - b.band),
+      };
+    });
+
+  return { attempts: attempts.reverse(), productive, byType, byPart, patterns, weakAreas, dataNote };
 }

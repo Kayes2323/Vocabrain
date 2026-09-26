@@ -22,12 +22,14 @@ service cloud.firestore {
       let d = request.resource.data;
       return d.id == sessionId
         && d.testId is string && d.testId.size() <= 100
-        && d.skill in ['listening', 'reading']
+        && d.skill in ['listening', 'reading', 'writing', 'speaking']
         && d.status in ['in-progress', 'submitted']
         && d.answers is map
         && d.elapsedSeconds is number && d.elapsedSeconds >= 0 && d.elapsedSeconds <= d.timeLimitSeconds
         && d.keys().hasOnly(['id', 'testId', 'bookId', 'skill', 'status', 'startedAt', 'updatedAt', 'submittedAt',
-                             'timeLimitSeconds', 'elapsedSeconds', 'answers', 'flagged', 'currentNumber', 'timedOut', 'result']);
+                             'timeLimitSeconds', 'elapsedSeconds', 'answers', 'flagged', 'currentNumber', 'timedOut', 'result',
+                             'responses', 'durations', 'feedback'])
+        && (!('responses' in d) || d.responses is map);
     }
 
     // users/{uid}: profile summary + app state (goals, plan, progress).
@@ -53,15 +55,20 @@ service cloud.firestore {
       }
 
       // users/{uid}/testSessions/{sessionId}: IELTS practice attempts.
-      // A submitted attempt is final: it can be read or deleted, never edited.
+      // A submitted attempt is final: its answers and score never change. The
+      // only later write allowed is adding Mino's Writing/Speaking feedback once.
       match /testSessions/{sessionId} {
         allow read, delete: if isOwner(uid);
         allow create: if isOwner(uid) && validTestSession(sessionId);
-        allow update: if isOwner(uid) && validTestSession(sessionId)
-          && resource.data.status == 'in-progress'
-          && request.resource.data.testId == resource.data.testId
-          && request.resource.data.skill == resource.data.skill
-          && request.resource.data.startedAt == resource.data.startedAt;
+        allow update: if isOwner(uid) && validTestSession(sessionId) && (
+          (resource.data.status == 'in-progress'
+            && request.resource.data.testId == resource.data.testId
+            && request.resource.data.skill == resource.data.skill
+            && request.resource.data.startedAt == resource.data.startedAt)
+          || (resource.data.status == 'submitted'
+            && resource.data.skill in ['writing', 'speaking']
+            && !('feedback' in resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['feedback', 'updatedAt'])));
       }
 
       // users/{uid}/mino/{memory|conversation}: Mino's short notes and the

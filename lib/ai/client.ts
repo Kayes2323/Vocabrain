@@ -21,3 +21,23 @@ export async function askMino(request: MinoAskRequest): Promise<MinoAskResponse>
     return { ok: false, error: 'unavailable' };
   }
 }
+
+/** Asks Mino to assess a submitted Writing/Speaking attempt (signed-in students only). */
+export async function assessSession(
+  sessionId: string,
+  language: 'en' | 'bn',
+): Promise<{ ok: true; feedback: import('@/lib/ielts').ProductiveFeedback } | { ok: false; error: import('./types').MinoErrorCode }> {
+  const user = auth?.currentUser;
+  if (!user) return { ok: false, error: 'unauthenticated' };
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/mino/assess', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ sessionId, language }),
+    });
+    return (await res.json().catch(() => ({ ok: false, error: 'unavailable' }))) as never;
+  } catch {
+    return { ok: false, error: 'unavailable' };
+  }
+}

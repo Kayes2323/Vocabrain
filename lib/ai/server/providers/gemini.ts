@@ -81,7 +81,11 @@ export function createGeminiProvider(apiKey: string): AIProvider {
         const body = {
           systemInstruction: { parts: [{ text: req.system }] },
           contents,
-          generationConfig: { maxOutputTokens: req.maxOutputTokens ?? LIMITS.maxOutputTokens, temperature: 0.6 },
+          generationConfig: {
+            maxOutputTokens: req.maxOutputTokens ?? LIMITS.maxOutputTokens,
+            temperature: req.json ? 0.2 : 0.6,
+            ...(req.json ? { responseMimeType: 'application/json' } : {}),
+          },
           ...(req.tools?.length && round < maxRounds ? { tools: [{ functionDeclarations: req.tools }] } : {}),
         };
         let data: GeminiResponse;

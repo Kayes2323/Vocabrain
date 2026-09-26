@@ -44,6 +44,13 @@ await expect('A submits session', () => setDoc(ts(A.db, ua, 's1'), session(ua, '
 await expect('A edits submitted session', () => setDoc(ts(A.db, ua, 's1'), session(ua, 's1', { status: 'submitted', result: { correct: 24, total: 24 } })), false);
 await expect('A reads B test session', () => getDoc(ts(A.db, ub, 's1')), false);
 await expect('A writes B test session', () => setDoc(ts(A.db, ub, 'x'), session(ub, 'x')), false);
+const w = (extra = {}) => session(ua, 'w1', { skill: 'writing', responses: { w1: 'Some text' }, ...extra });
+await expect('A starts writing session', () => setDoc(ts(A.db, ua, 'w1'), w()), true);
+await expect('A submits writing', () => setDoc(ts(A.db, ua, 'w1'), w({ status: 'submitted' })), true);
+await expect('A adds feedback once', () => updateDoc(ts(A.db, ua, 'w1'), { feedback: { overall: 6 }, updatedAt: 'y' }), true);
+await expect('A rewrites feedback', () => updateDoc(ts(A.db, ua, 'w1'), { feedback: { overall: 9 } }), false);
+await expect('A edits submitted essay', () => updateDoc(ts(A.db, ua, 'w1'), { responses: { w1: 'better' } }), false);
+await expect('A adds feedback to reading', () => updateDoc(ts(A.db, ua, 's1'), { feedback: { overall: 9 } }), false);
 const mino = (db, u, id) => doc(db, 'users', u.uid, 'mino', id);
 await expect('A saves Mino memory', () => setDoc(mino(A.db, ua, 'memory'), { notes: [{ id: 'n1', category: 'concern', text: 'Afraid of Speaking', at: 'x' }], updatedAt: 'x' }), true);
 await expect('A memory over 15 notes', () => setDoc(mino(A.db, ua, 'memory'), { notes: Array.from({ length: 16 }, (_, i) => ({ id: `n${i}` })), updatedAt: 'x' }), false);

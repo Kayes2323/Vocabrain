@@ -11,6 +11,7 @@
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:mino-knowledge": "npx -y tsx scripts/test-mino-knowledge.ts",
     "test:plan": "npx -y tsx scripts/test-study-plan.ts",
+    "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:mino": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"npx -y tsx scripts/test-mino-api.mts\"",
     "emulators": "npx -y firebase-tools@15 emulators:start --only auth,firestore --project demo-vocabbrain"
   },

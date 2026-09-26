@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BookText, Headphones } from 'lucide-react';
+import { BookText, Headphones, Mic, PenLine } from 'lucide-react';
 import { Callout, ListRow, PageHeader, RowGroup, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useTestSessions } from '@/components/test/useTestSessions';
-import { BOOKS, objectiveSkills } from '@/lib/ielts/content';
-import { questionSlots, type ObjectiveSection, type TestSession } from '@/lib/ielts';
+import { BOOKS, testSkills } from '@/lib/ielts/content';
+import { formatBand } from '@/lib/engine';
+import { questionSlots, type IELTSSkillId, type ObjectiveSection, type TestSession } from '@/lib/ielts';
 
-const SKILL_ICON = { listening: Headphones, reading: BookText } as const;
+const SKILL_ICON = { listening: Headphones, reading: BookText, writing: PenLine, speaking: Mic } as const;
 
 export default function TestLibraryPage() {
   const { t } = useLocale();
@@ -26,9 +27,14 @@ export default function TestLibraryPage() {
       {BOOKS.map((book) => (
         <Section key={book.id} title={book.title}>
           <RowGroup>
-            {book.tests.flatMap((test) =>
-              objectiveSkills(test).map((skill) => {
-                const section = test.sections[skill] as ObjectiveSection;
+            {book.tests.flatMap((test) => {
+              const meta = (skill: IELTSSkillId) => {
+                const sec = test.sections[skill]!;
+                if (sec.skill === 'writing') return t('tests.rowMetaWriting', { n: sec.tasks.length, minutes: sec.timeLimitMinutes });
+                if (sec.skill === 'speaking') return t('tests.rowMetaSpeaking', { n: sec.parts.length });
+                return t('tests.rowMeta', { n: questionSlots(sec as ObjectiveSection).length, minutes: sec.timeLimitMinutes });
+              };
+              return testSkills(test).map((skill: IELTSSkillId) => {
                 const mine = sessions.filter((s) => s.testId === test.id && s.skill === skill);
                 const active = mine.find((s) => s.status === 'in-progress');
                 const last = mine.find((s) => s.status === 'submitted');
@@ -39,18 +45,20 @@ export default function TestLibraryPage() {
                     icon={SKILL_ICON[skill]}
                     iconTone="brand"
                     title={`${test.title} · ${t(`skills.${skill}`)}`}
-                    description={t('tests.rowMeta', { n: questionSlots(section).length, minutes: section.timeLimitMinutes })}
+                    description={meta(skill)}
                     trailing={
                       active ? (
                         <StatusChip tone="warning">{t('tests.inProgress')}</StatusChip>
                       ) : last?.result ? (
                         <StatusChip tone="success">{`${last.result.correct}/${last.result.total}`}</StatusChip>
+                      ) : last?.feedback?.overall != null ? (
+                        <StatusChip tone="success">{formatBand(last.feedback.overall)}</StatusChip>
                       ) : undefined
                     }
                   />
                 );
-              }),
-            )}
+              });
+            })}
           </RowGroup>
         </Section>
       ))}

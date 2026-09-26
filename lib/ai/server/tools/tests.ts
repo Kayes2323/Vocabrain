@@ -1,4 +1,4 @@
-import { analyseTests, QUESTION_TYPE_LABELS, type TestSession } from '@/lib/ielts';
+import { analyseTests, QUESTION_TYPE_LABELS, type ObjectiveSection, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
 import { listOwnCollection } from '../firestore-rest';
 import type { MinoTool, ToolContext } from './types';
@@ -25,8 +25,17 @@ export const getTestHistory: MinoTool = {
   },
   async run(ctx, args) {
     const sessions = await loadSessions(ctx);
-    const { attempts } = analyseTests(sessions, getTest);
-    if (attempts.length === 0) return { tests: [], note: 'No submitted practice tests yet.' };
+    const { attempts, productive } = analyseTests(sessions, getTest);
+    const writingSpeaking = productive.slice(0, 5).map((p) => ({
+      sessionId: p.sessionId,
+      date: p.submittedAt.slice(0, 10),
+      test: p.testTitle,
+      skill: p.skill,
+      estimatedBand: p.overall ?? 'not enough to estimate',
+      criteria: p.criteria.map((c) => `${c.criterion} ${c.band.toFixed(1)}`),
+      note: 'AI practice feedback (estimate), not an official score.',
+    }));
+    if (attempts.length === 0) return { tests: [], writingSpeaking, note: 'No submitted Listening/Reading practice tests yet.' };
     const list = attempts.slice(0, 10).map((a) => ({
       sessionId: a.sessionId,
       date: a.submittedAt.slice(0, 10),
@@ -40,15 +49,16 @@ export const getTestHistory: MinoTool = {
     }));
     const id = typeof args.sessionId === 'string' ? args.sessionId : args.latest ? attempts[0].sessionId : undefined;
     const session = id ? sessions.find((s) => s.id === id && s.status === 'submitted') : undefined;
-    if (!session?.result) return { tests: list };
+    if (!session?.result) return { tests: list, writingSpeaking };
 
     const test = getTest(session.testId);
     const questions = new Map(
-      (test?.sections[session.skill]?.parts ?? []).flatMap((p) => p.groups.flatMap((g) => g.questions.map((q) => [q.id, q] as const))),
+      ((test?.sections[session.skill] as ObjectiveSection | undefined)?.parts ?? []).flatMap((p) => p.groups.flatMap((g) => g.questions.map((q) => [q.id, q] as const))),
     );
     const r = session.result;
     return {
       tests: list,
+      writingSpeaking,
       detail: {
         sessionId: session.id,
         test: test?.title ?? session.testId,
@@ -127,6 +137,12 @@ export const getWeakAreas: MinoTool = {
         strategyTopic: w.guideTopic,
       })),
       patterns: a.patterns,
+      writingSpeakingCriteria: a.productive.map((p) => ({
+        skill: p.skill,
+        date: p.submittedAt.slice(0, 10),
+        lowest: p.criteria[0] ? `${p.criteria[0].criterion} ${p.criteria[0].band.toFixed(1)}` : 'n/a',
+        all: p.criteria.map((c) => `${c.criterion} ${c.band.toFixed(1)}`),
+      })),
       rule: 'Only name causes that appear in patterns/evidence. If confidence is low, say it is an early signal and suggest another test.',
     };
   },

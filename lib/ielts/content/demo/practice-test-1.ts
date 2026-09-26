@@ -377,6 +377,17 @@ export const practiceTest1: PracticeTest = {
           task: 1,
           prompt:
             'The table below shows the percentage of journeys made by bicycle in four cities in 2005 and 2025. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.',
+          data: {
+            caption: 'Percentage of journeys made by bicycle',
+            headers: ['City', '2005', '2025'],
+            rows: [
+              ['Northport', '8%', '21%'],
+              ['Eastvale', '15%', '17%'],
+              ['Riverton', '24%', '19%'],
+              ['Westbridge', '3%', '12%'],
+            ],
+            note: 'Illustrative data written for practice; the cities are fictional.',
+          },
           minWords: 150,
           suggestedMinutes: 20,
         },

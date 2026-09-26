@@ -20,6 +20,19 @@ globalThis.fetch = (async (input: any, init?: any) => {
     if (url.includes('?key=')) throw new Error('key must not be in URL');
     const body = JSON.parse(init.body);
     geminiBodies.push(body);
+    if (body.generationConfig?.responseMimeType === 'application/json') {
+      const text = JSON.stringify({
+        criteria: [
+          { criterion: 'Task Response', band: 6, comment: 'Clear position.' },
+          { criterion: 'Task Achievement', band: 6, comment: 'Has an overview.' },
+          { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'Logical.' },
+          { criterion: 'Lexical Resource', band: 5.5, comment: 'Repetitive.' },
+          { criterion: 'Grammatical Range & Accuracy', band: 6, comment: 'Some errors.' },
+        ],
+        strengths: ['Clear'], mistakes: [], actions: ['Practise paraphrasing'], vocabulary: [], betterSentences: [],
+      });
+      return Response.json({ candidates: [{ content: { role: 'model', parts: [{ text }] }, finishReason: 'STOP' }], usageMetadata: {} });
+    }
     if (geminiMode === 'busy') return new Response('{}', { status: 429 });
     if (geminiMode === 'retired' && url.includes('/gemini-3.5-flash-lite:')) return new Response('{}', { status: 404 });
     const last = body.contents.at(-1);
@@ -176,17 +189,44 @@ geminiBodies.length = 0;
 await call(msg, a.token);
 check('memory notes appear in the next snapshot', geminiBodies[0].systemInstruction.parts[0].text.includes('[concern] Freezes in Speaking Part 2'));
 
+// Writing assessment: text read from the student's own submitted session, feedback written once.
+const { POST: ASSESS } = await import('../app/api/mino/assess/route');
+const assess = (body: unknown, token?: string) =>
+  ASSESS(new Request('http://localhost/api/mino/assess', {
+    method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body),
+  }) as any);
+let ws = I.createSession(t1, 'writing');
+ws = I.setResponse(ws, 'w1', 'The table compares cycling in four cities in 2005 and 2025. Overall, cycling increased in three cities. ' + 'Northport rose sharply while Riverton fell. '.repeat(12));
+ws = I.setResponse(ws, 'w2', 'Some people believe rooftops should grow food. '.repeat(30));
+ws = I.submit(ws, t1);
+await put(`users/${a.uid}/testSessions/${ws.id}`, (enc(JSON.parse(JSON.stringify(ws))) as any).mapValue.fields);
+res = await assess({ sessionId: ws.id, language: 'bn' });
+check('assess requires sign-in', res.status === 401);
+res = await assess({ sessionId: ws.id, language: 'bn' }, a.token);
+const wfb = await res.json();
+check('assess returns criterion feedback with weighted overall', res.status === 200 && wfb.feedback?.tasks?.length === 2 && wfb.feedback.overall === 6, wfb);
+const stored = await (await realFetch(`http://127.0.0.1:8080/v1/projects/${PROJECT}/databases/(default)/documents/users/${a.uid}/testSessions/${ws.id}`, { headers: { Authorization: 'Bearer owner' } })).json();
+check('feedback saved on the session (answers untouched)', Boolean(stored.fields?.feedback) && stored.fields?.responses?.mapValue?.fields?.w2 !== undefined && stored.fields?.status?.stringValue === 'submitted');
+const before = geminiBodies.length;
+res = await assess({ sessionId: ws.id, language: 'bn' }, a.token);
+check('second request returns saved feedback without a new AI call', res.status === 200 && geminiBodies.length === before);
+res = await assess({ sessionId: ws.id, language: 'bn' }, b.token);
+check("another student's session can't be assessed", res.status === 400);
+res = await assess({ sessionId: sess.id, language: 'en' }, b.token);
+check('reading sessions are not sent for AI assessment', res.status === 400);
+
 geminiMode = 'retired';
 res = await call(msg, a.token);
 const fb = await res.json();
 check('retired model → falls back to next model', res.status === 200 && fb.metadata?.model === 'gemini-3.1-flash-lite', fb.metadata ?? fb);
 
+const c = await signUp(`c${Date.now()}@test.com`); // fresh student: earlier checks used up A's per-minute limit
 geminiMode = 'busy';
-res = await call(msg, a.token);
+res = await call(msg, c.token);
 check('provider 429 → provider_busy 503', res.status === 503 && (await res.json()).error === 'provider_busy');
 
 delete process.env.GEMINI_API_KEY;
-res = await call(msg, a.token);
+res = await call(msg, c.token);
 check('no key → not_configured', (await res.json()).error === 'not_configured');
 
 process.exit(failed ? 1 : 0);
