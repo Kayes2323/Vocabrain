@@ -30,7 +30,11 @@ export interface ToolDeclaration {
   description: string;
   parameters: {
     type: 'object';
-    properties: Record<string, { type: 'string' | 'number' | 'integer' | 'boolean'; description: string; enum?: string[] }>;
+    properties: Record<
+      string,
+      | { type: 'string' | 'number' | 'integer' | 'boolean'; description: string; enum?: string[] }
+      | { type: 'array'; description: string; items: { type: 'string'; enum?: string[] }; maxItems?: number }
+    >;
     required?: string[];
   };
 }
@@ -127,6 +131,8 @@ export type MinoErrorCode =
   | 'unavailable';
 
 export interface MinoResponseMetadata {
+  /** Buttons to show under the reply (whitelisted app destinations). */
+  actions?: import('./actions').MinoActionId[];
   model: string;
   tier: ModelTier;
   latencyMs: number;

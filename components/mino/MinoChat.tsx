@@ -6,13 +6,17 @@ import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { MinoMark } from '@/components/shell/MinoMark';
+import Link from 'next/link';
 import { askMino } from '@/lib/ai/client';
+import { MINO_ACTIONS, type MinoActionId } from '@/lib/ai/actions';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
 import { setPlanMode } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
 interface ChatMessage extends AIMessage {
+  /** Buttons Mino attached to this reply. */
+  actions?: MinoActionId[];
   /** Local notices (e.g. Mino unavailable) are shown but never sent to the model. */
   notice?: boolean;
 }
@@ -49,25 +53,27 @@ export function MinoChat({ context }: { context: MinoContext }) {
     setMessages((prev) => [
       ...prev,
       res.ok
-        ? { role: 'assistant', content: res.response }
+        ? { role: 'assistant', content: res.response, actions: res.metadata.actions }
         : { role: 'assistant', content: t(`mino.errors.${res.error}`), notice: true },
     ]);
     setPending(false);
   };
 
-  // Opened from a test result (/mino?ask=result&test=…): ask Mino to analyse it once.
+  // Opened from another screen (/mino?ask=result|plan&…): ask Mino once.
   const asked = useRef(false);
   useEffect(() => {
     if (asked.current) return;
     const params = new URLSearchParams(window.location.search);
-    if (params.get('ask') !== 'result') return;
+    const ask = params.get('ask');
+    if (ask !== 'result' && ask !== 'plan') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
-    const skill = params.get('skill') ?? 'reading';
-    send(
-      t('mino.askResult', { test: params.get('test') ?? '', skill: t(`skills.${skill}`), date: params.get('date') ?? '' }),
-      'ielts-coach',
-    );
+    if (ask === 'result') {
+      const skill = params.get('skill') ?? 'reading';
+      send(t('mino.askResult', { test: params.get('test') ?? '', skill: t(`skills.${skill}`), date: params.get('date') ?? '' }), 'ielts-coach');
+    } else {
+      send(t('studyPlan.askPrompt', { days: Number(params.get('days')) || 30 }), 'study-planner');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -102,15 +108,30 @@ export function MinoChat({ context }: { context: MinoContext }) {
           {messages.map((m, i) => (
             <li key={i} className={cn('flex gap-2.5', m.role === 'user' && 'justify-end')}>
               {m.role === 'assistant' && <MinoMark size="sm" className="mt-0.5" />}
-              <p
-                className={cn(
-                  'max-w-[85%] rounded-2xl px-4 py-2.5 text-[15px] whitespace-pre-wrap',
-                  m.role === 'user' ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md border bg-card',
-                  m.notice && 'border-dashed text-muted-foreground',
+              <div className={cn('flex max-w-[85%] flex-col gap-2', m.role === 'user' && 'items-end')}>
+                <p
+                  className={cn(
+                    'rounded-2xl px-4 py-2.5 text-[15px] whitespace-pre-wrap',
+                    m.role === 'user' ? 'rounded-br-md bg-primary text-primary-foreground' : 'rounded-bl-md border bg-card',
+                    m.notice && 'border-dashed text-muted-foreground',
+                  )}
+                >
+                  {m.content}
+                </p>
+                {m.actions && m.actions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {m.actions.map((id) => (
+                      <Link
+                        key={id}
+                        href={MINO_ACTIONS[id]}
+                        className="rounded-full border border-brand/40 bg-brand-soft px-3 py-1.5 text-sm font-medium transition-colors hover:bg-brand/15"
+                      >
+                        {t(`mino.actions.${id}`)} →
+                      </Link>
+                    ))}
+                  </div>
                 )}
-              >
-                {m.content}
-              </p>
+              </div>
             </li>
           ))}
           {pending && (

@@ -69,7 +69,7 @@ export interface SectionDef {
 export const sectionKey = (id: string, field: 'title' | 'description' | 'highlights') => `sections.${id}.${field}`;
 
 export const IELTS_SECTIONS: SectionDef[] = [
-  { id: 'plan', icon: Target, href: '/ielts/plan', status: 'planned', phase: 2 },
+  { id: 'plan', icon: Target, href: '/ielts/plan', status: 'available', phase: 4 },
   { id: 'listening', icon: Headphones, href: '/ielts/listening', status: 'planned', phase: 2 },
   { id: 'reading', icon: BookText, href: '/ielts/reading', status: 'available', phase: 3 },
   { id: 'writing', icon: PenLine, href: '/ielts/writing', status: 'planned', phase: 3 },

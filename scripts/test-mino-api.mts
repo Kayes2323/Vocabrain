@@ -11,6 +11,7 @@ const realFetch = globalThis.fetch;
 const geminiBodies: any[] = [];
 let geminiMode: 'tool' | 'busy' | 'retired' | 'weak' = 'tool';
 let toolName = 'getVocabulary';
+let toolArgs: Record<string, unknown> | null = null;
 
 globalThis.fetch = (async (input: any, init?: any) => {
   const url = String(input);
@@ -25,7 +26,7 @@ globalThis.fetch = (async (input: any, init?: any) => {
     const answered = last.parts.some((p: any) => p.functionResponse);
     const parts = answered
       ? [{ text: `substantial মানে অনেক বা উল্লেখযোগ্য। TOOL=${JSON.stringify(last.parts[0].functionResponse.response.result)}` }]
-      : [{ functionCall: { name: toolName, args: toolName === 'getVocabulary' ? { word: 'substantial' } : {} } }];
+      : [{ functionCall: { name: toolName, args: toolArgs ?? (toolName === 'getVocabulary' ? { word: 'substantial' } : {}) } }];
     return Response.json({
       candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }],
       usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 20, totalTokenCount: 120 },
@@ -149,6 +150,19 @@ toolName = 'getTestHistory';
 res = await call(msg, b.token);
 const hist = await res.json();
 check('getTestHistory lists the attempt', hist.response.includes('Practice Test 1') && hist.response.includes('/24'), hist.response?.slice(0, 200));
+toolName = 'suggestActions';
+toolArgs = { actions: ['review', 'hack-the-planet', 'study-plan'] };
+res = await call(msg, b.token);
+const act = await res.json();
+check('suggestActions → whitelisted buttons only', JSON.stringify(act.metadata?.actions) === '["review","study-plan"]', act.metadata);
+check('everyday chat uses the fast model', act.metadata?.tier === 'fast');
+toolName = 'getStudyPlan';
+toolArgs = { days: 14 };
+res = await call({ ...msg, message: 'আমার জন্য একটা 14 দিনের routine বানাও' }, a.token);
+const plan = await res.json();
+check('plan request uses the smart model', plan.metadata?.tier === 'smart' && plan.metadata?.model === 'gemini-3.5-flash', plan.metadata);
+check('getStudyPlan returns a data-based plan', plan.response.includes('"horizonDays":14') && plan.response.includes('Vocabulary Review') && plan.response.includes('/ielts/plan'), plan.response?.slice(0, 300));
+toolArgs = null;
 toolName = 'getVocabulary';
 
 geminiMode = 'retired';

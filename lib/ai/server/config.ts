@@ -22,9 +22,9 @@ export const LIMITS = {
   historyChars: 6000,
   /** Newer models think before answering; thinking counts towards this limit. */
   maxOutputTokens: 2048,
-  maxToolRounds: 3,
+  maxToolRounds: 4,
   /** Provider call timeout. */
-  timeoutMs: 25_000,
+  timeoutMs: 20_000,
   /** Per-student limits (best effort per server instance; see rate-limit.ts). */
   perMinute: 8,
   perDay: 150,

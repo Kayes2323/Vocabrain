@@ -11,3 +11,4 @@ export * from './brain';
 export * from './recall';
 export * from './usage';
 export * from './diagnosis';
+export * from './study-plan';

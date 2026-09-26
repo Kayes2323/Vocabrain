@@ -31,7 +31,7 @@ Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
   - Country Explorer lists destinations by name only; no fees, visa or requirement data yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test, AI Writing/Speaking band feedback, progress dashboard, mistake notebook, study plan beyond today, grammar, country match, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
+Not built yet (PLANNED): Listening practice/tests, full 4-skill mock test, progress dashboard, mistake notebook, grammar, country match, universities, costs, scholarships, applications, documents (SOP/CV/LOR), visa.`;
 }
 
 export interface AppGuide {
@@ -120,6 +120,17 @@ export const APP_GUIDES: AppGuide[] = [
     steps: [
       'Up to four tasks: Vocabulary Review, Reading, Writing (use a word), Speaking (use a word). Tasks tick themselves when you finish the activity.',
       '"I only have 15 minutes" switches to a 15-minute plan. After 3+ days away, a lighter catch-up plan appears.',
+    ],
+  },
+  {
+    id: 'study-plan',
+    status: 'AVAILABLE',
+    title: 'My IELTS Plan (7–90 days or until the test)',
+    where: 'IELTS → My IELTS Plan (/ielts/plan)',
+    steps: [
+      'Pick 7, 14, 30, 60 or 90 days, or "Until test" when a test date is set.',
+      'Shows minutes a day, where the time goes and why (gap to target, weak test areas, due words), phases, and each day’s tasks with links.',
+      'Built from your data; it changes when your goal, study time or results change. Missing data is listed as assumptions.',
     ],
   },
   {

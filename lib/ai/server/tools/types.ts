@@ -4,6 +4,10 @@ import type { ToolDeclaration } from '../../types';
 export interface ToolContext {
   uid: string;
   idToken: string;
+  /** Buttons chosen during this turn (filled by suggestActions). */
+  actions?: string[];
+  /** Student's UTC offset in minutes. */
+  tzOffsetMinutes?: number;
 }
 
 /**

@@ -1,6 +1,8 @@
 import type { AIMessage, AIProvider, MinoCapabilityId, MinoResponseMetadata, ModelTier } from '../../types';
 import { LIMITS } from '../config';
 import { runTool, toolDeclarations } from '../tools';
+import type { ToolContext } from '../tools/types';
+import { isMinoAction } from '../../actions';
 import { buildSystemPrompt } from './prompt';
 import { buildStudentSnapshot } from './snapshot';
 
@@ -30,10 +32,19 @@ function trimHistory(history: AIMessage[]): AIMessage[] {
 }
 
 /** Mino → AI service → provider. One student message in, one reply out. */
+/** Deeper work (plans, analysis, Writing/Speaking feedback) uses the smart model; everyday chat stays fast and cheap. */
+const SMART_CAPABILITIES = new Set<MinoCapabilityId>(['study-planner', 'ielts-coach', 'writing-coach', 'speaking-coach']);
+const SMART_WORDS = /\b(plan|routine|schedule|analy[sz]e|analysis|weak|improv|diagnos|strategy|compare)\w*|রুটিন|প্ল্যান|পরিকল্পনা|বিশ্লেষণ|দুর্বল|উন্নতি|analyse/i;
+
+export function chooseTier(turn: Pick<MinoTurn, 'capability' | 'message'>): ModelTier {
+  if (turn.capability && SMART_CAPABILITIES.has(turn.capability)) return 'smart';
+  return SMART_WORDS.test(turn.message) ? 'smart' : 'fast';
+}
+
 export async function runMino(provider: AIProvider, turn: MinoTurn): Promise<{ response: string; metadata: MinoResponseMetadata }> {
-  const tier: ModelTier = 'fast';
+  const tier = chooseTier(turn);
   const started = Date.now();
-  const ctx = { uid: turn.student.uid, idToken: turn.student.idToken };
+  const ctx: ToolContext = { uid: turn.student.uid, idToken: turn.student.idToken, actions: [], tzOffsetMinutes: turn.tzOffsetMinutes };
 
   // Facts come from the database, never from the browser. If the read fails,
   // Mino is told plainly that it has no data rather than guessing.
@@ -60,6 +71,7 @@ export async function runMino(provider: AIProvider, turn: MinoTurn): Promise<{ r
       latencyMs: Date.now() - started,
       toolCalls: result.toolCalls,
       usage: result.usage,
+      ...(ctx.actions?.length ? { actions: ctx.actions.filter(isMinoAction) } : {}),
     },
   };
 }

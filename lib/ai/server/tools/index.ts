@@ -1,6 +1,8 @@
 import type { ToolDeclaration } from '../../types';
+import { suggestActions } from './actions';
 import { getAppGuide, getIELTSGuide } from './knowledge';
 import { getMinoMemory } from './memory';
+import { getStudyPlan } from './plan';
 import { getStudentProfile } from './profile';
 import { getQuestionPerformance, getTestHistory, getWeakAreas } from './tests';
 import type { MinoTool, ToolContext } from './types';
@@ -21,6 +23,8 @@ const TOOLS: MinoTool[] = [
   getTestHistory,
   getQuestionPerformance,
   getWeakAreas,
+  getStudyPlan,
+  suggestActions,
 ];
 
 export const toolDeclarations: ToolDeclaration[] = TOOLS.map((t) => t.declaration);

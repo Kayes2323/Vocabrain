@@ -10,7 +10,7 @@ import { MINO_CAPABILITIES } from '@/lib/ai/capabilities';
 import type { MinoAskResponse, MinoCapabilityId, MinoErrorCode } from '@/lib/ai/types';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const requestSchema = z.object({
   message: z.string().trim().min(1).max(LIMITS.messageChars),
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Log usage only: never the key, message text or reply.
-    console.info('[mino]', JSON.stringify({ status: 'ok', model: metadata.model, latencyMs: metadata.latencyMs, usage: metadata.usage, tools: metadata.toolCalls.map((t) => t.name) }));
+    console.info('[mino]', JSON.stringify({ status: 'ok', model: metadata.model, tier: metadata.tier, latencyMs: metadata.latencyMs, usage: metadata.usage, tools: metadata.toolCalls.map((t) => t.name) }));
     return NextResponse.json<MinoAskResponse>({ ok: true, response, metadata });
   } catch (error) {
     const code: MinoErrorCode = error instanceof MinoError ? error.code : 'unavailable';
