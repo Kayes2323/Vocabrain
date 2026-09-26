@@ -470,7 +470,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 2);
+  assert.equal(CHALLENGES.length, 3);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -480,6 +480,85 @@ test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stor
   fp = recordFinal(fp, { score: 83, level: 3, parts: {} }, NOW, 'tenses');
   assert.deepEqual([fp.finals!.tenses.best, fp.finals!.tenses.attempts], [83, 2]);
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Tenses Final Mastery Challenge: last 83% \(best 83%, 2 attempts/);
+});
+
+// ---------------------------------------------------------------- articles
+const articles = MODULES.find((m) => m.id === 'articles')!;
+const articleLessons = articles.lessons.filter((x) => x.kind !== 'test');
+const articleEx = articles.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+
+test('Articles: 8 taught lessons in v2 + a review test; every lesson has the full v2 shape and the 4 skills', () => {
+  assert.equal(articleLessons.length, 8);
+  assert.equal(articles.planned, undefined);
+  assert.deepEqual(articles.lessons.map((x) => x.id), ['ar-1', 'ar-2', 'ar-3', 'ar-4', 'ar-5', 'ar-6', 'ar-7', 'ar-8', 'ar-9']);
+  assert.equal(articles.lessons.at(-1)!.kind, 'test');
+  for (const x of articleLessons) {
+    assert.equal(x.format, 'v2', `${x.id} is v2`);
+    const kinds = x.steps.map((st) => st.kind);
+    for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'recall']) assert.ok(kinds.includes(k as never), `${x.id} has ${k}`);
+    const ielts = x.steps.find((st) => st.kind === 'ielts');
+    assert.equal(new Set(ielts && ielts.kind === 'ielts' ? ielts.uses.map((u) => u.skill) : []).size, 4, `${x.id} covers the 4 skills`);
+    const concept = x.steps.find((st) => st.kind === 'concept');
+    assert.ok(concept && concept.kind === 'concept' && concept.points?.some((pt) => /^NOT|: NOT|^না/.test(pt.en) || pt.en.includes('NOT')), `${x.id} says when NOT to use it`);
+    assert.ok(concept && concept.kind === 'concept' && concept.points?.some((pt) => /Bangla speakers slip/.test(pt.en)) || x.id === 'ar-6', `${x.id} explains why Bangla speakers slip`);
+    const practice = x.steps.filter((st) => st.kind === 'practice');
+    assert.ok(practice.some((st) => st.mode === 'recall'), `${x.id} has free recall`);
+    assert.ok(practice.some((st) => st.exercises.some((e) => e.type === 'correct' || e.type === 'spot')), `${x.id} has error correction`);
+    assert.ok(practice.some((st) => st.mode === 'personal' && st.exercises.some((e) => e.type === 'write' && e.mino)), `${x.id} has a Mino-checked sentence`);
+  }
+  assert.ok(articleEx.every((e) => e.tag === 'article' && e.concept?.startsWith('article-')), 'every question is an article question with its concept');
+  for (const e of articleEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+  // "No article" can be typed in a few natural ways.
+  assert.equal(grade2(ex('ar-4-r4'), '-'), true);
+  assert.equal(grade2(ex('ar-4-r4'), 'no article'), true);
+  assert.equal(grade2(ex('ar-4-r4'), 'the'), false);
+});
+
+test('Articles: every article concept is mastery-capable, reviewable and reaches mastery only after due reviews', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'article').map((c) => c.id);
+  assert.deepEqual(ids, ['article-a-an', 'article-a', 'article-the', 'article-zero']);
+  for (const c of ids) {
+    assert.ok(articleEx.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  let fp = empty();
+  for (const id of ['ar-3-p1', 'ar-3-p2', 'ar-3-p3', 'ar-3-r1', 'ar-3-r4']) fp = recordAnswer(fp, { source: 'ar-3', exercise: ex(id), answer: canonicalAnswer(ex(id)), correct: true, attempt: 1, now: NOW });
+  fp = recordApplication(fp, { source: 'ar-3', exercise: ex('ar-3-y1'), text: 'The best place in my city is the museum.', verdict: 'correct', corrected: 'The best place in my city is the museum.', attempt: 1, now: NOW });
+  assert.equal(conceptMastery(fp, 'article-the').level, 'practising');
+  fp = recordReview(fp, 'article-the', 100, NOW);
+  fp = recordReview(fp, 'article-the', 100, NOW);
+  assert.equal(conceptMastery(fp, 'article-the').consistency, false, 'an early repeat does not count');
+  fp = recordReview(fp, 'article-the', 100, new Date(NOW.getTime() + 2 * 86_400_000));
+  assert.equal(conceptMastery(fp, 'article-the').level, 'mastered');
+  assert.equal(findLesson('ar-6')!.lesson.concept, undefined, 'application lessons keep each question on its own concept');
+});
+
+test('Articles patterns: missing-article opens after 3 and fixes with article questions; noun-count shows on both pages', () => {
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'ar-2-p1', 'My mother is doctor.', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'ar-3-p1', 'A', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'ar-7-p2', 'the', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'articles', NOW).find((x) => x.pair === 'missing-article')!;
+  assert.equal(p.count, 3);
+  assert.equal(patternsFor(fp, 'tenses', NOW).length, 0);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Articles pattern: A missing a \/ an \/ the ×3.*fix\/missing-article/);
+  const qs = fixQuestions(fp, 'missing-article', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => q.tag === 'article' && exercisePattern(q) === 'missing-article'));
+  for (const k of ['missing-article', 'general-the', 'a-an-sound']) assert.ok(POS_FIX_GUIDE[k]?.avoid, `${k} has a guide`);
+  assert.deepEqual(POS_NAMED_PATTERNS['noun-count'].modules, ['parts-of-speech', 'articles']);
+});
+
+test('Articles Final Mastery Challenge: 6 parts, per-concept items, stored in finals.articles', () => {
+  const ch = getChallenge('articles')!;
+  assert.equal(ch.parts.length, 6);
+  assert.equal(ch.moduleId, 'articles');
+  assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))));
+  const fp = recordFinal(empty(), { score: 72, level: 2, parts: {} }, NOW, 'articles');
+  assert.equal(finalRecord(fp, 'articles')!.score, 72);
+  assert.equal(fp.finals!.tenses, undefined);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Articles Final Mastery Challenge: last 72%/);
 });
 
 const asyncTests: [string, () => Promise<void>][] = [];
@@ -516,6 +595,17 @@ asyncTests.push(['Mino tense feedback: names the deciding time word and separate
     .find((e): e is Extract<Exercise, { type: 'write' }> => e.type === 'write' && !!e.mino && (!e.concept || getConcept(e.concept)?.tag !== 'tense'))!;
   await assessFoundationSentence(fake, other, 'A sentence.', 'en');
   assert.doesNotMatch(seen!.system!, /Tense feedback/, 'non-tense tasks get no tense rules');
+}]);
+asyncTests.push(['Mino article feedback: names the noun, the deciding question and the sound for a / an', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'I am a student at a university.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'am student', fix: 'am a student', why: 'one countable thing → a' }], practice: { sentence: 'My uncle is ___ engineer.', answers: ['an'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('ar-2-y1') as Extract<Exercise, { type: 'write' }>, 'I am student at an university.', 'bn');
+  assert.match(seen!.system!, /Article feedback \(target: a \/ an: one of many\)/);
+  assert.match(seen!.system!, /does the reader know exactly which one/);
+  assert.match(seen!.system!, /how it SOUNDS/);
+  assert.doesNotMatch(seen!.system!, /Tense feedback/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['am student']);
+  assert.equal(fb.practice?.answers[0], 'an');
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

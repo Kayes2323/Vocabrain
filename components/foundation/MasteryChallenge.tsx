@@ -210,7 +210,7 @@ function Report({ module, challenge, answered, level, onRetry, levelName }: {
     return { part: p, correct: mine.filter((a) => a.correct).length, total: mine.length };
   });
   const units = module.units ?? [];
-  // Areas: the word job (Parts of Speech) or the concept (tense by tense).
+  // Areas: the word job (Parts of Speech) or the concept (tense by tense, article by article).
   const areaMap = new Map<string, Area>();
   for (const a of answered) {
     let key: string | undefined;
@@ -260,7 +260,7 @@ function Report({ module, challenge, answered, level, onRetry, levelName }: {
       </Section>
 
       {areas.length > 0 && (
-        <Section title={t(challenge.areas === 'pos' ? 'foundation.final.byJob' : 'foundation.final.byTense')} variant="label">
+        <Section title={t(challenge.areas === 'pos' ? 'foundation.final.byJob' : challenge.id === 'tenses' ? 'foundation.final.byTense' : 'foundation.final.byTopic')} variant="label">
           <div className="flex flex-wrap gap-2">
             {areas.map((x) => (
               <StatusChip key={x.key} tone={rate(x) >= 0.67 ? 'success' : 'warning'}>
@@ -331,7 +331,7 @@ function Report({ module, challenge, answered, level, onRetry, levelName }: {
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button asChild size="lg" className={cn('flex-1')}>
-          <Link href={askHref}>{challenge.id === 'pos' ? t('foundation.final.askMino') : t('foundation.final.askMinoTenses')}</Link>
+          <Link href={askHref}>{challenge.id === 'pos' ? t('foundation.final.askMino') : t('foundation.final.askMinoNamed', { name: text(challenge.name) })}</Link>
         </Button>
         <Button size="lg" variant="outline" className="flex-1" onClick={onRetry}>
           <RotateCcw /> {t('foundation.final.retry')}

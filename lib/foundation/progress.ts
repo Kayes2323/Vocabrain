@@ -4,6 +4,7 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
+import { CHALLENGES } from './content/challenges';
 import { CONCEPT_PATTERN, patternModules, POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { expectedAnswer, posPairs } from './grade';
 import type { ErrorTag, Exercise, FoundationSkill, Lesson, Module, Pos, Unit } from './model';
@@ -659,14 +660,17 @@ export function foundationSummaryLines(fp: FoundationProgress, now = new Date())
   const t = fp.days[today(now)];
   lines.push(`- Foundation today: ${t ? `${t.lessons} lessons, ${t.questions} questions (${t.correct} correct)` : 'nothing yet'}.`);
   lines.push(...posSummaryLines(fp, now));
-  for (const p of patternsFor(fp, 'tenses', now).filter((x) => !x.modules.includes('parts-of-speech')).slice(0, 2)) {
-    lines.push(
-      `- Open Tenses pattern: ${POS_NAMED_PATTERNS[p.pair].title.en} ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
-    );
+  // Named patterns that belong to Tenses or Articles (Parts of Speech has its own lines above).
+  for (const [moduleId, name] of [['tenses', 'Tenses'], ['articles', 'Articles']] as const) {
+    for (const p of patternsFor(fp, moduleId, now).filter((x) => !x.modules.includes('parts-of-speech') && x.modules[0] === moduleId).slice(0, 2)) {
+      lines.push(
+        `- Open ${name} pattern: ${POS_NAMED_PATTERNS[p.pair].title.en} ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,
+      );
+    }
   }
-  if (fp.finals?.tenses) {
-    const f = fp.finals.tenses;
-    lines.push(`- Tenses Final Mastery Challenge: last ${f.score}% (best ${f.best}%, ${f.attempts} attempt${f.attempts > 1 ? 's' : ''}, level reached ${f.level}/3, ${f.at.slice(0, 10)}).`);
+  for (const ch of CHALLENGES) {
+    const f = ch.id === 'pos' ? undefined : fp.finals?.[ch.id];
+    if (f) lines.push(`- ${ch.title.en}: last ${f.score}% (best ${f.best}%, ${f.attempts} attempt${f.attempts > 1 ? 's' : ''}, level reached ${f.level}/3, ${f.at.slice(0, 10)}).`);
   }
   return lines;
 }

@@ -10,6 +10,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { askMino } from '@/lib/ai/client';
+import { getChallenge } from '@/lib/foundation';
 import { MINO_ACTIONS, isMinoAction, type MinoActionId } from '@/lib/ai/actions';
 import { MINO_PROMPT_IDS, type MinoPromptId } from '@/lib/ai/capabilities';
 import type { AIMessage, MinoCapabilityId, MinoContext } from '@/lib/ai/types';
@@ -231,7 +232,15 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     } else if (ask === 'pos-final') {
       send(t('foundation.final.askPrompt'), 'ielts-coach');
     } else if (ask === 'final') {
-      send(t(params.get('challenge') === 'tenses' ? 'foundation.final.askPromptTenses' : 'foundation.final.askPrompt'), 'ielts-coach');
+      const challenge = getChallenge(params.get('challenge') ?? '');
+      send(
+        challenge?.id === 'tenses'
+          ? t('foundation.final.askPromptTenses')
+          : challenge && challenge.id !== 'pos'
+            ? t('foundation.final.askPromptNamed', { name: locale === 'bn' ? challenge.name.bn : challenge.name.en })
+            : t('foundation.final.askPrompt'),
+        'ielts-coach',
+      );
     } else if (ask === 'foundation-review') {
       send(t('foundation.askReview'), 'ielts-coach');
     } else if (ask === 'foundation') {

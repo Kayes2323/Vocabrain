@@ -23,23 +23,33 @@ const norm = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/[
 
 export async function assessFoundationSentence(provider: AIProvider, exercise: WriteExercise, text: string, language: 'en' | 'bn'): Promise<FoundationFeedback> {
   if (!exercise.mino) throw new MinoError('invalid_request', 'no mino task');
-  const tense = exercise.concept ? getConcept(exercise.concept) : undefined;
-  const tenseRules =
-    tense?.tag === 'tense'
+  const concept = exercise.concept ? getConcept(exercise.concept) : undefined;
+  // Topic-specific rules: tense and article tasks get a mentor-style check.
+  const focusRules =
+    concept?.tag === 'tense'
       ? `
-Tense feedback (target: ${tense.title.en}):
+Tense feedback (target: ${concept.title.en}):
 - If the tense is wrong, name the time word or context that decides it and say why, e.g. "'yesterday' is a finished time, so use the Past Simple: 'I went…'". If there is no time word, explain the meaning (finished vs still true, in progress vs complete, earlier past).
 - Keep two problems apart: a wrong TENSE CHOICE and a wrong VERB FORM. "I have went to Dhaka yesterday" has both: 'have went' is never correct (the forms are 'went' or 'have gone'), and 'yesterday' needs the Past Simple → 'I went to Dhaka yesterday.' Give each its own fix.
 - The follow-up gap practises the same decision with a new time word.
 `
-      : '';
+      : concept?.tag === 'article'
+        ? `
+Article feedback (target: ${concept.title.en}):
+- Bangla has no articles, so explain each article error with the noun it belongs to and ONE deciding question: does the reader know exactly which one? (→ the: second mention, only one, superlative, "the number of") · is it one countable thing that is new or one of many? (→ a / an) · is it plural or uncountable in a general sense? (→ no article).
+- For a / an, name the next word and how it SOUNDS ("university" = "yoo-" → a; "hour" has a silent h → an). The sound decides, not the letter.
+- Treat uncountable nouns with a / an ("an advice", "a information", "a research") as their own fix: some advice, some information.
+- Keep article errors apart from any other error (tense, word form) — give each its own fix.
+- The follow-up gap practises the same article decision in a NEW sentence; answers are a, an, the, or "-" for no article.
+`
+        : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
 Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice.
-${tenseRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
+${focusRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).
 - fixes: up to 3; "quote" MUST be copied exactly from the student's text. In "why", explain with the student's own words and the grammar reason, e.g. "You used 'go' with 'he'. Because the subject is 'he', the present simple verb needs -s: 'He goes…'". Name the job the word needs (noun, verb, adjective, adverb…) when that is the problem.
