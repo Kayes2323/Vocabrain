@@ -6,6 +6,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { BrandMark } from './BrandMark';
+import { MinoMark } from './MinoMark';
 
 /** Tablet/desktop navigation rail, same destinations as BottomNav. */
 export function SideNav() {
@@ -32,7 +33,7 @@ export function SideNav() {
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >
-                  <Icon className={cn('size-5', featured && !active && 'text-brand')} aria-hidden />
+                  {featured ? <MinoMark size="xs" /> : <Icon className="size-5" aria-hidden />}
                   {t(labelKey)}
                   {featured && (
                     <span className="ml-auto rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">

@@ -3,6 +3,19 @@
 Mino is the student's mentor. This document covers the AI foundation: how a
 message travels, how data stays private, and how to extend Mino.
 
+## Screen (UI)
+
+The Mino tab is one conversation (`components/mino/MinoChat.tsx`):
+
+- **Header**: the Mino mark, name and role; a "Today" pill (opens the Today sheet), New chat, and "What Mino knows" (opens the About sheet).
+- **New chat**: Mino greets the student by name with the real insight from `getMinoInsight`, then up to 3 focus cards (`getNextActions`) and 4 suggestions (`MINO_PROMPT_IDS`).
+- **Active chat**: the student's messages are soft bubbles; Mino's replies have no bubble, with action buttons and a copy button. While waiting, the mark "thinks" (glances and breathes) and a short status line cycles.
+- **Errors**: after one automatic retry, a calm notice with "Try again" that re-sends the last question without duplicating it.
+- **Composer**: docked above the tab bar; text in Bangla/English, voice input where the browser supports it (`useSpeechRecognition`, bn-BD or en-US).
+- **Sheets**: Today (full next-step list with reasons) and About (facts + memory notes). From 1280px the Today list sits in a side column.
+
+The mark ("Companion", `components/shell/MinoMark.tsx`) is a rounded square with two eyes and a spark. `alive` adds an occasional blink; `thinking` is the loading animation. All motion stops under `prefers-reduced-motion`.
+
 ## Request flow
 
 1. `components/mino/MinoChat.tsx` calls `askMino()` (`lib/ai/client.ts`).

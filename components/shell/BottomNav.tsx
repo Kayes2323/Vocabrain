@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
+import { MinoMark } from './MinoMark';
 
 /** Mobile primary navigation. Hidden from md upwards, where SideNav takes over. */
 export function BottomNav() {
@@ -32,10 +33,10 @@ export function BottomNav() {
                   <span
                     className={cn(
                       'flex h-7 w-11 items-center justify-center rounded-full transition-colors',
-                      active ? 'bg-brand text-brand-foreground' : 'text-brand',
+                      active && 'bg-brand-soft',
                     )}
                   >
-                    <Icon className="size-[18px]" aria-hidden />
+                    <MinoMark size="xs" alive={active} />
                   </span>
                 ) : (
                   <span

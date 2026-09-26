@@ -27,5 +27,5 @@ export const MINO_CAPABILITIES: MinoCapability[] = [
  * Quick-start prompts on the Mino screen (copy under `mino.prompts`).
  * `minimumDay` is handled locally: it switches today's plan to 15 minutes.
  */
-export const MINO_PROMPT_IDS = ['today', 'writingStuck', 'minimumDay', 'next'] as const;
+export const MINO_PROMPT_IDS = ['today', 'writingStuck', 'plan', 'minimumDay'] as const;
 export type MinoPromptId = (typeof MINO_PROMPT_IDS)[number];

@@ -1,7 +1,7 @@
 // Vocabulary Foundation engine: today's mission, journey, stats and the
 // mission session. Pure functions over the Brain (users/{uid}/vocabulary) and
 // profile.vocabFoundation, so every number comes from real data.
-import { dueWords, isWeakWord } from '@/lib/engine/brain';
+import { dueWords } from '@/lib/engine/brain';
 import { localDateKey } from '@/lib/engine/dates';
 import type { BrainWord, StudyProgress, VocabDay, VocabFoundationProgress, VocabSession, WordInfo } from '@/lib/models';
 import { FOUNDATION_WORDS, getFoundationWord, type FoundationWord } from './words';
@@ -180,21 +180,34 @@ export function sessionSummary(session: VocabSession) {
   };
 }
 
-/** Words to show Mino: forgotten recently, used correctly, overall accuracy. */
-export function vocabSummaryLines(brain: BrainWord[], vf: VocabFoundationProgress, now = new Date()): string[] {
+/**
+ * Words to show Mino: forgotten recently, used correctly, overall accuracy.
+ * Server-side docs can be partial (older or hand-made words), so every field is optional here.
+ */
+export function vocabSummaryLines(brain: BrainWord[], vf: VocabFoundationProgress | undefined, now = new Date()): string[] {
   const lines: string[] = [];
-  const discovered = Object.keys(vf.discovered).length;
-  const recalls = brain.reduce((s, w) => s + w.recallCount, 0);
-  const right = brain.reduce((s, w) => s + w.successfulRecallCount, 0);
-  const weak = brain.filter(isWeakWord);
-  const used = brain.filter((w) => w.writingUsageCount + w.speakingUsageCount > 0);
+  const words = brain.map((w) => ({
+    word: w.word ?? '',
+    createdAt: w.createdAt ?? '',
+    recallCount: w.recallCount ?? 0,
+    successfulRecallCount: w.successfulRecallCount ?? 0,
+    consecutiveFailures: w.consecutiveFailures ?? 0,
+    used: (w.writingUsageCount ?? 0) + (w.speakingUsageCount ?? 0) > 0,
+    usageHistory: w.usageHistory ?? [],
+  }));
+  const discovered = Object.keys(vf?.discovered ?? {}).length;
+  const recalls = words.reduce((s, w) => s + w.recallCount, 0);
+  const right = words.reduce((s, w) => s + w.successfulRecallCount, 0);
+  const weak = words.filter((w) => w.consecutiveFailures > 0 || (w.recallCount >= 3 && w.successfulRecallCount / w.recallCount < 0.5));
   const month = localDateKey(now).slice(0, 7);
-  const savedThisMonth = brain.filter((w) => w.createdAt.slice(0, 7) === month).length;
+  const savedThisMonth = words.filter((w) => w.createdAt.slice(0, 7) === month).length;
   lines.push(
-    `- Vocabulary Foundation: ${discovered}/${FOUNDATION_WORDS.length} course words discovered; recall accuracy ${recalls ? `${Math.round((right / recalls) * 100)}% of ${recalls} recalls` : 'no recalls yet'}; words used correctly in sentences: ${used.length}; saved this month: ${savedThisMonth}.`,
+    `- Vocabulary Foundation: ${discovered}/${FOUNDATION_WORDS.length} course words discovered; recall accuracy ${recalls ? `${Math.round((right / recalls) * 100)}% of ${recalls} recalls` : 'no recalls yet'}; words used correctly in sentences: ${words.filter((w) => w.used).length}; saved this month: ${savedThisMonth}.`,
   );
   if (weak.length) lines.push(`- Weak words (recent recall failures): ${weak.slice(0, 6).map((w) => `${w.word} (${w.consecutiveFailures} failed in a row)`).join(', ')}.`);
-  const lastUse = brain.flatMap((w) => w.usageHistory.filter((u) => !u.correct).map((u) => ({ word: w.word, ...u }))).sort((a, b) => b.at.localeCompare(a.at))[0];
+  const lastUse = words
+    .flatMap((w) => w.usageHistory.filter((u) => u && !u.correct && u.text && u.at).map((u) => ({ word: w.word, text: u.text, at: u.at })))
+    .sort((a, b) => b.at.localeCompare(a.at))[0];
   if (lastUse) lines.push(`- Latest sentence that needed work: "${lastUse.text.slice(0, 140)}" (word: ${lastUse.word}).`);
   return lines;
 }
