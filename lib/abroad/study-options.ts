@@ -101,6 +101,12 @@ export interface GuideDocument {
   generalOnly: boolean;
 }
 
+export interface GuideSource {
+  source: SourceRef;
+  /** Latest verification date of a fact shown from this source (absent: an official page to read). */
+  lastVerified?: string;
+}
+
 export interface ProgramGuide {
   country: Country;
   option: StudyOption;
@@ -113,8 +119,8 @@ export interface ProgramGuide {
   fundsOfficial: ShownOfficial[];
   /** Tuition, living and other costs: official, estimate and the student's budget, kept apart. */
   costGroups: GroupPlan[];
-  /** Every official source the guide uses, once. */
-  sources: SourceRef[];
+  /** Every source the guide uses, once, with the latest date a fact from it was verified. */
+  sources: GuideSource[];
 }
 
 const hasContent = (b: GuideBlock) => b.facts.length > 0 || Boolean(b.guidance) || Boolean(b.explanation) || b.links.length > 0;
@@ -227,23 +233,46 @@ export function programGuide(country: Country, optionId: string, abroad?: StudyA
   const fundsOfficial = plan.groups.flatMap((g) => g.official).filter((o) => isFunds(o) && !fromRegistry(o));
   const costGroups = plan.groups.map((g) => ({ ...g, official: g.official.filter((o) => !isFunds(o)) }));
 
-  const sources = new Map<string, SourceRef>();
-  const addSource = (s: SourceRef | undefined) => s && sources.set(s.url ?? s.name, s);
+  const sources = new Map<string, GuideSource>();
+  const addSource = (s: SourceRef | undefined, verified?: string) => {
+    if (!s) return;
+    const key = s.url ?? s.name;
+    const prev = sources.get(key);
+    const lastVerified = [prev?.lastVerified, verified].filter((d): d is string => Boolean(d)).sort().pop();
+    sources.set(key, { source: prev?.source ?? s, ...(lastVerified ? { lastVerified } : {}) });
+  };
   for (const blocks of Object.values(built)) for (const b of blocks) {
-    b.facts.forEach((f) => addSource(f.fact.source));
-    b.links.forEach(addSource);
+    b.facts.forEach((f) => addSource(f.fact.source, f.fact.lastVerified));
+    b.links.forEach((l) => addSource(l));
   }
-  documents.forEach((d) => d.requirements.forEach((r) => addSource(r.source)));
-  fundsOfficial.forEach((o) => addSource(o.cost.amount.source));
+  documents.forEach((d) => d.requirements.forEach((r) => addSource(r.source, r.lastVerified)));
+  fundsOfficial.forEach((o) => addSource(o.cost.amount.source, o.cost.amount.lastVerified));
   costGroups.forEach((g) => {
-    g.official.forEach((o) => addSource(o.cost.amount.source));
-    g.officialPending.forEach(addSource);
-    g.estimates.forEach((e) => e.sources?.forEach(addSource));
+    g.official.forEach((o) => addSource(o.cost.amount.source, o.cost.amount.lastVerified));
+    g.officialPending.forEach((l) => addSource(l));
+    g.estimates.forEach((e) => e.sources?.forEach((l) => addSource(l)));
   });
   const visaNames = Object.fromEntries(categories.map((c) => [c.id, verifiedVisaName(c, now)]));
-  Object.values(visaNames).forEach((n) => addSource(n?.source));
+  Object.values(visaNames).forEach((n) => addSource(n?.source, n?.lastVerified));
 
   return { country, option, visaCategories: categories, visaNames, sections: built, documents, fundsOfficial, costGroups, sources: [...sources.values()] };
+}
+
+/**
+ * A short, readable name for a source ("Korea Immigration Service – Visa
+ * Navigator"): parenthetical details are dropped. The full name, URL and
+ * dates stay in the data.
+ */
+export function shortSourceName(name: string): string {
+  const short = name.replace(/\s*\([^)]*\)/g, '').replace(/\s+/g, ' ').trim();
+  return short.length > 70 ? `${short.slice(0, 67).trimEnd()}…` : short || name;
+}
+
+/** Sources behind a set of blocks, once each (for the small link at the end of a section). */
+export function blockSources(blocks: GuideBlock[]): SourceRef[] {
+  const out = new Map<string, SourceRef>();
+  for (const b of blocks) for (const f of b.facts) out.set(f.fact.source.url ?? f.fact.source.name, f.fact.source);
+  return [...out.values()];
 }
 
 /** A guide section has official facts to show (else it reads "not verified yet"). */

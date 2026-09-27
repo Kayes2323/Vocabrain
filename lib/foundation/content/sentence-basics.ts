@@ -12,7 +12,7 @@ export const sentenceBasicsLessons: Lesson[] = [
     title: { en: 'What is a sentence?', bn: 'Sentence আসলে কী?' },
     why: {
       en: 'Examiners read your Writing sentence by sentence. Complete sentences are the base of Grammatical Range and Accuracy.',
-      bn: 'Examiner তোমার Writing sentence ধরে ধরে পড়েন। Complete sentence হলো Grammatical Range & Accuracy-র ভিত্তি।',
+      bn: 'Examiner আপনার Writing sentence ধরে ধরে পড়েন। Complete sentence হলো Grammatical Range & Accuracy-র ভিত্তি।',
     },
     minutes: 6,
     difficulty: 'easy',
@@ -76,10 +76,10 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-1-e3',
             type: 'correct',
-            prompt: { en: 'Make it a complete sentence by adding one word.', bn: 'একটা শব্দ যোগ করে complete sentence বানাও।' },
+            prompt: { en: 'Make it a complete sentence by adding one word.', bn: 'একটা শব্দ যোগ করে complete sentence বানান।' },
             sentence: 'Public transport very cheap in Dhaka.',
             accepted: ['Public transport is very cheap in Dhaka.'],
-            explanation: { en: 'Add the verb "is": "Public transport is very cheap in Dhaka."', bn: 'Verb "is" যোগ করো: "Public transport is very cheap in Dhaka."' },
+            explanation: { en: 'Add the verb "is": "Public transport is very cheap in Dhaka."', bn: 'Verb "is" যোগ করুন: "Public transport is very cheap in Dhaka."' },
             tag: 'verb',
           },
           {
@@ -95,7 +95,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-1-e5',
             type: 'write',
-            prompt: { en: 'Write one complete sentence about your city.', bn: 'তোমার শহর নিয়ে একটা complete sentence লেখো।' },
+            prompt: { en: 'Write one complete sentence about your city.', bn: 'আপনার শহর নিয়ে একটা complete sentence লিখুন।' },
             model: 'Chattogram is a busy port city.',
             checklist: [
               { en: 'Starts with a capital letter', bn: 'Capital letter দিয়ে শুরু' },
@@ -109,7 +109,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'Sentence = subject + verb + a complete idea.', bn: 'Sentence = subject + verb + সম্পূর্ণ idea।' },
           { en: '"Because…", "Although…" alone are not sentences.', bn: 'শুধু "Because…", "Although…" দিয়ে sentence হয় না।' },
@@ -138,14 +138,14 @@ export const sentenceBasicsLessons: Lesson[] = [
           bn: 'Subject হলো সেই মানুষ, জিনিস বা idea, যে কাজটা করছে বা যার কথা বলা হচ্ছে। সাধারণত verb-এর আগে বসে। Subject এক শব্দেরও হতে পারে ("Prices"), আবার লম্বা phrase-ও হতে পারে ("The number of students who study abroad")।',
         },
         points: [
-          { en: 'Ask "Who?" or "What?" before the verb.', bn: 'Verb-এর আগে "কে?" বা "কী?" জিজ্ঞেস করো।' },
+          { en: 'Ask "Who?" or "What?" before the verb.', bn: 'Verb-এর আগে "কে?" বা "কী?" জিজ্ঞেস করুন।' },
           { en: 'English almost always needs a subject. Bangla can drop it ("যাচ্ছি"), English cannot ("I am going").', bn: 'English-এ প্রায় সবসময় subject লাগে। বাংলায় বাদ দেওয়া যায় ("যাচ্ছি"), English-এ যায় না ("I am going")।' },
           { en: 'Use "It" or "There" when there is no real subject: "It is raining." "There are many parks."', bn: 'আসল subject না থাকলে "It" বা "There" লাগে: "It is raining." "There are many parks."' },
         ],
       },
       {
         kind: 'examples',
-        title: { en: 'Find the subject', bn: 'Subject খুঁজে বের করো' },
+        title: { en: 'Find the subject', bn: 'Subject খুঁজে বের করুন' },
         items: [
           { en: 'Online shopping has become popular.', note: { en: 'Subject: "Online shopping".', bn: 'Subject: "Online shopping"।' } },
           { en: 'The number of cars in the city doubled.', note: { en: 'Subject: "The number of cars in the city" (the head word is "number").', bn: 'Subject: "The number of cars in the city" (মূল শব্দ "number")।' } },
@@ -156,8 +156,8 @@ export const sentenceBasicsLessons: Lesson[] = [
         kind: 'ielts',
         title: { en: 'Where you need this in IELTS', bn: 'IELTS-এ কোথায় লাগবে' },
         uses: [
-          { skill: 'writing', example: 'The proportion of households with internet access rose.', note: { en: 'Task 1 subjects are often long. Find the head word ("proportion") to choose the verb.', bn: 'Task 1-এ subject প্রায়ই লম্বা হয়। Verb বাছতে মূল শব্দটা ("proportion") ধরো।' } },
-          { skill: 'speaking', example: 'It is really important to me.', note: { en: 'Don’t drop the subject: say "It is important", not "Is important".', bn: 'Subject বাদ দিও না: "It is important" বলো, "Is important" না।' } },
+          { skill: 'writing', example: 'The proportion of households with internet access rose.', note: { en: 'Task 1 subjects are often long. Find the head word ("proportion") to choose the verb.', bn: 'Task 1-এ subject প্রায়ই লম্বা হয়। Verb বাছতে মূল শব্দটা ("proportion") ধরুন।' } },
+          { skill: 'speaking', example: 'It is really important to me.', note: { en: 'Don’t drop the subject: say "It is important", not "Is important".', bn: 'Subject বাদ দিও না: "It is important" বলুন, "Is important" না।' } },
           { skill: 'reading', example: 'Researchers at the university found that…', note: { en: 'Who did what? Matching Features questions often test exactly this.', bn: 'কে কী করেছে? Matching Features প্রশ্ন ঠিক এটাই যাচাই করে।' } },
         ],
       },
@@ -187,7 +187,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-2-e3',
             type: 'correct',
-            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করো।' },
+            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করুন।' },
             sentence: 'Is important to learn English.',
             accepted: ['It is important to learn English.'],
             explanation: { en: 'English needs a subject: "It is important to learn English."', bn: 'English-এ subject লাগে: "It is important to learn English."' },
@@ -216,9 +216,9 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
-          { en: 'Ask "Who/What?" before the verb to find the subject.', bn: 'Subject পেতে verb-এর আগে "কে/কী?" জিজ্ঞেস করো।' },
+          { en: 'Ask "Who/What?" before the verb to find the subject.', bn: 'Subject পেতে verb-এর আগে "কে/কী?" জিজ্ঞেস করুন।' },
           { en: 'Never drop the subject in English: use "It" or "There" if needed.', bn: 'English-এ subject বাদ দিও না: দরকার হলে "It" বা "There"।' },
         ],
       },
@@ -285,7 +285,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-3-e2',
             type: 'correct',
-            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করো।' },
+            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করুন।' },
             sentence: 'House prices rising every year.',
             accepted: ['House prices are rising every year.', 'House prices rise every year.'],
             explanation: { en: '"rising" needs a helping verb: "are rising". Or use "rise".', bn: '"rising"-এর সাথে helping verb লাগে: "are rising"। অথবা "rise"।' },
@@ -303,7 +303,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-3-e4',
             type: 'choice',
-            prompt: { en: 'Choose the correct sentence.', bn: 'সঠিক sentence বাছো।' },
+            prompt: { en: 'Choose the correct sentence.', bn: 'সঠিক sentence বেছে নিন।' },
             options: ['The graph show the sales.', 'The graph shows the sales.', 'The graph showing the sales.'],
             answer: 'The graph shows the sales.',
             explanation: { en: 'Singular subject "The graph" → "shows".', bn: 'Singular subject "The graph" → "shows"।' },
@@ -312,7 +312,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-3-e5',
             type: 'write',
-            prompt: { en: 'Write one sentence about a change in your area. Use a trend verb (rise, fall, increase, decrease).', bn: 'তোমার এলাকার একটা পরিবর্তন নিয়ে এক sentence লেখো। একটা trend verb ব্যবহার করো (rise, fall, increase, decrease)।' },
+            prompt: { en: 'Write one sentence about a change in your area. Use a trend verb (rise, fall, increase, decrease).', bn: 'আপনার এলাকার একটা পরিবর্তন নিয়ে এক sentence লিখুন। একটা trend verb ব্যবহার করুন (rise, fall, increase, decrease)।' },
             model: 'The number of shopping malls in my area has increased.',
             checklist: [
               { en: 'Has a clear subject', bn: 'Subject পরিষ্কার' },
@@ -326,7 +326,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'Every sentence needs a full main verb.', bn: 'প্রতিটা sentence-এ একটা full main verb লাগে।' },
           { en: '-ing needs am/is/are/was/were before it.', bn: '-ing-এর আগে am/is/are/was/were লাগে।' },
@@ -352,7 +352,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         title: { en: 'Who or what receives the action', bn: 'কাজটা কার উপর হচ্ছে' },
         body: {
           en: 'The object receives the action of the verb. It usually comes straight after the verb: "Technology changes our lives." Ask "What?" or "Whom?" after the verb.',
-          bn: 'Object হলো যার উপর verb-এর কাজটা হয়। সাধারণত verb-এর ঠিক পরে বসে: "Technology changes our lives." Verb-এর পরে "কী?" বা "কাকে?" জিজ্ঞেস করো।',
+          bn: 'Object হলো যার উপর verb-এর কাজটা হয়। সাধারণত verb-এর ঠিক পরে বসে: "Technology changes our lives." Verb-এর পরে "কী?" বা "কাকে?" জিজ্ঞেস করুন।',
         },
         points: [
           { en: 'Some verbs need an object: affect, provide, reduce, improve, discuss.', bn: 'কিছু verb-এর object লাগবেই: affect, provide, reduce, improve, discuss।' },
@@ -375,7 +375,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         uses: [
           { skill: 'writing', example: 'Working from home saves time and money.', note: { en: 'Task 2 arguments often follow subject + verb + object.', bn: 'Task 2-এর argument প্রায়ই subject + verb + object ধরে চলে।' } },
           { skill: 'writing', example: 'The company raised prices, and sales fell.', note: { en: 'Task 1: "raise" takes an object, "rise" does not — a classic error.', bn: 'Task 1: "raise"-এর object লাগে, "rise"-এর না — খুব common ভুল।' } },
-          { skill: 'speaking', example: 'I really enjoy it.', note: { en: '"enjoy" needs an object: say "I enjoy it", not just "I enjoy".', bn: '"enjoy"-এর object লাগে: শুধু "I enjoy" না, "I enjoy it" বলো।' } },
+          { skill: 'speaking', example: 'I really enjoy it.', note: { en: '"enjoy" needs an object: say "I enjoy it", not just "I enjoy".', bn: '"enjoy"-এর object লাগে: শুধু "I enjoy" না, "I enjoy it" বলুন।' } },
         ],
       },
       {
@@ -395,7 +395,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-4-e2',
             type: 'correct',
-            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করো।' },
+            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করুন।' },
             sentence: 'Pollution affects on our health.',
             accepted: ['Pollution affects our health.'],
             explanation: { en: '"affect" takes the object directly: "affects our health".', bn: '"affect"-এর পরে সরাসরি object: "affects our health"।' },
@@ -404,7 +404,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-4-e3',
             type: 'choice',
-            prompt: { en: 'Choose the correct verb.', bn: 'সঠিক verb বাছো।' },
+            prompt: { en: 'Choose the correct verb.', bn: 'সঠিক verb বেছে নিন।' },
             sentence: 'The shop ___ its prices last month.',
             options: ['rose', 'raised'],
             answer: 'raised',
@@ -423,7 +423,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-4-e5',
             type: 'order',
-            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজাও।' },
+            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজান।' },
             answer: 'Technology has changed our lives.',
             explanation: { en: 'Subject (Technology) + verb (has changed) + object (our lives).', bn: 'Subject (Technology) + verb (has changed) + object (our lives)।' },
             tag: 'sentence-structure',
@@ -432,7 +432,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'Object = what/whom after the verb.', bn: 'Object = verb-এর পরে কী/কাকে।' },
           { en: 'affect / discuss / enter + object directly (no "on", "about", "into").', bn: 'affect / discuss / enter-এর পরে সরাসরি object ("on", "about", "into" নয়)।' },
@@ -492,7 +492,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-5-e1',
             type: 'order',
-            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজাও।' },
+            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজান।' },
             answer: 'My brother works in a bank.',
             explanation: { en: 'S (My brother) + V (works) + place (in a bank).', bn: 'S (My brother) + V (works) + place (in a bank)।' },
             tag: 'sentence-structure',
@@ -500,7 +500,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-5-e2',
             type: 'order',
-            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজাও।' },
+            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজান।' },
             answer: 'Many people visit Cox’s Bazar in winter.',
             explanation: { en: 'S + V + O (Cox’s Bazar) + time (in winter).', bn: 'S + V + O (Cox’s Bazar) + time (in winter)।' },
             tag: 'sentence-structure',
@@ -517,7 +517,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-5-e4',
             type: 'correct',
-            prompt: { en: 'Correct the word order.', bn: 'Word order ঠিক করো।' },
+            prompt: { en: 'Correct the word order.', bn: 'Word order ঠিক করুন।' },
             sentence: 'In 2020 the company 200 workers employed.',
             accepted: ['In 2020, the company employed 200 workers.', 'In 2020 the company employed 200 workers.', 'The company employed 200 workers in 2020.'],
             explanation: { en: 'The verb goes before the object: "the company employed 200 workers".', bn: 'Verb object-এর আগে: "the company employed 200 workers"।' },
@@ -527,7 +527,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'S + V + O, then place, then time.', bn: 'S + V + O, তারপর place, তারপর time।' },
           { en: 'The verb comes early in English, not at the end.', bn: 'English-এ verb আগে আসে, শেষে না।' },
@@ -557,7 +557,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         },
         points: [
           { en: 'Simple ≠ childish. A simple sentence can be precise and advanced.', bn: 'Simple মানে ছোটদের মতো না। Simple sentence-ও precise আর advanced হতে পারে।' },
-          { en: 'Use them for your main idea, then add detail.', bn: 'Main idea বলতে ব্যবহার করো, তারপর detail যোগ করো।' },
+          { en: 'Use them for your main idea, then add detail.', bn: 'Main idea বলতে ব্যবহার করুন, তারপর detail যোগ করুন।' },
         ],
       },
       {
@@ -596,7 +596,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-6-e2',
             type: 'order',
-            prompt: { en: 'Build a Task 1 overview sentence.', bn: 'একটা Task 1 overview sentence বানাও।' },
+            prompt: { en: 'Build a Task 1 overview sentence.', bn: 'একটা Task 1 overview sentence বানান।' },
             answer: 'Overall, car sales increased over the period.',
             explanation: { en: '"Overall," + S + V + time.', bn: '"Overall," + S + V + time।' },
             tag: 'sentence-structure',
@@ -604,7 +604,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-6-e3',
             type: 'write',
-            prompt: { en: 'IELTS Speaking Part 1: "Do you like reading?" Answer with one clear simple sentence.', bn: 'IELTS Speaking Part 1: "Do you like reading?" একটা clear simple sentence-এ answer দাও।' },
+            prompt: { en: 'IELTS Speaking Part 1: "Do you like reading?" Answer with one clear simple sentence.', bn: 'IELTS Speaking Part 1: "Do you like reading?" একটা clear simple sentence-এ answer দিন।' },
             model: 'Yes, I really enjoy reading novels in my free time.',
             checklist: [
               { en: 'Answers the question directly', bn: 'সরাসরি প্রশ্নের answer' },
@@ -617,8 +617,8 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
-        points: [{ en: 'One clause = simple sentence. Use it for main points and overviews.', bn: 'একটা clause = simple sentence। Main point আর overview-তে ব্যবহার করো।' }],
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
+        points: [{ en: 'One clause = simple sentence. Use it for main points and overviews.', bn: 'একটা clause = simple sentence। Main point আর overview-তে ব্যবহার করুন।' }],
       },
     ],
   },
@@ -640,7 +640,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         title: { en: 'Two complete ideas, one sentence', bn: 'দুইটা সম্পূর্ণ idea, এক sentence' },
         body: {
           en: 'A compound sentence joins two complete sentences with a joining word (coordinator). Put a comma before the joining word when both parts are long.',
-          bn: 'Compound sentence দুইটা complete sentence-কে একটা joining word (coordinator) দিয়ে জোড়ে। দুই অংশ লম্বা হলে joining word-এর আগে comma দাও।',
+          bn: 'Compound sentence দুইটা complete sentence-কে একটা joining word (coordinator) দিয়ে জোড়ে। দুই অংশ লম্বা হলে joining word-এর আগে comma দিন।',
         },
         points: [
           { en: 'and = add: "Prices rose, and demand fell."', bn: 'and = যোগ: "Prices rose, and demand fell."' },
@@ -673,7 +673,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-7-e1',
             type: 'choice',
-            prompt: { en: 'Choose the best joining word.', bn: 'সবচেয়ে ভালো joining word বাছো।' },
+            prompt: { en: 'Choose the best joining word.', bn: 'সবচেয়ে ভালো joining word বেছে নিন।' },
             sentence: 'The traffic was terrible, ___ I arrived late.',
             options: ['but', 'so', 'or'],
             answer: 'so',
@@ -683,7 +683,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-7-e2',
             type: 'choice',
-            prompt: { en: 'Choose the best joining word.', bn: 'সবচেয়ে ভালো joining word বাছো।' },
+            prompt: { en: 'Choose the best joining word.', bn: 'সবচেয়ে ভালো joining word বেছে নিন।' },
             sentence: 'Sales of laptops rose, ___ sales of desktop computers fell.',
             options: ['and', 'but', 'so'],
             answer: 'but',
@@ -702,7 +702,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-7-e4',
             type: 'write',
-            prompt: { en: 'Speaking Part 1: "Do you like your hometown?" Answer with a compound sentence using "but" or "so".', bn: 'Speaking Part 1: "Do you like your hometown?" "but" বা "so" দিয়ে compound sentence-এ answer দাও।' },
+            prompt: { en: 'Speaking Part 1: "Do you like your hometown?" Answer with a compound sentence using "but" or "so".', bn: 'Speaking Part 1: "Do you like your hometown?" "but" বা "so" দিয়ে compound sentence-এ answer দিন।' },
             model: 'Yes, I love my hometown, but it has become very crowded recently.',
             checklist: [
               { en: 'Two complete ideas', bn: 'দুইটা complete idea' },
@@ -715,7 +715,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'and (add) · but (contrast) · so (result) · or (choice)', bn: 'and (যোগ) · but (বিপরীত) · so (ফল) · or (বিকল্প)' },
           { en: 'Both sides must be complete sentences.', bn: 'দুই পাশেই complete sentence হতে হবে।' },
@@ -745,7 +745,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         },
         points: [
           { en: 'because = reason · although = contrast · when = time · if = condition', bn: 'because = কারণ · although = বিপরীত · when = সময় · if = শর্ত' },
-          { en: 'If the dependent clause comes first, add a comma: "Although it was expensive, it sold well."', bn: 'Dependent clause আগে এলে comma দাও: "Although it was expensive, it sold well."' },
+          { en: 'If the dependent clause comes first, add a comma: "Although it was expensive, it sold well."', bn: 'Dependent clause আগে এলে comma দিন: "Although it was expensive, it sold well."' },
           { en: 'Accuracy first: one correct complex sentence beats three broken ones.', bn: 'আগে accuracy: তিনটা ভাঙা complex sentence-এর চেয়ে একটা সঠিক ভালো।' },
         ],
       },
@@ -774,7 +774,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-8-e1',
             type: 'choice',
-            prompt: { en: 'Choose the best word.', bn: 'সবচেয়ে ভালো শব্দ বাছো।' },
+            prompt: { en: 'Choose the best word.', bn: 'সবচেয়ে ভালো শব্দ বেছে নিন।' },
             sentence: '___ it was raining, the match continued.',
             options: ['Because', 'Although', 'If'],
             answer: 'Although',
@@ -806,7 +806,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-8-e4',
             type: 'write',
-            prompt: { en: 'Speaking Part 1: "Do you prefer studying in the morning or at night?" Answer with "because".', bn: 'Speaking Part 1: "Do you prefer studying in the morning or at night?" "because" দিয়ে answer দাও।' },
+            prompt: { en: 'Speaking Part 1: "Do you prefer studying in the morning or at night?" Answer with "because".', bn: 'Speaking Part 1: "Do you prefer studying in the morning or at night?" "because" দিয়ে answer দিন।' },
             model: 'I prefer studying at night because the house is much quieter.',
             checklist: [
               { en: 'Direct answer first', bn: 'আগে সরাসরি answer' },
@@ -819,7 +819,7 @@ export const sentenceBasicsLessons: Lesson[] = [
       },
       {
         kind: 'recall',
-        title: { en: 'Remember', bn: 'মনে রাখো' },
+        title: { en: 'Remember', bn: 'মনে রাখুন' },
         points: [
           { en: 'Although + clause, main clause. (No "but".)', bn: 'Although + clause, main clause। ("but" না।)' },
           { en: 'Accuracy first, then variety.', bn: 'আগে accuracy, তারপর variety।' },
@@ -834,7 +834,7 @@ export const sentenceBasicsLessons: Lesson[] = [
     title: { en: 'Sentence practice: IELTS mix', bn: 'Sentence practice: IELTS mix' },
     why: {
       en: 'Put everything together on real IELTS-style sentences before moving on to Tenses.',
-      bn: 'Tenses-এ যাওয়ার আগে IELTS ধাঁচের sentence-এ সবকিছু একসাথে ঝালিয়ে নাও।',
+      bn: 'Tenses-এ যাওয়ার আগে IELTS ধাঁচের sentence-এ সবকিছু একসাথে ঝালিয়ে নিন।',
     },
     minutes: 10,
     difficulty: 'medium',
@@ -845,7 +845,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         title: { en: 'Your checklist for every sentence', bn: 'প্রতিটা sentence-এর checklist' },
         body: {
           en: 'Before you finish a sentence in Writing, check three things: Is there a subject? Is there a full verb that matches it? Is the idea complete? Then choose: simple, compound (and/but/so) or complex (because/although/when).',
-          bn: 'Writing-এ sentence শেষ করার আগে তিনটা জিনিস দেখো: subject আছে? subject-এর সাথে মেলে এমন full verb আছে? Idea সম্পূর্ণ? তারপর ঠিক করো: simple, compound (and/but/so) নাকি complex (because/although/when)।',
+          bn: 'Writing-এ sentence শেষ করার আগে তিনটা জিনিস দেখুন: subject আছে? subject-এর সাথে মেলে এমন full verb আছে? Idea সম্পূর্ণ? তারপর ঠিক করুন: simple, compound (and/but/so) নাকি complex (because/although/when)।',
         },
       },
       {
@@ -863,7 +863,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-9-e1',
             type: 'correct',
-            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করো।' },
+            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করুন।' },
             sentence: 'The number of students increasing every year.',
             accepted: ['The number of students is increasing every year.', 'The number of students increases every year.'],
             explanation: { en: 'Add a helping verb: "is increasing" (singular, because the head word is "number").', bn: 'Helping verb লাগবে: "is increasing" (singular, কারণ মূল শব্দ "number")।' },
@@ -872,7 +872,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-9-e2',
             type: 'correct',
-            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করো।' },
+            prompt: { en: 'Correct the sentence.', bn: 'Sentence-টা ঠিক করুন।' },
             sentence: 'Is difficult to find a good job without experience.',
             accepted: ['It is difficult to find a good job without experience.'],
             explanation: { en: 'Missing subject "It".', bn: 'Subject "It" বাদ পড়েছে।' },
@@ -881,7 +881,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-9-e3',
             type: 'order',
-            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজাও।' },
+            prompt: { en: 'Put the words in order.', bn: 'শব্দগুলো সাজান।' },
             answer: 'Although the rent is high, many students live in the city.',
             explanation: { en: '"Although" clause + comma + main clause.', bn: '"Although" clause + comma + main clause।' },
             tag: 'complex-sentence',
@@ -902,7 +902,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-9-e5',
             type: 'choice',
-            prompt: { en: 'Choose the correct verb.', bn: 'সঠিক verb বাছো।' },
+            prompt: { en: 'Choose the correct verb.', bn: 'সঠিক verb বেছে নিন।' },
             sentence: 'Unemployment ___ sharply in 2009.',
             options: ['rose', 'raised', 'rised'],
             answer: 'rose',
@@ -912,7 +912,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-9-e6',
             type: 'write',
-            prompt: { en: 'Task 2 practice: "Some people think university should be free." Write one sentence with your opinion and a reason.', bn: 'Task 2 practice: "Some people think university should be free." তোমার মত আর একটা কারণ দিয়ে এক sentence লেখো।' },
+            prompt: { en: 'Task 2 practice: "Some people think university should be free." Write one sentence with your opinion and a reason.', bn: 'Task 2 practice: "Some people think university should be free." আপনার মত আর একটা কারণ দিয়ে এক sentence লিখুন।' },
             model: 'I believe university should be free because education benefits the whole society.',
             checklist: [
               { en: 'Clear opinion', bn: 'পরিষ্কার মত' },

@@ -36,7 +36,7 @@ function station(o: {
   const id = `pl-${o.n}`;
   const repairs = o.repairs.flatMap((r, i): Exercise[] => [
     spot(`${id}-s${i + 1}`, C, {
-      prompt: l('Find the problem: tap the word, then type the fix.', 'সমস্যা খোঁজো: word-এ tap করো, তারপর ঠিক word-টা লেখো।'),
+      prompt: l('Find the problem: tap the word, then type the fix.', 'সমস্যা খুঁজুন: word-এ tap করুন, তারপর ঠিক word-টা লিখুন।'),
       sentence: r.sentence, wrong: r.wrong, accepted: r.accepted, explanation: r.explanation,
       tag: o.tag, pattern: o.pattern, pos: r.pos, wrongPos: r.wrongPos, family: r.family,
     }),
@@ -50,7 +50,7 @@ function station(o: {
       { kind: 'practice', title: l('Repair station', 'Repair station'), exercises: repairs },
       { kind: 'mistakes', title: l('What you repaired', 'যা ঠিক করলে'), items: o.mistakes },
       { kind: 'practice', mode: 'recall', title: l('Targeted practice', 'Targeted practice'), exercises: o.practice },
-      { kind: 'recall', title: l('Remember', 'মনে রাখো'), points: o.points },
+      { kind: 'recall', title: l('Remember', 'মনে রাখুন'), points: o.points },
     ],
   };
 }
@@ -69,7 +69,7 @@ const noun = station({
     answer: 'Nouns in the wrong form (count / plural)',
     diagnose: {
       'Nouns in the wrong form (count / plural)': l('Yes. information and advice are uncountable; people is already plural.', 'হ্যাঁ। information আর advice uncountable; people নিজেই plural।'),
-      'The verbs are in the wrong tense': l('"gives" and "use" are fine. Look at the nouns: informations, peoples, advices.', '"gives" আর "use" ঠিক আছে। noun-গুলো দেখো: informations, peoples, advices।'),
+      'The verbs are in the wrong tense': l('"gives" and "use" are fine. Look at the nouns: informations, peoples, advices.', '"gives" আর "use" ঠিক আছে। noun-গুলো দেখুন: informations, peoples, advices।'),
       'There are too many adjectives': l('There is only "many". The problem is the nouns after it.', 'শুধু "many" আছে। সমস্যা তার পরের noun-গুলোতে।'),
     },
   },
@@ -84,11 +84,11 @@ const noun = station({
     { wrong: 'advices', right: 'advice / pieces of advice', why: l('Uncountable.', 'Uncountable।') },
   ],
   practice: [
-    gap('pl-1-r1', C, { prompt: l('Write the correct word.', 'সঠিক word লেখো।'), sentence: 'Hospitals need more modern ______ (equipment).', accepted: ['equipment'], tag: 'countable', pattern: 'noun-count', explanation: l('equipment is uncountable.', 'equipment uncountable।') }),
+    gap('pl-1-r1', C, { prompt: l('Write the correct word.', 'সঠিক word লিখুন।'), sentence: 'Hospitals need more modern ______ (equipment).', accepted: ['equipment'], tag: 'countable', pattern: 'noun-count', explanation: l('equipment is uncountable.', 'equipment uncountable।') }),
     gap('pl-1-r2', C, { prompt: l('much or many?', 'much না many?'), sentence: 'There is too ______ traffic in the city centre.', accepted: ['much'], tag: 'countable', pattern: 'noun-count', explanation: l('traffic is uncountable → much.', 'traffic uncountable → much।') }),
-    correct('pl-1-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'Scientists have done many researches on this topic.', accepted: ['Scientists have done a lot of research on this topic.', 'Scientists have done much research on this topic.', 'Scientists have done lots of research on this topic.'], tag: 'countable', pattern: 'noun-count', explanation: l('research is uncountable: a lot of research.', 'research uncountable: a lot of research।') }),
+    correct('pl-1-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'Scientists have done many researches on this topic.', accepted: ['Scientists have done a lot of research on this topic.', 'Scientists have done much research on this topic.', 'Scientists have done lots of research on this topic.'], tag: 'countable', pattern: 'noun-count', explanation: l('research is uncountable: a lot of research.', 'research uncountable: a lot of research।') }),
   ],
-  points: [l('information, advice, research, equipment, traffic: no -s, use much / a lot of.', 'information, advice, research, equipment, traffic: -s না, much / a lot of ব্যবহার করো।'), l('people = plural of person.', 'people = person-এর plural।')],
+  points: [l('information, advice, research, equipment, traffic: no -s, use much / a lot of.', 'information, advice, research, equipment, traffic: -s না, much / a lot of ব্যবহার করুন।'), l('people = plural of person.', 'people = person-এর plural।')],
 });
 
 const verb = station({
@@ -103,7 +103,7 @@ const verb = station({
     answer: 'The second verb has the wrong form',
     diagnose: {
       'The second verb has the wrong form': l('Yes: can speak, does she live, is increasing.', 'হ্যাঁ: can speak, does she live, is increasing।'),
-      'The nouns are wrong': l('sister, French, tourists are fine. Look at the verb after can / does / is.', 'sister, French, tourists ঠিক। can / does / is-এর পরের verb দেখো।'),
+      'The nouns are wrong': l('sister, French, tourists are fine. Look at the verb after can / does / is.', 'sister, French, tourists ঠিক। can / does / is-এর পরের verb দেখুন।'),
       'The sentences are too short': l('Short is fine. The verbs after the helping verbs are the problem.', 'ছোট হলেও চলে। Helping verb-এর পরের verb-গুলোই সমস্যা।'),
     },
   },
@@ -118,9 +118,9 @@ const verb = station({
     { wrong: 'is increase', right: 'is increasing / increases', why: l('be + -ing', 'be + -ing') },
   ],
   practice: [
-    gap('pl-2-r1', C, { prompt: l('Write the correct form of "go".', '"go"-এর সঠিক form লেখো।'), sentence: 'Students should ______ to bed before midnight.', base: 'go', accepted: ['go'], tag: 'verb', pattern: 'verb-form', explanation: l('should + base verb.', 'should + base verb।') }),
-    gap('pl-2-r2', C, { prompt: l('Write the correct form of "grow".', '"grow"-এর সঠিক form লেখো।'), sentence: 'Online shopping is ______ quickly in Bangladesh.', base: 'grow', accepted: ['growing'], tag: 'verb', pattern: 'verb-form', explanation: l('is + -ing: is growing.', 'is + -ing: is growing।') }),
-    correct('pl-2-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'Did you finished your essay?', accepted: ['Did you finish your essay?'], tag: 'verb', pattern: 'verb-form', explanation: l('did + base verb: did you finish.', 'did + base verb: did you finish।') }),
+    gap('pl-2-r1', C, { prompt: l('Write the correct form of "go".', '"go"-এর সঠিক form লিখুন।'), sentence: 'Students should ______ to bed before midnight.', base: 'go', accepted: ['go'], tag: 'verb', pattern: 'verb-form', explanation: l('should + base verb.', 'should + base verb।') }),
+    gap('pl-2-r2', C, { prompt: l('Write the correct form of "grow".', '"grow"-এর সঠিক form লিখুন।'), sentence: 'Online shopping is ______ quickly in Bangladesh.', base: 'grow', accepted: ['growing'], tag: 'verb', pattern: 'verb-form', explanation: l('is + -ing: is growing.', 'is + -ing: is growing।') }),
+    correct('pl-2-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'Did you finished your essay?', accepted: ['Did you finish your essay?'], tag: 'verb', pattern: 'verb-form', explanation: l('did + base verb: did you finish.', 'did + base verb: did you finish।') }),
   ],
   points: [l('can / should / will / do / does / did + base verb.', 'can / should / will / do / does / did + base verb।'), l('is / are / was + -ing (or past participle), never + base verb.', 'is / are / was + -ing (বা past participle), কখনো + base verb না।')],
 });
@@ -128,7 +128,7 @@ const verb = station({
 const pronoun = station({
   n: 3, tag: 'part-of-speech', pattern: 'pronoun-form',
   title: l('Pronoun mistakes', 'Pronoun-এর ভুল'),
-  why: l('he/she, its/it’s and their/there look small, but they change who or what you mean.', 'he/she, its/it’s আর their/there ছোট দেখায়, কিন্তু কাকে বা কী বোঝাচ্ছো তা বদলে দেয়।'),
+  why: l('he/she, its/it’s and their/there look small, but they change who or what you mean.', 'he/she, its/it’s আর their/there ছোট দেখায়, কিন্তু কাকে বা কী বোঝাচ্ছেন তা বদলে দেয়।'),
   hook: {
     kind: 'hook', title: l('A Speaking answer (written down)', 'একটা Speaking উত্তর (লিখে রাখা)'),
     situation: l('"My mother is a teacher and he loves it’s job. Their are 40 students in her class."', '"My mother is a teacher and he loves it’s job. Their are 40 students in her class."'),
@@ -137,7 +137,7 @@ const pronoun = station({
     answer: 'Pronouns and possessives',
     diagnose: {
       'Pronouns and possessives': l('Yes: he → she, it’s → her, Their → There.', 'হ্যাঁ: he → she, it’s → her, Their → There।'),
-      Numbers: l('"40" is fine. Look at he, it’s and Their.', '"40" ঠিক আছে। he, it’s আর Their দেখো।'),
+      Numbers: l('"40" is fine. Look at he, it’s and Their.', '"40" ঠিক আছে। he, it’s আর Their দেখুন।'),
       Verbs: l('loves, are are correct. The small words before them are the problem.', 'loves, are ঠিক। তাদের আগের ছোট word-গুলোই সমস্যা।'),
     },
   },
@@ -147,16 +147,16 @@ const pronoun = station({
     { sentence: 'Many parents worry about there children’s screen time.', wrong: 'there', accepted: ['their'], pos: 'pronoun', explanation: l('their = belonging to them.', 'their = তাদের।'), why: { prompt: whyJob, options: ['"there" is a place; "their" shows ownership', '"parents" must be singular', '"worry" must be "worries"'], answer: '"there" is a place; "their" shows ownership', explanation: l('The children belong to the parents → their.', 'Children parents-দের → their।') } },
   ],
   mistakes: [
-    { wrong: 'My mother… he', right: 'My mother… she', why: l('Match the noun.', 'Noun-এর সাথে মেলাও।') },
+    { wrong: 'My mother… he', right: 'My mother… she', why: l('Match the noun.', 'Noun-এর সাথে মেলান।') },
     { wrong: 'it’s logo', right: 'its logo', why: l('its = belonging to it.', 'its = এটার।') },
     { wrong: 'there children', right: 'their children', why: l('their = belonging to them.', 'their = তাদের।') },
   ],
   practice: [
-    gap('pl-3-r1', C, { prompt: l('Write its or it’s.', 'its বা it’s লেখো।'), sentence: 'Every city has ______ own problems.', accepted: ['its'], pattern: 'pronoun-form', pos: 'pronoun', explanation: l('belonging to the city → its.', 'city-র → its।') }),
-    gap('pl-3-r2', C, { prompt: l('Write the correct pronoun.', 'সঠিক pronoun লেখো।'), sentence: 'The teacher gave my friend and ______ extra homework.', accepted: ['me'], pattern: 'pronoun-form', pos: 'pronoun', explanation: l('Object position → me.', 'Object-এর জায়গা → me।') }),
+    gap('pl-3-r1', C, { prompt: l('Write its or it’s.', 'its বা it’s লিখুন।'), sentence: 'Every city has ______ own problems.', accepted: ['its'], pattern: 'pronoun-form', pos: 'pronoun', explanation: l('belonging to the city → its.', 'city-র → its।') }),
+    gap('pl-3-r2', C, { prompt: l('Write the correct pronoun.', 'সঠিক pronoun লিখুন।'), sentence: 'The teacher gave my friend and ______ extra homework.', accepted: ['me'], pattern: 'pronoun-form', pos: 'pronoun', explanation: l('Object position → me.', 'Object-এর জায়গা → me।') }),
     spot('pl-3-r3', C, { sentence: 'My father says his going to retire next year.', wrong: 'his', accepted: ['he’s', "he's"], pattern: 'pronoun-form', explanation: l('he’s = he is: he’s going to retire.', 'he’s = he is: he’s going to retire।') }),
   ],
-  points: [l('Match the pronoun to the noun (mother → she).', 'Pronoun noun-এর সাথে মেলাও (mother → she)।'), l('Test with the long form: it is / they are.', 'লম্বা form দিয়ে পরীক্ষা করো: it is / they are।')],
+  points: [l('Match the pronoun to the noun (mother → she).', 'Pronoun noun-এর সাথে মেলান (mother → she)।'), l('Test with the long form: it is / they are.', 'লম্বা form দিয়ে পরীক্ষা করুন: it is / they are।')],
 });
 
 const adjAdv = station({
@@ -186,8 +186,8 @@ const adjAdv = station({
     { wrong: 'extreme effective', right: 'extremely effective', why: l('adjective ← adverb', 'adjective ← adverb') },
   ],
   practice: [
-    gap('pl-4-r1', C, { prompt: l('Write the correct form of "steady".', '"steady"-এর সঠিক form লেখো।'), sentence: 'Exports grew ______ throughout the decade.', base: 'steady', accepted: ['steadily'], pos: 'adverb', wrongPos: { steady: 'adjective' }, explanation: l('grew + adverb.', 'grew + adverb।') }),
-    gap('pl-4-r2', C, { prompt: l('Write the correct form of "slight".', '"slight"-এর সঠিক form লেখো।'), sentence: 'There was a ______ drop in unemployment.', base: 'slight', accepted: ['slight'], pos: 'adjective', wrongPos: { slightly: 'adverb' }, explanation: l('a ___ drop → adjective.', 'a ___ drop → adjective।') }),
+    gap('pl-4-r1', C, { prompt: l('Write the correct form of "steady".', '"steady"-এর সঠিক form লিখুন।'), sentence: 'Exports grew ______ throughout the decade.', base: 'steady', accepted: ['steadily'], pos: 'adverb', wrongPos: { steady: 'adjective' }, explanation: l('grew + adverb.', 'grew + adverb।') }),
+    gap('pl-4-r2', C, { prompt: l('Write the correct form of "slight".', '"slight"-এর সঠিক form লিখুন।'), sentence: 'There was a ______ drop in unemployment.', base: 'slight', accepted: ['slight'], pos: 'adjective', wrongPos: { slightly: 'adverb' }, explanation: l('a ___ drop → adjective.', 'a ___ drop → adjective।') }),
     spot('pl-4-r3', C, { sentence: 'Children who read regular do better at school.', wrong: 'regular', accepted: ['regularly'], pos: 'adverb', wrongPos: { regular: 'adjective' }, explanation: l('read + how often → adverb.', 'read + কতবার → adverb।') }),
   ],
   points: [l('Describing a noun → adjective (a sharp rise).', 'Noun describe করলে → adjective (a sharp rise)।'), l('Describing a verb or adjective → adverb (rose sharply, highly effective).', 'Verb বা adjective describe করলে → adverb (rose sharply, highly effective)।')],
@@ -205,12 +205,12 @@ const prep = station({
     answer: 'The word before or after it (depend, a date, a change)',
     diagnose: {
       'The word before or after it (depend, a date, a change)': l('Yes: depend on, on 5 May, rose by 10%.', 'হ্যাঁ: depend on, on 5 May, rose by 10%।'),
-      'Translation from Bangla': l('"এর উপর নির্ভর" suggests "of" or "on"… English simply uses "depend on". Learn the partner.', '"এর উপর নির্ভর" থেকে "of" বা "on" মনে হতে পারে… English-এ শুধু "depend on"। সঙ্গী শেখো।'),
-      'It is random': l('It isn’t random: there are patterns (on + dates, by + change). Learn them as chunks.', 'এটা এলোমেলো না: pattern আছে (on + তারিখ, by + পরিবর্তন)। chunk হিসেবে শেখো।'),
+      'Translation from Bangla': l('"এর উপর নির্ভর" suggests "of" or "on"… English simply uses "depend on". Learn the partner.', '"এর উপর নির্ভর" থেকে "of" বা "on" মনে হতে পারে… English-এ শুধু "depend on"। সঙ্গী শিখুন।'),
+      'It is random': l('It isn’t random: there are patterns (on + dates, by + change). Learn them as chunks.', 'এটা এলোমেলো না: pattern আছে (on + তারিখ, by + পরিবর্তন)। chunk হিসেবে শিখুন।'),
     },
   },
   repairs: [
-    { sentence: 'Success depends of hard work.', wrong: 'of', accepted: ['on'], explanation: l('depend on.', 'depend on।'), why: { prompt: whyJob, options: ['"depend" always takes "on"', '"hard work" is a time', '"of" is only for places'], answer: '"depend" always takes "on"', explanation: l('A dependent preposition: learn depend on as one chunk.', 'Dependent preposition: depend on একটা chunk হিসেবে শেখো।') } },
+    { sentence: 'Success depends of hard work.', wrong: 'of', accepted: ['on'], explanation: l('depend on.', 'depend on।'), why: { prompt: whyJob, options: ['"depend" always takes "on"', '"hard work" is a time', '"of" is only for places'], answer: '"depend" always takes "on"', explanation: l('A dependent preposition: learn depend on as one chunk.', 'Dependent preposition: depend on একটা chunk হিসেবে শিখুন।') } },
     { sentence: 'I was born in 5 May 2004.', wrong: 'in', accepted: ['on'], explanation: l('on + a date.', 'on + তারিখ।'), why: { prompt: whyJob, options: ['Dates take "on"', 'Years always take "on"', '"born" takes "at"'], answer: 'Dates take "on"', explanation: l('in May, in 2004, but on 5 May.', 'in May, in 2004, কিন্তু on 5 May।') } },
     { sentence: 'Sales rose with 10% last year.', wrong: 'with', accepted: ['by'], explanation: l('rose by + the amount of change.', 'rose by + পরিবর্তনের পরিমাণ।'), why: { prompt: whyJob, options: ['The amount of change takes "by"', '"with" is for years', '"rose" takes no preposition'], answer: 'The amount of change takes "by"', explanation: l('rose by 10% (change); rose to 50% (new level).', 'rose by 10% (পরিবর্তন); rose to 50% (নতুন মান)।') } },
   ],
@@ -220,8 +220,8 @@ const prep = station({
     { wrong: 'rose with 10%', right: 'rose by 10%', why: l('by + change.', 'by + পরিবর্তন।') },
   ],
   practice: [
-    gap('pl-5-r1', C, { prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'The meeting starts ______ 9 a.m.', accepted: ['at'], tag: 'preposition', pattern: 'prep-choice', explanation: l('at + clock time.', 'at + ঘড়ির সময়।') }),
-    gap('pl-5-r2', C, { prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'Unemployment fell ______ 8% in 2019 (the new level).', accepted: ['to'], tag: 'preposition', pattern: 'prep-choice', explanation: l('fell to + the new level.', 'fell to + নতুন মান।') }),
+    gap('pl-5-r1', C, { prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'The meeting starts ______ 9 a.m.', accepted: ['at'], tag: 'preposition', pattern: 'prep-choice', explanation: l('at + clock time.', 'at + ঘড়ির সময়।') }),
+    gap('pl-5-r2', C, { prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'Unemployment fell ______ 8% in 2019 (the new level).', accepted: ['to'], tag: 'preposition', pattern: 'prep-choice', explanation: l('fell to + the new level.', 'fell to + নতুন মান।') }),
     spot('pl-5-r3', C, { sentence: 'Students should focus in their weakest skill.', wrong: 'in', accepted: ['on'], tag: 'preposition', pattern: 'prep-choice', explanation: l('focus on.', 'focus on।') }),
   ],
   points: [l('in (month, year) · on (day, date) · at (time).', 'in (মাস, বছর) · on (দিন, তারিখ) · at (সময়)।'), l('depend on · focus on · rose by (change) · rose to (level).', 'depend on · focus on · rose by (পরিবর্তন) · rose to (মান)।')],
@@ -254,11 +254,11 @@ const conj = station({
     { wrong: 'Despite it was raining', right: 'Although it was raining', why: l('although + clause.', 'although + clause।') },
   ],
   practice: [
-    gap('pl-6-r1', C, { prompt: l('Write a linking word showing result.', 'ফলাফল বোঝায় এমন linking word লেখো।'), sentence: 'The bus was late, ______ I missed the exam.', accepted: ['so'], tag: 'connector', pattern: 'conj-logic', explanation: l('Result → so.', 'ফলাফল → so।') }),
-    gap('pl-6-r2', C, { prompt: l('Write one word to start the second sentence (contrast).', 'দ্বিতীয় sentence শুরু করতে একটা word লেখো (বিপরীত)।'), sentence: 'Cars are convenient. ______, they cause pollution.', accepted: ['however', 'nevertheless', 'nonetheless'], tag: 'connector', pattern: 'conj-logic', explanation: l('New sentence + contrast → However,', 'নতুন sentence + বিপরীত → However,') }),
-    correct('pl-6-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'Although the flat is small, but it is comfortable.', accepted: ['Although the flat is small, it is comfortable.', 'The flat is small, but it is comfortable.'], tag: 'connector', pattern: 'conj-logic', explanation: l('One linker for one contrast.', 'এক বিপরীতের জন্য একটা linker।') }),
+    gap('pl-6-r1', C, { prompt: l('Write a linking word showing result.', 'ফলাফল বোঝায় এমন linking word লিখুন।'), sentence: 'The bus was late, ______ I missed the exam.', accepted: ['so'], tag: 'connector', pattern: 'conj-logic', explanation: l('Result → so.', 'ফলাফল → so।') }),
+    gap('pl-6-r2', C, { prompt: l('Write one word to start the second sentence (contrast).', 'দ্বিতীয় sentence শুরু করতে একটা word লিখুন (বিপরীত)।'), sentence: 'Cars are convenient. ______, they cause pollution.', accepted: ['however', 'nevertheless', 'nonetheless'], tag: 'connector', pattern: 'conj-logic', explanation: l('New sentence + contrast → However,', 'নতুন sentence + বিপরীত → However,') }),
+    correct('pl-6-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'Although the flat is small, but it is comfortable.', accepted: ['Although the flat is small, it is comfortable.', 'The flat is small, but it is comfortable.'], tag: 'connector', pattern: 'conj-logic', explanation: l('One linker for one contrast.', 'এক বিপরীতের জন্য একটা linker।') }),
   ],
-  points: [l('Choose the relation first: reason (because), result (so), contrast (but, although).', 'আগে সম্পর্ক ঠিক করো: কারণ (because), ফলাফল (so), বিপরীত (but, although)।'), l('Never "although … but". despite + noun, although + clause.', 'কখনো "although … but" না। despite + noun, although + clause।')],
+  points: [l('Choose the relation first: reason (because), result (so), contrast (but, although).', 'আগে সম্পর্ক ঠিক করুন: কারণ (because), ফলাফল (so), বিপরীত (but, although)।'), l('Never "although … but". despite + noun, although + clause.', 'কখনো "although … but" না। despite + noun, although + clause।')],
 });
 
 const forms = station({
@@ -274,7 +274,7 @@ const forms = station({
     diagnose: {
       'Which job each word does after its neighbours': l('Yes: The ___ of → development; more ___ (after "made communication") → effective; "more easy" → easier.', 'হ্যাঁ: The ___ of → development; more ___ ("made communication"-এর পরে) → effective; "more easy" → easier।'),
       'The spelling of "technology"': l('It is spelled correctly. The forms of develop and effective are the problem.', 'বানান ঠিক আছে। develop আর effective-এর form সমস্যা।'),
-      'The length of the sentence': l('Length is fine. Check each word’s job.', 'দৈর্ঘ্য ঠিক আছে। প্রতিটা word-এর কাজ দেখো।'),
+      'The length of the sentence': l('Length is fine. Check each word’s job.', 'দৈর্ঘ্য ঠিক আছে। প্রতিটা word-এর কাজ দেখুন।'),
     },
   },
   repairs: [
@@ -288,8 +288,8 @@ const forms = station({
     { wrong: 'should protection', right: 'should protect', why: l('verb', 'verb') },
   ],
   practice: [
-    gap('pl-7-r1', C, { prompt: l('Write the correct form of "decide".', '"decide"-এর সঠিক form লেখো।'), sentence: 'It was a difficult ______ for the family.', base: 'decide', accepted: ['decision'], pos: 'noun', wrongPos: { decide: 'verb' }, family: 'decide', explanation: l('a difficult ___ → noun.', 'a difficult ___ → noun।') }),
-    gap('pl-7-r2', C, { prompt: l('Write the correct form of "beauty".', '"beauty"-এর সঠিক form লেখো।'), sentence: 'Sylhet is famous for its ______ tea gardens.', base: 'beauty', accepted: ['beautiful'], pos: 'adjective', wrongPos: { beauty: 'noun' }, family: 'beauty', explanation: l('its ___ gardens → adjective.', 'its ___ gardens → adjective।') }),
+    gap('pl-7-r1', C, { prompt: l('Write the correct form of "decide".', '"decide"-এর সঠিক form লিখুন।'), sentence: 'It was a difficult ______ for the family.', base: 'decide', accepted: ['decision'], pos: 'noun', wrongPos: { decide: 'verb' }, family: 'decide', explanation: l('a difficult ___ → noun.', 'a difficult ___ → noun।') }),
+    gap('pl-7-r2', C, { prompt: l('Write the correct form of "beauty".', '"beauty"-এর সঠিক form লিখুন।'), sentence: 'Sylhet is famous for its ______ tea gardens.', base: 'beauty', accepted: ['beautiful'], pos: 'adjective', wrongPos: { beauty: 'noun' }, family: 'beauty', explanation: l('its ___ gardens → adjective.', 'its ___ gardens → adjective।') }),
     spot('pl-7-r3', C, { sentence: 'We need to improvement our public schools.', wrong: 'improvement', accepted: ['improve'], pos: 'verb', wrongPos: { improvement: 'noun' }, family: 'improve', explanation: l('to + verb.', 'to + verb।') }),
   ],
   points: [l('Neighbours decide the form: the ___ of → noun; a ___ + noun → adjective; should/to ___ → verb.', 'আশেপাশের word form ঠিক করে: the ___ of → noun; a ___ + noun → adjective; should/to ___ → verb।')],
@@ -314,7 +314,7 @@ const sv = station({
   },
   repairs: [
     { sentence: 'My brother go to university every day.', wrong: 'go', accepted: ['goes'], pos: 'verb', explanation: l('he/she/it (my brother) + verb-s: goes.', 'he/she/it (my brother) + verb-s: goes।'), why: { prompt: whyJob, options: ['"My brother" is he, so the verb needs -s', '"university" needs "the"', '"every day" needs past tense'], answer: '"My brother" is he, so the verb needs -s', explanation: l('Present simple: he goes, she works, it costs.', 'Present simple: he goes, she works, it costs।') } },
-    { sentence: 'The number of cars on the roads are rising.', wrong: 'are', accepted: ['is'], pos: 'verb', explanation: l('The subject is "the number" (singular).', 'Subject হলো "the number" (singular)।'), why: { prompt: whyJob, options: ['The subject is "the number", not "cars"', '"roads" must be singular', '"rising" must be "rise"'], answer: 'The subject is "the number", not "cars"', explanation: l('Cover "of cars on the roads": the number is rising.', '"of cars on the roads" ঢেকে দাও: the number is rising।') } },
+    { sentence: 'The number of cars on the roads are rising.', wrong: 'are', accepted: ['is'], pos: 'verb', explanation: l('The subject is "the number" (singular).', 'Subject হলো "the number" (singular)।'), why: { prompt: whyJob, options: ['The subject is "the number", not "cars"', '"roads" must be singular', '"rising" must be "rise"'], answer: 'The subject is "the number", not "cars"', explanation: l('Cover "of cars on the roads": the number is rising.', '"of cars on the roads" ঢেকে দিন: the number is rising।') } },
     { sentence: 'Everyone in my family enjoy cricket.', wrong: 'enjoy', accepted: ['enjoys'], pos: 'verb', explanation: l('everyone is singular → enjoys.', 'everyone singular → enjoys।'), why: { prompt: whyJob, options: ['"Everyone" is singular', '"family" must be plural', '"cricket" must be plural'], answer: '"Everyone" is singular', explanation: l('everyone, everybody, each → singular verb.', 'everyone, everybody, each → singular verb।') } },
   ],
   mistakes: [
@@ -323,11 +323,11 @@ const sv = station({
     { wrong: 'Everyone enjoy', right: 'Everyone enjoys', why: l('everyone = singular', 'everyone = singular') },
   ],
   practice: [
-    gap('pl-8-r1', C, { prompt: l('Write the correct form of "cost".', '"cost"-এর সঠিক form লেখো।'), sentence: 'A metro ticket ______ 60 taka.', base: 'cost', accepted: ['costs'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('a ticket (it) + costs.', 'a ticket (it) + costs।') }),
-    gap('pl-8-r2', C, { prompt: l('Write is or are.', 'is বা are লেখো।'), sentence: 'A number of students ______ taking the test again.', accepted: ['are'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('"a number of" = many → plural: are.', '"a number of" = অনেক → plural: are।') }),
-    correct('pl-8-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'He don’t like crowded places.', accepted: ['He doesn’t like crowded places.', "He doesn't like crowded places.", 'He does not like crowded places.'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('he + doesn’t.', 'he + doesn’t।') }),
+    gap('pl-8-r1', C, { prompt: l('Write the correct form of "cost".', '"cost"-এর সঠিক form লিখুন।'), sentence: 'A metro ticket ______ 60 taka.', base: 'cost', accepted: ['costs'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('a ticket (it) + costs.', 'a ticket (it) + costs।') }),
+    gap('pl-8-r2', C, { prompt: l('Write is or are.', 'is বা are লিখুন।'), sentence: 'A number of students ______ taking the test again.', accepted: ['are'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('"a number of" = many → plural: are.', '"a number of" = অনেক → plural: are।') }),
+    correct('pl-8-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'He don’t like crowded places.', accepted: ['He doesn’t like crowded places.', "He doesn't like crowded places.", 'He does not like crowded places.'], tag: 'agreement', pattern: 'sv-agreement', explanation: l('he + doesn’t.', 'he + doesn’t।') }),
   ],
-  points: [l('Find the real subject (cover "of …"), then match the verb.', 'আসল subject খোঁজো ("of …" ঢেকে দাও), তারপর verb মেলাও।'), l('he/she/it/everyone + verb-s; the number of = singular; a number of = plural.', 'he/she/it/everyone + verb-s; the number of = singular; a number of = plural।')],
+  points: [l('Find the real subject (cover "of …"), then match the verb.', 'আসল subject খুঁজুন ("of …" ঢেকে দিন), তারপর verb মেলান।'), l('he/she/it/everyone + verb-s; the number of = singular; a number of = plural.', 'he/she/it/everyone + verb-s; the number of = singular; a number of = plural।')],
 });
 
 export const posLabLessons: Lesson[] = [noun, verb, pronoun, adjAdv, prep, conj, forms, sv];

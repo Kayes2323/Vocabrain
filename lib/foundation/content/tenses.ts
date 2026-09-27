@@ -21,7 +21,7 @@ export const TENSE_CONCEPTS: Concept[] = [
 ];
 
 const practice = (exercises: Exercise[]) => ({ kind: 'practice' as const, title: l('Practice', 'Practice'), exercises });
-const recall = (...points: L[]) => ({ kind: 'recall' as const, title: l('Remember', 'মনে রাখো'), points });
+const recall = (...points: L[]) => ({ kind: 'recall' as const, title: l('Remember', 'মনে রাখুন'), points });
 const ielts = (uses: Extract<Lesson['steps'][number], { kind: 'ielts' }>['uses']) => ({
   kind: 'ielts' as const,
   title: l('IELTS connection', 'IELTS-এ কোথায় লাগবে'),

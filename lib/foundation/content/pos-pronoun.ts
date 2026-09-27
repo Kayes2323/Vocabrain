@@ -34,7 +34,7 @@ const p1: Lesson = {
       body: l('A pronoun replaces a noun so we don’t repeat it. Subject pronouns do the action: I, you, he, she, it, we, they. Object pronouns receive it: me, you, him, her, it, us, them. In English, he / him is for a man or boy, she / her for a woman or girl, it for things and animals.', 'Pronoun noun-এর জায়গায় বসে, যাতে বারবার একই noun না বলতে হয়। Subject pronoun কাজটা করে: I, you, he, she, it, we, they। Object pronoun কাজটা গ্রহণ করে: me, you, him, her, it, us, them। English-এ he / him পুরুষ বা ছেলের জন্য, she / her মহিলা বা মেয়ের জন্য, it জিনিস আর প্রাণীর জন্য।'),
       points: [
         l('Before the verb → subject: She called. After the verb or a preposition → object: I called her. with them.', 'Verb-এর আগে → subject: She called। Verb বা preposition-এর পরে → object: I called her। with them।'),
-        l('Put yourself last and use "I" as a subject: My friend and I went (not "Me and my friend went").', 'নিজেকে শেষে রাখো আর subject-এ "I": My friend and I went ("Me and my friend went" না)।'),
+        l('Put yourself last and use "I" as a subject: My friend and I went (not "Me and my friend went").', 'নিজেকে শেষে রাখুন আর subject-এ "I": My friend and I went ("Me and my friend went" না)।'),
       ],
     },
     {
@@ -60,7 +60,7 @@ const p1: Lesson = {
       title: l('Common mistakes', 'Common ভুল'),
       items: [
         { wrong: 'My sister is a doctor. He works in a hospital.', right: 'My sister is a doctor. She works in a hospital.', why: l('sister → she.', 'sister → she।') },
-        { wrong: 'Me and my friend went to the cinema.', right: 'My friend and I went to the cinema.', why: l('Subject → I, and put yourself last.', 'Subject → I, আর নিজেকে শেষে রাখো।') },
+        { wrong: 'Me and my friend went to the cinema.', right: 'My friend and I went to the cinema.', why: l('Subject → I, and put yourself last.', 'Subject → I, আর নিজেকে শেষে রাখুন।') },
         { wrong: 'The teacher helped we.', right: 'The teacher helped us.', why: l('After the verb → object: us.', 'Verb-এর পরে → object: us।') },
       ],
     },
@@ -68,9 +68,9 @@ const p1: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('ppr-1-p1', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বাছো।'), sentence: 'My aunt lives in London. ______ works as a nurse.', options: ['She', 'He', 'It'], answer: 'She', explanation: l('aunt → she.', 'aunt → she।') }),
-        choice('ppr-1-p2', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['My brother and I play cricket.', 'Me and my brother play cricket.', 'I and my brother play cricket.'], answer: 'My brother and I play cricket.', explanation: l('Subject → I, yourself last.', 'Subject → I, নিজে শেষে।') }),
-        choice('ppr-1-p3', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বাছো।'), sentence: 'Our neighbours are friendly. We often visit ______.', options: ['them', 'they', 'their'], answer: 'them', explanation: l('After the verb → object: them.', 'Verb-এর পরে → object: them।') }),
+        choice('ppr-1-p1', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বেছে নিন।'), sentence: 'My aunt lives in London. ______ works as a nurse.', options: ['She', 'He', 'It'], answer: 'She', explanation: l('aunt → she.', 'aunt → she।') }),
+        choice('ppr-1-p2', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['My brother and I play cricket.', 'Me and my brother play cricket.', 'I and my brother play cricket.'], answer: 'My brother and I play cricket.', explanation: l('Subject → I, yourself last.', 'Subject → I, নিজে শেষে।') }),
+        choice('ppr-1-p3', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বেছে নিন।'), sentence: 'Our neighbours are friendly. We often visit ______.', options: ['them', 'they', 'their'], answer: 'them', explanation: l('After the verb → object: them.', 'Verb-এর পরে → object: them।') }),
         tagWords('ppr-1-p4', C, { sentence: 'They/pronoun invited/verb us/pronoun to their/pronoun wedding./noun', choices: JOBS, explanation: l('They, us and their are pronouns (their shows who it belongs to).', 'They, us আর their pronoun (their বলে কার)।') }),
       ],
     },
@@ -78,9 +78,9 @@ const p1: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('ppr-1-r1', C, { prompt: l('Write the pronoun.', 'Pronoun লেখো।'), sentence: 'My father is a farmer. ___ grows rice and vegetables.', accepted: ['he'], explanation: l('father → he.', 'father → he।'), why: { she: l('A father is "he".', 'বাবা হলো "he"।') } }),
-        gap('ppr-1-r2', C, { prompt: l('Write the pronoun.', 'Pronoun লেখো।'), sentence: 'Can you help ___ with this question? (I)', accepted: ['me'], explanation: l('After the verb → me.', 'Verb-এর পরে → me।'), why: { i: l('After a verb we use the object form: me.', 'Verb-এর পরে object form: me।') } }),
-        correct('ppr-1-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'Me and my cousin went to Sylhet.', accepted: ['My cousin and I went to Sylhet.'], explanation: l('My cousin and I…', 'My cousin and I…') }),
+        gap('ppr-1-r1', C, { prompt: l('Write the pronoun.', 'Pronoun লিখুন।'), sentence: 'My father is a farmer. ___ grows rice and vegetables.', accepted: ['he'], explanation: l('father → he.', 'father → he।'), why: { she: l('A father is "he".', 'বাবা হলো "he"।') } }),
+        gap('ppr-1-r2', C, { prompt: l('Write the pronoun.', 'Pronoun লিখুন।'), sentence: 'Can you help ___ with this question? (I)', accepted: ['me'], explanation: l('After the verb → me.', 'Verb-এর পরে → me।'), why: { i: l('After a verb we use the object form: me.', 'Verb-এর পরে object form: me।') } }),
+        correct('ppr-1-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'Me and my cousin went to Sylhet.', accepted: ['My cousin and I went to Sylhet.'], explanation: l('My cousin and I…', 'My cousin and I…') }),
       ],
     },
     {
@@ -94,10 +94,10 @@ const p1: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppr-1-w1', C, {
-          prompt: l('Speaking Part 2: describe a woman you admire in two sentences, using she / her.', 'Speaking Part 2: তুমি শ্রদ্ধা করো এমন একজন মহিলাকে দুই sentence-এ describe করো, she / her দিয়ে।'),
+          prompt: l('Speaking Part 2: describe a woman you admire in two sentences, using she / her.', 'Speaking Part 2: আপনি শ্রদ্ধা করুন এমন একজন মহিলাকে দুই sentence-এ describe করুন, she / her দিয়ে।'),
           model: 'I really admire my aunt. She started her own business and she always helps other women in our village.',
           task: 'The student describes a woman they admire in two sentences. Check pronoun gender (she/her, not he/his), subject vs object forms, and possessives.',
           target: l('she / her used correctly', 'she / her সঠিকভাবে'),
@@ -108,7 +108,7 @@ const p1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('he / him / his for a man; she / her for a woman; it for things.', 'পুরুষের জন্য he / him / his; মহিলার জন্য she / her; জিনিসের জন্য it।'),
         l('Subject: I, we, they. Object: me, us, them. My friend and I…', 'Subject: I, we, they। Object: me, us, them। My friend and I…'),
@@ -180,10 +180,10 @@ const p2: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('ppr-2-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'The school improved ______ library.', options: ['its', 'it’s', 'it'], answer: 'its', explanation: l('belonging to the school → its.', 'school-এর → its।') }),
-        choice('ppr-2-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'Many people leave ______ villages for the city.', options: ['their', 'there', 'they’re'], answer: 'their', explanation: l('belonging to people → their.', 'মানুষের → their।') }),
-        choice('ppr-2-p3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: '______ a good idea to start early.', options: ['It’s', 'Its'], answer: 'It’s', explanation: l('It is a good idea → It’s.', 'It is a good idea → It’s।') }),
-        choice('ppr-2-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'I prepared for IELTS by ______.', options: ['myself', 'me', 'mine'], answer: 'myself', explanation: l('by myself = alone, without help.', 'by myself = একা, সাহায্য ছাড়া।') }),
+        choice('ppr-2-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'The school improved ______ library.', options: ['its', 'it’s', 'it'], answer: 'its', explanation: l('belonging to the school → its.', 'school-এর → its।') }),
+        choice('ppr-2-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'Many people leave ______ villages for the city.', options: ['their', 'there', 'they’re'], answer: 'their', explanation: l('belonging to people → their.', 'মানুষের → their।') }),
+        choice('ppr-2-p3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: '______ a good idea to start early.', options: ['It’s', 'Its'], answer: 'It’s', explanation: l('It is a good idea → It’s.', 'It is a good idea → It’s।') }),
+        choice('ppr-2-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'I prepared for IELTS by ______.', options: ['myself', 'me', 'mine'], answer: 'myself', explanation: l('by myself = alone, without help.', 'by myself = একা, সাহায্য ছাড়া।') }),
       ],
     },
     {
@@ -192,24 +192,24 @@ const p2: Lesson = {
       exercises: [
         spot('ppr-2-r1', C, { sentence: 'Every country has it’s own culture.', wrong: 'it’s', accepted: ['its'], explanation: l('belonging to it → its.', 'এর নিজের → its।') }),
         spot('ppr-2-r2', C, { sentence: 'Young people spend a lot of there money online.', wrong: 'there', accepted: ['their'], explanation: l('belonging to young people → their.', 'তরুণদের → their।') }),
-        gap('ppr-2-r3', C, { prompt: l('Write the possessive pronoun.', 'Possessive pronoun লেখো।'), sentence: 'This bag is not mine; it is ___. (she)', accepted: ['hers'], explanation: l('she → hers (no apostrophe).', 'she → hers (apostrophe ছাড়া)।'), why: { "her's": l('No apostrophe: hers.', 'Apostrophe নেই: hers।'), her: l('Alone, without a noun: hers.', 'Noun ছাড়া একা: hers।') } }),
+        gap('ppr-2-r3', C, { prompt: l('Write the possessive pronoun.', 'Possessive pronoun লিখুন।'), sentence: 'This bag is not mine; it is ___. (she)', accepted: ['hers'], explanation: l('she → hers (no apostrophe).', 'she → hers (apostrophe ছাড়া)।'), why: { "her's": l('No apostrophe: hers.', 'Apostrophe নেই: hers।'), her: l('Alone, without a noun: hers.', 'Noun ছাড়া একা: hers।') } }),
       ],
     },
     {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('ppr-2-c1', C, { prompt: l('How do you know it is "its" and not "it’s"?', 'কীভাবে বুঝবে "it’s" না, "its"?'), sentence: 'The company lost its best worker.', options: ['"it is best worker" makes no sense', '"its" is always correct', 'Because company is a noun'], answer: '"it is best worker" makes no sense', explanation: l('Try "it is". If it doesn’t fit, write its.', '"it is" বসিয়ে দেখো। না মিললে its।') }),
+        choice('ppr-2-c1', C, { prompt: l('How do you know it is "its" and not "it’s"?', 'কীভাবে বুঝবে "it’s" না, "its"?'), sentence: 'The company lost its best worker.', options: ['"it is best worker" makes no sense', '"its" is always correct', 'Because company is a noun'], answer: '"it is best worker" makes no sense', explanation: l('Try "it is". If it doesn’t fit, write its.', '"it is" বসিয়ে দেখুন। না মিললে its।') }),
         spot('ppr-2-c2', C, { sentence: 'Parents should check they’re children’s homework.', wrong: 'they’re', accepted: ['their'], fixOptions: ['their', 'there', 'them'], explanation: l('belonging to parents → their.', 'বাবা-মায়ের → their।') }),
-        choice('ppr-2-c3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['The decision is ours.', 'The decision is our’s.', 'The decision is ours’.'], answer: 'The decision is ours.', explanation: l('No apostrophe in ours.', 'ours-এ apostrophe নেই।') }),
+        choice('ppr-2-c3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['The decision is ours.', 'The decision is our’s.', 'The decision is ours’.'], answer: 'The decision is ours.', explanation: l('No apostrophe in ours.', 'ours-এ apostrophe নেই।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppr-2-w1', C, {
-          prompt: l('Write one Task 2 sentence about what parents or governments should do, using their or its.', 'বাবা-মা বা সরকারের কী করা উচিত, তা নিয়ে their বা its দিয়ে একটা Task 2 sentence লেখো।'),
+          prompt: l('Write one Task 2 sentence about what parents or governments should do, using their or its.', 'বাবা-মা বা সরকারের কী করা উচিত, তা নিয়ে their বা its দিয়ে একটা Task 2 sentence লিখুন।'),
           model: 'Every government should invest more of its budget in education, and parents should limit their children’s screen time.',
           task: 'The student writes one Task 2 sentence using possessive pronouns (its/their). Check its vs it\'s, their vs there/they\'re, and agreement between the pronoun and its noun (government → its, parents → their).',
           target: l('its / their used correctly', 'its / their সঠিকভাবে'),
@@ -220,7 +220,7 @@ const p2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('its = belonging to it; it’s = it is. their = belonging to them; there = place; they’re = they are.', 'its = এর নিজের; it’s = it is। their = তাদের; there = জায়গা; they’re = they are।'),
         l('yours, hers, ours, theirs: never an apostrophe.', 'yours, hers, ours, theirs: কখনো apostrophe না।'),
@@ -250,12 +250,12 @@ const p3: Lesson = {
     identify({
       sentence: 'Solar/adjective panels/noun are/verb cheap,/adjective and they/pronoun last/verb for years./noun',
       choices: JOBS,
-      pattern: l('"they" points back to "solar panels". Pronouns connect sentences: always know what they point to.', '"they" পেছনে "solar panels"-কে বোঝায়। Pronoun sentence জোড়ে: সবসময় জানো এটা কাকে বোঝাচ্ছে।'),
+      pattern: l('"they" points back to "solar panels". Pronouns connect sentences: always know what they point to.', '"they" পেছনে "solar panels"-কে বোঝায়। Pronoun sentence জোড়ে: সবসময় জানেন এটা কাকে বোঝাচ্ছে।'),
     }),
     {
       kind: 'concept',
       title: l('Pointing back', 'পেছনে ইঙ্গিত করা'),
-      body: l('Pronouns like it, they, this, these, that, which usually point back to something already mentioned. In Reading, find it by looking back to the nearest noun or idea that fits in number (singular/plural) and meaning. In Writing, make sure every pronoun has one clear noun to point to.', 'it, they, this, these, that, which-এর মতো pronoun সাধারণত আগে বলা কিছুর দিকে ফিরে যায়। Reading-এ পেছনে সবচেয়ে কাছের সেই noun বা ধারণাটা খোঁজো যা সংখ্যায় (singular/plural) আর অর্থে মেলে। Writing-এ নিশ্চিত হও প্রতিটা pronoun-এর একটা পরিষ্কার noun আছে।'),
+      body: l('Pronouns like it, they, this, these, that, which usually point back to something already mentioned. In Reading, find it by looking back to the nearest noun or idea that fits in number (singular/plural) and meaning. In Writing, make sure every pronoun has one clear noun to point to.', 'it, they, this, these, that, which-এর মতো pronoun সাধারণত আগে বলা কিছুর দিকে ফিরে যায়। Reading-এ পেছনে সবচেয়ে কাছের সেই noun বা ধারণাটা খুঁজুন যা সংখ্যায় (singular/plural) আর অর্থে মেলে। Writing-এ নিশ্চিত হোন প্রতিটা pronoun-এর একটা পরিষ্কার noun আছে।'),
       points: [
         l('it / this = singular; they / these = plural. This / That can refer to a whole idea.', 'it / this = singular; they / these = plural। This / That পুরো একটা ধারণাকেও বোঝাতে পারে।'),
         l('Unclear: "Students and teachers disagree because they are busy." (who?) Clear: "…because teachers are busy."', 'অস্পষ্ট: "Students and teachers disagree because they are busy." (কারা?) পরিষ্কার: "…because teachers are busy."'),
@@ -285,7 +285,7 @@ const p3: Lesson = {
       items: [
         { wrong: 'Smartphones are useful, but it can be addictive.', right: 'Smartphones are useful, but they can be addictive.', why: l('smartphones (plural) → they.', 'smartphones (plural) → they।') },
         { wrong: 'This problems need attention.', right: 'These problems need attention.', why: l('plural → these.', 'plural → these।') },
-        { wrong: 'My father told my brother that he was wrong.', right: 'My father told my brother, "You are wrong."', why: l('"he" could be either person. Make it clear.', '"he" দুজনের যে কেউ হতে পারে। পরিষ্কার করো।') },
+        { wrong: 'My father told my brother that he was wrong.', right: 'My father told my brother, "You are wrong."', why: l('"he" could be either person. Make it clear.', '"he" দুজনের যে কেউ হতে পারে। পরিষ্কার করুন।') },
       ],
     },
     {
@@ -293,18 +293,18 @@ const p3: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('ppr-3-p1', C, { prompt: l('What does "they" refer to?', '"they" কাকে বোঝায়?'), sentence: 'Electric buses are quiet, and they produce no smoke.', options: ['electric buses', 'the smoke', 'the passengers'], answer: 'electric buses', explanation: l('Plural, and buses produce smoke (or not).', 'Plural, আর bus-ই smoke তৈরি করে (বা করে না)।') }),
-        choice('ppr-3-p2', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বাছো।'), sentence: 'Air pollution is serious. ______ causes breathing problems.', options: ['It', 'They', 'These'], answer: 'It', explanation: l('air pollution (singular) → it.', 'air pollution (singular) → it।') }),
+        choice('ppr-3-p2', C, { prompt: l('Choose the pronoun.', 'Pronoun-টা বেছে নিন।'), sentence: 'Air pollution is serious. ______ causes breathing problems.', options: ['It', 'They', 'These'], answer: 'It', explanation: l('air pollution (singular) → it.', 'air pollution (singular) → it।') }),
         choice('ppr-3-p3', C, { prompt: l('What does "This" refer to?', '"This" কাকে বোঝায়?'), sentence: 'Many graduates cannot find jobs. This leads to frustration.', options: ['graduates not finding jobs', 'the graduates', 'frustration'], answer: 'graduates not finding jobs', explanation: l('"This" = the whole situation.', '"This" = পুরো পরিস্থিতি।') }),
-        choice('ppr-3-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: '______ changes will take time.', options: ['These', 'This'], answer: 'These', explanation: l('changes (plural) → These.', 'changes (plural) → These।') }),
+        choice('ppr-3-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: '______ changes will take time.', options: ['These', 'This'], answer: 'These', explanation: l('changes (plural) → These.', 'changes (plural) → These।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('ppr-3-r1', C, { prompt: l('Write the pronoun.', 'Pronoun লেখো।'), sentence: 'Bicycles are cheap, and ___ do not pollute the air.', accepted: ['they'], explanation: l('bicycles (plural) → they.', 'bicycles (plural) → they।'), why: { it: l('Bicycles are plural: they.', 'Bicycles plural: they।') } }),
+        gap('ppr-3-r1', C, { prompt: l('Write the pronoun.', 'Pronoun লিখুন।'), sentence: 'Bicycles are cheap, and ___ do not pollute the air.', accepted: ['they'], explanation: l('bicycles (plural) → they.', 'bicycles (plural) → they।'), why: { it: l('Bicycles are plural: they.', 'Bicycles plural: they।') } }),
         spot('ppr-3-r2', C, { sentence: 'Social media apps are popular, but it can waste time.', wrong: 'it', accepted: ['they'], explanation: l('apps (plural) → they.', 'apps (plural) → they।') }),
-        gap('ppr-3-r3', C, { prompt: l('Write "this" or "these".', '"this" বা "these" লেখো।'), sentence: '___ solutions are expensive but effective.', accepted: ['these'], explanation: l('solutions (plural) → these.', 'solutions (plural) → these।') }),
+        gap('ppr-3-r3', C, { prompt: l('Write "this" or "these".', '"this" বা "these" লিখুন।'), sentence: '___ solutions are expensive but effective.', accepted: ['these'], explanation: l('solutions (plural) → these.', 'solutions (plural) → these।') }),
       ],
     },
     {
@@ -313,15 +313,15 @@ const p3: Lesson = {
       exercises: [
         choice('ppr-3-c1', C, { prompt: l('Reading: what does "it" refer to?', 'Reading: "it" কাকে বোঝায়?'), sentence: 'The museum reopened in 2022 after it was repaired.', options: ['the museum', '2022', 'the repair'], answer: 'the museum', explanation: l('The museum was repaired.', 'Museum-টা মেরামত হয়েছিল।') }),
         spot('ppr-3-c2', C, { sentence: 'This problems affect millions of people.', wrong: 'This', accepted: ['These'], fixOptions: ['These', 'That', 'It'], explanation: l('problems (plural) → These.', 'problems (plural) → These।') }),
-        correct('ppr-3-c3', C, { prompt: l('Make the reference clear: replace "they" with the right noun.', 'Reference পরিষ্কার করো: "they"-এর জায়গায় ঠিক noun দাও।'), sentence: 'Students and teachers disagree because they have too much work.', accepted: ['Students and teachers disagree because teachers have too much work.', 'Students and teachers disagree because students have too much work.'], explanation: l('Replace "they" with the group you mean.', 'যাদের বোঝাচ্ছো, "they"-এর জায়গায় সেই group-এর নাম দাও।') }),
+        correct('ppr-3-c3', C, { prompt: l('Make the reference clear: replace "they" with the right noun.', 'Reference পরিষ্কার করুন: "they"-এর জায়গায় ঠিক noun দিন।'), sentence: 'Students and teachers disagree because they have too much work.', accepted: ['Students and teachers disagree because teachers have too much work.', 'Students and teachers disagree because students have too much work.'], explanation: l('Replace "they" with the group you mean.', 'যাদের বোঝাচ্ছেন, "they"-এর জায়গায় সেই group-এর নাম দিন।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppr-3-w1', C, {
-          prompt: l('Write two linked Task 2 sentences about mobile phones. Use "they" or "this" in the second sentence to point back.', 'Mobile phone নিয়ে দুটো জোড়া Task 2 sentence লেখো। দ্বিতীয় sentence-এ পেছনে ফিরতে "they" বা "this" ব্যবহার করো।'),
+          prompt: l('Write two linked Task 2 sentences about mobile phones. Use "they" or "this" in the second sentence to point back.', 'Mobile phone নিয়ে দুটো জোড়া Task 2 sentence লিখুন। দ্বিতীয় sentence-এ পেছনে ফিরতে "they" বা "this" ব্যবহার করুন।'),
           model: 'Many teenagers spend hours on their phones every day. This can affect their sleep and their studies.',
           task: 'The student writes two linked Task 2 sentences about mobile phones, using "they", "it", "this" or "these" in the second sentence to refer back. Check that each pronoun agrees in number and has one clear referent.',
           target: l('A pronoun that clearly points back', 'পরিষ্কারভাবে পেছনে ইঙ্গিত করা pronoun'),
@@ -332,9 +332,9 @@ const p3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Look back for the nearest noun or idea that fits in number and meaning.', 'পেছনে সবচেয়ে কাছের সেই noun বা ধারণা খোঁজো যা সংখ্যা আর অর্থে মেলে।'),
+        l('Look back for the nearest noun or idea that fits in number and meaning.', 'পেছনে সবচেয়ে কাছের সেই noun বা ধারণা খুঁজুন যা সংখ্যা আর অর্থে মেলে।'),
         l('it / this = singular; they / these = plural. Every pronoun needs one clear target.', 'it / this = singular; they / these = plural। প্রতিটা pronoun-এর একটা পরিষ্কার লক্ষ্য লাগে।'),
       ],
     },

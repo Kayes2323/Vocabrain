@@ -91,7 +91,7 @@ export const COUNTRIES: Country[] = [
     workQuestions: [
       {
         id: 'korean',
-        label: { en: 'Your Korean level (TOPIK)', bn: 'তোমার Korean level (TOPIK)' },
+        label: { en: 'Your Korean level (TOPIK)', bn: 'আপনার Korean level (TOPIK)' },
         options: [
           { value: 'none', label: { en: 'None yet', bn: 'এখনো নেই' } },
           { value: 'beginner', label: { en: 'Beginner (no TOPIK)', bn: 'Beginner (TOPIK নেই)' } },
@@ -101,7 +101,7 @@ export const COUNTRIES: Country[] = [
       {
         // D-4 language trainees: permission only after 6 months in Korea (asked here only; never guessed).
         id: 'stayMonths',
-        label: { en: 'How long have you been in Korea on D-4?', bn: 'D-4-এ কত দিন ধরে Korea-তে আছো?' },
+        label: { en: 'How long have you been in Korea on D-4?', bn: 'D-4-এ কত দিন ধরে Korea-তে আছেন?' },
         options: [
           { value: 'under-6', label: { en: 'Less than 6 months', bn: '৬ মাসের কম' } },
           { value: '6-plus', label: { en: '6 months or more', bn: '৬ মাস বা বেশি' } },

@@ -61,7 +61,7 @@ async function main() {
     );
     assert.equal(calls.length, 2, 'one call per task');
     assert.ok(calls.every((c) => c.tier === 'smart' && c.json));
-    assert.match(calls[0].system, /casual, friendly Bangla/);
+    assert.match(calls[0].system, /friendly, respectful Bangla \(always "আপনি"/);
     const task2 = f.tasks.find((x) => x.title === 'Task 2')!;
     assert.deepEqual(task2.criteria.map((c) => c.band), [6.5, 6, 5.5, 7], 'bands rounded to half');
     assert.equal(task2.band, 6.5);

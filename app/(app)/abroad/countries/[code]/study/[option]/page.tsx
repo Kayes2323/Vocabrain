@@ -9,10 +9,10 @@ import { ScreenSkeleton } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { formatMoney, useFormatDate } from '@/components/abroad/FactRow';
-import { GuideBlocks, NotVerified, SourceLinks } from '@/components/abroad/GuideBlocks';
+import { factSources, GuideBlocks, NotVerified, SectionSources, SourceLinks } from '@/components/abroad/GuideBlocks';
 import { useBilingual } from '@/components/abroad/useBilingual';
 import { countryHref } from '@/lib/abroad/countries';
-import { GUIDE_SECTIONS, guideSectionVerified, programGuide, studyOptionName, type GuideSectionId } from '@/lib/abroad/study-options';
+import { blockSources, GUIDE_SECTIONS, guideSectionVerified, programGuide, shortSourceName, studyOptionName, type GuideSectionId } from '@/lib/abroad/study-options';
 import { getCountry } from '@/lib/content/countries';
 import { formatIntake } from '@/lib/engine';
 import type { SourceRef } from '@/lib/models';
@@ -59,10 +59,20 @@ export default function StudyOptionPage() {
   const general = guide.documents.filter((d) => d.generalOnly);
   const costGroups = guide.costGroups.filter((g) => g.official.length || g.officialPending.length || g.estimates.length || g.mine);
 
+  // The sources behind what a section shows: one small link at its end (the full list is at the bottom).
+  const sectionSources = (id: GuideSectionId): SourceRef[] => [
+    ...blockSources(guide.sections[id]),
+    ...(id === 'visa' ? Object.values(guide.visaNames).flatMap((n) => (n ? [n.source] : [])) : []),
+    ...(id === 'documents' ? required.flatMap((d) => d.requirements.map((r) => r.source)) : []),
+    ...(id === 'finances' ? guide.fundsOfficial.map((o) => o.cost.amount.source) : []),
+    ...(id === 'costs' ? costGroups.flatMap((g) => g.official.map((o) => o.cost.amount.source)) : []),
+  ];
+
   const Section = ({ id, children }: { id: GuideSectionId | 'sources'; children: ReactNode }) => (
     <section id={id} className="scroll-mt-20 space-y-4 border-t pt-8" data-guide-section={id} data-verified={id === 'sources' ? undefined : String(verified(id as GuideSectionId))}>
       <h2 className="text-xl font-semibold tracking-tight">{t(`sa.guide.sections.${id}`)}</h2>
       {children}
+      {id !== 'sources' && <SectionSources sources={sectionSources(id)} lastVerified={id === 'documents' || id === 'finances' || id === 'costs' || id === 'visa' ? undefined : factSources(guide.sections[id].flatMap((b) => b.facts)).lastVerified} />}
     </section>
   );
 
@@ -134,14 +144,6 @@ export default function StudyOptionPage() {
                 {c.code} · {official ? official.value : text(c.name)}
               </p>
               <p className="text-[15px] leading-relaxed text-foreground/85">{t('sa.guide.visaIntro', { code: c.code })}</p>
-              {official && (
-                <p className="text-xs text-success">
-                  <a href={official.source.url} target="_blank" rel="noopener noreferrer" className="font-medium hover:underline">
-                    {official.source.name} <ExternalLink className="inline size-3" aria-hidden />
-                  </a>{' '}
-                  · {t('sa.hub.verifiedOn', { date: date(official.lastVerified) })}
-                </p>
-              )}
             </div>
           );
         })}
@@ -178,16 +180,6 @@ export default function StudyOptionPage() {
                     <div key={i} className="space-y-1 rounded-lg bg-muted/50 px-3 py-2">
                       <p className="text-xs font-medium text-muted-foreground">{t('sa.docs2.official')}</p>
                       <p className="text-sm leading-relaxed">{r.value}</p>
-                      <p className="text-xs text-success">
-                        {r.source.url ? (
-                          <a href={r.source.url} target="_blank" rel="noopener noreferrer" className="font-medium hover:underline">
-                            {r.source.name} <ExternalLink className="inline size-3" aria-hidden />
-                          </a>
-                        ) : (
-                          r.source.name
-                        )}{' '}
-                        · {t('sa.hub.verifiedOn', { date: date(r.lastVerified) })}
-                      </p>
                     </div>
                   ))
                 ) : (
@@ -218,7 +210,6 @@ export default function StudyOptionPage() {
             <p className="text-[15px]">
               {formatMoney(o.cost.amount.value)} · {t(`sa.cost.per.${o.cost.amount.value.period}`)}
             </p>
-            <SourceLine source={o.cost.amount.source} checked={date(o.cost.amount.lastVerified)} />
           </div>
         ))}
         {guide.fundsOfficial.length === 0 && !guideSectionVerified(guide.sections.finances) ? (
@@ -244,7 +235,6 @@ export default function StudyOptionPage() {
                           <p>
                             {text(o.cost.label)}: {formatMoney(o.cost.amount.value)} · {t(`sa.cost.per.${o.cost.amount.value.period}`)}
                           </p>
-                          <SourceLine source={o.cost.amount.source} checked={date(o.cost.amount.lastVerified)} />
                         </div>
                       ))
                     ) : (
@@ -269,7 +259,7 @@ export default function StudyOptionPage() {
                   <dt className="font-medium">{t('sa.cost.mine')}</dt>
                   <dd>{g.mine ? `${formatMoney(g.mine)} · ${t(`sa.cost.per.${g.mine.period}`)}` : <span className="text-muted-foreground">{t('sa.cost.notSet')}</span>}</dd>
                 </dl>
-                <SourceLinks links={g.officialPending} />
+                <SourceLinks links={g.officialPending} label={t('sa.guide.officialPages')} />
               </div>
             ))}
           </div>
@@ -313,16 +303,20 @@ export default function StudyOptionPage() {
       <Section id="sources">
         <p className="text-sm text-muted-foreground">{t('sa.guide.sourcesIntro')}</p>
         {guide.sources.length ? (
-          <ul className="space-y-2" data-testid="guide-sources">
-            {guide.sources.map((s) => (
-              <li key={s.url ?? s.name}>
-                {s.url ? (
-                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 text-[15px] font-medium text-brand">
-                    {s.name} <ExternalLink className="mt-1 size-3.5 shrink-0" aria-hidden />
-                  </a>
-                ) : (
-                  <span className="text-[15px]">{s.name}</span>
-                )}
+          <ul className="space-y-2.5" data-testid="guide-sources">
+            {guide.sources.map(({ source: s, lastVerified }) => (
+              <li key={s.url ?? s.name} className="flex gap-2 text-[15px]">
+                <span aria-hidden className="text-muted-foreground">•</span>
+                <span className="min-w-0">
+                  {s.url ? (
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-start gap-1.5 font-medium text-brand" title={s.name}>
+                      {shortSourceName(s.name)} <ExternalLink className="mt-1 size-3.5 shrink-0" aria-hidden />
+                    </a>
+                  ) : (
+                    <span>{shortSourceName(s.name)}</span>
+                  )}
+                  {lastVerified && <span className="block text-xs text-muted-foreground">{t('sa.guide.checked', { date: date(lastVerified) })}</span>}
+                </span>
               </li>
             ))}
           </ul>
@@ -342,18 +336,3 @@ export default function StudyOptionPage() {
   );
 }
 
-function SourceLine({ source, checked }: { source: SourceRef; checked: string }) {
-  const { t } = useLocale();
-  return (
-    <p className="text-xs text-success">
-      {source.url ? (
-        <a href={source.url} target="_blank" rel="noopener noreferrer" className="font-medium hover:underline">
-          {source.name} <ExternalLink className="inline size-3" aria-hidden />
-        </a>
-      ) : (
-        source.name
-      )}{' '}
-      · {t('sa.hub.verifiedOn', { date: checked })}
-    </p>
-  );
-}

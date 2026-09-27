@@ -124,7 +124,7 @@ export const KR_D4: VisaCategory = {
       ],
       explanation: {
         en: 'This is the official proof the visa asks for, not your full budget. The official amount is not verified yet: ask your language institute and the Korean embassy.',
-        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ, তোমার পুরো budget নয়। Official amount এখনো verified নয়: language institute আর Korean embassy থেকে জেনে নাও।',
+        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ, আপনার পুরো budget নয়। Official amount এখনো verified নয়: language institute আর Korean embassy থেকে জেনে নিন।',
       },
       blocks: [
         {
@@ -154,7 +154,7 @@ export const KR_D4: VisaCategory = {
       links: [KR_SIK_WORK, KR_EASYLAW_WORK],
       explanation: {
         en: 'Your weekly hours depend on how long you have been in Korea and your Korean level. Answer the questions below; you still need the permission before you start.',
-        bn: 'সপ্তাহে কত ঘণ্টা কাজ করা যাবে, তা Korea-তে কত দিন আছো আর তোমার Korean level-এর উপর নির্ভর করে। নিচের প্রশ্নের উত্তর দাও; কাজ শুরুর আগে permission লাগবেই।',
+        bn: 'সপ্তাহে কত ঘণ্টা কাজ করা যাবে, তা Korea-তে কত দিন আছেন আর আপনার Korean level-এর উপর নির্ভর করে। নিচের প্রশ্নের উত্তর দিন; কাজ শুরুর আগে permission লাগবেই।',
       },
     },
     // 16 · Length of stay

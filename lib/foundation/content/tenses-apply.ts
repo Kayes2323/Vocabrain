@@ -13,7 +13,7 @@ import { l } from './pos-kit';
 const cmPractice: Exercise[] = [
   {
     id: 't-9-e5', type: 'choice', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Choose the correct Task 1 sentence.', 'সঠিক Task 1 sentence বাছো।'),
+    prompt: l('Choose the correct Task 1 sentence.', 'সঠিক Task 1 sentence বেছে নিন।'),
     options: ['In 1990, the figure is 20%, and in 2000 it rises to 35%.', 'In 1990, the figure was 20%, and in 2000 it rose to 35%.', 'In 1990, the figure was 20%, and in 2000 it has risen to 35%.'],
     answer: 'In 1990, the figure was 20%, and in 2000 it rose to 35%.',
     explanation: l('Both years are finished → past simple in both parts.', 'দুই বছরই শেষ → দুই অংশেই past simple।'),
@@ -21,7 +21,7 @@ const cmPractice: Exercise[] = [
   },
   {
     id: 't-9-p1', type: 'choice', tag: 'agreement', concept: 'present-simple', pattern: 'sv-agreement',
-    prompt: l('Choose the correct sentence.', 'সঠিক sentence বাছো।'),
+    prompt: l('Choose the correct sentence.', 'সঠিক sentence বেছে নিন।'),
     options: ['My father work in a garment factory.', 'My father works in a garment factory.', 'My father working in a garment factory.'],
     answer: 'My father works in a garment factory.',
     explanation: l('"My father" = he → works.', '"My father" = he → works।'),
@@ -37,7 +37,7 @@ const cmPractice: Exercise[] = [
   },
   {
     id: 't-9-p3', type: 'choice', tag: 'tense', concept: 'present-perfect', pattern: 'tense-time',
-    prompt: l('Keep the time frame. Choose the correct second half.', 'Time frame ঠিক রাখো। সঠিক দ্বিতীয় অংশ বাছো।'),
+    prompt: l('Keep the time frame. Choose the correct second half.', 'Time frame ঠিক রাখুন। সঠিক দ্বিতীয় অংশ বেছে নিন।'),
     sentence: 'The city built its first metro line in 2022, and since then traffic ___.',
     options: ['has improved', 'improved', 'improves'], answer: 'has improved',
     explanation: l('The time changes: "in 2022" (past simple) → "since then" (present perfect).', 'সময় বদলেছে: "in 2022" (past simple) → "since then" (present perfect)।'),
@@ -48,35 +48,35 @@ const cmPractice: Exercise[] = [
 const cmRecall: Exercise[] = [
   {
     id: 't-9-e1', type: 'correct', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'The number of tourists has increased in 2012.',
     accepted: ['The number of tourists increased in 2012.'],
     explanation: l('"in 2012" is finished → past simple.', '"in 2012" শেষ → past simple।'),
   },
   {
     id: 't-9-e2', type: 'correct', tag: 'tense', concept: 'past-simple', pattern: 'verb-form',
-    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'Car sales rised sharply in 2018.',
     accepted: ['Car sales rose sharply in 2018.', 'Car sales increased sharply in 2018.'],
     explanation: l('rise → rose (irregular).', 'rise → rose (irregular)।'),
   },
   {
     id: 't-9-e3', type: 'correct', tag: 'agreement', concept: 'present-simple', pattern: 'sv-agreement',
-    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'The government spend a lot on education.',
     accepted: ['The government spends a lot on education.'],
     explanation: l('"The government" is singular → "spends".', '"The government" singular → "spends"।'),
   },
   {
     id: 't-9-e4', type: 'correct', tag: 'tense', concept: 'present-continuous', pattern: 'verb-form',
-    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'These days more people using mobile banking.',
     accepted: ['These days more people are using mobile banking.', 'These days, more people are using mobile banking.'],
     explanation: l('-ing needs "are": "are using".', '-ing-এর সাথে "are" লাগে: "are using"।'),
   },
   {
     id: 't-9-e6', type: 'correct', tag: 'tense', concept: 'present-perfect', pattern: 'past-vs-perfect',
-    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Correct the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'I am living in Chattogram since 2020.',
     accepted: ['I have lived in Chattogram since 2020.', 'I have been living in Chattogram since 2020.'],
     explanation: l('"since 2020" → present perfect: "I have lived".', '"since 2020" → present perfect: "I have lived"।'),
@@ -92,7 +92,7 @@ const cmChallenge: Exercise[] = [
   },
   {
     id: 't-9-c2', type: 'spot', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['In', '2005,', 'only', '10%', 'of', 'homes', 'have', 'internet', 'access.'], wrong: 6,
     accepted: ['had'], fixOptions: ['had', 'has', 'having'],
     explanation: l('"In 2005" is finished → past simple of have: had.', '"In 2005" শেষ → have-এর past simple: had।'),
@@ -116,20 +116,20 @@ export const tenseMistakesV2: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Be the examiner', 'তুমিই examiner'),
+      title: l('Be the examiner', 'আপনিই examiner'),
       situation: l('A student’s Task 1: "In 2010 the number of students is 500. Since then it has rised every year, and in 2020 it has reached 900."', 'একজন student-এর Task 1: "In 2010 the number of students is 500. Since then it has rised every year, and in 2020 it has reached 900."'),
       question: l('How many tense mistakes are there?', 'কয়টা tense-এর ভুল আছে?'),
       options: ['None', 'One', 'Three'],
       answer: 'Three',
       diagnose: {
-        None: l('Look again at each verb and its time word: "In 2010 … is", "has rised", "in 2020 … has reached".', 'প্রতিটা verb আর তার time word আবার দেখো: "In 2010 … is", "has rised", "in 2020 … has reached"।'),
-        One: l('There are more. Check each verb against its time word and its form.', 'আরও আছে। প্রতিটা verb-কে তার time word আর form-এর সাথে মিলিয়ে দেখো।'),
+        None: l('Look again at each verb and its time word: "In 2010 … is", "has rised", "in 2020 … has reached".', 'প্রতিটা verb আর তার time word আবার দেখুন: "In 2010 … is", "has rised", "in 2020 … has reached"।'),
+        One: l('There are more. Check each verb against its time word and its form.', 'আরও আছে। প্রতিটা verb-কে তার time word আর form-এর সাথে মিলিয়ে দেখুন।'),
         Three: l('Right: "In 2010 … was", "has risen" (not rised), and "in 2020 it reached" (finished year).', 'ঠিক: "In 2010 … was", "has risen" (rised না), আর "in 2020 it reached" (শেষ হওয়া বছর)।'),
       },
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: '✗ In 2010 the figure is 500. → ✓ In 2010 the figure was 500.', note: l('time', 'সময়') },
         { en: '✗ My father work in a bank. → ✓ My father works in a bank.', note: l('subject', 'subject') },
@@ -153,14 +153,14 @@ export const tenseMistakesV2: Lesson = {
       title: l('Three checks for every verb', 'প্রতিটা verb-এর জন্য তিনটা check'),
       body: l(
         'Most tense errors come from a few habits. Before you finish a Writing task, read each verb with three questions: TIME — does the tense match the time words? SUBJECT — does the verb match its subject? FORM — is the form correct after have / had / be / did / will?',
-        'বেশিরভাগ tense-এর ভুল আসে অল্প কয়েকটা অভ্যাস থেকে। Writing শেষ করার আগে প্রতিটা verb তিনটা প্রশ্ন দিয়ে পড়ো: TIME — tense কি time word-এর সাথে মেলে? SUBJECT — verb কি subject-এর সাথে মেলে? FORM — have / had / be / did / will-এর পরে form কি ঠিক?',
+        'বেশিরভাগ tense-এর ভুল আসে অল্প কয়েকটা অভ্যাস থেকে। Writing শেষ করার আগে প্রতিটা verb তিনটা প্রশ্ন দিয়ে পড়ুন: TIME — tense কি time word-এর সাথে মেলে? SUBJECT — verb কি subject-এর সাথে মেলে? FORM — have / had / be / did / will-এর পরে form কি ঠিক?',
       ),
       points: [
         l('1. Missing -s: "She work" → "She works".', '১. -s বাদ: "She work" → "She works"।'),
         l('2. Present perfect with a finished time: "has increased in 2010" → "increased in 2010".', '২. শেষ হওয়া সময়ের সাথে present perfect: "has increased in 2010" → "increased in 2010"।'),
         l('3. Wrong past form: "rised", "falled" → "rose", "fell".', '৩. ভুল past form: "rised", "falled" → "rose", "fell"।'),
         l('4. -ing without "be": "Prices rising" → "Prices are rising".', '৪. "be" ছাড়া -ing: "Prices rising" → "Prices are rising"।'),
-        l('5. NOT every change of tense is a mistake: change it when the time changes ("in 2010 … since then").', '৫. Tense বদলানো সবসময় ভুল না: সময় বদলালে বদলাও ("in 2010 … since then")।'),
+        l('5. NOT every change of tense is a mistake: change it when the time changes ("in 2010 … since then").', '৫. Tense বদলানো সবসময় ভুল না: সময় বদলালে বদলান ("in 2010 … since then")।'),
       ],
     },
     {
@@ -177,9 +177,9 @@ export const tenseMistakesV2: Lesson = {
       title: l('Where this shows up in IELTS', 'IELTS-এ কোথায় আসে'),
       uses: [
         { skill: 'writing', example: 'In 2010, exports rose to $5 billion, and they have continued to grow since then.', note: l('Changing tense is fine when the time changes (2010 → since then).', 'সময় বদলালে tense বদলানো ঠিক আছে (2010 → since then)।') },
-        { skill: 'speaking', example: 'When I was a child I lived in a village, but now I live in the city.', note: l('Keep past for the past and present for now.', 'অতীতের জন্য past আর এখনের জন্য present রাখো।') },
+        { skill: 'speaking', example: 'When I was a child I lived in a village, but now I live in the city.', note: l('Keep past for the past and present for now.', 'অতীতের জন্য past আর এখনের জন্য present রাখুন।') },
         { skill: 'reading', example: 'The factory closed in 1998; since then, the area has become a park.', note: l('The tense tells you what is still true: it is a park now.', 'Tense বলে দেয় কী এখনো সত্য: এখন এটা একটা park।') },
-        { skill: 'listening', example: 'We moved the meeting — it was on Tuesday, but now it’s on Thursday.', note: l('was (old) vs is (now): write the present one.', 'was (পুরনো) বনাম is (এখন): এখনকারটা লেখো।') },
+        { skill: 'listening', example: 'We moved the meeting — it was on Tuesday, but now it’s on Thursday.', note: l('was (old) vs is (now): write the present one.', 'was (পুরনো) বনাম is (এখন): এখনকারটা লিখুন।') },
       ],
     },
     {
@@ -192,17 +192,17 @@ export const tenseMistakesV2: Lesson = {
         { wrong: 'These days more people using mobile banking.', right: 'These days more people are using mobile banking.', why: l('-ing needs are.', '-ing-এর সাথে are লাগে।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: spot the right one', 'Practice: ঠিকটা খোঁজো'), exercises: cmPractice },
-    { kind: 'practice', mode: 'recall', title: l('Active recall: fix it yourself', 'Active recall: নিজে ঠিক করো'), exercises: cmRecall },
+    { kind: 'practice', mode: 'practice', title: l('Practice: spot the right one', 'Practice: ঠিকটা খুঁজুন'), exercises: cmPractice },
+    { kind: 'practice', mode: 'recall', title: l('Active recall: fix it yourself', 'Active recall: নিজে ঠিক করুন'), exercises: cmRecall },
     { kind: 'practice', title: l('Mini challenge', 'Mini challenge'), exercises: cmChallenge },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: three times in one answer', 'এবার তোমার পালা: এক answer-এ তিন সময়'),
+      title: l('Your turn: three times in one answer', 'এবার আপনার পালা: এক answer-এ তিন সময়'),
       exercises: [
         {
           id: 't-9-y1', type: 'write', tag: 'tense', concept: 'present-perfect',
-          prompt: l('Write 3 sentences about learning English: when you started (past), how long you have been learning (since / for), and what you are doing to improve these days.', 'English শেখা নিয়ে ৩টা sentence লেখো: কবে শুরু করেছিলে (past), কতদিন ধরে শিখছো (since / for), আর আজকাল উন্নতির জন্য কী করছো।'),
+          prompt: l('Write 3 sentences about learning English: when you started (past), how long you have been learning (since / for), and what you are doing to improve these days.', 'English শেখা নিয়ে ৩টা sentence লিখুন: কবে শুরু করেছিলেন (past), কতদিন ধরে শিখছেন (since / for), আর আজকাল উন্নতির জন্য কী করছেন।'),
           model: 'I started learning English when I was six. I have studied it for about fifteen years. These days I am practising speaking with a friend every evening.',
           checklist: [l('Past simple with a finished time', 'শেষ হওয়া সময়ের সাথে past simple'), l('have/has + participle with since / for', 'since / for সহ have/has + participle'), l('am/is/are + -ing for these days', 'আজকালের জন্য am/is/are + -ing')],
           explanation: l('Three time frames, three tenses: exactly what the three checks protect.', 'তিন সময়, তিন tense: তিনটা check ঠিক এটাই রক্ষা করে।'),
@@ -215,11 +215,11 @@ export const tenseMistakesV2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Check every verb: time? subject? form?', 'প্রতিটা verb check করো: সময়? subject? form?'),
+        l('Check every verb: time? subject? form?', 'প্রতিটা verb check করুন: সময়? subject? form?'),
         l('Finished year → past simple. since/for → present perfect.', 'শেষ হওয়া বছর → past simple। since/for → present perfect।'),
-        l('Change tense only when the time changes.', 'সময় বদলালেই শুধু tense বদলাও।'),
+        l('Change tense only when the time changes.', 'সময় বদলালেই শুধু tense বদলান।'),
       ],
     },
   ],
@@ -229,15 +229,15 @@ export const tenseMistakesV2: Lesson = {
 const wrPractice: Exercise[] = [
   {
     id: 't-10-e1', type: 'choice', tag: 'tense', concept: 'present-simple',
-    prompt: l('The graph covers 2000–2020. Choose the correct introduction.', 'Graph-টা 2000–2020-এর। সঠিক introduction বাছো।'),
+    prompt: l('The graph covers 2000–2020. Choose the correct introduction.', 'Graph-টা 2000–2020-এর। সঠিক introduction বেছে নিন।'),
     options: ['The graph showed the number of visitors between 2000 and 2020.', 'The graph shows the number of visitors between 2000 and 2020.', 'The graph has shown the number of visitors between 2000 and 2020.'],
     answer: 'The graph shows the number of visitors between 2000 and 2020.',
     explanation: l('The graph shows it now → present "shows".', 'Graph-টা এখন দেখাচ্ছে → present "shows"।'),
-    why: { 'The graph showed the number of visitors between 2000 and 2020.': l('The data is past, but the graph is in front of you now.', 'Data অতীতের, কিন্তু graph-টা এখন তোমার সামনে।'), 'The graph has shown the number of visitors between 2000 and 2020.': l('Just describe what it shows now: shows.', 'এখন কী দেখায় সেটাই বলো: shows।') },
+    why: { 'The graph showed the number of visitors between 2000 and 2020.': l('The data is past, but the graph is in front of you now.', 'Data অতীতের, কিন্তু graph-টা এখন আপনার সামনে।'), 'The graph has shown the number of visitors between 2000 and 2020.': l('Just describe what it shows now: shows.', 'এখন কী দেখায় সেটাই বলুন: shows।') },
   },
   {
     id: 't-10-e2', type: 'choice', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Choose the correct data sentence.', 'সঠিক data sentence বাছো।'),
+    prompt: l('Choose the correct data sentence.', 'সঠিক data sentence বেছে নিন।'),
     sentence: 'Data: 2005: 40% → 2015: 25%',
     options: ['The proportion fell from 40% in 2005 to 25% in 2015.', 'The proportion falls from 40% in 2005 to 25% in 2015.', 'The proportion has fallen from 40% in 2005 to 25% in 2015.'],
     answer: 'The proportion fell from 40% in 2005 to 25% in 2015.',
@@ -245,7 +245,7 @@ const wrPractice: Exercise[] = [
   },
   {
     id: 't-10-e4', type: 'choice', tag: 'tense', concept: 'present-simple',
-    prompt: l('Process diagram. Choose the correct sentence.', 'Process diagram। সঠিক sentence বাছো।'),
+    prompt: l('Process diagram. Choose the correct sentence.', 'Process diagram। সঠিক sentence বেছে নিন।'),
     options: ['First, the tea leaves are picked by hand.', 'First, the tea leaves were picked by hand.', 'First, the tea leaves picked by hand.'],
     answer: 'First, the tea leaves are picked by hand.',
     explanation: l('Processes happen in general → present simple passive (are + past participle).', 'Process সাধারণভাবে ঘটে → present simple passive (are + past participle)।'),
@@ -253,7 +253,7 @@ const wrPractice: Exercise[] = [
   },
   {
     id: 't-10-p1', type: 'choice', tag: 'tense', concept: 'present-perfect',
-    prompt: l('Task 2 introduction: choose the best background sentence.', 'Task 2 introduction: সবচেয়ে ভালো background sentence বাছো।'),
+    prompt: l('Task 2 introduction: choose the best background sentence.', 'Task 2 introduction: সবচেয়ে ভালো background sentence বেছে নিন।'),
     options: ['In recent years, the use of smartphones among children has increased dramatically.', 'In recent years, the use of smartphones among children increased dramatically in 2015.', 'In recent years, the use of smartphones among children is increase dramatically.'],
     answer: 'In recent years, the use of smartphones among children has increased dramatically.',
     explanation: l('"In recent years" = up to now → present perfect.', '"In recent years" = এখন পর্যন্ত → present perfect।'),
@@ -264,21 +264,21 @@ const wrPractice: Exercise[] = [
 const wrRecall: Exercise[] = [
   {
     id: 't-10-e3', type: 'gap', tag: 'tense', concept: 'future',
-    prompt: l('Complete the projection (expect, reach).', 'Projection-টা complete করো (expect, reach)।'),
+    prompt: l('Complete the projection (expect, reach).', 'Projection-টা complete করুন (expect, reach)।'),
     sentence: 'The figure ___ 60% by 2030.',
     accepted: ['is expected to reach', 'is projected to reach', 'is predicted to reach', 'will reach'],
     explanation: l('Future year → "is expected to reach" (or "will reach").', 'ভবিষ্যতের বছর → "is expected to reach" (বা "will reach")।'),
   },
   {
     id: 't-10-r1', type: 'gap', tag: 'tense', concept: 'past-simple', pattern: 'verb-form',
-    prompt: l('Write the past simple of "peak".', '"peak"-এর past simple লেখো।'),
+    prompt: l('Write the past simple of "peak".', '"peak"-এর past simple লিখুন।'),
     sentence: 'Coffee sales ___ at 800 cups in July and then declined.',
     accepted: ['peaked'],
     explanation: l('A finished month in the data → peaked.', 'Data-র শেষ হওয়া মাস → peaked।'),
   },
   {
     id: 't-10-r2', type: 'correct', tag: 'tense', concept: 'present-simple',
-    prompt: l('Fix the process sentence.', 'Process sentence-টা ঠিক করো।'),
+    prompt: l('Fix the process sentence.', 'Process sentence-টা ঠিক করুন।'),
     sentence: 'Next, the bricks heated in a kiln.',
     accepted: ['Next, the bricks are heated in a kiln.'],
     explanation: l('Process → present simple passive: are heated.', 'Process → present simple passive: are heated।'),
@@ -295,7 +295,7 @@ const wrChallenge: Exercise[] = [
   },
   {
     id: 't-10-c2', type: 'spot', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('One word breaks this Task 1 sentence. Tap it, then fix it.', 'একটা word Task 1 sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('One word breaks this Task 1 sentence. Tap it, then fix it.', 'একটা word Task 1 sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['In', '2005,', 'rail', 'use', 'peak', 'at', '40%.'], wrong: 4,
     accepted: ['peaked'], fixOptions: ['peaked', 'has peaked', 'peaks'],
     explanation: l('"In 2005" is finished → past simple: peaked (not "has peaked").', '"In 2005" শেষ → past simple: peaked ("has peaked" না)।'),
@@ -321,19 +321,19 @@ export const tensesWritingV2: Lesson = {
     {
       kind: 'hook',
       title: l('The first sentence of Task 1', 'Task 1-এর প্রথম sentence'),
-      situation: l('Your Task 1 graph shows bus users from 2000 to 2020. You begin your answer.', 'তোমার Task 1 graph-এ 2000 থেকে 2020 পর্যন্ত bus যাত্রী। তুমি answer শুরু করছো।'),
+      situation: l('Your Task 1 graph shows bus users from 2000 to 2020. You begin your answer.', 'আপনার Task 1 graph-এ 2000 থেকে 2020 পর্যন্ত bus যাত্রী। আপনি answer শুরু করছেন।'),
       question: l('Which introduction is correct?', 'কোন introduction ঠিক?'),
       options: ['The graph showed the number of bus users from 2000 to 2020.', 'The graph shows the number of bus users from 2000 to 2020.', 'The graph has shown the number of bus users from 2000 to 2020.'],
       answer: 'The graph shows the number of bus users from 2000 to 2020.',
       diagnose: {
-        'The graph showed the number of bus users from 2000 to 2020.': l('The data is in the past, but the graph shows it now, in front of you. So: shows. Past tenses come in the body, for the data.', 'Data অতীতের, কিন্তু graph-টা এখন তোমার সামনে দেখাচ্ছে। তাই: shows। Past tense আসবে body-তে, data-র জন্য।'),
+        'The graph showed the number of bus users from 2000 to 2020.': l('The data is in the past, but the graph shows it now, in front of you. So: shows. Past tenses come in the body, for the data.', 'Data অতীতের, কিন্তু graph-টা এখন আপনার সামনে দেখাচ্ছে। তাই: shows। Past tense আসবে body-তে, data-র জন্য।'),
         'The graph shows the number of bus users from 2000 to 2020.': l('Right. Introduction: present. Data in past years: past simple.', 'ঠিক। Introduction: present। অতীতের বছরের data: past simple।'),
-        'The graph has shown the number of bus users from 2000 to 2020.': l('Not wrong grammar, but unnatural here. Keep the introduction simple: shows.', 'Grammar ভুল না, কিন্তু এখানে অস্বাভাবিক। Introduction সহজ রাখো: shows।'),
+        'The graph has shown the number of bus users from 2000 to 2020.': l('Not wrong grammar, but unnatural here. Keep the introduction simple: shows.', 'Grammar ভুল না, কিন্তু এখানে অস্বাভাবিক। Introduction সহজ রাখুন: shows।'),
       },
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'The chart shows how many people used buses between 1990 and 2020.', note: l('intro: present · data: past', 'intro: present · data: past') },
         { en: 'The figure is expected to reach 60% by 2030.', note: l('future years → is expected to', 'ভবিষ্যতের বছর → is expected to') },
@@ -354,15 +354,15 @@ export const tensesWritingV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('Choose the tense from the task', 'Task দেখে tense বাছো'),
+      title: l('Choose the tense from the task', 'Task দেখে tense বেছে নিন'),
       body: l(
         'Before writing, look at the time in the question. Task 1: past years → past simple; future years → "is expected to"; no time (a process, a map now) → present simple. Task 2: present simple for opinions and general truths, present perfect for recent changes, "will / may" for results.',
-        'লেখার আগে প্রশ্নে সময়টা দেখো। Task 1: অতীতের বছর → past simple; ভবিষ্যতের বছর → "is expected to"; সময় নেই (process, এখনকার map) → present simple। Task 2: মতামত আর সাধারণ সত্যে present simple, সাম্প্রতিক পরিবর্তনে present perfect, ফলাফলে "will / may"।',
+        'লেখার আগে প্রশ্নে সময়টা দেখুন। Task 1: অতীতের বছর → past simple; ভবিষ্যতের বছর → "is expected to"; সময় নেই (process, এখনকার map) → present simple। Task 2: মতামত আর সাধারণ সত্যে present simple, সাম্প্রতিক পরিবর্তনে present perfect, ফলাফলে "will / may"।',
       ),
       points: [
         l('Introduction (Task 1): "The graph shows…" — always present.', 'Introduction (Task 1): "The graph shows…" — সবসময় present।'),
         l('Process diagrams: present simple passive ("The leaves are dried").', 'Process diagram: present simple passive ("The leaves are dried")।'),
-        l('Mixed charts (past + future): change tense exactly where the time changes.', 'মিশ্র chart (অতীত + ভবিষ্যৎ): যেখানে সময় বদলায়, ঠিক সেখানেই tense বদলাও।'),
+        l('Mixed charts (past + future): change tense exactly where the time changes.', 'মিশ্র chart (অতীত + ভবিষ্যৎ): যেখানে সময় বদলায়, ঠিক সেখানেই tense বদলান।'),
         l('NOT tense variety for its own sake: the right tense for each time beats "more tenses".', 'শুধু বৈচিত্র্যের জন্য tense না: প্রতিটা সময়ে ঠিক tense, "বেশি tense"-এর চেয়ে ভালো।'),
       ],
     },
@@ -395,20 +395,20 @@ export const tensesWritingV2: Lesson = {
         { wrong: 'Next, the bricks heated.', right: 'Next, the bricks are heated.', why: l('Process → present passive.', 'Process → present passive।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: choose for the task', 'Practice: task দেখে বাছো'), exercises: wrPractice },
+    { kind: 'practice', mode: 'practice', title: l('Practice: choose for the task', 'Practice: task দেখে বেছে নিন'), exercises: wrPractice },
     { kind: 'practice', mode: 'recall', title: l('Active recall: no options', 'Active recall: কোনো option নেই'), exercises: wrRecall },
     { kind: 'practice', title: l('Mini challenge', 'Mini challenge'), exercises: wrChallenge },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: Task 1 and Task 2', 'এবার তোমার পালা: Task 1 আর Task 2'),
+      title: l('Your turn: Task 1 and Task 2', 'এবার আপনার পালা: Task 1 আর Task 2'),
       exercises: [
         {
           id: 't-10-y1', type: 'write', tag: 'tense', concept: 'past-simple',
-          prompt: l('Task 1: rail passengers were 20 million in 2000, 35 million in 2010, and are expected to reach 50 million in 2030. Write 2 sentences: one about the past data, one about the projection.', 'Task 1: rail যাত্রী 2000-এ 20 million, 2010-এ 35 million, আর 2030-এ 50 million হবে বলে আশা করা হচ্ছে। ২টা sentence লেখো: একটা অতীতের data নিয়ে, একটা projection নিয়ে।'),
+          prompt: l('Task 1: rail passengers were 20 million in 2000, 35 million in 2010, and are expected to reach 50 million in 2030. Write 2 sentences: one about the past data, one about the projection.', 'Task 1: rail যাত্রী 2000-এ 20 million, 2010-এ 35 million, আর 2030-এ 50 million হবে বলে আশা করা হচ্ছে। ২টা sentence লিখুন: একটা অতীতের data নিয়ে, একটা projection নিয়ে।'),
           model: 'The number of rail passengers rose from 20 million in 2000 to 35 million in 2010. This figure is expected to reach 50 million by 2030.',
           checklist: [l('Past simple for 2000–2010', '2000–2010-এর জন্য past simple'), l('is expected to / will for 2030', '2030-এর জন্য is expected to / will')],
-          explanation: l('Change the tense exactly where the data becomes a projection.', 'Data যেখানে projection হয়, ঠিক সেখানেই tense বদলাও।'),
+          explanation: l('Change the tense exactly where the data becomes a projection.', 'Data যেখানে projection হয়, ঠিক সেখানেই tense বদলান।'),
           mino: {
             task: 'The student writes two IELTS Task 1 sentences: past data (2000–2010) and a projection for 2030. Check past simple for the finished years (never "has increased in 2010"), correct irregular forms (rose, grew), and a correct future form for the projection (is expected/predicted to + base verb, or will + base verb; not "will be increase"). Explain any tense error by pointing to the year in the student’s sentence.',
             target: l('Past data → past simple · projection → is expected to', 'অতীতের data → past simple · projection → is expected to'),
@@ -416,7 +416,7 @@ export const tensesWritingV2: Lesson = {
         },
         {
           id: 't-10-e5', type: 'write', tag: 'tense', concept: 'present-perfect',
-          prompt: l('Task 2 introduction: write one sentence about a recent change in how people shop.', 'Task 2 introduction: মানুষের কেনাকাটার সাম্প্রতিক পরিবর্তন নিয়ে এক sentence লেখো।'),
+          prompt: l('Task 2 introduction: write one sentence about a recent change in how people shop.', 'Task 2 introduction: মানুষের কেনাকাটার সাম্প্রতিক পরিবর্তন নিয়ে এক sentence লিখুন।'),
           model: 'In recent years, online shopping has become a normal part of daily life for many people.',
           checklist: [l('"In recent years" + present perfect', '"In recent years" + present perfect'), l('No finished time (yesterday, in 2010)', 'শেষ হওয়া সময় নেই (yesterday, in 2010)')],
           explanation: l('A clear background sentence for Task 2.', 'Task 2-এর জন্য একটা পরিষ্কার background sentence।'),
@@ -429,7 +429,7 @@ export const tensesWritingV2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('"The graph shows…" · past years → past · future years → is expected to.', '"The graph shows…" · অতীতের বছর → past · ভবিষ্যতের বছর → is expected to।'),
         l('Process → present simple passive.', 'Process → present simple passive।'),
@@ -443,7 +443,7 @@ export const tensesWritingV2: Lesson = {
 const spPractice: Exercise[] = [
   {
     id: 't-11-e1', type: 'choice', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('Examiner: "Did you like reading as a child?" Choose the best start.', 'Examiner: "Did you like reading as a child?" সবচেয়ে ভালো শুরু বাছো।'),
+    prompt: l('Examiner: "Did you like reading as a child?" Choose the best start.', 'Examiner: "Did you like reading as a child?" সবচেয়ে ভালো শুরু বেছে নিন।'),
     options: ['Yes, I like reading very much.', 'Yes, I loved reading stories when I was young.', 'Yes, I have liked reading.'], answer: 'Yes, I loved reading stories when I was young.',
     explanation: l('"Did you…as a child" → past simple.', '"Did you…as a child" → past simple।'),
     why: { 'Yes, I like reading very much.': l('This answers "Do you like…?", not the past question.', 'এটা "Do you like…?"-এর answer, অতীতের প্রশ্নের না।'), 'Yes, I have liked reading.': l('Present perfect does not fit "as a child" (a finished time).', '"as a child" শেষ হওয়া সময়, present perfect মেলে না।') },
@@ -464,7 +464,7 @@ const spPractice: Exercise[] = [
   },
   {
     id: 't-11-p1', type: 'choice', tag: 'tense', concept: 'present-continuous', pattern: 'simple-vs-continuous',
-    prompt: l('Examiner: "Do you work or are you a student?" You are in your final year at university.', 'Examiner: "Do you work or are you a student?" তুমি university-র শেষ বর্ষে আছো।'),
+    prompt: l('Examiner: "Do you work or are you a student?" You are in your final year at university.', 'Examiner: "Do you work or are you a student?" আপনি university-র শেষ বর্ষে আছেন।'),
     options: ['I’m a student. I’m doing a degree in economics at the moment.', 'I’m a student. I do a degree in economics at the moment.', 'I’m a student. I am study economics.'],
     answer: 'I’m a student. I’m doing a degree in economics at the moment.',
     explanation: l('A temporary current situation with "at the moment" → present continuous.', '"at the moment" সহ এখনকার সাময়িক অবস্থা → present continuous।'),
@@ -475,14 +475,14 @@ const spPractice: Exercise[] = [
 const spRecall: Exercise[] = [
   {
     id: 't-11-e3', type: 'correct', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('Part 2 story: correct the sentence.', 'Part 2-এর গল্প: sentence-টা ঠিক করো।'),
+    prompt: l('Part 2 story: correct the sentence.', 'Part 2-এর গল্প: sentence-টা ঠিক করুন।'),
     sentence: 'Last winter I go to Srimangal and I see a lot of tea gardens.',
     accepted: ['Last winter I went to Srimangal and I saw a lot of tea gardens.', 'Last winter, I went to Srimangal and I saw a lot of tea gardens.', 'Last winter I went to Srimangal and saw a lot of tea gardens.'],
     explanation: l('A finished past story → went, saw.', 'শেষ হওয়া অতীতের গল্প → went, saw।'),
   },
   {
     id: 't-11-r1', type: 'gap', tag: 'tense', concept: 'present-perfect',
-    prompt: l('Examiner: "How has your city changed?" Complete with "become".', 'Examiner: "How has your city changed?" "become" দিয়ে complete করো।'),
+    prompt: l('Examiner: "How has your city changed?" Complete with "become".', 'Examiner: "How has your city changed?" "become" দিয়ে complete করুন।'),
     sentence: 'It ___ much busier over the last few years.',
     accepted: ['has become', "'s become"],
     explanation: l('"over the last few years" = up to now → has become.', '"over the last few years" = এখন পর্যন্ত → has become।'),
@@ -490,7 +490,7 @@ const spRecall: Exercise[] = [
   },
   {
     id: 't-11-r2', type: 'correct', tag: 'tense', concept: 'future', pattern: 'verb-form',
-    prompt: l('Part 3: fix the answer.', 'Part 3: উত্তরটা ঠিক করো।'),
+    prompt: l('Part 3: fix the answer.', 'Part 3: উত্তরটা ঠিক করুন।'),
     sentence: 'I think people will uses more solar power in the future.',
     accepted: ['I think people will use more solar power in the future.'],
     explanation: l('will + base verb: will use.', 'will + base verb: will use।'),
@@ -507,7 +507,7 @@ const spChallenge: Exercise[] = [
   },
   {
     id: 't-11-c2', type: 'spot', tag: 'tense', concept: 'past-continuous',
-    prompt: l('One word breaks this Part 2 sentence. Tap it, then fix it.', 'একটা word Part 2 sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('One word breaks this Part 2 sentence. Tap it, then fix it.', 'একটা word Part 2 sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['I', 'was', 'walk', 'to', 'the', 'market', 'when', 'I', 'met', 'her.'], wrong: 2,
     accepted: ['walking'], fixOptions: ['walking', 'walked', 'walks'],
     explanation: l('was + verb-ing for the background: was walking.', 'পটভূমির জন্য was + verb-ing: was walking।'),
@@ -532,7 +532,7 @@ export const tensesSpeakingV2: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Listen to the question', 'প্রশ্নটা শোনো'),
+      title: l('Listen to the question', 'প্রশ্নটা শুনুন'),
       situation: l('Examiner: "Have you ever been to a wedding in another city?"', 'Examiner: "Have you ever been to a wedding in another city?"'),
       question: l('Which answer sounds natural and accurate?', 'কোন উত্তর স্বাভাবিক আর নির্ভুল?'),
       options: ['Yes, I have. I went to my cousin’s wedding in Sylhet last year.', 'Yes, I have gone to my cousin’s wedding in Sylhet last year.', 'Yes, I go to my cousin’s wedding in Sylhet last year.'],
@@ -545,14 +545,14 @@ export const tensesSpeakingV2: Lesson = {
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'Do you like cooking? — Yes, I love it. I usually cook on Fridays.', note: l('Do you…? → present simple', 'Do you…? → present simple') },
         { en: 'Did you enjoy school? — Yes, I did. I especially liked science.', note: l('Did you…? → past simple', 'Did you…? → past simple') },
         { en: 'How long have you lived here? — I’ve lived here for six years.', note: l('How long have you…? → present perfect', 'How long have you…? → present perfect') },
         { en: 'Will cities change? — I think they’ll become greener.', note: l('Will…? → will', 'Will…? → will') },
       ],
-      question: l('Where does the tense of your answer come from?', 'তোমার উত্তরের tense কোথা থেকে আসে?'),
+      question: l('Where does the tense of your answer come from?', 'আপনার উত্তরের tense কোথা থেকে আসে?'),
       options: [
         l('From the examiner’s question', 'Examiner-এর প্রশ্ন থেকে'),
         l('It is always present simple in Speaking', 'Speaking-এ সবসময় present simple'),
@@ -561,12 +561,12 @@ export const tensesSpeakingV2: Lesson = {
       answer: 0,
       pattern: l(
         'The question gives you the tense. Answer in that tense, then extend with a different time (a past example, a future plan).',
-        'প্রশ্নই tense দিয়ে দেয়। সেই tense-এ উত্তর দাও, তারপর অন্য সময় দিয়ে বাড়াও (অতীতের উদাহরণ, ভবিষ্যতের পরিকল্পনা)।',
+        'প্রশ্নই tense দিয়ে দেয়। সেই tense-এ উত্তর দিন, তারপর অন্য সময় দিয়ে বাড়াও (অতীতের উদাহরণ, ভবিষ্যতের পরিকল্পনা)।',
       ),
     },
     {
       kind: 'concept',
-      title: l('Listen to the question’s tense', 'প্রশ্নের tense শোনো'),
+      title: l('Listen to the question’s tense', 'প্রশ্নের tense শুনুন'),
       body: l(
         'The examiner’s question usually tells you the tense. "Do you…?" → present simple. "Did you…? / Describe a time when…" → past. "How long have you…?" → present perfect. "Will…? / How might… change?" → future.',
         'Examiner-এর প্রশ্নই সাধারণত tense বলে দেয়। "Do you…?" → present simple। "Did you…? / Describe a time when…" → past। "How long have you…?" → present perfect। "Will…? / How might… change?" → future।',
@@ -590,7 +590,7 @@ export const tensesSpeakingV2: Lesson = {
       kind: 'ielts',
       title: l('Across the test', 'পুরো test জুড়ে'),
       uses: [
-        { skill: 'speaking', example: 'Did you enjoy school? — Yes, I did. I especially liked science because we did lots of experiments.', note: l('Answer a past question in the past.', 'অতীতের প্রশ্নের answer অতীতে দাও।') },
+        { skill: 'speaking', example: 'Did you enjoy school? — Yes, I did. I especially liked science because we did lots of experiments.', note: l('Answer a past question in the past.', 'অতীতের প্রশ্নের answer অতীতে দিন।') },
         { skill: 'speaking', example: 'How has your city changed? — It has grown very fast; there are many more flyovers now.', note: l('"has changed" question → present perfect answer.', '"has changed" প্রশ্ন → present perfect answer।') },
         { skill: 'writing', example: 'Many young people have moved to cities in recent years, and this trend is likely to continue.', note: l('Task 2 uses the same time logic as speaking: recent years → present perfect.', 'Task 2-তেও speaking-এর মতো সময়ের logic: recent years → present perfect।') },
         { skill: 'listening', example: 'I used to live in Khulna, but I’ve moved to Dhaka now.', note: l('Part 1 forms: the present address is the answer, not the old one.', 'Part 1 form: বর্তমান ঠিকানাই উত্তর, পুরনোটা না।') },
@@ -606,17 +606,17 @@ export const tensesSpeakingV2: Lesson = {
         { wrong: 'I think people will uses more solar power.', right: 'I think people will use more solar power.', why: l('will + base verb.', 'will + base verb।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: match the question', 'Practice: প্রশ্নের সাথে মেলাও'), exercises: spPractice },
+    { kind: 'practice', mode: 'practice', title: l('Practice: match the question', 'Practice: প্রশ্নের সাথে মেলান'), exercises: spPractice },
     { kind: 'practice', mode: 'recall', title: l('Active recall: no options', 'Active recall: কোনো option নেই'), exercises: spRecall },
     { kind: 'practice', title: l('Mini challenge', 'Mini challenge'), exercises: spChallenge },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: a Part 1 answer with range', 'এবার তোমার পালা: range সহ Part 1 answer'),
+      title: l('Your turn: a Part 1 answer with range', 'এবার আপনার পালা: range সহ Part 1 answer'),
       exercises: [
         {
           id: 't-11-e5', type: 'write', tag: 'tense', concept: 'past-simple',
-          prompt: l('Part 1: "Do you like travelling?" Answer in 3 sentences: a general answer (present), one past example, and one future plan.', 'Part 1: "Do you like travelling?" ৩টা sentence-এ উত্তর দাও: সাধারণ উত্তর (present), একটা অতীতের উদাহরণ, আর একটা ভবিষ্যতের পরিকল্পনা।'),
+          prompt: l('Part 1: "Do you like travelling?" Answer in 3 sentences: a general answer (present), one past example, and one future plan.', 'Part 1: "Do you like travelling?" ৩টা sentence-এ উত্তর দিন: সাধারণ উত্তর (present), একটা অতীতের উদাহরণ, আর একটা ভবিষ্যতের পরিকল্পনা।'),
           model: 'Yes, I really enjoy travelling. Last year I went to Sajek with my cousins, and it was amazing. Next winter I’m going to visit Sundarbans.',
           checklist: [l('Present simple for the general answer', 'সাধারণ answer-এ present simple'), l('Past simple for the example', 'উদাহরণে past simple'), l('going to / will for the plan', 'পরিকল্পনায় going to / will')],
           explanation: l('General answer + past example + future plan: a natural way to extend Part 1.', 'সাধারণ answer + অতীতের উদাহরণ + ভবিষ্যতের পরিকল্পনা — Part 1 বাড়ানোর স্বাভাবিক উপায়।'),
@@ -629,9 +629,9 @@ export const tensesSpeakingV2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Answer in the tense of the question.', 'প্রশ্নের tense-এই answer দাও।'),
+        l('Answer in the tense of the question.', 'প্রশ্নের tense-এই answer দিন।'),
         l('Extend with another time: a past example or a future plan.', 'আরেকটা সময় দিয়ে বাড়াও: অতীতের উদাহরণ বা ভবিষ্যতের পরিকল্পনা।'),
         l('"Have you ever…?" → I have. + past detail with a finished time.', '"Have you ever…?" → I have। + শেষ হওয়া সময়ের বিস্তারিত past-এ।'),
       ],

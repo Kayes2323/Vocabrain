@@ -116,7 +116,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
         ],
         guidance: {
           en: "Bangladesh-specific requirement: Needs review. The Embassy's student document list is dated (first posted 2021-02-07) and still says to apply at the Embassy; since 2 Sep 2026 you apply through the Visa Application Center. Confirm the current list with the Center before you apply.",
-          bn: 'Bangladesh-specific requirement: Needs review। Embassy-র student document list পুরনো (প্রথম post 2021-02-07) আর এখনো Embassy-তে জমা দিতে বলে; ২ Sep 2026 থেকে Visa Application Center দিয়ে apply করতে হয়। Apply-এর আগে Center থেকে বর্তমান list নিশ্চিত করো।',
+          bn: 'Bangladesh-specific requirement: Needs review। Embassy-র student document list পুরনো (প্রথম post 2021-02-07) আর এখনো Embassy-তে জমা দিতে বলে; ২ Sep 2026 থেকে Visa Application Center দিয়ে apply করতে হয়। Apply-এর আগে Center থেকে বর্তমান list নিশ্চিত করুন।',
         },
         links: [KR_EMBASSY_BD_STUDENT_DOCS, KR_EMBASSY_BD_VISA, KR_EMBASSY_BD],
       },
@@ -157,7 +157,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
     ],
     explanation: {
       en: 'Order: admission letter → documents → apply at the Korean mission (in Bangladesh, through the Visa Application Center) → review → visa. Your roadmap tracks the same steps.',
-      bn: 'ক্রম: admission letter → document → Korean mission-এ apply (Bangladesh-এ Visa Application Center দিয়ে) → review → visa। তোমার roadmap-এ একই ধাপগুলো ধরা আছে।',
+      bn: 'ক্রম: admission letter → document → Korean mission-এ apply (Bangladesh-এ Visa Application Center দিয়ে) → review → visa। আপনার roadmap-এ একই ধাপগুলো ধরা আছে।',
     },
     blocks: [
       {
@@ -226,7 +226,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
     ],
     explanation: {
       en: 'The visa fee and the Center’s service fee are separate. The Embassy’s student page names USD 60, but that page is older than the Visa Application Center, so the fee that applies to you still needs to be confirmed when you apply.',
-      bn: 'Visa fee আর Center-এর service fee আলাদা। Embassy-র student page-এ USD 60 লেখা, কিন্তু page-টা Visa Application Center চালুর আগের; তাই তোমার fee apply-এর সময় নিশ্চিত করতে হবে।',
+      bn: 'Visa fee আর Center-এর service fee আলাদা। Embassy-র student page-এ USD 60 লেখা, কিন্তু page-টা Visa Application Center চালুর আগের; তাই আপনার fee apply-এর সময় নিশ্চিত করতে হবে।',
     },
   },
   // 08 · Biometrics: in Korea (entry and registration); biometrics at the visa application is not verified.
@@ -274,7 +274,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
   mistakes: {
     facts: [
       {
-        label: { en: 'Check the university yourself (Embassy in Bangladesh)', bn: 'University নিজে যাচাই করো (Bangladesh-এর Embassy)' },
+        label: { en: 'Check the university yourself (Embassy in Bangladesh)', bn: 'University নিজে যাচাই করুন (Bangladesh-এর Embassy)' },
         fact: krFact(
           "Before applying, carefully verify the university's financial condition, operating status, eligibility to recruit international students, programmes and refund policy through the university's official website or office; do not rely solely on education consultants or recruitment agencies.",
           KR_EMBASSY_BD_UNIVERSITIES,
@@ -358,7 +358,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
         ),
       },
       {
-        label: { en: 'Report changes in 15 days', bn: '১৫ দিনের মধ্যে পরিবর্তন জানাও' },
+        label: { en: 'Report changes in 15 days', bn: '১৫ দিনের মধ্যে পরিবর্তন জানান' },
         fact: krFact(
           'After registering, report a change of name, nationality, passport, your institution, or whether you are enrolled within 15 days. Not reporting can mean a fine of up to KRW 1,000,000.',
           KR_EASYLAW_REGISTRATION,
@@ -367,7 +367,7 @@ export const KR_SHARED_PARTS: Partial<Record<VisaPartId, CountrySection>> = {
         ),
       },
       {
-        label: { en: 'Report a new address in 15 days', bn: '১৫ দিনের মধ্যে নতুন ঠিকানা জানাও' },
+        label: { en: 'Report a new address in 15 days', bn: '১৫ দিনের মধ্যে নতুন ঠিকানা জানান' },
         fact: krFact('If you move, report your new address within 15 days of moving in. Not reporting can be fined up to KRW 1,000,000.', KR_EASYLAW_REGISTRATION, 'medium', {
           notes: 'Immigration Act, Articles 36 and 98.',
         }),

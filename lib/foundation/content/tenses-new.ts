@@ -11,22 +11,22 @@ import { l } from './pos-kit';
 const ppcPractice: Exercise[] = [
   {
     id: 't-13-p1', type: 'choice', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'tense-time',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'I ___ English for five years, and I still take classes.',
     options: ['am studying', 'have been studying', 'studied'], answer: 'have been studying',
     explanation: l('An activity that started in the past and is still going on, with "for" → have been + -ing.', 'অতীতে শুরু হয়ে এখনো চলা কাজ, "for" সহ → have been + -ing।'),
-    why: { 'am studying': l('Bangla "পাঁচ বছর ধরে পড়ছি" uses the present, but English needs "have been studying" to join the past to now.', 'বাংলায় "পাঁচ বছর ধরে পড়ছি"-তে present, কিন্তু English-এ অতীত আর এখন জোড়ার জন্য "have been studying" লাগে।'), studied: l('"studied" is finished, but you still take classes.', '"studied" শেষ, কিন্তু তুমি এখনো class করছো।') },
+    why: { 'am studying': l('Bangla "পাঁচ বছর ধরে পড়ছি" uses the present, but English needs "have been studying" to join the past to now.', 'বাংলায় "পাঁচ বছর ধরে পড়ছি"-তে present, কিন্তু English-এ অতীত আর এখন জোড়ার জন্য "have been studying" লাগে।'), studied: l('"studied" is finished, but you still take classes.', '"studied" শেষ, কিন্তু আপনি এখনো class করছেন।') },
   },
   {
     id: 't-13-p2', type: 'choice', tag: 'tense', concept: 'present-perfect-continuous',
-    prompt: l('You come in and the ground is wet. What do you say?', 'তুমি বাইরে থেকে এলে, মাটি ভেজা। কী বলবে?'),
+    prompt: l('You come in and the ground is wet. What do you say?', 'আপনি বাইরে থেকে এলে, মাটি ভেজা। কী বলবেন?'),
     options: ['It has been raining.', 'It rains.', 'It is rain.'], answer: 'It has been raining.',
     explanation: l('A recent activity with a visible result now (wet ground) → has been + -ing.', 'সাম্প্রতিক কাজ যার ফল এখন দেখা যায় (ভেজা মাটি) → has been + -ing।'),
     why: { 'It rains.': l('Present simple is a general fact ("It rains a lot in July").', 'Present simple সাধারণ সত্য ("It rains a lot in July")।'), 'It is rain.': l('"is rain" is not a verb form.', '"is rain" কোনো verb form না।') },
   },
   {
     id: 't-13-p3', type: 'choice', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'simple-vs-continuous',
-    prompt: l('Choose the correct sentence.', 'সঠিক sentence বাছো।'),
+    prompt: l('Choose the correct sentence.', 'সঠিক sentence বেছে নিন।'),
     options: ['I have been knowing her since school.', 'I have known her since school.'], answer: 'I have known her since school.',
     explanation: l('"know" is a state verb: have known, not have been knowing.', '"know" state verb: have known, have been knowing না।'),
     why: { 'I have been knowing her since school.': l('State verbs (know, believe, own) do not take -ing, even here.', 'State verb (know, believe, own)-এ -ing হয় না, এখানেও না।') },
@@ -35,14 +35,14 @@ const ppcPractice: Exercise[] = [
     id: 't-13-p4', type: 'choice', tag: 'tense', concept: 'present-perfect-continuous',
     prompt: l('Which one talks about a finished number?', 'কোনটা একটা শেষ হওয়া সংখ্যার কথা বলে?'),
     options: ['I have written three essays this week.', 'I have been writing three essays this week.'], answer: 'I have written three essays this week.',
-    explanation: l('How many / how much you completed → present perfect simple. How long an activity has gone on → continuous.', 'কতগুলো শেষ করেছো → present perfect simple। কতক্ষণ ধরে কাজটা চলছে → continuous।'),
+    explanation: l('How many / how much you completed → present perfect simple. How long an activity has gone on → continuous.', 'কতগুলো শেষ করেছেন → present perfect simple। কতক্ষণ ধরে কাজটা চলছে → continuous।'),
   },
 ];
 
 const ppcRecall: Exercise[] = [
   {
     id: 't-13-r1', type: 'gap', tag: 'tense', concept: 'present-perfect-continuous',
-    prompt: l('Write the verb (wait). No options!', 'Verb লেখো (wait)। কোনো option নেই!'),
+    prompt: l('Write the verb (wait). No options!', 'Verb লিখুন (wait)। কোনো option নেই!'),
     sentence: 'We ___ for the bus since eight o’clock, and it still hasn’t come.',
     accepted: ['have been waiting', "'ve been waiting"],
     explanation: l('since + still going on → have been waiting.', 'since + এখনো চলছে → have been waiting।'),
@@ -50,14 +50,14 @@ const ppcRecall: Exercise[] = [
   },
   {
     id: 't-13-r2', type: 'correct', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'tense-time',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'I am learning to drive for three months.',
     accepted: ['I have been learning to drive for three months.'],
     explanation: l('for + until now → have been learning.', 'for + এখন পর্যন্ত → have been learning।'),
   },
   {
     id: 't-13-r3', type: 'correct', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'verb-form',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'She has been work at the hospital since 2021.',
     accepted: ['She has been working at the hospital since 2021.', 'She has worked at the hospital since 2021.'],
     explanation: l('has been + -ing: has been working.', 'has been + -ing: has been working।'),
@@ -73,7 +73,7 @@ const ppcChallenge: Exercise[] = [
   },
   {
     id: 't-13-c2', type: 'spot', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'verb-form',
-    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['Governments', 'have', 'been', 'invest', 'in', 'renewable', 'energy', 'for', 'years.'], wrong: 3,
     accepted: ['investing'], fixOptions: ['investing', 'invested', 'invests'],
     explanation: l('have been + -ing: have been investing.', 'have been + -ing: have been investing।'),
@@ -98,20 +98,20 @@ export const presentPerfectContinuous: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('You look tired', 'তোমাকে ক্লান্ত দেখাচ্ছে'),
-      situation: l('Your friend says: "You look tired!" You started studying at 8 this morning, and you are still at your desk at 4 p.m.', 'বন্ধু বললো: "You look tired!" তুমি সকাল ৮টায় পড়া শুরু করেছো, বিকেল ৪টাতেও টেবিলে বসে আছো।'),
-      question: l('What do you say?', 'তুমি কী বলবে?'),
+      title: l('You look tired', 'আপনাকে ক্লান্ত দেখাচ্ছে'),
+      situation: l('Your friend says: "You look tired!" You started studying at 8 this morning, and you are still at your desk at 4 p.m.', 'বন্ধু বললো: "You look tired!" আপনি সকাল ৮টায় পড়া শুরু করেছেন, বিকেল ৪টাতেও টেবিলে বসে আছেন।'),
+      question: l('What do you say?', 'আপনি কী বলবেন?'),
       options: ['I am studying since 8 a.m.', 'I studied since 8 a.m.', 'I have been studying since 8 a.m.'],
       answer: 'I have been studying since 8 a.m.',
       diagnose: {
         'I am studying since 8 a.m.': l('Very common for Bangla speakers: "সকাল ৮টা থেকে পড়ছি" uses the present. English needs a tense that joins 8 a.m. to now.', 'বাংলাভাষীদের খুব common ভুল: "সকাল ৮টা থেকে পড়ছি"-তে present। English-এ সকাল ৮টা আর এখনকে জোড়ার tense লাগে।'),
-        'I studied since 8 a.m.': l('"studied" says it is over, but you are still studying.', '"studied" বলে শেষ হয়ে গেছে, কিন্তু তুমি এখনো পড়ছো।'),
-        'I have been studying since 8 a.m.': l('Right. Started in the past, still going on, and you feel how long: have been + -ing.', 'ঠিক। অতীতে শুরু, এখনো চলছে, আর সময়ের দৈর্ঘ্যটা টের পাচ্ছো: have been + -ing।'),
+        'I studied since 8 a.m.': l('"studied" says it is over, but you are still studying.', '"studied" বলে শেষ হয়ে গেছে, কিন্তু আপনি এখনো পড়ছেন।'),
+        'I have been studying since 8 a.m.': l('Right. Started in the past, still going on, and you feel how long: have been + -ing.', 'ঠিক। অতীতে শুরু, এখনো চলছে, আর সময়ের দৈর্ঘ্যটা টের পাচ্ছেন: have been + -ing।'),
       },
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'I have been waiting for an hour.', note: l('still waiting', 'এখনো অপেক্ষা করছি') },
         { en: 'She has been working here since 2019.', note: l('still working here', 'এখনো এখানে কাজ করছে') },
@@ -141,7 +141,7 @@ export const presentPerfectContinuous: Lesson = {
         l('I / you / we / they have been working · he / she / it has been working', 'I / you / we / they have been working · he / she / it has been working'),
         l('How long have you been…? — for two years / since 2022 / all day', 'How long have you been…? — for two years / since 2022 / all day'),
         l('NOT with state verbs: have known, have wanted (not "have been knowing").', 'State verb-এর সাথে না: have known, have wanted ("have been knowing" না)।'),
-        l('NOT for how many you finished: "I have written three essays" (not "have been writing three essays").', 'কতগুলো শেষ করেছো তা বোঝাতে না: "I have written three essays" ("have been writing three essays" না)।'),
+        l('NOT for how many you finished: "I have written three essays" (not "have been writing three essays").', 'কতগুলো শেষ করেছেন তা বোঝাতে না: "I have written three essays" ("have been writing three essays" না)।'),
         l('Why Bangla speakers slip: "ধরে" + present ("পাঁচ বছর ধরে পড়ছি") → "I am studying for five years". English: I have been studying for five years.', 'বাংলাভাষীরা কেন ভুল করে: "ধরে" + present ("পাঁচ বছর ধরে পড়ছি") → "I am studying for five years"। English-এ: I have been studying for five years।'),
       ],
       timeline: [
@@ -183,11 +183,11 @@ export const presentPerfectContinuous: Lesson = {
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: how long have you been…?', 'এবার তোমার পালা: কতদিন ধরে…?'),
+      title: l('Your turn: how long have you been…?', 'এবার আপনার পালা: কতদিন ধরে…?'),
       exercises: [
         {
           id: 't-13-y1', type: 'write', tag: 'tense', concept: 'present-perfect-continuous',
-          prompt: l('Speaking Part 1: "How long have you been learning English, and what have you been doing to improve?" Answer in 2 sentences.', 'Speaking Part 1: "How long have you been learning English, and what have you been doing to improve?" ২টা sentence-এ উত্তর দাও।'),
+          prompt: l('Speaking Part 1: "How long have you been learning English, and what have you been doing to improve?" Answer in 2 sentences.', 'Speaking Part 1: "How long have you been learning English, and what have you been doing to improve?" ২টা sentence-এ উত্তর দিন।'),
           model: 'I’ve been learning English since I was in class three, so about twelve years. Recently I’ve been watching English news every night to improve my listening.',
           checklist: [l('have/has been + verb-ing', 'have/has been + verb-ing'), l('for or since used correctly', 'for বা since ঠিকভাবে'), l('No -ing with know / want / like', 'know / want / like-এ -ing না')],
           explanation: l('Answer "How long have you been…?" with the same tense + for / since.', '"How long have you been…?"-এর উত্তর একই tense + for / since দিয়ে।'),
@@ -200,7 +200,7 @@ export const presentPerfectContinuous: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('have / has been + -ing = from the past up to now, still going.', 'have / has been + -ing = অতীত থেকে এখন পর্যন্ত, এখনো চলছে।'),
         l('"I am studying for five years" ✗ → "I have been studying for five years" ✓', '"I am studying for five years" ✗ → "I have been studying for five years" ✓'),
@@ -214,14 +214,14 @@ export const presentPerfectContinuous: Lesson = {
 const cmpPractice: Exercise[] = [
   {
     id: 't-14-p1', type: 'choice', tag: 'tense', concept: 'present-simple', pattern: 'simple-vs-continuous',
-    prompt: l('Choose the sentence that fits: this is her permanent job.', 'যেটা মেলে বাছো: এটা তার স্থায়ী চাকরি।'),
+    prompt: l('Choose the sentence that fits: this is her permanent job.', 'যেটা মেলে বেছে নিন: এটা তার স্থায়ী চাকরি।'),
     options: ['My sister teaches at a school in Bogura.', 'My sister is teaching at a school in Bogura.'], answer: 'My sister teaches at a school in Bogura.',
     explanation: l('Permanent → present simple. "is teaching" would mean only for now.', 'স্থায়ী → present simple। "is teaching" মানে শুধু এখনকার জন্য।'),
     why: { 'My sister is teaching at a school in Bogura.': l('Correct English, but it means a temporary job ("this term").', 'English ঠিক, কিন্তু অর্থ সাময়িক চাকরি ("this term")।') },
   },
   {
     id: 't-14-p2', type: 'choice', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Choose the correct sentence.', 'সঠিক sentence বাছো।'),
+    prompt: l('Choose the correct sentence.', 'সঠিক sentence বেছে নিন।'),
     options: ['I have lost my phone last week.', 'I lost my phone last week.'], answer: 'I lost my phone last week.',
     explanation: l('"last week" = finished → past simple. (Without a time, "I have lost my phone" = I still don’t have it.)', '"last week" = শেষ → past simple। (সময় ছাড়া "I have lost my phone" = এখনো পাইনি।)'),
     why: { 'I have lost my phone last week.': l('A finished time cannot go with the present perfect.', 'শেষ হওয়া সময় present perfect-এর সাথে যায় না।') },
@@ -231,7 +231,7 @@ const cmpPractice: Exercise[] = [
     prompt: l('Which sentence means the power cut interrupted your study?', 'কোন sentence মানে বিদ্যুৎ চলে যাওয়ায় পড়া বাধা পেল?'),
     options: ['I was studying when the power went off.', 'I studied when the power went off.'], answer: 'I was studying when the power went off.',
     explanation: l('was studying = already in progress; went off = the interruption.', 'was studying = আগে থেকে চলছিল; went off = বাধা।'),
-    why: { 'I studied when the power went off.': l('This suggests you started studying after the power went off.', 'এতে মনে হয় বিদ্যুৎ যাওয়ার পরে পড়া শুরু করেছো।') },
+    why: { 'I studied when the power went off.': l('This suggests you started studying after the power went off.', 'এতে মনে হয় বিদ্যুৎ যাওয়ার পরে পড়া শুরু করেছেন।') },
   },
   {
     id: 't-14-p4', type: 'choice', tag: 'tense', concept: 'present-perfect-continuous',
@@ -247,7 +247,7 @@ const cmpPractice: Exercise[] = [
   },
   {
     id: 't-14-p6', type: 'choice', tag: 'tense', concept: 'future',
-    prompt: l('You bought the tickets last month. What do you say?', 'তুমি গত মাসে টিকিট কিনেছো। কী বলবে?'),
+    prompt: l('You bought the tickets last month. What do you say?', 'আপনি গত মাসে টিকিট কিনেছেন। কী বলবেন?'),
     options: ['I’m going to Kolkata next Friday.', 'I’ll go to Kolkata next Friday, I think.'], answer: 'I’m going to Kolkata next Friday.',
     explanation: l('A fixed arrangement (tickets bought) → present continuous. "I’ll … I think" sounds like a quick decision.', 'ঠিক হয়ে যাওয়া arrangement (টিকিট কেনা) → present continuous। "I’ll … I think" শুনলে হঠাৎ সিদ্ধান্ত মনে হয়।'),
   },
@@ -256,15 +256,15 @@ const cmpPractice: Exercise[] = [
 const cmpRecall: Exercise[] = [
   {
     id: 't-14-r1', type: 'gap', tag: 'tense', concept: 'present-perfect', pattern: 'past-vs-perfect',
-    prompt: l('Write the correct form of "be". (You still live in Rajshahi.)', '"be"-এর সঠিক form লেখো। (তুমি এখনো Rajshahi-তে থাকো।)'),
+    prompt: l('Write the correct form of "be". (You still live in Rajshahi.)', '"be"-এর সঠিক form লিখুন। (আপনি এখনো Rajshahi-তে থাকুন।)'),
     sentence: 'I ___ in Rajshahi for three years now.',
     accepted: ['have been', "'ve been"],
     explanation: l('Still true now, with "for … now" → have been.', 'এখনো সত্য, "for … now" সহ → have been।'),
-    why: { was: l('"was" means it is over, but you still live there.', '"was" মানে শেষ, কিন্তু তুমি এখনো সেখানে থাকো।'), am: l('"am … for three years" misses the link from the past to now.', '"am … for three years"-এ অতীত থেকে এখনের যোগটা নেই।') },
+    why: { was: l('"was" means it is over, but you still live there.', '"was" মানে শেষ, কিন্তু আপনি এখনো সেখানে থাকুন।'), am: l('"am … for three years" misses the link from the past to now.', '"am … for three years"-এ অতীত থেকে এখনের যোগটা নেই।') },
   },
   {
     id: 't-14-r2', type: 'gap', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Write the correct form of "start".', '"start"-এর সঠিক form লেখো।'),
+    prompt: l('Write the correct form of "start".', '"start"-এর সঠিক form লিখুন।'),
     sentence: 'I ___ university in 2022.',
     accepted: ['started'],
     explanation: l('"in 2022" = finished → started.', '"in 2022" = শেষ → started।'),
@@ -272,14 +272,14 @@ const cmpRecall: Exercise[] = [
   },
   {
     id: 't-14-r3', type: 'correct', tag: 'tense', concept: 'present-simple', pattern: 'simple-vs-continuous',
-    prompt: l('Fix the sentence (it is a daily habit).', 'Sentence-টা ঠিক করো (এটা প্রতিদিনের অভ্যাস)।'),
+    prompt: l('Fix the sentence (it is a daily habit).', 'Sentence-টা ঠিক করুন (এটা প্রতিদিনের অভ্যাস)।'),
     sentence: 'I am going to the gym every morning.',
     accepted: ['I go to the gym every morning.'],
     explanation: l('"every morning" = a habit → present simple.', '"every morning" = অভ্যাস → present simple।'),
   },
   {
     id: 't-14-r4', type: 'correct', tag: 'tense', concept: 'past-perfect',
-    prompt: l('Fix the sentence (the film started first).', 'Sentence-টা ঠিক করো (film আগে শুরু হয়েছিল)।'),
+    prompt: l('Fix the sentence (the film started first).', 'Sentence-টা ঠিক করুন (film আগে শুরু হয়েছিল)।'),
     sentence: 'When we arrived, the film has already started.',
     accepted: ['When we arrived, the film had already started.'],
     explanation: l('Earlier past → had already started.', 'আরও আগের অতীত → had already started।'),
@@ -303,7 +303,7 @@ const cmpChallenge: Exercise[] = [
   },
   {
     id: 't-14-c3', type: 'spot', tag: 'tense', concept: 'present-simple', pattern: 'simple-vs-continuous',
-    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['Water', 'is', 'boiling', 'at', '100', 'degrees', 'Celsius.'], wrong: 2,
     accepted: ['boils'], fixOptions: ['boils', 'boiled', 'boil'],
     explanation: l('A scientific fact → present simple: Water boils…', 'বৈজ্ঞানিক সত্য → present simple: Water boils…'),
@@ -314,7 +314,7 @@ export const tenseComparisons: Lesson = {
   id: 't-14',
   format: 'v2',
   title: l('Tense Comparisons', 'Tense-এর তুলনা'),
-  why: l('Most tense mistakes are not about forms but about choosing between two close tenses. Here you choose by meaning.', 'বেশিরভাগ tense-এর ভুল form-এ না, কাছাকাছি দুটো tense-এর মধ্যে বাছাইয়ে। এখানে তুমি অর্থ দেখে বাছবে।'),
+  why: l('Most tense mistakes are not about forms but about choosing between two close tenses. Here you choose by meaning.', 'বেশিরভাগ tense-এর ভুল form-এ না, কাছাকাছি দুটো tense-এর মধ্যে বাছাইয়ে। এখানে আপনি অর্থ দেখে বাছবে।'),
   minutes: 13,
   difficulty: 'hard',
   skill: 'grammar',
@@ -334,7 +334,7 @@ export const tenseComparisons: Lesson = {
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'I work in a bank. / I’m working in a bank this summer.', note: l('permanent / temporary', 'স্থায়ী / সাময়িক') },
         { en: 'I visited Sylhet in 2022. / I have visited Sylhet twice.', note: l('finished time / experience', 'শেষ হওয়া সময় / অভিজ্ঞতা') },
@@ -350,7 +350,7 @@ export const tenseComparisons: Lesson = {
       answer: 0,
       pattern: l(
         'Both sentences in each pair are correct English, but they say different things. Ask about the meaning, and the tense follows.',
-        'প্রতিটা জোড়ার দুটো sentence-ই ঠিক English, কিন্তু আলাদা কথা বলে। অর্থ নিয়ে প্রশ্ন করো, tense নিজেই চলে আসবে।',
+        'প্রতিটা জোড়ার দুটো sentence-ই ঠিক English, কিন্তু আলাদা কথা বলে। অর্থ নিয়ে প্রশ্ন করুন, tense নিজেই চলে আসবে।',
       ),
     },
     {
@@ -358,7 +358,7 @@ export const tenseComparisons: Lesson = {
       title: l('Five questions instead of formulas', 'Formula-র বদলে পাঁচটা প্রশ্ন'),
       body: l(
         'When two tenses seem possible, ask a meaning question. Always or right now? (present simple / continuous) Finished time or linked to now? (past simple / present perfect) Background or next event? (past continuous / past simple) Result or activity? (present perfect / present perfect continuous) Which came first? (past perfect / past simple). For the future: prediction, plan or fixed arrangement?',
-        'দুটো tense সম্ভব মনে হলে অর্থের প্রশ্ন করো। সবসময় নাকি এখনই? (present simple / continuous) শেষ হওয়া সময় নাকি এখনের সাথে যুক্ত? (past simple / present perfect) পটভূমি নাকি পরের ঘটনা? (past continuous / past simple) ফলাফল নাকি কাজ? (present perfect / present perfect continuous) কোনটা আগে? (past perfect / past simple)। ভবিষ্যতের জন্য: ভবিষ্যদ্বাণী, পরিকল্পনা নাকি ঠিক হওয়া arrangement?',
+        'দুটো tense সম্ভব মনে হলে অর্থের প্রশ্ন করুন। সবসময় নাকি এখনই? (present simple / continuous) শেষ হওয়া সময় নাকি এখনের সাথে যুক্ত? (past simple / present perfect) পটভূমি নাকি পরের ঘটনা? (past continuous / past simple) ফলাফল নাকি কাজ? (present perfect / present perfect continuous) কোনটা আগে? (past perfect / past simple)। ভবিষ্যতের জন্য: ভবিষ্যদ্বাণী, পরিকল্পনা নাকি ঠিক হওয়া arrangement?',
       ),
       points: [
         l('Always / habit → I go · right now / temporary → I’m going', 'সবসময় / অভ্যাস → I go · এই মুহূর্তে / সাময়িক → I’m going'),
@@ -396,17 +396,17 @@ export const tenseComparisons: Lesson = {
         { wrong: 'Water is boiling at 100 °C.', right: 'Water boils at 100 °C.', why: l('Fact → present simple.', 'সত্য → present simple।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: choose by meaning', 'Practice: অর্থ দেখে বাছো'), exercises: cmpPractice },
+    { kind: 'practice', mode: 'practice', title: l('Practice: choose by meaning', 'Practice: অর্থ দেখে বেছে নিন'), exercises: cmpPractice },
     { kind: 'practice', mode: 'recall', title: l('Active recall: no options', 'Active recall: কোনো option নেই'), exercises: cmpRecall },
     { kind: 'practice', title: l('Mini challenge', 'Mini challenge'), exercises: cmpChallenge },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: one pair about you', 'এবার তোমার পালা: তোমাকে নিয়ে একটা জোড়া'),
+      title: l('Your turn: one pair about you', 'এবার আপনার পালা: আপনাকে নিয়ে একটা জোড়া'),
       exercises: [
         {
           id: 't-14-y1', type: 'write', tag: 'tense', concept: 'present-perfect',
-          prompt: l('Write two true sentences about yourself that show the difference: one with the present perfect (experience or up to now) and one with the past simple (a finished time).', 'নিজেকে নিয়ে দুটো সত্যি sentence লেখো যা পার্থক্যটা দেখায়: একটা present perfect-এ (অভিজ্ঞতা বা এখন পর্যন্ত), একটা past simple-এ (শেষ হওয়া সময়)।'),
+          prompt: l('Write two true sentences about yourself that show the difference: one with the present perfect (experience or up to now) and one with the past simple (a finished time).', 'নিজেকে নিয়ে দুটো সত্যি sentence লিখুন যা পার্থক্যটা দেখায়: একটা present perfect-এ (অভিজ্ঞতা বা এখন পর্যন্ত), একটা past simple-এ (শেষ হওয়া সময়)।'),
           model: 'I have been to Cox’s Bazar three times. I went there last with my friends in 2023.',
           checklist: [l('Present perfect with no finished time', 'শেষ হওয়া সময় ছাড়া present perfect'), l('Past simple with a finished time', 'শেষ হওয়া সময়ের সাথে past simple')],
           explanation: l('Experience (present perfect) + detail with a time (past simple): the most useful pair in Speaking.', 'অভিজ্ঞতা (present perfect) + সময়সহ বিস্তারিত (past simple): Speaking-এর সবচেয়ে কাজের জোড়া।'),
@@ -419,9 +419,9 @@ export const tenseComparisons: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Choose by meaning: finished? still going? temporary? first?', 'অর্থ দেখে বাছো: শেষ? এখনো চলছে? সাময়িক? আগে?'),
+        l('Choose by meaning: finished? still going? temporary? first?', 'অর্থ দেখে বেছে নিন: শেষ? এখনো চলছে? সাময়িক? আগে?'),
         l('have been to (came back) · have gone to (still there)', 'have been to (ফিরে এসেছে) · have gone to (এখনো সেখানে)'),
         l('Result → have done · activity → have been doing', 'ফলাফল → have done · কাজ → have been doing'),
       ],
@@ -433,42 +433,42 @@ export const tenseComparisons: Lesson = {
 const mixPractice: Exercise[] = [
   {
     id: 't-15-p1', type: 'choice', tag: 'tense', concept: 'past-continuous',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'While my mother ___ dinner, the guests arrived.',
     options: ['cooked', 'was cooking', 'has cooked'], answer: 'was cooking',
     explanation: l('"While" + an action in progress when something else happened → was cooking.', '"While" + অন্য কিছু ঘটার সময় চলা কাজ → was cooking।'),
   },
   {
     id: 't-15-p2', type: 'choice', tag: 'tense', concept: 'present-perfect', pattern: 'past-vs-perfect',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'The number of cyclists in the city ___ since the new lanes opened.',
     options: ['doubled', 'has doubled', 'doubles'], answer: 'has doubled',
     explanation: l('"since …" joins the past to now → has doubled.', '"since …" অতীত আর এখনকে জোড়ে → has doubled।'),
   },
   {
     id: 't-15-p3', type: 'choice', tag: 'tense', concept: 'future',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'Experts say the population ___ 200 million by 2045.',
     options: ['reached', 'is expected to reach', 'has reached'], answer: 'is expected to reach',
     explanation: l('"by 2045" is in the future → a projection.', '"by 2045" ভবিষ্যতে → projection।'),
   },
   {
     id: 't-15-p4', type: 'choice', tag: 'tense', concept: 'present-simple', pattern: 'simple-vs-continuous',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'In my family, my father usually ___ the grocery shopping on Fridays.',
     options: ['does', 'is doing', 'did'], answer: 'does',
     explanation: l('"usually … on Fridays" = a habit → does.', '"usually … on Fridays" = অভ্যাস → does।'),
   },
   {
     id: 't-15-p5', type: 'choice', tag: 'tense', concept: 'past-perfect',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'By the time the ambulance arrived, the neighbours ___ the fire.',
     options: ['put out', 'had put out', 'have put out'], answer: 'had put out',
     explanation: l('Earlier than a past event ("by the time … arrived") → had put out.', 'অতীতের একটা ঘটনার আগে ("by the time … arrived") → had put out।'),
   },
   {
     id: 't-15-p6', type: 'choice', tag: 'tense', concept: 'present-continuous', pattern: 'simple-vs-continuous',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'Can you call back later? I ___ a class right now.',
     options: ['take', 'am taking', 'took'], answer: 'am taking',
     explanation: l('"right now" → am taking.', '"right now" → am taking।'),
@@ -478,7 +478,7 @@ const mixPractice: Exercise[] = [
 const mixRecall: Exercise[] = [
   {
     id: 't-15-r1', type: 'gap', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('Write the correct form of "open".', '"open"-এর সঠিক form লেখো।'),
+    prompt: l('Write the correct form of "open".', '"open"-এর সঠিক form লিখুন।'),
     sentence: 'The Padma Bridge ___ to traffic in 2022.',
     accepted: ['opened'],
     explanation: l('"in 2022" = finished → opened.', '"in 2022" = শেষ → opened।'),
@@ -486,7 +486,7 @@ const mixRecall: Exercise[] = [
   },
   {
     id: 't-15-r2', type: 'gap', tag: 'tense', concept: 'present-perfect-continuous', pattern: 'tense-time',
-    prompt: l('Write the correct form of "learn".', '"learn"-এর সঠিক form লেখো।'),
+    prompt: l('Write the correct form of "learn".', '"learn"-এর সঠিক form লিখুন।'),
     sentence: 'She ___ Japanese for two years and hopes to work in Tokyo.',
     accepted: ['has been learning', "'s been learning", 'has learned', 'has learnt'],
     explanation: l('"for two years" and still going on → has been learning.', '"for two years" আর এখনো চলছে → has been learning।'),
@@ -494,7 +494,7 @@ const mixRecall: Exercise[] = [
   },
   {
     id: 't-15-r3', type: 'gap', tag: 'tense', concept: 'future', pattern: 'tense-time',
-    prompt: l('Write the correct form of "finish".', '"finish"-এর সঠিক form লেখো।'),
+    prompt: l('Write the correct form of "finish".', '"finish"-এর সঠিক form লিখুন।'),
     sentence: 'I will call you as soon as I ___ my exam.',
     accepted: ['finish'],
     explanation: l('After "as soon as / when / if" about the future → present: finish.', 'ভবিষ্যৎ নিয়ে "as soon as / when / if"-এর পরে → present: finish।'),
@@ -502,14 +502,14 @@ const mixRecall: Exercise[] = [
   },
   {
     id: 't-15-r4', type: 'correct', tag: 'tense', concept: 'past-simple', pattern: 'past-vs-perfect',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'Two years ago, the company has opened a new branch in Sylhet.',
     accepted: ['Two years ago, the company opened a new branch in Sylhet.'],
     explanation: l('"ago" = finished → opened.', '"ago" = শেষ → opened।'),
   },
   {
     id: 't-15-r5', type: 'correct', tag: 'tense', concept: 'present-continuous', pattern: 'simple-vs-continuous',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'Look! The children play in the rain.',
     accepted: ['Look! The children are playing in the rain.'],
     explanation: l('"Look!" = right now → are playing.', '"Look!" = এই মুহূর্তে → are playing।'),
@@ -519,14 +519,14 @@ const mixRecall: Exercise[] = [
 const mixChallenge: Exercise[] = [
   {
     id: 't-15-c1', type: 'spot', tag: 'tense', concept: 'past-simple', pattern: 'tense-time',
-    prompt: l('Task 1: one verb breaks this sentence. Tap it, then fix it.', 'Task 1: একটা verb sentence-টা ভাঙছে। Tap করে ঠিক করো।'),
+    prompt: l('Task 1: one verb breaks this sentence. Tap it, then fix it.', 'Task 1: একটা verb sentence-টা ভাঙছে। Tap করে ঠিক করুন।'),
     words: ['In', '2015,', 'the', 'figure', 'drops', 'to', '12%.'], wrong: 4,
     accepted: ['dropped'], fixOptions: ['dropped', 'has dropped', 'drop'],
     explanation: l('"In 2015" = finished → dropped.', '"In 2015" = শেষ → dropped।'),
   },
   {
     id: 't-15-c2', type: 'correct', tag: 'tense', concept: 'past-continuous',
-    prompt: l('Part 2 story: fix the two verbs.', 'Part 2-এর গল্প: দুটো verb ঠিক করো।'),
+    prompt: l('Part 2 story: fix the two verbs.', 'Part 2-এর গল্প: দুটো verb ঠিক করুন।'),
     sentence: 'I walk home when I see an old friend.',
     accepted: ['I was walking home when I saw an old friend.'],
     explanation: l('Background in progress (was walking) + the event (saw).', 'চলতে থাকা পটভূমি (was walking) + ঘটনা (saw)।'),
@@ -544,14 +544,14 @@ export const tensesMixedPractice: Lesson = {
   id: 't-15',
   format: 'v2',
   title: l('Mixed Practice', 'Mixed Practice'),
-  why: l('In the real test nobody tells you which tense to use. Here you decide from the context, like in IELTS.', 'আসল পরীক্ষায় কেউ বলে দেয় না কোন tense লাগবে। এখানে তুমি প্রসঙ্গ দেখে ঠিক করবে, IELTS-এর মতোই।'),
+  why: l('In the real test nobody tells you which tense to use. Here you decide from the context, like in IELTS.', 'আসল পরীক্ষায় কেউ বলে দেয় না কোন tense লাগবে। এখানে আপনি প্রসঙ্গ দেখে ঠিক করবেন, IELTS-এর মতোই।'),
   minutes: 13,
   difficulty: 'hard',
   skill: 'grammar',
   steps: [
     {
       kind: 'hook',
-      title: l('Read for time first', 'আগে সময়টা পড়ো'),
+      title: l('Read for time first', 'আগে সময়টা পড়ুন'),
       situation: l('A student’s answer: "I (live) in Barishal until 2018. Then my family (move) to Dhaka, and I (live) here since then."', 'একজন student-এর উত্তর: "I (live) in Barishal until 2018. Then my family (move) to Dhaka, and I (live) here since then."'),
       question: l('Which set of verbs is correct?', 'কোন verb-এর সেট ঠিক?'),
       options: ['lived · moved · have lived', 'have lived · moved · lived', 'live · move · live'],
@@ -564,7 +564,7 @@ export const tensesMixedPractice: Lesson = {
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'until 2018 → lived', note: l('finished', 'শেষ') },
         { en: 'since then → have lived', note: l('up to now', 'এখন পর্যন্ত') },
@@ -580,7 +580,7 @@ export const tensesMixedPractice: Lesson = {
       answer: 0,
       pattern: l(
         'Read the whole sentence for time first: time words (since, ago, by, right now, usually) and the order of events. Then choose the tense, then the form.',
-        'আগে পুরো sentence পড়ে সময়টা বোঝো: time word (since, ago, by, right now, usually) আর ঘটনার ক্রম। তারপর tense বাছো, তারপর form।',
+        'আগে পুরো sentence পড়ে সময়টা বুঝুন: time word (since, ago, by, right now, usually) আর ঘটনার ক্রম। তারপর tense বেছে নিন, তারপর form।',
       ),
     },
     {
@@ -588,11 +588,11 @@ export const tensesMixedPractice: Lesson = {
       title: l('A three-step routine', 'তিন ধাপের রুটিন'),
       body: l(
         'For every gap: 1) Find the time (time words, the rest of the sentence, the story’s order). 2) Choose the tense by meaning (finished? now? habit? up to now? earlier? future?). 3) Build the form for the subject (he goes, has risen, were waiting, will reach).',
-        'প্রতিটা gap-এর জন্য: ১) সময় খোঁজো (time word, বাকি sentence, গল্পের ক্রম)। ২) অর্থ দেখে tense বাছো (শেষ? এখন? অভ্যাস? এখন পর্যন্ত? আগে? ভবিষ্যৎ?)। ৩) Subject অনুযায়ী form বানাও (he goes, has risen, were waiting, will reach)।',
+        'প্রতিটা gap-এর জন্য: ১) সময় খুঁজুন (time word, বাকি sentence, গল্পের ক্রম)। ২) অর্থ দেখে tense বেছে নিন (শেষ? এখন? অভ্যাস? এখন পর্যন্ত? আগে? ভবিষ্যৎ?)। ৩) Subject অনুযায়ী form বানান (he goes, has risen, were waiting, will reach)।',
       ),
       points: [
-        l('No time word? Look at the other verbs and the situation.', 'Time word নেই? অন্য verb আর পরিস্থিতি দেখো।'),
-        l('In a text, keep the same time frame until the time changes.', 'লেখায় সময় না বদলানো পর্যন্ত একই time frame রাখো।'),
+        l('No time word? Look at the other verbs and the situation.', 'Time word নেই? অন্য verb আর পরিস্থিতি দেখুন।'),
+        l('In a text, keep the same time frame until the time changes.', 'লেখায় সময় না বদলানো পর্যন্ত একই time frame রাখুন।'),
         l('NOT the tense that sounds "advanced": the one the time needs.', '"Advanced" শোনায় এমন tense না: সময় যেটা চায় সেটা।'),
       ],
     },
@@ -612,7 +612,7 @@ export const tensesMixedPractice: Lesson = {
         { skill: 'writing', example: 'Sales fell in 2019, but they have recovered and are expected to double by 2030.', note: l('One Task 1 sentence, three times: past, up to now, future.', 'এক Task 1 sentence-এ তিন সময়: অতীত, এখন পর্যন্ত, ভবিষ্যৎ।') },
         { skill: 'speaking', example: 'I grew up in a village, I’ve lived in the city for five years, and next year I’m moving abroad.', note: l('Part 2/3: moving between times naturally shows range.', 'Part 2/3: স্বাভাবিকভাবে সময় বদলানো range দেখায়।') },
         { skill: 'reading', example: 'The lake had dried up by 1990, but it has been refilled since 2005.', note: l('Time words build the timeline you need for the questions.', 'Time word দিয়েই প্রশ্নের জন্য দরকারি timeline তৈরি হয়।') },
-        { skill: 'listening', example: 'The talk was at 3, but it’s been moved to 4.', note: l('Catch the change: the present tense gives the current answer.', 'পরিবর্তনটা ধরো: present tense-ই এখনকার উত্তর।') },
+        { skill: 'listening', example: 'The talk was at 3, but it’s been moved to 4.', note: l('Catch the change: the present tense gives the current answer.', 'পরিবর্তনটা ধরুন: present tense-ই এখনকার উত্তর।') },
       ],
     },
     {
@@ -624,17 +624,17 @@ export const tensesMixedPractice: Lesson = {
         { wrong: 'In 2015, the figure drops to 12%.', right: 'In 2015, the figure dropped to 12%.', why: l('Finished year → past.', 'শেষ হওয়া বছর → past।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: decide from context', 'Practice: প্রসঙ্গ দেখে ঠিক করো'), exercises: mixPractice },
-    { kind: 'practice', mode: 'recall', title: l('Active recall: write the form', 'Active recall: form লেখো'), exercises: mixRecall },
+    { kind: 'practice', mode: 'practice', title: l('Practice: decide from context', 'Practice: প্রসঙ্গ দেখে ঠিক করুন'), exercises: mixPractice },
+    { kind: 'practice', mode: 'recall', title: l('Active recall: write the form', 'Active recall: form লিখুন'), exercises: mixRecall },
     { kind: 'practice', title: l('Mini challenge', 'Mini challenge'), exercises: mixChallenge },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: your story in three times', 'এবার তোমার পালা: তিন সময়ে তোমার গল্প'),
+      title: l('Your turn: your story in three times', 'এবার আপনার পালা: তিন সময়ে আপনার গল্প'),
       exercises: [
         {
           id: 't-15-y1', type: 'write', tag: 'tense', concept: 'past-simple',
-          prompt: l('Speaking Part 2 style: "Describe a place you have lived." Write 3–4 sentences: when you moved there, how long you have lived there, what you are doing there these days, and one plan.', 'Speaking Part 2 ধাঁচে: "Describe a place you have lived." ৩–৪টা sentence লেখো: কবে সেখানে গিয়েছো, কতদিন ধরে থাকছো, আজকাল সেখানে কী করছো, আর একটা পরিকল্পনা।'),
+          prompt: l('Speaking Part 2 style: "Describe a place you have lived." Write 3–4 sentences: when you moved there, how long you have lived there, what you are doing there these days, and one plan.', 'Speaking Part 2 ধাঁচে: "Describe a place you have lived." ৩–৪টা sentence লিখুন: কবে সেখানে গিয়েছেন, কতদিন ধরে থাকছেন, আজকাল সেখানে কী করছেন, আর একটা পরিকল্পনা।'),
           model: 'My family moved to Mirpur in 2015. We have lived there for almost ten years. These days I am preparing for IELTS at a centre near my home. Next year, I am going to study in Malaysia.',
           checklist: [l('Past simple with a finished time', 'শেষ হওয়া সময়ের সাথে past simple'), l('Present perfect with for / since', 'for / since সহ present perfect'), l('Present continuous for these days', 'আজকালের জন্য present continuous'), l('A future form for the plan', 'পরিকল্পনার জন্য future form')],
           explanation: l('Four times, four tenses — each chosen by the time, not by habit.', 'চার সময়, চার tense — প্রতিটা সময় দেখে বাছা, অভ্যাস দেখে না।'),
@@ -647,10 +647,10 @@ export const tensesMixedPractice: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Find the time → choose the tense → build the form.', 'সময় খোঁজো → tense বাছো → form বানাও।'),
-        l('Keep one time frame until the time changes.', 'সময় না বদলানো পর্যন্ত এক time frame রাখো।'),
+        l('Find the time → choose the tense → build the form.', 'সময় খুঁজুন → tense বেছে নিন → form বানান।'),
+        l('Keep one time frame until the time changes.', 'সময় না বদলানো পর্যন্ত এক time frame রাখুন।'),
         l('when / if / as soon as + present for the future.', 'ভবিষ্যৎ বোঝাতে when / if / as soon as + present।'),
       ],
     },

@@ -51,8 +51,8 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'Word-টা কি একটা noun-কে describe করছে? তাহলে adjective: effective measures, a sharp rise। be / feel / seem / look-এর পরেও adjective: I feel bad, the results were surprising।',
     ),
     why: l('"-ly" sounds more formal, so it is easy to add it everywhere. But -ly words describe actions, not things.', '"-ly" বেশি formal শোনায়, তাই সব জায়গায় বসাতে ইচ্ছা করে। কিন্তু -ly word কাজকে describe করে, জিনিসকে না।'),
-    recognise: l('Look at the next word. If it is a noun (measures, rise, city), the gap describes a thing → adjective.', 'পরের word দেখো। সেটা noun হলে (measures, rise, city) gap-টা একটা জিনিসকে describe করছে → adjective।'),
-    avoid: l('Before writing -ly, ask: "what am I describing?" Thing → adjective. Action → adverb.', '-ly লেখার আগে জিজ্ঞেস করো: "আমি কী describe করছি?" জিনিস → adjective। কাজ → adverb।'),
+    recognise: l('Look at the next word. If it is a noun (measures, rise, city), the gap describes a thing → adjective.', 'পরের word দেখুন। সেটা noun হলে (measures, rise, city) gap-টা একটা জিনিসকে describe করছে → adjective।'),
+    avoid: l('Before writing -ly, ask: "what am I describing?" Thing → adjective. Action → adverb.', '-ly লেখার আগে জিজ্ঞেস করুন: "আমি কী describe করছি?" জিনিস → adjective। কাজ → adverb।'),
   },
   'adverb>adjective': {
     rule: l(
@@ -60,17 +60,17 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'Word-টা কি একটা verb-কে describe করছে (কীভাবে, কতটা)? তাহলে adverb: rose sharply, work effectively, increased significantly। Adverb adjective-কেও describe করে: extremely important।',
     ),
     why: l('In Bangla the same word often works for both ("দ্রুত"), so English -ly is easy to forget.', 'বাংলায় একই word দুই কাজেই চলে ("দ্রুত"), তাই English-এ -ly ভুলে যাওয়া সহজ।'),
-    recognise: l('Find the verb. If your word tells how or how much it happened (rose ___, work ___), you need -ly.', 'Verb-টা খুঁজে বের করো। তোমার word যদি বলে কাজটা কীভাবে বা কতটা হলো (rose ___, work ___), তাহলে -ly লাগবে।'),
-    avoid: l('In Task 1, check every trend verb: rose / fell / increased + an adverb (sharply, slightly, steadily).', 'Task 1-এ প্রতিটা trend verb দেখো: rose / fell / increased + adverb (sharply, slightly, steadily)।'),
+    recognise: l('Find the verb. If your word tells how or how much it happened (rose ___, work ___), you need -ly.', 'Verb-টা খুঁজে বের করুন। আপনার word যদি বলে কাজটা কীভাবে বা কতটা হলো (rose ___, work ___), তাহলে -ly লাগবে।'),
+    avoid: l('In Task 1, check every trend verb: rose / fell / increased + an adverb (sharply, slightly, steadily).', 'Task 1-এ প্রতিটা trend verb দেখুন: rose / fell / increased + adverb (sharply, slightly, steadily)।'),
   },
   'noun>verb': {
     rule: l(
       'After a / the / my / this, and between "the" and "of", you need a noun: the development of, a decision, my improvement.',
       'a / the / my / this-এর পরে, আর "the" ও "of"-এর মাঝে noun লাগে: the development of, a decision, my improvement।',
     ),
-    why: l('You know the idea as an action (develop, decide), so the verb comes first to mind.', 'Idea-টা তুমি কাজ হিসেবে চেনো (develop, decide), তাই verb-টাই আগে মাথায় আসে।'),
+    why: l('You know the idea as an action (develop, decide), so the verb comes first to mind.', 'Idea-টা আপনি কাজ হিসেবে চেনেন (develop, decide), তাই verb-টাই আগে মাথায় আসে।'),
     recognise: l('a / the / my / this / of before the gap → the gap is a thing → noun (-ment, -tion, -ence).', 'Gap-এর আগে a / the / my / this / of → gap-টা একটা জিনিস → noun (-ment, -tion, -ence)।'),
-    avoid: l('Learn the family together: develop → development, decide → decision, improve → improvement.', 'পুরো family একসাথে শেখো: develop → development, decide → decision, improve → improvement।'),
+    avoid: l('Learn the family together: develop → development, decide → decision, improve → improvement.', 'পুরো family একসাথে শিখুন: develop → development, decide → decision, improve → improvement।'),
   },
   'verb>noun': {
     rule: l(
@@ -79,7 +79,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     ),
     why: l('Academic writing uses many nouns, so a noun (improvement, success) can feel "more IELTS" even where a verb is needed.', 'Academic writing-এ অনেক noun থাকে, তাই verb দরকার এমন জায়গাতেও noun (improvement, success) বেশি "IELTS-মার্কা" মনে হয়।'),
     recognise: l('to / can / should / must / will right before the gap → base verb.', 'Gap-এর ঠিক আগে to / can / should / must / will → base verb।'),
-    avoid: l('After every should / must in your essay, read the next word: it must be an action.', 'Essay-তে প্রতিটা should / must-এর পরের word পড়ো: সেটা অবশ্যই একটা কাজ হবে।'),
+    avoid: l('After every should / must in your essay, read the next word: it must be an action.', 'Essay-তে প্রতিটা should / must-এর পরের word পড়ুন: সেটা অবশ্যই একটা কাজ হবে।'),
   },
   'noun>adjective': {
     rule: l(
@@ -88,7 +88,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     ),
     why: l('Adjectives and nouns of one family look alike (economic / economy, beautiful / beauty).', 'একই family-র adjective আর noun দেখতে কাছাকাছি (economic / economy, beautiful / beauty)।'),
     recognise: l('If nothing comes after it and it is the subject or object, it names something → noun.', 'পরে কোনো noun না থাকলে আর এটা subject বা object হলে, এটা কিছুর নাম → noun।'),
-    avoid: l('Ask: "is there a noun after it that it describes?" No noun → you probably need the noun form.', 'জিজ্ঞেস করো: "এর পরে কি এমন noun আছে যাকে এটা describe করছে?" না থাকলে সম্ভবত noun form লাগবে।'),
+    avoid: l('Ask: "is there a noun after it that it describes?" No noun → you probably need the noun form.', 'জিজ্ঞেস করুন: "এর পরে কি এমন noun আছে যাকে এটা describe করছে?" না থাকলে সম্ভবত noun form লাগবে।'),
   },
   'adjective>noun': {
     rule: l(
@@ -97,16 +97,16 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     ),
     why: l('You remember the noun (success, economy) better than its adjective.', 'Noun-টা (success, economy) adjective-এর চেয়ে বেশি মনে থাকে।'),
     recognise: l('Word + noun (___ benefits, a ___ business) → the first word describes → adjective.', 'Word + noun (___ benefits, a ___ business) → প্রথম word describe করছে → adjective।'),
-    avoid: l('Learn adjective endings: -ful, -ic, -al, -ous, -ive, -able.', 'Adjective ending শেখো: -ful, -ic, -al, -ous, -ive, -able।'),
+    avoid: l('Learn adjective endings: -ful, -ic, -al, -ous, -ive, -able.', 'Adjective ending শিখুন: -ful, -ic, -al, -ous, -ive, -able।'),
   },
   'sv-agreement': {
     rule: l(
       'Find the real subject, then match the verb: he/she/it + verb-s (He goes). "The number of…", "Everyone", "Each" are singular (is). "People", "children", "a number of…" are plural (are).',
-      'আসল subject খুঁজে verb মেলাও: he/she/it + verb-s (He goes)। "The number of…", "Everyone", "Each" singular (is)। "People", "children", "a number of…" plural (are)।',
+      'আসল subject খুঁজে verb মেলান: he/she/it + verb-s (He goes)। "The number of…", "Everyone", "Each" singular (is)। "People", "children", "a number of…" plural (are)।',
     ),
     why: l('Bangla verbs do not change for "he" in the same way, and long subjects hide the real subject (The number of students… are ✗).', 'বাংলায় "he"-র জন্য verb একইভাবে বদলায় না, আর লম্বা subject আসল subject-কে লুকিয়ে ফেলে (The number of students… are ✗)।'),
-    recognise: l('Cover the "of …" part: "The number (of students) is". Ask: one thing or many?', '"of …" অংশটা ঢেকে দাও: "The number (of students) is"। জিজ্ঞেস করো: একটা না অনেকগুলো?'),
-    avoid: l('After writing a sentence, underline its subject and its verb. Do they match?', 'Sentence লেখার পরে subject আর verb-এর নিচে দাগ দাও। মিলছে কি?'),
+    recognise: l('Cover the "of …" part: "The number (of students) is". Ask: one thing or many?', '"of …" অংশটা ঢেকে দিন: "The number (of students) is"। জিজ্ঞেস করুন: একটা না অনেকগুলো?'),
+    avoid: l('After writing a sentence, underline its subject and its verb. Do they match?', 'Sentence লেখার পরে subject আর verb-এর নিচে দাগ দিন। মিলছে কি?'),
   },
   'verb-form': {
     rule: l(
@@ -114,7 +114,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'can / should / must / will / do / does / did + base verb (can speak, does work)। be + -ing বা past participle (is increasing, was built), কখনো be + base verb না (is increase ✗)।',
     ),
     why: l('The "-s" rule for he/she is fresh in your mind, so it slips in after can and does too (can speaks ✗).', 'he/she-এর "-s" নিয়ম মাথায় থাকে, তাই can আর does-এর পরেও চলে আসে (can speaks ✗)।'),
-    recognise: l('Look at the word before the verb: a modal or do/does → base form. A form of be → -ing or -ed/3rd form.', 'Verb-এর আগের word দেখো: modal বা do/does → base form। be-এর কোনো form → -ing বা -ed/3rd form।'),
+    recognise: l('Look at the word before the verb: a modal or do/does → base form. A form of be → -ing or -ed/3rd form.', 'Verb-এর আগের word দেখুন: modal বা do/does → base form। be-এর কোনো form → -ing বা -ed/3rd form।'),
     avoid: l('Only the first verb changes. After it, the second verb has a fixed form.', 'শুধু প্রথম verb বদলায়। তার পরের verb-এর form নির্দিষ্ট।'),
   },
   'noun-count': {
@@ -124,7 +124,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     ),
     why: l('Some nouns are countable in Bangla but uncountable in English (তথ্যগুলো → information).', 'কিছু noun বাংলায় গোনা যায় কিন্তু English-এ uncountable (তথ্যগুলো → information)।'),
     recognise: l('Can you say "one ___, two ___s"? If not (one information ✗), it is uncountable.', '"one ___, two ___s" বলা যায়? না গেলে (one information ✗) এটা uncountable।'),
-    avoid: l('Keep a short list of IELTS uncountables: information, advice, research, equipment, traffic, pollution, knowledge.', 'IELTS-এর uncountable-এর ছোট একটা list রাখো: information, advice, research, equipment, traffic, pollution, knowledge।'),
+    avoid: l('Keep a short list of IELTS uncountables: information, advice, research, equipment, traffic, pollution, knowledge.', 'IELTS-এর uncountable-এর ছোট একটা list রাখুন: information, advice, research, equipment, traffic, pollution, knowledge।'),
   },
   'pronoun-form': {
     rule: l(
@@ -132,8 +132,8 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'Subject I / he / she / they; object me / him / her / them। its = এটার; it’s = it is। their = তাদের; there = ওখানে / there is; they’re = they are।',
     ),
     why: l('Bangla "সে" is both he and she, and its / it’s and their / there sound the same.', 'বাংলায় "সে" মানে he আর she দুটোই, আর its / it’s, their / there শুনতে একই।'),
-    recognise: l('Replace with the long form: "it is own culture" ✗ → so it must be "its". "they are children" ✗ → "their".', 'লম্বা form বসিয়ে দেখো: "it is own culture" ✗ → তাই "its"। "they are children" ✗ → "their"।'),
-    avoid: l('Before submitting, search your text for it’s, their, there and he/she and test each one.', 'জমা দেওয়ার আগে লেখায় it’s, their, there আর he/she খুঁজে প্রতিটা পরীক্ষা করো।'),
+    recognise: l('Replace with the long form: "it is own culture" ✗ → so it must be "its". "they are children" ✗ → "their".', 'লম্বা form বসিয়ে দেখুন: "it is own culture" ✗ → তাই "its"। "they are children" ✗ → "their"।'),
+    avoid: l('Before submitting, search your text for it’s, their, there and he/she and test each one.', 'জমা দেওয়ার আগে লেখায় it’s, their, there আর he/she খুঁজে প্রতিটা পরীক্ষা করুন।'),
   },
   'prep-choice': {
     rule: l(
@@ -141,8 +141,8 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'সময়: in (মাস, বছর), on (দিন, তারিখ), at (সময়)। সাথী: depend on, focus on, discuss (preposition ছাড়া)। Data: rose by 5% (পরিবর্তন), rose to 50% (নতুন মান), peaked at 70%।',
     ),
     why: l('Prepositions rarely translate one-to-one from Bangla (এর উপর নির্ভর → depend on, not depend of).', 'Preposition বাংলা থেকে এক-এক করে অনুবাদ হয় না (এর উপর নির্ভর → depend on, depend of না)।'),
-    recognise: l('Look at the word before (depend, focus, rise) and after (a day, a time, a number). They choose the preposition.', 'আগের word (depend, focus, rise) আর পরের word (দিন, সময়, সংখ্যা) দেখো। ওরাই preposition ঠিক করে।'),
-    avoid: l('Learn verbs with their partner as one chunk: depend on, focus on, result in, lead to.', 'Verb-কে তার সাথী সহ একটা chunk হিসেবে শেখো: depend on, focus on, result in, lead to।'),
+    recognise: l('Look at the word before (depend, focus, rise) and after (a day, a time, a number). They choose the preposition.', 'আগের word (depend, focus, rise) আর পরের word (দিন, সময়, সংখ্যা) দেখুন। ওরাই preposition ঠিক করে।'),
+    avoid: l('Learn verbs with their partner as one chunk: depend on, focus on, result in, lead to.', 'Verb-কে তার সাথী সহ একটা chunk হিসেবে শিখুন: depend on, focus on, result in, lead to।'),
   },
   'conj-logic': {
     rule: l(
@@ -150,8 +150,8 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'because = কারণ; so = ফলাফল; but / although = বিপরীত; however নতুন sentence শুরু করে (However, …); despite + noun / -ing (despite the rain)।',
     ),
     why: l('The ideas are right but the link word says the wrong relation (reason vs result, contrast vs addition).', 'Idea ঠিক আছে, কিন্তু জোড়ার word ভুল সম্পর্ক বলছে (কারণ বনাম ফলাফল, বিপরীত বনাম যোগ)।'),
-    recognise: l('Say the two ideas with "and that is why" or "but surprisingly". Which one sounds true?', 'দুটো idea "and that is why" বা "but surprisingly" দিয়ে বলো। কোনটা সত্যি শোনায়?'),
-    avoid: l('Choose the relation first (reason, result, contrast), then the word.', 'আগে সম্পর্ক ঠিক করো (কারণ, ফলাফল, বিপরীত), তারপর word।'),
+    recognise: l('Say the two ideas with "and that is why" or "but surprisingly". Which one sounds true?', 'দুটো idea "and that is why" বা "but surprisingly" দিয়ে বলুন। কোনটা সত্যি শোনায়?'),
+    avoid: l('Choose the relation first (reason, result, contrast), then the word.', 'আগে সম্পর্ক ঠিক করুন (কারণ, ফলাফল, বিপরীত), তারপর word।'),
   },
   'past-vs-perfect': {
     rule: l(
@@ -159,7 +159,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'শেষ হয়ে যাওয়া সময় (yesterday, last year, in 2019, ago, when I was…) → Past Simple: I visited Sylhet last year। শেষ সময় নেই, বা এখনের সাথে যোগ আছে (since, for, ever, never, yet, already, recently) → Present Perfect: I have visited Sylhet twice।',
     ),
     why: l('Bangla "আমি গিয়েছি" and "আমি গেলাম" both feel like "have gone", so students add "have" even when a finished time is there ("I have gone yesterday").', 'বাংলায় "আমি গিয়েছি" আর "আমি গেলাম" দুটোই "have gone"-এর মতো লাগে, তাই শেষ হওয়া সময় থাকলেও "have" বসে যায় ("I have gone yesterday")।'),
-    recognise: l('Look for a time word. Can you answer "When exactly?" with a finished time? Then it is Past Simple.', 'Time word খোঁজো। "ঠিক কখন?"-এর উত্তরে শেষ হওয়া সময় আছে? তাহলে Past Simple।'),
+    recognise: l('Look for a time word. Can you answer "When exactly?" with a finished time? Then it is Past Simple.', 'Time word খুঁজুন। "ঠিক কখন?"-এর উত্তরে শেষ হওয়া সময় আছে? তাহলে Past Simple।'),
     avoid: l('In Task 1, past years → Past Simple. Use Present Perfect only for "since…", "in recent years" or experience.', 'Task 1-এ অতীতের বছর → Past Simple। Present Perfect শুধু "since…", "in recent years" বা অভিজ্ঞতার জন্য।'),
   },
   'simple-vs-continuous': {
@@ -168,7 +168,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'রুটিন, স্থায়ী সত্য আর অবস্থা (know, like, want, believe, own) → simple: I work in a bank। I know him। এই মুহূর্ত, সাময়িক অবস্থা আর বদলাতে থাকা trend → continuous: I am working late this week। Prices are rising।',
     ),
     why: l('Bangla uses "করছি" for both "I work" and "I am working", so the -ing form feels natural everywhere.', 'বাংলায় "I work" আর "I am working" দুটোতেই "করছি" চলে, তাই -ing সব জায়গায় স্বাভাবিক লাগে।'),
-    recognise: l('Ask: is it happening now or only for a while? → continuous. Is it always, usually, or a state? → simple.', 'জিজ্ঞেস করো: এখন হচ্ছে বা কিছুদিনের জন্য? → continuous। সবসময়, সাধারণত, নাকি একটা অবস্থা? → simple।'),
+    recognise: l('Ask: is it happening now or only for a while? → continuous. Is it always, usually, or a state? → simple.', 'জিজ্ঞেস করুন: এখন হচ্ছে বা কিছুদিনের জন্য? → continuous। সবসময়, সাধারণত, নাকি একটা অবস্থা? → simple।'),
     avoid: l('Never put -ing on know, understand, believe, want, own, need. For your job or home, use simple unless it is temporary.', 'know, understand, believe, want, own, need-এ কখনো -ing না। চাকরি বা বাসার কথায় simple, যদি না সেটা সাময়িক হয়।'),
   },
   'tense-time': {
@@ -177,34 +177,34 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
       'Time word-ই tense বেছে দেয়: yesterday, last…, ago, in 2010 → past; now, at the moment, these days → present continuous; every day, usually → present simple; since, for, so far → present perfect; tomorrow, next…, by 2030 → future; by the time + past → past perfect।',
     ),
     why: l('Bangla verbs change less for time, so the time word often feels like enough ("Yesterday I go").', 'বাংলায় verb সময়ের সাথে কম বদলায়, তাই মনে হয় time word-ই যথেষ্ট ("Yesterday I go")।'),
-    recognise: l('Underline the time word first. Then check that the verb agrees with it.', 'আগে time word-এর নিচে দাগ দাও। তারপর দেখো verb তার সাথে মেলে কিনা।'),
-    avoid: l('When you proofread, read only the time words and verbs together: "in 2015 … increased", "since 2015 … has increased".', 'Proofread করার সময় শুধু time word আর verb একসাথে পড়ো: "in 2015 … increased", "since 2015 … has increased"।'),
+    recognise: l('Underline the time word first. Then check that the verb agrees with it.', 'আগে time word-এর নিচে দাগ দিন। তারপর দেখুন verb তার সাথে মেলে কিনা।'),
+    avoid: l('When you proofread, read only the time words and verbs together: "in 2015 … increased", "since 2015 … has increased".', 'Proofread করার সময় শুধু time word আর verb একসাথে পড়ুন: "in 2015 … increased", "since 2015 … has increased"।'),
   },  'missing-article': {
     rule: l(
       'One countable thing never stands alone. Put a / an before it when it is new or one of many (I am a student, there was a rise), and "the" when the reader knows which one (the number of, the highest, the chart).',
       'গোনা যায় এমন একটা জিনিস একা দাঁড়ায় না। নতুন বা অনেকের একটা হলে a / an (I am a student, there was a rise), আর পাঠক জানলে কোনটা, তখন "the" (the number of, the highest, the chart)।',
     ),
     why: l('Bangla needs nothing before a noun ("আমি ছাত্র", "গ্রাফটি দেখায়"), and marks "the" after it (-টা, -টি), so the English word before the noun gets lost.', 'বাংলায় noun-এর আগে কিছু লাগে না ("আমি ছাত্র", "গ্রাফটি দেখায়"), আর "the"-এর কাজ হয় পরে (-টা, -টি), তাই English-এ noun-এর আগের word-টা হারিয়ে যায়।'),
-    recognise: l('Find each singular noun (student, graph, number, rise). Is there a / an / the / my / this before it? If not, one is missing.', 'প্রতিটা একবচন noun খোঁজো (student, graph, number, rise)। আগে কি a / an / the / my / this আছে? না থাকলে একটা বাদ পড়েছে।'),
-    avoid: l('Proofread nouns only: singular + countable → add a / an (new) or the (known). In Task 1, "The chart shows the number of…" every time.', 'শুধু noun-গুলো proofread করো: একবচন + গোনা যায় → a / an (নতুন) বা the (চেনা) বসাও। Task 1-এ প্রতিবার "The chart shows the number of…"।'),
+    recognise: l('Find each singular noun (student, graph, number, rise). Is there a / an / the / my / this before it? If not, one is missing.', 'প্রতিটা একবচন noun খুঁজুন (student, graph, number, rise)। আগে কি a / an / the / my / this আছে? না থাকলে একটা বাদ পড়েছে।'),
+    avoid: l('Proofread nouns only: singular + countable → add a / an (new) or the (known). In Task 1, "The chart shows the number of…" every time.', 'শুধু noun-গুলো proofread করুন: একবচন + গোনা যায় → a / an (নতুন) বা the (চেনা) বসাও। Task 1-এ প্রতিবার "The chart shows the number of…"।'),
   },
   'general-the': {
     rule: l(
       'Talking about things in general? Plural and uncountable nouns take NO article: Education is important. Cars cause pollution. Use "the" only for a particular thing or group: the education system in Bangladesh, the cars in my street.',
-      'সাধারণভাবে বলছো? Plural আর uncountable noun-এ article লাগে না: Education is important। Cars cause pollution। শুধু নির্দিষ্ট জিনিস বা দলের জন্য "the": the education system in Bangladesh, the cars in my street।',
+      'সাধারণভাবে বলছেন? Plural আর uncountable noun-এ article লাগে না: Education is important। Cars cause pollution। শুধু নির্দিষ্ট জিনিস বা দলের জন্য "the": the education system in Bangladesh, the cars in my street।',
     ),
     why: l('"The" feels formal and academic, like "শিক্ষাব্যবস্থা", so it gets added to general ideas in Task 2. Languages and city names get it too (the English, the Dhaka).', '"The" formal আর academic মনে হয়, যেন "শিক্ষাব্যবস্থা", তাই Task 2-এ সাধারণ ধারণায় বসে যায়। ভাষা আর শহরের নামেও বসে (the English, the Dhaka)।'),
-    recognise: l('Ask "which one?". If the answer is "all of them / in general", there is no "the". Also no "the" with languages, most names and "most + plural".', '"কোনটা?" জিজ্ঞেস করো। উত্তর "সবগুলো / সাধারণভাবে" হলে "the" না। ভাষা, বেশিরভাগ নাম আর "most + plural"-এও "the" না।'),
-    avoid: l('In Task 2, start general statements with the noun itself: Technology…, Children…, Pollution…, Governments…', 'Task 2-এ সাধারণ বক্তব্য noun দিয়েই শুরু করো: Technology…, Children…, Pollution…, Governments…'),
+    recognise: l('Ask "which one?". If the answer is "all of them / in general", there is no "the". Also no "the" with languages, most names and "most + plural".', '"কোনটা?" জিজ্ঞেস করুন। উত্তর "সবগুলো / সাধারণভাবে" হলে "the" না। ভাষা, বেশিরভাগ নাম আর "most + plural"-এও "the" না।'),
+    avoid: l('In Task 2, start general statements with the noun itself: Technology…, Children…, Pollution…, Governments…', 'Task 2-এ সাধারণ বক্তব্য noun দিয়েই শুরু করুন: Technology…, Children…, Pollution…, Governments…'),
   },
   'a-an-sound': {
     rule: l(
       'Say the next word: a vowel SOUND → an (an hour, an MBA, an 8% rise); a consonant SOUND → a (a university, a European, a one-year course). The sound decides, not the letter.',
-      'পরের word-টা বলো: vowel SOUND → an (an hour, an MBA, an 8% rise); consonant SOUND → a (a university, a European, a one-year course)। অক্ষর না, sound ঠিক করে।',
+      'পরের word-টা বলুন: vowel SOUND → an (an hour, an MBA, an 8% rise); consonant SOUND → a (a university, a European, a one-year course)। অক্ষর না, sound ঠিক করে।',
     ),
     why: l('Bangla spelling follows the sound, so we trust the letter. In English, "u" can sound like "yoo" and "h" can be silent.', 'বাংলা বানান উচ্চারণ মেনে চলে, তাই আমরা অক্ষরের উপর ভরসা করি। English-এ "u" "ইউ" শোনাতে পারে আর "h" নীরব থাকতে পারে।'),
-    recognise: l('Look for u-, eu-, one-, h- and numbers (8, 11, 18) after a / an.', 'a / an-এর পরে u-, eu-, one-, h- আর সংখ্যা (8, 11, 18) খেয়াল করো।'),
-    avoid: l('Before writing a or an, whisper the next word — including adjectives and numbers.', 'a বা an লেখার আগে পরের word-টা মনে মনে বলো — adjective আর সংখ্যাও।'),
+    recognise: l('Look for u-, eu-, one-, h- and numbers (8, 11, 18) after a / an.', 'a / an-এর পরে u-, eu-, one-, h- আর সংখ্যা (8, 11, 18) খেয়াল করুন।'),
+    avoid: l('Before writing a or an, whisper the next word — including adjectives and numbers.', 'a বা an লেখার আগে পরের word-টা মনে মনে বলুন — adjective আর সংখ্যাও।'),
   },
 };
 

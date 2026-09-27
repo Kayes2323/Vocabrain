@@ -68,9 +68,9 @@ const pp1: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('ppp-1-p1', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'The shop opens ______ 10 am.', options: ['at', 'on', 'in'], answer: 'at', explanation: l('clock time → at.', 'ঘড়ির সময় → at।') }),
-        choice('ppp-1-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'Pohela Boishakh is ______ 14 April.', options: ['on', 'in', 'at'], answer: 'on', explanation: l('date → on.', 'তারিখ → on।') }),
-        choice('ppp-1-p3', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'It rains a lot ______ July.', options: ['in', 'on', 'at'], answer: 'in', explanation: l('month → in.', 'মাস → in।') }),
+        choice('ppp-1-p1', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'The shop opens ______ 10 am.', options: ['at', 'on', 'in'], answer: 'at', explanation: l('clock time → at.', 'ঘড়ির সময় → at।') }),
+        choice('ppp-1-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'Pohela Boishakh is ______ 14 April.', options: ['on', 'in', 'at'], answer: 'on', explanation: l('date → on.', 'তারিখ → on।') }),
+        choice('ppp-1-p3', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'It rains a lot ______ July.', options: ['in', 'on', 'at'], answer: 'in', explanation: l('month → in.', 'মাস → in।') }),
         tagWords('ppp-1-p4', C, { tag: 'preposition', sentence: 'We met/verb at/preposition the station/noun on/preposition Friday/noun.', choices: JOBS, explanation: l('at and on are prepositions; they link station and Friday to "met".', 'at আর on preposition; এরা station আর Friday-কে "met"-এর সাথে জোড়ে।') }),
       ],
     },
@@ -78,8 +78,8 @@ const pp1: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('ppp-1-r1', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'I usually go to bed ___ midnight.', accepted: ['at'], explanation: l('at midnight (a point in time).', 'at midnight (সময়ের একটা বিন্দু)।') }),
-        gap('ppp-1-r2', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'My sister was born ___ 2010.', accepted: ['in'], explanation: l('year → in.', 'বছর → in।') }),
+        gap('ppp-1-r1', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'I usually go to bed ___ midnight.', accepted: ['at'], explanation: l('at midnight (a point in time).', 'at midnight (সময়ের একটা বিন্দু)।') }),
+        gap('ppp-1-r2', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'My sister was born ___ 2010.', accepted: ['in'], explanation: l('year → in.', 'বছর → in।') }),
         spot('ppp-1-r3', C, { tag: 'preposition', sentence: 'We have classes in Saturday morning.', wrong: 'in', accepted: ['on'], explanation: l('A named day (Saturday morning) → on.', 'নির্দিষ্ট দিন (Saturday morning) → on।') }),
       ],
     },
@@ -89,16 +89,16 @@ const pp1: Lesson = {
       exercises: [
         choice('ppp-1-c1', C, { tag: 'preposition', prompt: l('Why "in the morning" but "on Monday morning"?', '"in the morning" কিন্তু "on Monday morning" কেন?'), options: ['A named day makes it "on"', 'Monday is a place', 'Both are wrong'], answer: 'A named day makes it "on"', explanation: l('in the morning; on + a day: on Monday morning.', 'in the morning; দিন থাকলে on: on Monday morning।') }),
         spot('ppp-1-c2', C, { tag: 'preposition', sentence: 'The train arrives on 5.30 pm.', wrong: 'on', accepted: ['at'], fixOptions: ['at', 'in', 'by'], explanation: l('clock time → at.', 'ঘড়ির সময় → at।') }),
-        choice('ppp-1-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বাছো।'), sentence: 'I work best ______.', options: ['at night', 'in night', 'on night'], answer: 'at night', explanation: l('at night.', 'at night।') }),
+        choice('ppp-1-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বেছে নিন।'), sentence: 'I work best ______.', options: ['at night', 'in night', 'on night'], answer: 'at night', explanation: l('at night.', 'at night।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppp-1-w1', C, {
           tag: 'preposition',
-          prompt: l('Speaking Part 1: describe your study routine in two sentences with at / on / in.', 'Speaking Part 1: at / on / in দিয়ে তোমার পড়ার রুটিন দুই sentence-এ বলো।'),
+          prompt: l('Speaking Part 1: describe your study routine in two sentences with at / on / in.', 'Speaking Part 1: at / on / in দিয়ে আপনার পড়ার রুটিন দুই sentence-এ বলুন।'),
           model: 'I usually study in the evening, from 7 to 10. On Fridays I take a break and visit my grandparents.',
           task: 'The student describes their study routine in two sentences using time prepositions (at, on, in). Check at + clock time/night, on + days/dates, in + months/years/parts of the day.',
           target: l('at / on / in for time', 'সময়ের জন্য at / on / in'),
@@ -109,7 +109,7 @@ const pp1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('at 7 pm, at night · on Monday, on 5 May · in May, in 2020, in winter, in the morning.', 'at 7 pm, at night · on Monday, on 5 May · in May, in 2020, in winter, in the morning।'),
         l('A preposition is followed by a noun, pronoun or -ing.', 'Preposition-এর পরে noun, pronoun বা -ing বসে।'),
@@ -144,9 +144,9 @@ const pp2: Lesson = {
     {
       kind: 'concept',
       title: l('Fixed partners', 'নির্দিষ্ট সাথী'),
-      body: l('Many verbs, adjectives and nouns always use the same preposition. Learn them as one unit: depend on, focus on, rely on, interested in, good at, afraid of, responsible for, different from, married to, the reason for, an increase in. Some verbs take NO preposition: discuss, enter, reach, marry, contact.', 'অনেক verb, adjective আর noun সবসময় একই preposition নেয়। একসাথে একটা unit হিসেবে শেখো: depend on, focus on, rely on, interested in, good at, afraid of, responsible for, different from, married to, the reason for, an increase in। কিছু verb-এর সাথে কোনো preposition লাগে না: discuss, enter, reach, marry, contact।'),
+      body: l('Many verbs, adjectives and nouns always use the same preposition. Learn them as one unit: depend on, focus on, rely on, interested in, good at, afraid of, responsible for, different from, married to, the reason for, an increase in. Some verbs take NO preposition: discuss, enter, reach, marry, contact.', 'অনেক verb, adjective আর noun সবসময় একই preposition নেয়। একসাথে একটা unit হিসেবে শিখুন: depend on, focus on, rely on, interested in, good at, afraid of, responsible for, different from, married to, the reason for, an increase in। কিছু verb-এর সাথে কোনো preposition লাগে না: discuss, enter, reach, marry, contact।'),
       points: [
-        l('When you learn a new word, write it with its partner: "responsible for".', 'নতুন word শেখার সময় সাথী সহ লেখো: "responsible for"।'),
+        l('When you learn a new word, write it with its partner: "responsible for".', 'নতুন word শেখার সময় সাথী সহ লিখুন: "responsible for"।'),
       ],
     },
     {
@@ -180,37 +180,37 @@ const pp2: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('ppp-2-p1', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'I am interested ______ learning French.', options: ['in', 'on', 'for'], answer: 'in', explanation: l('interested in.', 'interested in।') }),
-        choice('ppp-2-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'Farmers depend ______ rain.', options: ['on', 'of', 'from'], answer: 'on', explanation: l('depend on.', 'depend on।') }),
-        choice('ppp-2-p3', C, { tag: 'preposition', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['The teacher entered the classroom.', 'The teacher entered into the classroom.', 'The teacher entered in the classroom.'], answer: 'The teacher entered the classroom.', explanation: l('enter + place (no preposition).', 'enter + জায়গা (preposition ছাড়া)।') }),
-        choice('ppp-2-p4', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'Who is responsible ______ this project?', options: ['for', 'of', 'to'], answer: 'for', explanation: l('responsible for.', 'responsible for।') }),
+        choice('ppp-2-p1', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'I am interested ______ learning French.', options: ['in', 'on', 'for'], answer: 'in', explanation: l('interested in.', 'interested in।') }),
+        choice('ppp-2-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'Farmers depend ______ rain.', options: ['on', 'of', 'from'], answer: 'on', explanation: l('depend on.', 'depend on।') }),
+        choice('ppp-2-p3', C, { tag: 'preposition', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['The teacher entered the classroom.', 'The teacher entered into the classroom.', 'The teacher entered in the classroom.'], answer: 'The teacher entered the classroom.', explanation: l('enter + place (no preposition).', 'enter + জায়গা (preposition ছাড়া)।') }),
+        choice('ppp-2-p4', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'Who is responsible ______ this project?', options: ['for', 'of', 'to'], answer: 'for', explanation: l('responsible for.', 'responsible for।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('ppp-2-r1', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'My brother is very good ___ football.', accepted: ['at'], explanation: l('good at.', 'good at।'), why: { in: l('We say "good at" a skill.', 'দক্ষতার ক্ষেত্রে "good at"।') } }),
-        gap('ppp-2-r2', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লেখো।'), sentence: 'Students should focus ___ their weak areas.', accepted: ['on'], explanation: l('focus on.', 'focus on।') }),
-        correct('ppp-2-r3', C, { tag: 'preposition', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'In this essay I will discuss about both views.', accepted: ['In this essay I will discuss both views.', 'In this essay, I will discuss both views.'], explanation: l('discuss + object.', 'discuss + object।') }),
+        gap('ppp-2-r1', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'My brother is very good ___ football.', accepted: ['at'], explanation: l('good at.', 'good at।'), why: { in: l('We say "good at" a skill.', 'দক্ষতার ক্ষেত্রে "good at"।') } }),
+        gap('ppp-2-r2', C, { tag: 'preposition', prompt: l('Write the preposition.', 'Preposition লিখুন।'), sentence: 'Students should focus ___ their weak areas.', accepted: ['on'], explanation: l('focus on.', 'focus on।') }),
+        correct('ppp-2-r3', C, { tag: 'preposition', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'In this essay I will discuss about both views.', accepted: ['In this essay I will discuss both views.', 'In this essay, I will discuss both views.'], explanation: l('discuss + object.', 'discuss + object।') }),
       ],
     },
     {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('ppp-2-c1', C, { tag: 'preposition', prompt: l('Why is "discuss about" wrong but "talk about" right?', '"discuss about" ভুল কিন্তু "talk about" ঠিক কেন?'), options: ['discuss takes a direct object; talk needs "about"', 'discuss is only used in writing', 'Both are wrong'], answer: 'discuss takes a direct object; talk needs "about"', explanation: l('Each verb has its own pattern: learn them as units.', 'প্রতিটা verb-এর নিজের pattern আছে: একসাথে শেখো।') }),
+        choice('ppp-2-c1', C, { tag: 'preposition', prompt: l('Why is "discuss about" wrong but "talk about" right?', '"discuss about" ভুল কিন্তু "talk about" ঠিক কেন?'), options: ['discuss takes a direct object; talk needs "about"', 'discuss is only used in writing', 'Both are wrong'], answer: 'discuss takes a direct object; talk needs "about"', explanation: l('Each verb has its own pattern: learn them as units.', 'প্রতিটা verb-এর নিজের pattern আছে: একসাথে শিখুন।') }),
         spot('ppp-2-c2', C, { tag: 'preposition', sentence: 'Her success depends of hard work.', wrong: 'of', accepted: ['on'], fixOptions: ['on', 'in', 'from'], explanation: l('depend on.', 'depend on।') }),
-        choice('ppp-2-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বাছো।'), sentence: 'City life is very different ______ village life.', options: ['from', 'than', 'with'], answer: 'from', explanation: l('different from.', 'different from।') }),
+        choice('ppp-2-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বেছে নিন।'), sentence: 'City life is very different ______ village life.', options: ['from', 'than', 'with'], answer: 'from', explanation: l('different from.', 'different from।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppp-2-w1', C, {
           tag: 'preposition',
-          prompt: l('Write two sentences about your interests with "interested in", "good at" or "depend on".', '"interested in", "good at" বা "depend on" দিয়ে তোমার আগ্রহ নিয়ে দুটো sentence লেখো।'),
+          prompt: l('Write two sentences about your interests with "interested in", "good at" or "depend on".', '"interested in", "good at" বা "depend on" দিয়ে আপনার আগ্রহ নিয়ে দুটো sentence লিখুন।'),
           model: 'I am interested in graphic design, and I am quite good at drawing. My progress depends on regular practice.',
           task: 'The student writes two sentences using dependent prepositions such as interested in, good at, depend on, responsible for. Check each preposition partner and that no preposition follows discuss/enter/reach.',
           target: l('Two fixed partners', 'দুটো নির্দিষ্ট সাথী'),
@@ -221,7 +221,7 @@ const pp2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('depend on, focus on, interested in, good at, responsible for, different from.', 'depend on, focus on, interested in, good at, responsible for, different from।'),
         l('No preposition: discuss, enter, reach, contact.', 'Preposition ছাড়া: discuss, enter, reach, contact।'),
@@ -238,9 +238,9 @@ const pp3: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Read the chart carefully', 'Chart মন দিয়ে পড়ো'),
+      title: l('Read the chart carefully', 'Chart মন দিয়ে পড়ুন'),
       situation: l('Unemployment was 5% in 2019 and 8% in 2020. Which sentence is correct?', 'বেকারত্ব ২০১৯-এ ৫% আর ২০২০-এ ৮% ছিল। কোন sentence সঠিক?'),
-      question: l('Choose one.', 'একটা বাছো।'),
+      question: l('Choose one.', 'একটা বেছে নিন।'),
       options: ['It rose by 3% to 8%.', 'It rose to 3% by 8%.', 'It rose by 8%.'], answer: 'It rose by 3% to 8%.',
       diagnose: {
         'It rose by 3% to 8%.': l('Right. by = the size of the change (3 points); to = the new figure (8%).', 'ঠিক। by = পরিবর্তনের মাপ (৩ point); to = নতুন সংখ্যা (৮%)।'),
@@ -293,18 +293,18 @@ const pp3: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('ppp-3-p1', C, { tag: 'preposition', prompt: l('From 40 to 60: choose the preposition for the change.', '40 থেকে 60: পরিবর্তনের preposition বাছো।'), sentence: 'The number rose ______ 20.', options: ['by', 'to', 'at'], answer: 'by', explanation: l('The change was 20 → by.', 'পরিবর্তন ছিল 20 → by।') }),
-        choice('ppp-3-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'Unemployment stood ______ 6% in 2018.', options: ['at', 'by', 'on'], answer: 'at', explanation: l('A level → at.', 'স্তর → at।') }),
-        choice('ppp-3-p3', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'There was a sharp increase ______ tourism.', options: ['in', 'of', 'at'], answer: 'in', explanation: l('increase in + the thing.', 'increase in + জিনিস।') }),
-        choice('ppp-3-p4', C, { tag: 'preposition', prompt: l('Choose the pair.', 'জোড়াটা বাছো।'), sentence: 'Prices rose ______ Tk 40 ______ Tk 55.', options: ['from / to', 'by / at', 'at / by'], answer: 'from / to', explanation: l('start and end → from … to.', 'শুরু আর শেষ → from … to।') }),
+        choice('ppp-3-p1', C, { tag: 'preposition', prompt: l('From 40 to 60: choose the preposition for the change.', '40 থেকে 60: পরিবর্তনের preposition বেছে নিন।'), sentence: 'The number rose ______ 20.', options: ['by', 'to', 'at'], answer: 'by', explanation: l('The change was 20 → by.', 'পরিবর্তন ছিল 20 → by।') }),
+        choice('ppp-3-p2', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'Unemployment stood ______ 6% in 2018.', options: ['at', 'by', 'on'], answer: 'at', explanation: l('A level → at.', 'স্তর → at।') }),
+        choice('ppp-3-p3', C, { tag: 'preposition', prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'There was a sharp increase ______ tourism.', options: ['in', 'of', 'at'], answer: 'in', explanation: l('increase in + the thing.', 'increase in + জিনিস।') }),
+        choice('ppp-3-p4', C, { tag: 'preposition', prompt: l('Choose the pair.', 'জোড়াটা বেছে নিন।'), sentence: 'Prices rose ______ Tk 40 ______ Tk 55.', options: ['from / to', 'by / at', 'at / by'], answer: 'from / to', explanation: l('start and end → from … to.', 'শুরু আর শেষ → from … to।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('ppp-3-r1', C, { tag: 'preposition', prompt: l('Write the preposition (the new level).', 'Preposition লেখো (নতুন স্তর)।'), sentence: 'Car ownership rose ___ 45% in 2020.', accepted: ['to'], explanation: l('New level → to.', 'নতুন স্তর → to।') }),
-        gap('ppp-3-r2', C, { tag: 'preposition', prompt: l('Write the preposition (the highest point).', 'Preposition লেখো (সর্বোচ্চ বিন্দু)।'), sentence: 'Sales peaked ___ 800 units in March.', accepted: ['at'], explanation: l('peak at.', 'peak at।') }),
+        gap('ppp-3-r1', C, { tag: 'preposition', prompt: l('Write the preposition (the new level).', 'Preposition লিখুন (নতুন স্তর)।'), sentence: 'Car ownership rose ___ 45% in 2020.', accepted: ['to'], explanation: l('New level → to.', 'নতুন স্তর → to।') }),
+        gap('ppp-3-r2', C, { tag: 'preposition', prompt: l('Write the preposition (the highest point).', 'Preposition লিখুন (সর্বোচ্চ বিন্দু)।'), sentence: 'Sales peaked ___ 800 units in March.', accepted: ['at'], explanation: l('peak at.', 'peak at।') }),
         spot('ppp-3-r3', C, { tag: 'preposition', sentence: 'The price of fuel increased with 15% last year.', wrong: 'with', accepted: ['by'], explanation: l('Size of change → by.', 'পরিবর্তনের মাপ → by।') }),
       ],
     },
@@ -314,16 +314,16 @@ const pp3: Lesson = {
       exercises: [
         choice('ppp-3-c1', C, { tag: 'preposition', prompt: l('The share was 20% and ended at 50%. Which sentence is correct?', 'ভাগটা ছিল ২০%, শেষ হলো ৫০%-এ। কোন sentence সঠিক?'), options: ['It rose to 50%.', 'It rose by 50%.'], answer: 'It rose to 50%.', explanation: l('to = the new level (50%). "by" gives the size of the change (by 30 points).', 'to = নতুন স্তর (৫০%)। "by" দেয় পরিবর্তনের মাপ (by 30 points)।') }),
         spot('ppp-3-c2', C, { tag: 'preposition', sentence: 'The number of visitors peaked in 12,000 in 2019.', wrong: 'in', accepted: ['at'], fixOptions: ['at', 'by', 'on'], explanation: l('peak at + number.', 'peak at + সংখ্যা।') }),
-        choice('ppp-3-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বাছো।'), sentence: 'There was a rise ______ 10% ______ exports.', options: ['of / in', 'in / of', 'by / at'], answer: 'of / in', explanation: l('a rise of + amount + in + thing.', 'a rise of + পরিমাণ + in + জিনিস।') }),
+        choice('ppp-3-c3', C, { tag: 'preposition', prompt: l('Choose the right phrase.', 'ঠিক phrase-টা বেছে নিন।'), sentence: 'There was a rise ______ 10% ______ exports.', options: ['of / in', 'in / of', 'by / at'], answer: 'of / in', explanation: l('a rise of + amount + in + thing.', 'a rise of + পরিমাণ + in + জিনিস।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('ppp-3-w1', C, {
           tag: 'preposition',
-          prompt: l('Task 1: describe this in one sentence: "Internet users: 30% (2015) → 70% (2020)".', 'Task 1: এক sentence-এ লেখো: "Internet users: 30% (2015) → 70% (2020)"।'),
+          prompt: l('Task 1: describe this in one sentence: "Internet users: 30% (2015) → 70% (2020)".', 'Task 1: এক sentence-এ লিখুন: "Internet users: 30% (2015) → 70% (2020)"।'),
           model: 'The proportion of internet users rose by 40 percentage points, from 30% in 2015 to 70% in 2020.',
           task: 'The student describes internet users rising from 30% in 2015 to 70% in 2020 in one sentence. Check data prepositions: by (size of change), from ... to ... (start and end), in (years), at (a level). Also check the trend verb and past tense.',
           target: l('by / from … to … / in', 'by / from … to … / in'),
@@ -334,7 +334,7 @@ const pp3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('by = the change; to = the new level; at = a level; from … to … = start and end.', 'by = পরিবর্তন; to = নতুন স্তর; at = স্তর; from … to … = শুরু আর শেষ।'),
         l('a rise OF 10% IN sales.', 'a rise OF 10% IN sales।'),

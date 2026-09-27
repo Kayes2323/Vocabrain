@@ -46,7 +46,7 @@ export const POS_UNITS: Unit[] = [
     id: 'ielts', mark: 'IE', group: 'skills', concept: 'pos-ielts', minutes: 64, title: l('Parts of Speech in IELTS', 'IELTS-এ Parts of Speech'), tagline: l('Grammar knowledge into IELTS skill', 'Grammar জ্ঞান থেকে IELTS skill'),
   },
   {
-    id: 'lab', mark: 'Lb', group: 'together', concept: 'pos-lab', minutes: 48, title: l('Common Mistakes Lab', 'Common Mistakes Lab'), tagline: l('Repair real sentences', 'আসল sentence ঠিক করো'),
+    id: 'lab', mark: 'Lb', group: 'together', concept: 'pos-lab', minutes: 48, title: l('Common Mistakes Lab', 'Common Mistakes Lab'), tagline: l('Repair real sentences', 'আসল sentence ঠিক করুন'),
   },
   {
     id: 'final', mark: '★', group: 'together', challenge: true, minutes: 25, title: l('Final Mastery Challenge', 'Final Mastery Challenge'), tagline: l('30 items, one report', '৩০টা item, একটা report'),

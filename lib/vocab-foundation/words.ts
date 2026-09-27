@@ -55,7 +55,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
     meaning: l('large or important enough to be noticed', 'উল্লেখযোগ্য / চোখে পড়ার মতো বড় বা গুরুত্বপূর্ণ'),
     explanation: l(
       'Use it when a change, difference or effect is big enough to matter — not just "big".',
-      'কোনো পরিবর্তন, পার্থক্য বা প্রভাব যখন গুরুত্ব পাওয়ার মতো বড় — শুধু "বড়" না, তখন এটা ব্যবহার করো।',
+      'কোনো পরিবর্তন, পার্থক্য বা প্রভাব যখন গুরুত্ব পাওয়ার মতো বড় — শুধু "বড়" না, তখন এটা ব্যবহার করুন।',
     ),
     examples: ['There is a significant difference between the two groups.', 'Social media has had a significant impact on how young people communicate.'],
     collocations: ['significant increase', 'significant change', 'significant difference', 'significant impact'],
@@ -74,8 +74,8 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'reading', example: 'a considerable rise in … = a significant increase', note: l('Passages often paraphrase it as "considerable" or "substantial".', 'Passage-এ প্রায়ই "considerable" বা "substantial" দিয়ে paraphrase হয়।') },
       { skill: 'speaking', example: 'Moving to Dhaka was a significant change in my life.', note: l('Part 2: an important moment or change.', 'Part 2: জীবনের গুরুত্বপূর্ণ মুহূর্ত বা পরিবর্তন।') },
     ],
-    clue: l('Think about the context: the population didn’t grow a little — it grew enough to notice.', 'Context-টা ভাবো: জনসংখ্যা অল্প না, চোখে পড়ার মতো বেড়েছে।'),
-    useTask: l('Write one sentence about a change in your life, your city or your studies.', 'তোমার জীবন, শহর বা পড়াশোনার কোনো পরিবর্তন নিয়ে এক sentence লেখো।'),
+    clue: l('Think about the context: the population didn’t grow a little — it grew enough to notice.', 'Context-টা ভাবুন: জনসংখ্যা অল্প না, চোখে পড়ার মতো বেড়েছে।'),
+    useTask: l('Write one sentence about a change in your life, your city or your studies.', 'আপনার জীবন, শহর বা পড়াশোনার কোনো পরিবর্তন নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'decline',
@@ -99,16 +99,16 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
     synonyms: ['decrease', 'fall', 'drop'],
     synonymNote: l(
       '"decline" often suggests a slow, gradual fall; "drop" can be sudden. Use "a decline IN something".',
-      '"decline" প্রায়ই ধীরে ধীরে কমা বোঝায়; "drop" হঠাৎও হতে পারে। "a decline IN something" লেখো।',
+      '"decline" প্রায়ই ধীরে ধীরে কমা বোঝায়; "drop" হঠাৎও হতে পারে। "a decline IN something" লিখুন।',
     ),
     antonyms: ['increase', 'rise', 'grow'],
     ielts: [
       { skill: 'writing', example: 'Sales of desktop computers declined gradually over the period.', note: l('Task 1 trends: pair with sharply / gradually / steadily.', 'Task 1 trend: sharply / gradually / steadily-র সাথে।') },
-      { skill: 'reading', example: 'the population of bees has fallen = has declined', note: l('Watch for "fall", "drop", "decrease" as paraphrases.', '"fall", "drop", "decrease" paraphrase হিসেবে খেয়াল করো।') },
+      { skill: 'reading', example: 'the population of bees has fallen = has declined', note: l('Watch for "fall", "drop", "decrease" as paraphrases.', '"fall", "drop", "decrease" paraphrase হিসেবে খেয়াল করুন।') },
       { skill: 'listening', example: '…and visitor numbers have declined since the new road opened.', note: l('Recognise it in lectures and talks.', 'Lecture আর talk-এ চিনতে পারা।') },
     ],
     clue: l('The newspapers sentence: fewer people buy them now than before.', 'Newspaper-এর sentence: আগের চেয়ে এখন কম মানুষ কেনে।'),
-    useTask: l('Write one sentence about something that has declined in your country or town.', 'তোমার দেশ বা শহরে কমে গেছে এমন কিছু নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about something that has declined in your country or town.', 'আপনার দেশ বা শহরে কমে গেছে এমন কিছু নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'benefit',
@@ -141,7 +141,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'speaking', example: 'I think children benefit a lot from playing outside.', note: l('Part 3: "benefit from" sounds natural.', 'Part 3: "benefit from" স্বাভাবিক শোনায়।') },
     ],
     clue: l('Studying from home is a good thing about online classes.', 'বাসা থেকে পড়তে পারা online class-এর একটা ভালো দিক।'),
-    useTask: l('Write one sentence about a benefit of something you use every day.', 'প্রতিদিন ব্যবহার করো এমন কিছুর একটা benefit নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about a benefit of something you use every day.', 'প্রতিদিন ব্যবহার করুন এমন কিছুর একটা benefit নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'impact',
@@ -158,22 +158,22 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
     meaning: l('a strong effect or influence on something', 'প্রভাব / জোরালো প্রভাব'),
     explanation: l(
       'Say "have an impact ON something". Add an adjective to show if it is good or bad: positive, negative, serious.',
-      '"have an impact ON something" বলো। ভালো না খারাপ বোঝাতে adjective দাও: positive, negative, serious।',
+      '"have an impact ON something" বলুন। ভালো না খারাপ বোঝাতে adjective দিন: positive, negative, serious।',
     ),
     examples: ['Tourism has a positive impact on the local economy.', 'The new policy had little impact on unemployment.'],
     collocations: ['have an impact on', 'a positive impact', 'a negative impact', 'a significant impact'],
     synonyms: ['effect', 'influence'],
     synonymNote: l(
       '"impact" is stronger than "effect". Don’t use it for small things.',
-      '"impact" "effect"-এর চেয়ে জোরালো। ছোট ব্যাপারে ব্যবহার কোরো না।',
+      '"impact" "effect"-এর চেয়ে জোরালো। ছোট ব্যাপারে ব্যবহার করবেন না।',
     ),
     ielts: [
       { skill: 'writing', example: 'Social media has had a negative impact on teenagers’ sleep.', note: l('Task 2: effects of a trend.', 'Task 2: কোনো trend-এর প্রভাব।') },
-      { skill: 'speaking', example: 'My teacher had a huge impact on my decision to study abroad.', note: l('Part 2: a person who influenced you.', 'Part 2: যে মানুষ তোমাকে প্রভাবিত করেছে।') },
+      { skill: 'speaking', example: 'My teacher had a huge impact on my decision to study abroad.', note: l('Part 2: a person who influenced you.', 'Part 2: যে মানুষ আপনাকে প্রভাবিত করেছে।') },
       { skill: 'reading', example: 'the effect of … on … = the impact of … on …', note: l('Matching and TFNG often paraphrase "impact" as "effect".', 'Matching আর TFNG-তে "impact" প্রায়ই "effect" দিয়ে paraphrase হয়।') },
     ],
     clue: l('Plastic hurts sea animals: that is what it does TO marine life.', 'Plastic সমুদ্রের প্রাণীদের ক্ষতি করে: marine life-এর উপর এটাই করে।'),
-    useTask: l('Write one sentence about the impact of technology on your life.', 'তোমার জীবনে technology-র impact নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about the impact of technology on your life.', 'আপনার জীবনে technology-র impact নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'access',
@@ -198,10 +198,10 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
     family: [{ word: 'accessible', pos: 'adjective', example: 'The metro makes the city centre more accessible.' }],
     ielts: [
       { skill: 'writing', example: 'Governments should ensure that all children have access to education.', note: l('Task 2: fairness and public services.', 'Task 2: ন্যায্যতা আর public service।') },
-      { skill: 'speaking', example: 'In my village, people now have easier access to healthcare.', note: l('Part 1/3: changes in your area.', 'Part 1/3: তোমার এলাকার পরিবর্তন।') },
+      { skill: 'speaking', example: 'In my village, people now have easier access to healthcare.', note: l('Part 1/3: changes in your area.', 'Part 1/3: আপনার এলাকার পরিবর্তন।') },
     ],
     clue: l('The rural students can’t USE fast internet — they don’t have the chance.', 'গ্রামের student-রা দ্রুত internet ব্যবহার করতে পারে না — সুযোগ নেই।'),
-    useTask: l('Write one sentence about something people in your area have (or don’t have) access to.', 'তোমার এলাকার মানুষের কোন জিনিসের access আছে (বা নেই) তা নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about something people in your area have (or don’t have) access to.', 'আপনার এলাকার মানুষের কোন জিনিসের access আছে (বা নেই) তা নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'contribute',
@@ -229,7 +229,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'speaking', example: 'I’d like to contribute to my community in the future.', note: l('Part 3: future plans and values.', 'Part 3: ভবিষ্যতের পরিকল্পনা আর মূল্যবোধ।') },
     ],
     clue: l('The money helps the economy grow — it ADDS to it.', 'এই টাকা economy বাড়াতে সাহায্য করে — যোগ করে।'),
-    useTask: l('Write one sentence about something that contributes to a problem or to success.', 'কোনো সমস্যা বা সাফল্যে contribute করে এমন কিছু নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about something that contributes to a problem or to success.', 'কোনো সমস্যা বা সাফল্যে contribute করে এমন কিছু নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'sustainable',
@@ -262,7 +262,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'listening', example: '…the course focuses on sustainable farming methods.', note: l('Part 3/4: common in academic talks.', 'Part 3/4: academic talk-এ common।') },
     ],
     clue: l('Metro and cycling can go on for years without polluting much.', 'Metro আর cycling অনেক দূষণ ছাড়াই বছরের পর বছর চলতে পারে।'),
-    useTask: l('Write one sentence about a sustainable habit people could have.', 'মানুষ গড়ে তুলতে পারে এমন একটা sustainable অভ্যাস নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about a sustainable habit people could have.', 'মানুষ গড়ে তুলতে পারে এমন একটা sustainable অভ্যাস নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'crucial',
@@ -294,7 +294,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'speaking', example: 'For me, good time management is crucial.', note: l('Part 1/3: give weight to your opinion.', 'Part 1/3: মতামতে জোর দিতে।') },
     ],
     clue: l('Before an exam, sleep isn’t just nice — your result depends on it.', 'Exam-এর আগে ঘুম শুধু ভালো না — result এর উপর নির্ভর করে।'),
-    useTask: l('Write one sentence about something that is crucial for students.', 'Student-দের জন্য crucial এমন কিছু নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about something that is crucial for students.', 'Student-দের জন্য crucial এমন কিছু নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'consequence',
@@ -326,7 +326,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'reading', example: 'as a result of … = as a consequence of …', note: l('Recognise it in cause–effect passages.', 'Cause–effect passage-এ চিনতে পারা।') },
     ],
     clue: l('Heart disease is what HAPPENS because of too much fast food.', 'বেশি fast food খাওয়ার কারণে যা ঘটে — heart disease।'),
-    useTask: l('Write one sentence about a consequence of using a phone late at night.', 'রাতে দেরিতে phone ব্যবহারের একটা consequence নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about a consequence of using a phone late at night.', 'রাতে দেরিতে phone ব্যবহারের একটা consequence নিয়ে এক sentence লিখুন।'),
   },
   {
     id: 'afford',
@@ -354,7 +354,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       { skill: 'speaking', example: 'I’d love to travel more, but I can’t afford it right now.', note: l('Part 1: a natural, honest answer.', 'Part 1: স্বাভাবিক, সৎ answer।') },
     ],
     clue: l('Studying abroad is expensive — many families don’t have enough money.', 'বিদেশে পড়া দামি — অনেক পরিবারের যথেষ্ট টাকা নেই।'),
-    useTask: l('Write one sentence about something students can or can’t afford.', 'Student-রা afford করতে পারে বা পারে না এমন কিছু নিয়ে এক sentence লেখো।'),
+    useTask: l('Write one sentence about something students can or can’t afford.', 'Student-রা afford করতে পারে বা পারে না এমন কিছু নিয়ে এক sentence লিখুন।'),
   },
 ];
 

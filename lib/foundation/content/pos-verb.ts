@@ -71,16 +71,16 @@ const v1: Lesson = {
         choice('pvb-1-p1', C, { tag: 'verb', prompt: l('Which sentence is complete?', 'কোন sentence-টা সম্পূর্ণ?'), options: ['Dhaka a very big city.', 'Dhaka is a very big city.', 'Dhaka very big city.'], answer: 'Dhaka is a very big city.', explanation: l('A sentence needs a verb: is.', 'Sentence-এ verb লাগে: is।') }),
         choice('pvb-1-p2', C, { tag: 'verb', prompt: l('Which word is the verb?', 'কোন word-টা verb?'), sentence: 'The chart shows the population of three cities.', options: ['chart', 'shows', 'population'], answer: 'shows', pos: 'verb', wrongPos: { chart: 'noun', population: 'noun' }, explanation: l('"shows" is what the chart does.', '"shows" হলো chart যা করে।') }),
         tagWords('pvb-1-p3', C, { tag: 'verb', sentence: 'Young/adjective people/noun spend/verb hours/noun online/adverb and feel/verb tired/adjective.', choices: JOBS4, explanation: l('spend and feel are verbs; tired describes the people; online tells where.', 'spend আর feel verb; tired মানুষকে describe করে; online বলে কোথায়।') }),
-        choice('pvb-1-p4', C, { tag: 'verb', prompt: l('Choose the missing word.', 'বাদ পড়া word-টা বাছো।'), sentence: 'My parents ______ very proud of me.', options: ['are', 'is', 'be'], answer: 'are', explanation: l('parents (plural) + are.', 'parents (plural) + are।') }),
+        choice('pvb-1-p4', C, { tag: 'verb', prompt: l('Choose the missing word.', 'বাদ পড়া word-টা বেছে নিন।'), sentence: 'My parents ______ very proud of me.', options: ['are', 'is', 'be'], answer: 'are', explanation: l('parents (plural) + are.', 'parents (plural) + are।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pvb-1-r1', C, { tag: 'verb', prompt: l('Write the missing verb.', 'বাদ পড়া verb-টা লেখো।'), sentence: 'My hometown ___ famous for its sweets.', accepted: ['is'], explanation: l('One hometown → is.', 'একটা hometown → is।') }),
-        gap('pvb-1-r2', C, { tag: 'verb', prompt: l('Write the missing verb.', 'বাদ পড়া verb-টা লেখো।'), sentence: 'The students ___ nervous before the test yesterday.', accepted: ['were', 'felt', 'looked', 'seemed', 'got'], explanation: l('Past + plural: were (or felt).', 'Past + plural: were (বা felt)।') }),
-        correct('pvb-1-r3', C, { tag: 'verb', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'My father a bank officer.', accepted: ['My father is a bank officer.', 'My father was a bank officer.'], explanation: l('Add the verb: is.', 'Verb যোগ করো: is।') }),
+        gap('pvb-1-r1', C, { tag: 'verb', prompt: l('Write the missing verb.', 'বাদ পড়া verb-টা লিখুন।'), sentence: 'My hometown ___ famous for its sweets.', accepted: ['is'], explanation: l('One hometown → is.', 'একটা hometown → is।') }),
+        gap('pvb-1-r2', C, { tag: 'verb', prompt: l('Write the missing verb.', 'বাদ পড়া verb-টা লিখুন।'), sentence: 'The students ___ nervous before the test yesterday.', accepted: ['were', 'felt', 'looked', 'seemed', 'got'], explanation: l('Past + plural: were (or felt).', 'Past + plural: were (বা felt)।') }),
+        correct('pvb-1-r3', C, { tag: 'verb', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'My father a bank officer.', accepted: ['My father is a bank officer.', 'My father was a bank officer.'], explanation: l('Add the verb: is.', 'Verb যোগ করুন: is।') }),
       ],
     },
     {
@@ -88,17 +88,17 @@ const v1: Lesson = {
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
         choice('pvb-1-c1', C, { tag: 'verb', prompt: l('Why is "The weather very hot." wrong?', '"The weather very hot." ভুল কেন?'), options: ['It has no verb', '"hot" should be "hotly"', '"weather" needs -s'], answer: 'It has no verb', explanation: l('The weather is very hot.', 'The weather is very hot।') }),
-        spot('pvb-1-c2', C, { tag: 'verb', sentence: 'The city very crowded during Eid.', wrong: 'very', accepted: ['is very', 'gets very', 'becomes very'], fixOptions: ['is very', 'being very', 'to very'], explanation: l('Add the verb before "very": is very crowded.', '"very"-এর আগে verb দাও: is very crowded।') }),
+        spot('pvb-1-c2', C, { tag: 'verb', sentence: 'The city very crowded during Eid.', wrong: 'very', accepted: ['is very', 'gets very', 'becomes very'], fixOptions: ['is very', 'being very', 'to very'], explanation: l('Add the verb before "very": is very crowded.', '"very"-এর আগে verb দিন: is very crowded।') }),
         choice('pvb-1-c3', C, { tag: 'verb', prompt: l('How many verbs are in this sentence?', 'এই sentence-এ কয়টা verb?'), sentence: 'I think that online classes save time.', options: ['two: think, save', 'one: think', 'three: think, online, save'], answer: 'two: think, save', explanation: l('think and save are verbs; online describes classes.', 'think আর save verb; online classes-কে describe করে।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pvb-1-w1', C, {
           tag: 'verb',
-          prompt: l('Speaking Part 1: introduce one family member in two sentences.', 'Speaking Part 1: পরিবারের একজনের পরিচয় দুই sentence-এ দাও।'),
+          prompt: l('Speaking Part 1: introduce one family member in two sentences.', 'Speaking Part 1: পরিবারের একজনের পরিচয় দুই sentence-এ দিন।'),
           model: 'My mother is a school teacher. She loves reading and she cooks delicious food.',
           task: 'The student introduces a family member in two sentences. Check that every sentence has a verb (especially "is/are" before nouns and adjectives), subject–verb agreement and pronoun gender (he/she).',
           target: l('Every sentence has a verb', 'প্রতিটা sentence-এ verb আছে'),
@@ -109,7 +109,7 @@ const v1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Every English sentence needs a verb.', 'প্রতিটা English sentence-এ verb লাগে।'),
         l('Where Bangla has no verb, English uses be: My brother is a doctor.', 'বাংলায় যেখানে verb নেই, English-এ be বসে: My brother is a doctor।'),
@@ -122,7 +122,7 @@ const v1: Lesson = {
 const v2: Lesson = {
   id: 'pvb-2', unit: 'verb', format: 'v2', concept: C, minutes: 5, difficulty: 'medium', skill: 'grammar',
   title: l('Main and helping verbs', 'Main আর helping verb'),
-  why: l('"He don’t like" and "She can speaks" lower your grammar score.', '"He don’t like" আর "She can speaks" তোমার grammar score কমায়।'),
+  why: l('"He don’t like" and "She can speaks" lower your grammar score.', '"He don’t like" আর "She can speaks" আপনার grammar score কমায়।'),
   steps: [
     {
       kind: 'hook',
@@ -133,7 +133,7 @@ const v2: Lesson = {
       diagnose: {
         two: l('Right: he doesn’t like, and he can play.', 'ঠিক: he doesn’t like, আর he can play।'),
         one: l('There are two: "don’t" should be "doesn’t", and after "can" the verb has no -s.', 'দুটো আছে: "don’t"-এর জায়গায় "doesn’t", আর "can"-এর পরে verb-এ -s বসে না।'),
-        none: l('Look at "he don’t" and "can plays".', '"he don’t" আর "can plays" দেখো।'),
+        none: l('Look at "he don’t" and "can plays".', '"he don’t" আর "can plays" দেখুন।'),
       },
     },
     identify({
@@ -181,18 +181,18 @@ const v2: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pvb-2-p1', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'My brother ______ like spicy food.', options: ['doesn’t', 'don’t', 'isn’t'], answer: 'doesn’t', explanation: l('he → doesn’t + base verb.', 'he → doesn’t + মূল verb।') }),
-        choice('pvb-2-p2', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Children should ______ more vegetables.', options: ['eat', 'eats', 'to eat'], answer: 'eat', explanation: l('should + base verb.', 'should + মূল verb।') }),
-        choice('pvb-2-p3', C, { tag: 'verb', prompt: l('Choose the correct question.', 'সঠিক প্রশ্নটা বাছো।'), options: ['Does she works here?', 'Does she work here?', 'Do she work here?'], answer: 'Does she work here?', explanation: l('Does + she + base verb.', 'Does + she + মূল verb।') }),
-        choice('pvb-2-p4', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'You must ______ your passport at the airport.', options: ['show', 'to show', 'showing'], answer: 'show', explanation: l('must + base verb, no "to".', 'must + মূল verb, "to" ছাড়া।') }),
+        choice('pvb-2-p1', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'My brother ______ like spicy food.', options: ['doesn’t', 'don’t', 'isn’t'], answer: 'doesn’t', explanation: l('he → doesn’t + base verb.', 'he → doesn’t + মূল verb।') }),
+        choice('pvb-2-p2', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Children should ______ more vegetables.', options: ['eat', 'eats', 'to eat'], answer: 'eat', explanation: l('should + base verb.', 'should + মূল verb।') }),
+        choice('pvb-2-p3', C, { tag: 'verb', prompt: l('Choose the correct question.', 'সঠিক প্রশ্নটা বেছে নিন।'), options: ['Does she works here?', 'Does she work here?', 'Do she work here?'], answer: 'Does she work here?', explanation: l('Does + she + base verb.', 'Does + she + মূল verb।') }),
+        choice('pvb-2-p4', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'You must ______ your passport at the airport.', options: ['show', 'to show', 'showing'], answer: 'show', explanation: l('must + base verb, no "to".', 'must + মূল verb, "to" ছাড়া।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pvb-2-r1', C, { tag: 'verb', prompt: l('Write the right form of "play".', '"play"-এর ঠিক form লেখো।'), base: 'play', sentence: 'My sister can ___ the harmonium.', accepted: ['play'], explanation: l('can + base verb.', 'can + মূল verb।'), why: { plays: l('After "can" the verb never takes -s.', '"can"-এর পরে verb-এ কখনো -s বসে না।') } }),
-        gap('pvb-2-r2', C, { tag: 'verb', prompt: l('Write the missing helping verb (negative).', 'বাদ পড়া helping verb লেখো (না-বোধক)।'), sentence: 'My father ___ drink tea after dinner.', accepted: ['doesn’t', "doesn't", 'does not'], explanation: l('he → doesn’t.', 'he → doesn’t।'), why: { "don't": l('With he / she / it we use doesn’t.', 'he / she / it-এর সাথে doesn’t।') } }),
+        gap('pvb-2-r1', C, { tag: 'verb', prompt: l('Write the right form of "play".', '"play"-এর ঠিক form লিখুন।'), base: 'play', sentence: 'My sister can ___ the harmonium.', accepted: ['play'], explanation: l('can + base verb.', 'can + মূল verb।'), why: { plays: l('After "can" the verb never takes -s.', '"can"-এর পরে verb-এ কখনো -s বসে না।') } }),
+        gap('pvb-2-r2', C, { tag: 'verb', prompt: l('Write the missing helping verb (negative).', 'বাদ পড়া helping verb লিখুন (না-বোধক)।'), sentence: 'My father ___ drink tea after dinner.', accepted: ['doesn’t', "doesn't", 'does not'], explanation: l('he → doesn’t.', 'he → doesn’t।'), why: { "don't": l('With he / she / it we use doesn’t.', 'he / she / it-এর সাথে doesn’t।') } }),
         spot('pvb-2-r3', C, { tag: 'verb', sentence: 'Students must submits their essays by Friday.', wrong: 'submits', accepted: ['submit'], explanation: l('must + base verb: must submit.', 'must + মূল verb: must submit।') }),
       ],
     },
@@ -202,16 +202,16 @@ const v2: Lesson = {
       exercises: [
         choice('pvb-2-c1', C, { tag: 'verb', prompt: l('Why is it "She can swim" and not "She can swims"?', '"She can swims" না হয়ে "She can swim" কেন?'), options: ['After a modal the main verb is in its base form', 'Because she is a girl', 'Because swim is irregular'], answer: 'After a modal the main verb is in its base form', explanation: l('can, should, must + base verb.', 'can, should, must + মূল verb।') }),
         spot('pvb-2-c2', C, { tag: 'verb', sentence: 'Does your city has a good bus service?', wrong: 'has', accepted: ['have'], fixOptions: ['have', 'had', 'having'], explanation: l('Does + base verb: have.', 'Does + মূল verb: have।') }),
-        choice('pvb-2-c3', C, { tag: 'verb', prompt: l('Task 2: choose the best recommendation.', 'Task 2: সবচেয়ে ভালো পরামর্শটা বাছো।'), options: ['Governments should build more cycle lanes.', 'Governments should builds more cycle lanes.', 'Governments should to build more cycle lanes.'], answer: 'Governments should build more cycle lanes.', explanation: l('should + base verb.', 'should + মূল verb।') }),
+        choice('pvb-2-c3', C, { tag: 'verb', prompt: l('Task 2: choose the best recommendation.', 'Task 2: সবচেয়ে ভালো পরামর্শটা বেছে নিন।'), options: ['Governments should build more cycle lanes.', 'Governments should builds more cycle lanes.', 'Governments should to build more cycle lanes.'], answer: 'Governments should build more cycle lanes.', explanation: l('should + base verb.', 'should + মূল verb।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pvb-2-w1', C, {
           tag: 'verb',
-          prompt: l('Write two sentences about a friend: one thing they can do and one thing they don’t like.', 'একজন বন্ধুকে নিয়ে দুটো sentence লেখো: সে কী পারে, আর কী পছন্দ করে না।'),
+          prompt: l('Write two sentences about a friend: one thing they can do and one thing they don’t like.', 'একজন বন্ধুকে নিয়ে দুটো sentence লিখুন: সে কী পারে, আর কী পছন্দ করে না।'),
           model: 'My friend Sami can cook really well, but he doesn’t like washing the dishes.',
           task: 'The student writes two sentences about a friend using "can" and "doesn\'t". Check modal + base verb (no -s, no "to"), does/doesn\'t with he/she, and the base verb after doesn\'t.',
           target: l('can + base verb; doesn’t + base verb', 'can + মূল verb; doesn’t + মূল verb'),
@@ -222,7 +222,7 @@ const v2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Modal (can, should, must…) + base verb. No -s, no "to".', 'Modal (can, should, must…) + মূল verb। -s নেই, "to" নেই।'),
         l('he / she / it: does / doesn’t + base verb.', 'he / she / it: does / doesn’t + মূল verb।'),
@@ -294,18 +294,18 @@ const v3: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pvb-3-p1', C, { tag: 'verb', prompt: l('Task 1: choose the right past form.', 'Task 1: ঠিক past form-টা বাছো।'), sentence: 'Unemployment ______ to 8% in 2020.', options: ['rose', 'raised', 'rised'], answer: 'rose', explanation: l('rise → rose (no object).', 'rise → rose (object ছাড়া)।') }),
-        choice('pvb-3-p2', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Many people avoid ______ in the rainy season.', options: ['travelling', 'to travel', 'travel'], answer: 'travelling', explanation: l('avoid + -ing.', 'avoid + -ing।') }),
-        choice('pvb-3-p3', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'I decided ______ IELTS this year.', options: ['to take', 'taking', 'take'], answer: 'to take', explanation: l('decide + to.', 'decide + to।') }),
-        choice('pvb-3-p4', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'She has ______ three books this month.', options: ['read', 'readed', 'reading'], answer: 'read', explanation: l('read-read-read (pronounced "red" in the past).', 'read-read-read (past-এ উচ্চারণ "red")।') }),
+        choice('pvb-3-p1', C, { tag: 'verb', prompt: l('Task 1: choose the right past form.', 'Task 1: ঠিক past form-টা বেছে নিন।'), sentence: 'Unemployment ______ to 8% in 2020.', options: ['rose', 'raised', 'rised'], answer: 'rose', explanation: l('rise → rose (no object).', 'rise → rose (object ছাড়া)।') }),
+        choice('pvb-3-p2', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Many people avoid ______ in the rainy season.', options: ['travelling', 'to travel', 'travel'], answer: 'travelling', explanation: l('avoid + -ing.', 'avoid + -ing।') }),
+        choice('pvb-3-p3', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'I decided ______ IELTS this year.', options: ['to take', 'taking', 'take'], answer: 'to take', explanation: l('decide + to.', 'decide + to।') }),
+        choice('pvb-3-p4', C, { tag: 'verb', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'She has ______ three books this month.', options: ['read', 'readed', 'reading'], answer: 'read', explanation: l('read-read-read (pronounced "red" in the past).', 'read-read-read (past-এ উচ্চারণ "red")।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pvb-3-r1', C, { tag: 'verb', prompt: l('Write the past form of "fall".', '"fall"-এর past form লেখো।'), base: 'fall', sentence: 'The number of tourists ___ sharply in 2020.', accepted: ['fell'], explanation: l('fall-fell-fallen.', 'fall-fell-fallen।'), why: { falled: l('fall is irregular: fell.', 'fall irregular: fell।') } }),
-        gap('pvb-3-r2', C, { tag: 'verb', prompt: l('Write the right form of "read".', '"read"-এর ঠিক form লেখো।'), base: 'read', sentence: 'I really enjoy ___ detective stories.', accepted: ['reading'], explanation: l('enjoy + -ing.', 'enjoy + -ing।') }),
+        gap('pvb-3-r1', C, { tag: 'verb', prompt: l('Write the past form of "fall".', '"fall"-এর past form লিখুন।'), base: 'fall', sentence: 'The number of tourists ___ sharply in 2020.', accepted: ['fell'], explanation: l('fall-fell-fallen.', 'fall-fell-fallen।'), why: { falled: l('fall is irregular: fell.', 'fall irregular: fell।') } }),
+        gap('pvb-3-r2', C, { tag: 'verb', prompt: l('Write the right form of "read".', '"read"-এর ঠিক form লিখুন।'), base: 'read', sentence: 'I really enjoy ___ detective stories.', accepted: ['reading'], explanation: l('enjoy + -ing.', 'enjoy + -ing।') }),
         spot('pvb-3-r3', C, { tag: 'verb', sentence: 'I have wrote two practice essays this week.', wrong: 'wrote', accepted: ['written'], explanation: l('have + past participle: written.', 'have + past participle: written।') }),
       ],
     },
@@ -315,16 +315,16 @@ const v3: Lesson = {
       exercises: [
         choice('pvb-3-c1', C, { tag: 'verb', prompt: l('Why "Taxes rose" but "The government raised taxes"?', '"Taxes rose" কিন্তু "The government raised taxes" কেন?'), options: ['rise has no object; raise needs an object', 'Both mean the same', 'raise is only for money'], answer: 'rise has no object; raise needs an object', explanation: l('Something rises by itself; someone raises something.', 'কিছু নিজে rise করে; কেউ কিছু raise করে।') }),
         spot('pvb-3-c2', C, { tag: 'verb', sentence: 'Many students avoid study late at night.', wrong: 'study', accepted: ['studying'], fixOptions: ['studying', 'to study', 'studied'], explanation: l('avoid + -ing: avoid studying.', 'avoid + -ing: avoid studying।') }),
-        choice('pvb-3-c3', C, { tag: 'verb', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['I can’t afford to buy a laptop.', 'I can’t afford buying a laptop.', 'I can’t afford buy a laptop.'], answer: 'I can’t afford to buy a laptop.', explanation: l('afford + to.', 'afford + to।') }),
+        choice('pvb-3-c3', C, { tag: 'verb', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['I can’t afford to buy a laptop.', 'I can’t afford buying a laptop.', 'I can’t afford buy a laptop.'], answer: 'I can’t afford to buy a laptop.', explanation: l('afford + to.', 'afford + to।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pvb-3-w1', C, {
           tag: 'verb',
-          prompt: l('Write two sentences about last holiday: what you did (past) and what you enjoyed (+ -ing).', 'শেষ ছুটি নিয়ে দুটো sentence লেখো: কী করেছিলে (past) আর কী ভালো লেগেছিল (+ -ing)।'),
+          prompt: l('Write two sentences about last holiday: what you did (past) and what you enjoyed (+ -ing).', 'শেষ ছুটি নিয়ে দুটো sentence লিখুন: কী করেছিলেন (past) আর কী ভালো লেগেছিল (+ -ing)।'),
           model: 'Last winter we went to Sylhet and stayed near a tea garden. I really enjoyed walking in the hills.',
           task: 'The student writes two sentences about a past holiday. Check past forms (especially irregular verbs like went, took, saw), and verb patterns (enjoy + -ing, want/decide + to).',
           target: l('Past forms + enjoy -ing', 'Past form + enjoy -ing'),
@@ -335,7 +335,7 @@ const v3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('go-went-gone, take-took-taken, rise-rose-risen, fall-fell-fallen, write-wrote-written.', 'go-went-gone, take-took-taken, rise-rose-risen, fall-fell-fallen, write-wrote-written।'),
         l('want / decide / plan + to; enjoy / avoid / suggest + -ing.', 'want / decide / plan + to; enjoy / avoid / suggest + -ing।'),
@@ -406,19 +406,19 @@ const v4: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pvb-4-p1', C, { tag: 'verb', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['I agree with this view.', 'I am agree with this view.', 'I am agreeing with this view.'], answer: 'I agree with this view.', explanation: l('agree is a verb; no "am".', 'agree নিজেই verb; "am" লাগে না।') }),
-        choice('pvb-4-p2', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বাছো।'), sentence: 'The number of cars ______ every year.', options: ['increases', 'increasing', 'is increase'], answer: 'increases', explanation: l('the number (singular) + increases.', 'the number (singular) + increases।') }),
-        choice('pvb-4-p3', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বাছো।'), sentence: 'My uncle ______ in Dubai.', options: ['works', 'work', 'working'], answer: 'works', explanation: l('he → works.', 'he → works।') }),
-        choice('pvb-4-p4', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বাছো।'), sentence: 'The price of rice ______ at the moment.', options: ['is rising', 'rising', 'is rise'], answer: 'is rising', explanation: l('at the moment → is + -ing.', 'at the moment → is + -ing।') }),
+        choice('pvb-4-p1', C, { tag: 'verb', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['I agree with this view.', 'I am agree with this view.', 'I am agreeing with this view.'], answer: 'I agree with this view.', explanation: l('agree is a verb; no "am".', 'agree নিজেই verb; "am" লাগে না।') }),
+        choice('pvb-4-p2', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বেছে নিন।'), sentence: 'The number of cars ______ every year.', options: ['increases', 'increasing', 'is increase'], answer: 'increases', explanation: l('the number (singular) + increases.', 'the number (singular) + increases।') }),
+        choice('pvb-4-p3', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বেছে নিন।'), sentence: 'My uncle ______ in Dubai.', options: ['works', 'work', 'working'], answer: 'works', explanation: l('he → works.', 'he → works।') }),
+        choice('pvb-4-p4', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বেছে নিন।'), sentence: 'The price of rice ______ at the moment.', options: ['is rising', 'rising', 'is rise'], answer: 'is rising', explanation: l('at the moment → is + -ing.', 'at the moment → is + -ing।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        correct('pvb-4-r1', C, { tag: 'verb', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'I am agree with the writer.', accepted: ['I agree with the writer.'], explanation: l('I agree…', 'I agree…') }),
-        spot('pvb-4-r2', C, { tag: 'verb', sentence: 'The population of Dhaka growing very fast.', wrong: 'growing', accepted: ['is growing', 'grows', 'has been growing'], explanation: l('Add "is": is growing (or grows).', '"is" যোগ করো: is growing (অথবা grows)।') }),
-        gap('pvb-4-r3', C, { tag: 'verb', prompt: l('Write the right form of "go".', '"go"-এর ঠিক form লেখো।'), base: 'go', sentence: 'My sister ___ to the gym every morning.', accepted: ['goes'], explanation: l('she → goes.', 'she → goes।'), why: { go: l('With she, add -es: goes.', 'she-এর সাথে -es: goes।') } }),
+        correct('pvb-4-r1', C, { tag: 'verb', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'I am agree with the writer.', accepted: ['I agree with the writer.'], explanation: l('I agree…', 'I agree…') }),
+        spot('pvb-4-r2', C, { tag: 'verb', sentence: 'The population of Dhaka growing very fast.', wrong: 'growing', accepted: ['is growing', 'grows', 'has been growing'], explanation: l('Add "is": is growing (or grows).', '"is" যোগ করুন: is growing (অথবা grows)।') }),
+        gap('pvb-4-r3', C, { tag: 'verb', prompt: l('Write the right form of "go".', '"go"-এর ঠিক form লিখুন।'), base: 'go', sentence: 'My sister ___ to the gym every morning.', accepted: ['goes'], explanation: l('she → goes.', 'she → goes।'), why: { go: l('With she, add -es: goes.', 'she-এর সাথে -es: goes।') } }),
       ],
     },
     {
@@ -432,11 +432,11 @@ const v4: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pvb-4-w1', C, {
           tag: 'verb',
-          prompt: l('Task 2: give your opinion in one sentence on "Students should wear uniforms." Start with "I agree" or "I disagree".', 'Task 2: "Students should wear uniforms."-এর উপর এক sentence-এ মতামত দাও। "I agree" বা "I disagree" দিয়ে শুরু করো।'),
+          prompt: l('Task 2: give your opinion in one sentence on "Students should wear uniforms." Start with "I agree" or "I disagree".', 'Task 2: "Students should wear uniforms."-এর উপর এক sentence-এ মতামত দিন। "I agree" বা "I disagree" দিয়ে শুরু করুন।'),
           model: 'I agree that students should wear uniforms because they reduce pressure to buy expensive clothes.',
           task: 'The student gives an opinion in one sentence starting with "I agree" or "I disagree". Check: no "I am agree", complete verbs in every clause, modal + base verb, subject–verb agreement.',
           target: l('I agree / I disagree + complete verbs', 'I agree / I disagree + সম্পূর্ণ verb'),
@@ -447,7 +447,7 @@ const v4: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('-ing alone is not a verb: is increasing. "is + base verb" is never correct.', 'শুধু -ing দিয়ে verb হয় না: is increasing। "is + মূল verb" কখনো ঠিক না।'),
         l('I agree (never "I am agree"). he / she → -s: goes, works.', 'I agree (কখনো "I am agree" না)। he / she → -s: goes, works।'),
@@ -464,7 +464,7 @@ const v5: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Describe the line', 'Line-টা describe করো'),
+      title: l('Describe the line', 'Line-টা describe করুন'),
       situation: l('A line goes up and down many times between 2010 and 2015, with no clear direction.', 'একটা line ২০১০ থেকে ২০১৫-এর মধ্যে অনেকবার ওঠানামা করেছে, কোনো নির্দিষ্ট দিক নেই।'),
       question: l('Which verb fits best?', 'কোন verb সবচেয়ে ভালো মানায়?'),
       options: ['fluctuated', 'increased', 'remained stable'], answer: 'fluctuated',
@@ -484,7 +484,7 @@ const v5: Lesson = {
       title: l('Trend verbs and reporting verbs', 'Trend verb আর reporting verb'),
       body: l('Task 1 trend verbs: up: rise, increase, grow, climb; down: fall, decrease, decline, drop; no change: remain stable, stay the same, level off; up and down: fluctuate; highest point: peak. Task 2 reporting verbs: argue, claim, believe, suggest, point out: "Some people argue that…"', 'Task 1-এর trend verb: উপরে: rise, increase, grow, climb; নিচে: fall, decrease, decline, drop; পরিবর্তন নেই: remain stable, stay the same, level off; ওঠানামা: fluctuate; সর্বোচ্চ বিন্দু: peak। Task 2-এর reporting verb: argue, claim, believe, suggest, point out: "Some people argue that…"'),
       points: [
-        l('Use a variety: do not write "increased" five times.', 'বৈচিত্র্য রাখো: পাঁচবার "increased" লিখো না।'),
+        l('Use a variety: do not write "increased" five times.', 'বৈচিত্র্য রাখুন: পাঁচবার "increased" লিখুন না।'),
         l('rise / fall have no object; increase / reduce can take one: The city reduced traffic.', 'rise / fall-এর object নেই; increase / reduce-এর object থাকতে পারে: The city reduced traffic।'),
       ],
     },
@@ -501,7 +501,7 @@ const v5: Lesson = {
       kind: 'ielts',
       title: l('Where you will use this', 'কোথায় লাগবে'),
       uses: [
-        { skill: 'writing', example: 'The figure dropped slightly, then remained stable.', note: l('Task 1: choose the verb that matches the shape of the line.', 'Task 1: line-এর আকারের সাথে মেলে এমন verb বাছো।') },
+        { skill: 'writing', example: 'The figure dropped slightly, then remained stable.', note: l('Task 1: choose the verb that matches the shape of the line.', 'Task 1: line-এর আকারের সাথে মেলে এমন verb বেছে নিন।') },
         { skill: 'writing', example: 'Supporters of this idea claim that…', note: l('Task 2: reporting verbs present other views fairly.', 'Task 2: reporting verb অন্যদের মত ন্যায্যভাবে তুলে ধরে।') },
         { skill: 'listening', example: '"prices went up" = "prices rose"', note: l('Listening and Reading paraphrase trend verbs.', 'Listening আর Reading-এ trend verb অন্যভাবে বলা হয়।') },
       ],
@@ -519,19 +519,19 @@ const v5: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pvb-5-p1', C, { tag: 'verb', prompt: l('The line stays flat. Choose the verb.', 'Line সমান থাকে। Verb বাছো।'), sentence: 'The price ______ at $50 from 2016 to 2018.', options: ['remained stable', 'fluctuated', 'peaked'], answer: 'remained stable', explanation: l('No change → remained stable.', 'পরিবর্তন নেই → remained stable।') }),
-        choice('pvb-5-p2', C, { tag: 'verb', prompt: l('The highest point. Choose the verb.', 'সর্বোচ্চ বিন্দু। Verb বাছো।'), sentence: 'Visitor numbers ______ at 90,000 in July.', options: ['peaked', 'declined', 'levelled off'], answer: 'peaked', explanation: l('The highest point → peaked.', 'সর্বোচ্চ বিন্দু → peaked।') }),
-        choice('pvb-5-p3', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বাছো।'), sentence: 'The government ______ fuel prices last year.', options: ['raised', 'rose', 'risen'], answer: 'raised', explanation: l('With an object (fuel prices): raised.', 'Object (fuel prices) থাকলে: raised।') }),
-        choice('pvb-5-p4', C, { tag: 'verb', prompt: l('Task 2: choose the best phrase.', 'Task 2: সবচেয়ে ভালো phrase-টা বাছো।'), sentence: 'Some people ______ that technology makes us lonely.', options: ['argue', 'argue about', 'are argue'], answer: 'argue', explanation: l('argue that + clause.', 'argue that + clause।') }),
+        choice('pvb-5-p1', C, { tag: 'verb', prompt: l('The line stays flat. Choose the verb.', 'Line সমান থাকে। Verb বেছে নিন।'), sentence: 'The price ______ at $50 from 2016 to 2018.', options: ['remained stable', 'fluctuated', 'peaked'], answer: 'remained stable', explanation: l('No change → remained stable.', 'পরিবর্তন নেই → remained stable।') }),
+        choice('pvb-5-p2', C, { tag: 'verb', prompt: l('The highest point. Choose the verb.', 'সর্বোচ্চ বিন্দু। Verb বেছে নিন।'), sentence: 'Visitor numbers ______ at 90,000 in July.', options: ['peaked', 'declined', 'levelled off'], answer: 'peaked', explanation: l('The highest point → peaked.', 'সর্বোচ্চ বিন্দু → peaked।') }),
+        choice('pvb-5-p3', C, { tag: 'verb', prompt: l('Choose the right verb.', 'ঠিক verb-টা বেছে নিন।'), sentence: 'The government ______ fuel prices last year.', options: ['raised', 'rose', 'risen'], answer: 'raised', explanation: l('With an object (fuel prices): raised.', 'Object (fuel prices) থাকলে: raised।') }),
+        choice('pvb-5-p4', C, { tag: 'verb', prompt: l('Task 2: choose the best phrase.', 'Task 2: সবচেয়ে ভালো phrase-টা বেছে নিন।'), sentence: 'Some people ______ that technology makes us lonely.', options: ['argue', 'argue about', 'are argue'], answer: 'argue', explanation: l('argue that + clause.', 'argue that + clause।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pvb-5-r1', C, { tag: 'verb', prompt: l('Write a verb meaning "went up and down".', '"ওঠানামা করেছে" অর্থের verb লেখো।'), sentence: 'Oil prices ___ throughout the decade.', accepted: ['fluctuated', 'varied'], explanation: l('fluctuated = went up and down.', 'fluctuated = ওঠানামা করেছে।') }),
-        gap('pvb-5-r2', C, { tag: 'verb', prompt: l('Write the past of "rise".', '"rise"-এর past লেখো।'), base: 'rise', sentence: 'The number of cyclists ___ to 12,000 in 2021.', accepted: ['rose'], explanation: l('rise-rose-risen.', 'rise-rose-risen।'), why: { raised: l('"raised" needs an object. Numbers rise by themselves: rose.', '"raised"-এর object লাগে। সংখ্যা নিজে বাড়ে: rose।') } }),
-        correct('pvb-5-r3', C, { tag: 'verb', prompt: l('Rewrite with a different verb that means "increased".', '"increased"-এর মতো অর্থের অন্য verb দিয়ে আবার লেখো।'), sentence: 'Sales increased in 2020.', accepted: ['Sales rose in 2020.', 'Sales grew in 2020.', 'Sales climbed in 2020.', 'Sales went up in 2020.'], explanation: l('rose / grew / climbed.', 'rose / grew / climbed।') }),
+        gap('pvb-5-r1', C, { tag: 'verb', prompt: l('Write a verb meaning "went up and down".', '"ওঠানামা করেছে" অর্থের verb লিখুন।'), sentence: 'Oil prices ___ throughout the decade.', accepted: ['fluctuated', 'varied'], explanation: l('fluctuated = went up and down.', 'fluctuated = ওঠানামা করেছে।') }),
+        gap('pvb-5-r2', C, { tag: 'verb', prompt: l('Write the past of "rise".', '"rise"-এর past লিখুন।'), base: 'rise', sentence: 'The number of cyclists ___ to 12,000 in 2021.', accepted: ['rose'], explanation: l('rise-rose-risen.', 'rise-rose-risen।'), why: { raised: l('"raised" needs an object. Numbers rise by themselves: rose.', '"raised"-এর object লাগে। সংখ্যা নিজে বাড়ে: rose।') } }),
+        correct('pvb-5-r3', C, { tag: 'verb', prompt: l('Rewrite with a different verb that means "increased".', '"increased"-এর মতো অর্থের অন্য verb দিয়ে আবার লিখুন।'), sentence: 'Sales increased in 2020.', accepted: ['Sales rose in 2020.', 'Sales grew in 2020.', 'Sales climbed in 2020.', 'Sales went up in 2020.'], explanation: l('rose / grew / climbed.', 'rose / grew / climbed।') }),
       ],
     },
     {
@@ -545,11 +545,11 @@ const v5: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pvb-5-w1', C, {
           tag: 'verb',
-          prompt: l('Task 1: describe this trend in one sentence: "Rice price: 2019 Tk 50 → 2020 Tk 65 → 2021 Tk 65 → 2022 Tk 65."', 'Task 1: এই trend-টা এক sentence-এ লেখো: "Rice price: 2019 Tk 50 → 2020 Tk 65 → 2021 Tk 65 → 2022 Tk 65."'),
+          prompt: l('Task 1: describe this trend in one sentence: "Rice price: 2019 Tk 50 → 2020 Tk 65 → 2021 Tk 65 → 2022 Tk 65."', 'Task 1: এই trend-টা এক sentence-এ লিখুন: "Rice price: 2019 Tk 50 → 2020 Tk 65 → 2021 Tk 65 → 2022 Tk 65."'),
           model: 'The price of rice rose from Tk 50 to Tk 65 in 2020 and then remained stable until 2022.',
           task: 'The student describes a trend: rice price rose from Tk 50 (2019) to Tk 65 (2020) and then stayed at Tk 65 until 2022. Check the trend verbs (rose / increased, remained stable / levelled off), past tense, and from/to/until with the figures.',
           target: l('Two trend verbs: up, then no change', 'দুটো trend verb: উপরে, তারপর অপরিবর্তিত'),
@@ -560,7 +560,7 @@ const v5: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('up: rise, increase, grow · down: fall, decline, drop · flat: remain stable, level off · up and down: fluctuate · top: peak.', 'উপরে: rise, increase, grow · নিচে: fall, decline, drop · সমান: remain stable, level off · ওঠানামা: fluctuate · চূড়া: peak।'),
         l('rise (no object) vs raise (with an object).', 'rise (object ছাড়া) বনাম raise (object সহ)।'),

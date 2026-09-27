@@ -110,7 +110,11 @@ export const saEn = {
     fundsIntro: 'Money you may have to show. Official amounts only; nothing is converted between currencies.',
     costsIntro: 'Official figures, estimates and your own budget are kept apart. Nothing is converted between currencies.',
     planBudget: 'Plan my budget',
-    sourcesIntro: 'Every fact above links to its official source and shows when we checked it.',
+    sourceOne: 'Official source',
+    sourceMany: 'Official sources',
+    checkAgain: 'Check this on the official page before relying on it.',
+    checked: 'checked {date}',
+    sourcesIntro: 'The information on this page comes from these pages. Tap one to open the original.',
     askMino: 'A personal question about this option? Ask Mino',
     askPrompt: 'I am reading about {option} in {country}. Based on my profile, what should I focus on? Use only verified facts for rules, fees and dates.',
     sections: {
@@ -128,7 +132,7 @@ export const saEn = {
       'after-admission': 'After admission',
       'before-departure': 'Before departure',
       notes: 'Important notes',
-      sources: 'Official sources',
+      sources: 'Sources',
     },
   },
   home: {

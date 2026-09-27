@@ -37,7 +37,7 @@ Limits: max 3 strengths, 6 mistakes, 3 actions, 5 vocabulary items, 3 better sen
 
 function languageRule(language: 'en' | 'bn') {
   return language === 'bn'
-    ? 'Write comments, why, tips, strengths and actions in casual, friendly Bangla ("তুমি"), keeping IELTS terms (Task Response, Coherence & Cohesion, Lexical Resource, collocation...) in English. Quotes, fixes, words and improved sentences stay in English.'
+    ? 'Write comments, why, tips, strengths and actions in friendly, respectful Bangla (always "আপনি", never "তুমি"), keeping IELTS terms (Task Response, Coherence & Cohesion, Lexical Resource, collocation...) in English. Quotes, fixes, words and improved sentences stay in English.'
     : 'Write everything in clear, simple English.';
 }
 

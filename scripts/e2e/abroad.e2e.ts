@@ -410,14 +410,14 @@ async function main() {
     const guideSections = await p.locator('[data-guide-section]').evaluateAll((els) => els.map((e) => e.getAttribute('data-guide-section')));
     check('guide: every part on one page, in order', guideSections.join(',') === 'overview,who,study,admission,language,visa,documents,finances,costs,application,visa-application,after-admission,before-departure,notes,sources', guideSections.join(','));
     check('guide: readable text, no accordions to open', (await guideEl.locator('[aria-expanded]').count()) === 0);
-    check('guide: verified visa facts with source + date', (await p.locator('[data-guide-section="visa"] [data-fact]').count()) > 0 && /verified/i.test(await p.locator('[data-guide-section="visa"]').innerText()));
+    check('guide: verified visa facts, content first; one small source link at the end of the section', (await p.locator('[data-guide-section="visa"] [data-fact]').count()) > 0 && (await p.locator('[data-guide-section="visa"] [data-section-sources]').count()) === 1 && !/verified \d/.test(await p.locator('[data-guide-section="visa"]').innerText()));
     check('guide: unverified part says so ("not verified yet")', (await p.locator('[data-guide-section="who"]').getAttribute('data-verified')) === 'false' && /This information is not verified yet/.test(await p.locator('[data-guide-section="who"]').innerText()));
     const docKinds = await p.locator('[data-guide-doc]').evaluateAll((els) => els.map((e) => e.getAttribute('data-guide-doc')));
     check('guide: documents for this option, each once (passport, admission letter…)', docKinds.length > 0 && new Set(docKinds).size === docKinds.length && docKinds.includes('passport') && docKinds.includes('admission-letter'), docKinds.join(','));
     check('guide: general-guidance documents kept apart from requirements', (await p.getByTestId('guide-documents-general').count()) === 1 && /Not an official requirement/.test(await p.getByTestId('guide-documents-general').innerText()));
     check('guide: money — official / estimate / your budget apart, no invented amount', /Official|Not verified yet/.test(await p.locator('[data-guide-section="costs"]').innerText()) && (await p.locator('[data-guide-section="finances"] [data-fact]').count()) > 0);
     check('guide: only D-2 content (no D-4 blocks leak into the degree guide)', (await p.locator('[data-guide-block*="kr-d4"]').count()) === 0 && (await p.locator('[data-guide-block*="kr-d2"]').count()) > 0);
-    check('guide: official sources listed and linked', (await p.getByTestId('guide-sources').locator('a[href^="http"]').count()) >= 3);
+    check('guide: "Sources" list at the end — short linked names with the date checked', (await p.getByTestId('guide-sources').locator('a[href^="http"]').count()) >= 3 && /checked/.test(await p.getByTestId('guide-sources').innerText()) && !/https?:\/\//.test(await p.getByTestId('guide-sources').innerText()));
     check('guide: Mino is one optional link, not the interface', (await guideEl.getByRole('link', { name: /Mino/ }).count()) === 1 && (await p.getByTestId('guide-ask-mino').getAttribute('href')) === '/mino?ask=abroad-option&country=kr&option=degree-bachelors');
     check('guide desktop: no sideways scroll', await noHorizontalScroll(p), await overflowers(p));
     await shot(p, 'ex-01-kr-bachelors-guide');
@@ -445,8 +445,8 @@ async function main() {
     await work.getByRole('button', { name: /Part-time work/ }).click();
     const fact = work.locator('[data-fact]').first();
     await fact.waitFor({ timeout: 5_000 });
-    check('verified fact shows its official source link', (await fact.locator('a[href^="http"]').count()) === 1);
-    check('verified fact shows when it was checked', /Verified|verified/.test(await fact.innerText()));
+    check('verified fact reads clean (no citation under the fact)', (await fact.locator('a[href^="http"]').count()) === 0);
+    check('section ends with a small official source link + when it was checked', (await work.locator('[data-section-sources] a[href^="http"]').count()) >= 1 && /checked/.test(await work.locator('[data-section-sources]').innerText()));
     check('Germany · Tuition fees: Not verified yet', (await p.locator('[data-section="tuition"]').getAttribute('data-status')) === 'not-yet');
     check('dream country: “Your dream country” + Open my roadmap', (await p.getByText('Your dream country').count()) === 1 && (await p.getByRole('link', { name: 'Open my roadmap' }).count()) >= 1);
     await p.getByRole('tab', { name: 'Apply' }).click();
@@ -686,7 +686,7 @@ async function main() {
     // C1.3: D-4 filled from official sources; interview, processing time and insurance stay "Not verified yet".
     check('D-4: only interview / processing / insurance Not verified yet; type needs review (D-4 type names differ)', (await p.locator('[data-section][data-status="not-yet"]').count()) === 3 && ['interview', 'processing', 'insurance'].every(Boolean) && (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'needs-review');
     const d4Type = await p.locator('[data-section="type"]').innerText();
-    check('D-4 type: official name, D-4-1, source + date; no D-2 data', /D-4 \(General Trainee\)/.test(d4Type) && /D-4-1 Korean Language Training/.test(d4Type) && /Korea Immigration Service/.test(d4Type) && /verified [^\n]*2026/.test(d4Type) && !/D-2-|D-2 \(Student\)/.test(d4Type), d4Type.slice(0, 200));
+    check('D-4 type: official name, D-4-1, source + date; no D-2 data', /D-4 \(General Trainee\)/.test(d4Type) && /D-4-1 Korean Language Training/.test(d4Type) && /Korea Immigration Service/.test((await p.locator('[data-section="type"] [data-section-sources]').getAttribute('data-sources')) ?? '') && /checked [^\n]*2026/.test(d4Type) && !/D-2-|D-2 \(Student\)/.test(d4Type), d4Type.slice(0, 200));
     check('picker card: which visa (official name) + source', /Visa: D-4 \(General Trainee\)/.test(await p.locator('[data-pathway="language"]').innerText()) && /Visa: D-2 \(Student\)/.test(await p.locator('[data-pathway="degree"]').innerText()) && (await p.getByTestId('pathway-source').first().getAttribute('href')) === 'https://www.immigration.go.kr/bbs/immigration_eng/230/454085/download.do');
     await p.locator('[data-section="documents"] button[aria-expanded]').first().click();
     const bd = await p.locator('[data-block="kr-bd-specific"]').innerText();
@@ -947,7 +947,7 @@ async function main() {
     await q.goto(`${BASE}/abroad/countries`, { waitUntil: 'load' });
     await q.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
     check('bn explorer mobile: no sideways scroll', await noHorizontalScroll(q));
-    check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখো' }).count()) >= 13);
+    check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখুন' }).count()) >= 13);
     await shot(q, 'sa-3b-02-explorer-mobile', false);
     await q.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
     await q.getByTestId('study-options').waitFor({ timeout: 60_000 });
@@ -955,6 +955,7 @@ async function main() {
     await q.locator('[data-study-option="degree-bachelors"]').click();
     await q.waitForURL('**/abroad/countries/kr/study/degree-bachelors');
     await q.getByTestId('study-guide').waitFor({ timeout: 60_000 });
+    check('bn guide: respectful Bangla (no তুমি/তোমার) and "তথ্যের উৎস" at the end', !/তুমি|তোমার|তোমাকে/.test(await q.locator('main').innerText()) && /তথ্যের উৎস/.test(await q.getByTestId('study-guide').innerText()));
     check('bn guide: headings and "এই তথ্য এখনো verified নয়"', /এই প্রোগ্রামটি কী\?/.test(await q.getByTestId('study-guide').innerText()) && /এই তথ্য এখনো verified নয়/.test(await q.getByTestId('study-guide').innerText()));
     check('bn guide mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'ex-02-kr-bachelors-guide-mobile-bn', false);
@@ -986,13 +987,13 @@ async function main() {
       await q.waitForTimeout(300);
       check(`bn ${path} mobile: no sideways scroll`, await noHorizontalScroll(q), await overflowers(q));
     }
-    check('bn documents in Bangla', /তোমার Australia plan-এর জন্য/.test(await (async () => { await q.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' }); await q.getByTestId('docs-required').waitFor({ timeout: 60_000 }); return q.locator('main').innerText(); })()));
+    check('bn documents in Bangla', /আপনার Australia plan-এর জন্য/.test(await (async () => { await q.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' }); await q.getByTestId('docs-required').waitFor({ timeout: 60_000 }); return q.locator('main').innerText(); })()));
     await shot(q, 'sa-3i-02-documents-mobile-bn', false);
     await q.goto(`${BASE}/abroad/visa/au`, { waitUntil: 'load' });
     await q.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
     await q.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await q.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
-    check('bn KR visa: pathway question in Bangla', /তুমি কী পড়ার plan করছো\?/.test(await q.getByTestId('pathway-picker').innerText()));
+    check('bn KR visa: pathway question in Bangla', /আপনি কী পড়ার plan করছেন\?/.test(await q.getByTestId('pathway-picker').innerText()));
     check('bn KR picker: visa name + source line in Bangla', /Visa: D-2 \(Student\)/.test(await q.getByTestId('pathway-picker').innerText()) && /Visa-র নামের source/.test(await q.getByTestId('pathway-picker').innerText()));
     // C1.2 · D-2 in Bangla on mobile
     await q.locator('[data-pathway="degree"]').click();
@@ -1011,7 +1012,7 @@ async function main() {
     await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-4', null, { timeout: 10_000 });
     check('bn D-4 processing: "Official নির্দিষ্ট processing time verified নয়"', /Official নির্দিষ্ট processing time verified নয়/.test(await qOpen('processing')));
     check('bn D-4 money: "Official amount এখনো verified নয়"', /Official amount এখনো verified নয়/.test(await qOpen('finances')));
-    check('bn D-4 work question in Bangla', /D-4-এ কত দিন ধরে Korea-তে আছো\?/.test(await q.getByTestId('work-check').innerText()));
+    check('bn D-4 work question in Bangla', /D-4-এ কত দিন ধরে Korea-তে আছেন\?/.test(await q.getByTestId('work-check').innerText()));
     check('bn D-4 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-c13-02-d4-mobile-bn', false);
     // Back to "no pathway" so the later checks start from the same state.
@@ -1021,7 +1022,7 @@ async function main() {
     await shot(q, 'sa-kr-b2-02-visa-mobile-bn', false);
     await q.goto(`${BASE}/abroad/universities?country=kr`, { waitUntil: 'load' });
     await q.getByTestId('program-finder').waitFor({ timeout: 60_000 });
-    check('bn: contextual question in Bangla', /কোন ভাষায় পড়তে চাও\?/.test(await q.locator('[data-question="studyLanguage"]').innerText()));
+    check('bn: contextual question in Bangla', /কোন ভাষায় পড়তে চান\?/.test(await q.locator('[data-question="studyLanguage"]').innerText()));
     check('bn universities mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-b3-03-universities-mobile-bn', false);
     await q.goto(`${BASE}/abroad/profile`, { waitUntil: 'load' });
@@ -1031,7 +1032,7 @@ async function main() {
     await shot(q, 'sa-kr-b3-04-profile-mobile-bn', false);
     await q.goto(`${BASE}/abroad/cost?country=kr`, { waitUntil: 'load' });
     await q.getByTestId('cost-groups').waitFor({ timeout: 60_000 });
-    check('bn cost: title + pathway notice (no pathway chosen)', /কত টাকা লাগতে পারে\?/.test(await q.locator('main').innerText()) && /আগে pathway বেছে নাও/.test(await q.locator('main').innerText()));
+    check('bn cost: title + pathway notice (no pathway chosen)', /কত টাকা লাগতে পারে\?/.test(await q.locator('main').innerText()) && /আগে pathway বেছে নিন/.test(await q.locator('main').innerText()));
     check('bn cost mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-b4-03-cost-mobile-bn', false);
     await q.goto(`${BASE}/abroad/documents`, { waitUntil: 'load' });

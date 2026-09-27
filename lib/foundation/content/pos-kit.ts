@@ -29,7 +29,7 @@ export const spot = (id: string, concept: string, o: Common & { prompt?: L; sent
   const { sentence, wrong, prompt, ...rest } = o;
   return {
     id, type: 'spot', concept, tag: o.tag ?? 'part-of-speech', words, wrong: index,
-    prompt: prompt ?? l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। সেটায় tap করো, তারপর ঠিক করো।'),
+    prompt: prompt ?? l('One word breaks this sentence. Tap it, then fix it.', 'একটা word sentence-টা ভাঙছে। সেটায় tap করুন, তারপর ঠিক করুন।'),
     ...rest,
   };
 };
@@ -37,7 +37,7 @@ export const spot = (id: string, concept: string, o: Common & { prompt?: L; sent
 /** Tag the words. Write the sentence with the job after words to tag: "The young/adjective student/noun". */
 export const tagWords = (id: string, concept: string, o: { sentence: string; choices: Pos[]; explanation: L; prompt?: L; tag?: ErrorTag }): TagExercise => ({
   id, type: 'tag', concept, tag: o.tag ?? 'part-of-speech', choices: o.choices, explanation: o.explanation,
-  prompt: o.prompt ?? l('Tap each marked word and choose its job.', 'চিহ্ন দেওয়া প্রতিটা word-এ tap করে তার কাজ বাছো।'),
+  prompt: o.prompt ?? l('Tap each marked word and choose its job.', 'চিহ্ন দেওয়া প্রতিটা word-এ tap করে তার কাজ বেছে নিন।'),
   tokens: tokens(o.sentence),
 });
 
@@ -51,7 +51,7 @@ export function tokens(sentence: string): { w: string; pos?: Pos }[] {
 export const identify = (o: { sentence: string; choices: Pos[]; pattern: L }): LessonStep => ({
   kind: 'identify',
   title: l('What job is each word doing?', 'প্রতিটা word কী কাজ করছে?'),
-  question: l('Tap a marked word, then choose its job. No rules yet: just think.', 'চিহ্ন দেওয়া word-এ tap করো, তারপর কাজটা বাছো। এখনো কোনো নিয়ম না, শুধু ভাবো।'),
+  question: l('Tap a marked word, then choose its job. No rules yet: just think.', 'চিহ্ন দেওয়া word-এ tap করুন, তারপর কাজটা বেছে নিন। এখনো কোনো নিয়ম না, শুধু ভাবুন।'),
   tokens: tokens(o.sentence),
   choices: o.choices,
   pattern: o.pattern,

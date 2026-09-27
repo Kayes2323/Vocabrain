@@ -12,18 +12,18 @@ const JOBS5: Pos[] = ['noun', 'verb', 'adjective', 'adverb', 'preposition'];
 const r1: Lesson = {
   id: 'pie-1', unit: 'ielts', format: 'v2', concept: C, minutes: 7, difficulty: 'medium', skill: 'reading',
   title: l('Reading: understand words you don’t know', 'Reading: অচেনা word বোঝা'),
-  why: l('Every Reading passage has words you have never seen. Their job and their neighbours still tell you a lot.', 'প্রতিটা Reading passage-এ এমন word থাকে যা তুমি আগে দেখোনি। তাদের কাজ আর আশেপাশের word তবুও অনেক কিছু বলে দেয়।'),
+  why: l('Every Reading passage has words you have never seen. Their job and their neighbours still tell you a lot.', 'প্রতিটা Reading passage-এ এমন word থাকে যা আপনি আগে দেখোনি। তাদের কাজ আর আশেপাশের word তবুও অনেক কিছু বলে দেয়।'),
   steps: [
     {
       kind: 'hook',
       title: l('An unknown word', 'একটা অচেনা word'),
-      situation: l('Reading passage: "The rapid expansion of urban areas has reduced the amount of farmland." You don’t know "expansion".', 'Reading passage: "The rapid expansion of urban areas has reduced the amount of farmland." তুমি "expansion" চেনো না।'),
+      situation: l('Reading passage: "The rapid expansion of urban areas has reduced the amount of farmland." You don’t know "expansion".', 'Reading passage: "The rapid expansion of urban areas has reduced the amount of farmland." আপনি "expansion" চেনেন না।'),
       question: l('What can you still say about "expansion"?', '"expansion" সম্পর্কে তবুও কী বলা যায়?'),
       options: ['It is a thing (noun) that happened quickly to cities', 'Nothing: I must skip the whole sentence', 'It is a verb, the action of the sentence'],
       answer: 'It is a thing (noun) that happened quickly to cities',
       diagnose: {
         'It is a thing (noun) that happened quickly to cities': l('Exactly. "the rapid ___ of" can only hold a noun, and "rapid" + "urban areas" tell you it is something growing fast in cities.', 'ঠিক। "the rapid ___ of"-এ শুধু noun বসে, আর "rapid" + "urban areas" বলে দেয় এটা শহরে দ্রুত বাড়তে থাকা কিছু।'),
-        'Nothing: I must skip the whole sentence': l('You know more than you think. The job of the word and its neighbours give you the general meaning.', 'তুমি যতটা ভাবছো তার চেয়ে বেশি জানো। Word-এর কাজ আর আশেপাশের word সাধারণ অর্থটা দিয়ে দেয়।'),
+        'Nothing: I must skip the whole sentence': l('You know more than you think. The job of the word and its neighbours give you the general meaning.', 'আপনি যতটা ভাবছেন তার চেয়ে বেশি জানেন। Word-এর কাজ আর আশেপাশের word সাধারণ অর্থটা দিয়ে দেয়।'),
         'It is a verb, the action of the sentence': l('The action is "has reduced". "expansion" comes after "the rapid", so it is a thing: a noun.', 'কাজটা হলো "has reduced"। "expansion" আছে "the rapid"-এর পরে, তাই এটা একটা জিনিস: noun।'),
       },
     },
@@ -35,15 +35,15 @@ const r1: Lesson = {
     {
       kind: 'concept',
       title: l('Job first, meaning second', 'আগে কাজ, তারপর অর্থ'),
-      body: l('When a word is new, first find its job from its position: after the/a/rapid → noun; after to/can/has → verb; before a noun → adjective; next to a verb, often with -ly → adverb. Then use the neighbours to guess the general meaning. This does not give you the dictionary meaning, but it is often enough to follow the sentence and match it to a question.', 'নতুন word পেলে আগে জায়গা দেখে তার কাজ বের করো: the/a/rapid-এর পরে → noun; to/can/has-এর পরে → verb; noun-এর আগে → adjective; verb-এর পাশে, প্রায়ই -ly সহ → adverb। তারপর আশেপাশের word দিয়ে সাধারণ অর্থ আন্দাজ করো। এতে dictionary-র অর্থ পাবে না, কিন্তু sentence বুঝতে আর প্রশ্নের সাথে মেলাতে প্রায়ই এটুকুই যথেষ্ট।'),
+      body: l('When a word is new, first find its job from its position: after the/a/rapid → noun; after to/can/has → verb; before a noun → adjective; next to a verb, often with -ly → adverb. Then use the neighbours to guess the general meaning. This does not give you the dictionary meaning, but it is often enough to follow the sentence and match it to a question.', 'নতুন word পেলে আগে জায়গা দেখে তার কাজ বের করুন: the/a/rapid-এর পরে → noun; to/can/has-এর পরে → verb; noun-এর আগে → adjective; verb-এর পাশে, প্রায়ই -ly সহ → adverb। তারপর আশেপাশের word দিয়ে সাধারণ অর্থ আন্দাজ করুন। এতে dictionary-র অর্থ পাবে না, কিন্তু sentence বুঝতে আর প্রশ্নের সাথে মেলাতে প্রায়ই এটুকুই যথেষ্ট।'),
       points: [
         l('Endings help: -tion/-ment/-ity = noun; -ous/-ive/-al = adjective; -ly = usually adverb; -ise/-ify = verb.', 'Ending সাহায্য করে: -tion/-ment/-ity = noun; -ous/-ive/-al = adjective; -ly = সাধারণত adverb; -ise/-ify = verb।'),
-        l('Job + context narrows the meaning. It does not answer the question for you: always check the passage.', 'কাজ + প্রসঙ্গ অর্থটা সংকুচিত করে। প্রশ্নের উত্তর নিজে দেয় না: সবসময় passage দেখো।'),
+        l('Job + context narrows the meaning. It does not answer the question for you: always check the passage.', 'কাজ + প্রসঙ্গ অর্থটা সংকুচিত করে। প্রশ্নের উত্তর নিজে দেয় না: সবসময় passage দেখুন।'),
       ],
     },
     {
       kind: 'examples',
-      title: l('Guess the job, then the meaning', 'কাজ আন্দাজ করো, তারপর অর্থ'),
+      title: l('Guess the job, then the meaning', 'কাজ আন্দাজ করুন, তারপর অর্থ'),
       items: [
         { en: 'Farmers faced an arduous journey to the market.', note: l('an ___ journey → adjective describing the journey: probably "difficult, tiring".', 'an ___ journey → journey-কে describe করা adjective: সম্ভবত "কঠিন, ক্লান্তিকর"।') },
         { en: 'The new law aims to mitigate the effects of flooding.', note: l('to ___ the effects → verb; with "flooding", probably "reduce".', 'to ___ the effects → verb; "flooding"-এর সাথে, সম্ভবত "কমানো"।') },
@@ -81,8 +81,8 @@ const r1: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pie-1-r1', C, { prompt: l('Write the job of "mitigate" (noun, verb, adjective or adverb).', '"mitigate"-এর কাজ লেখো (noun, verb, adjective বা adverb)।'), sentence: 'Governments must mitigate the risks of flooding. → mitigate = ___', accepted: ['verb'], pos: 'verb', wrongPos: { noun: 'noun', adjective: 'adjective', adverb: 'adverb' }, explanation: l('must + base verb.', 'must + base verb।') }),
-        gap('pie-1-r2', C, { prompt: l('Write the job of "scarcity".', '"scarcity"-এর কাজ লেখো।'), sentence: 'The scarcity of clean water affects millions. → scarcity = ___', accepted: ['noun'], pos: 'noun', wrongPos: { verb: 'verb', adjective: 'adjective', adverb: 'adverb' }, explanation: l('"The ___ of" and -ity → noun.', '"The ___ of" আর -ity → noun।') }),
+        gap('pie-1-r1', C, { prompt: l('Write the job of "mitigate" (noun, verb, adjective or adverb).', '"mitigate"-এর কাজ লিখুন (noun, verb, adjective বা adverb)।'), sentence: 'Governments must mitigate the risks of flooding. → mitigate = ___', accepted: ['verb'], pos: 'verb', wrongPos: { noun: 'noun', adjective: 'adjective', adverb: 'adverb' }, explanation: l('must + base verb.', 'must + base verb।') }),
+        gap('pie-1-r2', C, { prompt: l('Write the job of "scarcity".', '"scarcity"-এর কাজ লিখুন।'), sentence: 'The scarcity of clean water affects millions. → scarcity = ___', accepted: ['noun'], pos: 'noun', wrongPos: { verb: 'verb', adjective: 'adjective', adverb: 'adverb' }, explanation: l('"The ___ of" and -ity → noun.', '"The ___ of" আর -ity → noun।') }),
         gap('pie-1-r3', C, { prompt: l('Paraphrase with a noun: "Crime increased" → "an ___ in crime".', 'Noun দিয়ে paraphrase: "Crime increased" → "an ___ in crime"।'), sentence: 'an ___ in crime', accepted: ['increase', 'rise'], family: 'increase', explanation: l('increased (verb) → an increase (noun).', 'increased (verb) → an increase (noun)।') }),
       ],
     },
@@ -97,13 +97,13 @@ const r1: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pie-1-w1', C, {
-          prompt: l('Paraphrase this passage sentence by changing at least one word form: "Online shopping has grown rapidly."', 'অন্তত একটা word form বদলে এই sentence-টা paraphrase করো: "Online shopping has grown rapidly."'),
+          prompt: l('Paraphrase this passage sentence by changing at least one word form: "Online shopping has grown rapidly."', 'অন্তত একটা word form বদলে এই sentence-টা paraphrase করুন: "Online shopping has grown rapidly."'),
           model: 'There has been a rapid growth in online shopping.',
           task: 'The student paraphrases "Online shopping has grown rapidly." by changing at least one word form (e.g. grown → growth, rapidly → rapid). Check that the meaning stays the same, that each changed word has the correct form for its job, and that the sentence is grammatical.',
-          target: l('Change the job of a word: grown → growth, rapidly → rapid', 'একটা word-এর কাজ বদলাও: grown → growth, rapidly → rapid'),
+          target: l('Change the job of a word: grown → growth, rapidly → rapid', 'একটা word-এর কাজ বদলান: grown → growth, rapidly → rapid'),
           checklist: [l('Same meaning', 'অর্থ একই'), l('At least one word in a new form', 'অন্তত একটা word নতুন form-এ')],
           explanation: l('grew rapidly → a rapid growth.', 'grew rapidly → a rapid growth।'),
         }),
@@ -111,7 +111,7 @@ const r1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Unknown word? Job first (from its position), meaning second (from its neighbours).', 'অচেনা word? আগে কাজ (জায়গা থেকে), তারপর অর্থ (আশেপাশের word থেকে)।'),
         l('Paraphrases often change the job: grow quickly = rapid growth.', 'Paraphrase-এ প্রায়ই কাজ বদলায়: grow quickly = rapid growth।'),
@@ -135,7 +135,7 @@ const r2: Lesson = {
       diagnose: {
         'A noun (a thing that can fall), e.g. use': l('Yes. "the ___ of" is a noun position, and the noun must be something that can "fall": use, number, sale.', 'হ্যাঁ। "the ___ of" হলো noun-এর জায়গা, আর noun-টা এমন কিছু যা "fall" করতে পারে: use, number, sale।'),
         'A verb, e.g. use': l('The verb of the clause is "fell". "the ___ of" needs a noun (here "use" is a noun).', 'Clause-এর verb হলো "fell"। "the ___ of"-এ noun লাগে (এখানে "use" noun)।'),
-        'An adverb, e.g. rarely': l('An adverb cannot follow "the". Look at the neighbours: the ___ of → noun.', 'Adverb "the"-এর পরে বসে না। আশেপাশে দেখো: the ___ of → noun।'),
+        'An adverb, e.g. rarely': l('An adverb cannot follow "the". Look at the neighbours: the ___ of → noun.', 'Adverb "the"-এর পরে বসে না। আশেপাশে দেখুন: the ___ of → noun।'),
       },
     },
     identify({
@@ -145,8 +145,8 @@ const r2: Lesson = {
     }),
     {
       kind: 'concept',
-      title: l('Read the gap before the passage', 'Passage-এর আগে gap পড়ো'),
-      body: l('For every gap, spend five seconds on its neighbours. the/a/an/of + ___ → noun; ___ + noun → adjective; to/will/should + ___ → verb; after a verb, telling how → adverb. Then check grammar: singular or plural noun? Past or present verb? Your answer must fit the sentence exactly, and the word limit (e.g. ONE WORD ONLY).', 'প্রতিটা gap-এর আশেপাশে পাঁচ সেকেন্ড দাও। the/a/an/of + ___ → noun; ___ + noun → adjective; to/will/should + ___ → verb; verb-এর পরে, কীভাবে বলছে → adverb। তারপর grammar দেখো: noun singular না plural? Verb past না present? উত্তর sentence-এ ঠিকঠাক বসতে হবে, আর word limit (যেমন ONE WORD ONLY) মানতে হবে।'),
+      title: l('Read the gap before the passage', 'Passage-এর আগে gap পড়ুন'),
+      body: l('For every gap, spend five seconds on its neighbours. the/a/an/of + ___ → noun; ___ + noun → adjective; to/will/should + ___ → verb; after a verb, telling how → adverb. Then check grammar: singular or plural noun? Past or present verb? Your answer must fit the sentence exactly, and the word limit (e.g. ONE WORD ONLY).', 'প্রতিটা gap-এর আশেপাশে পাঁচ সেকেন্ড দিন। the/a/an/of + ___ → noun; ___ + noun → adjective; to/will/should + ___ → verb; verb-এর পরে, কীভাবে বলছে → adverb। তারপর grammar দেখুন: noun singular না plural? Verb past না present? উত্তর sentence-এ ঠিকঠাক বসতে হবে, আর word limit (যেমন ONE WORD ONLY) মানতে হবে।'),
       points: [
         l('a/an + ___ → a singular noun (or adjective + noun).', 'a/an + ___ → singular noun (বা adjective + noun)।'),
         l('The word you copy must be exactly as in the passage: don’t change its form.', 'Passage থেকে যে word নেবে তা হুবহু: form বদলাবে না।'),
@@ -174,7 +174,7 @@ const r2: Lesson = {
       title: l('Common mistakes', 'Common ভুল'),
       items: [
         { wrong: 'a ______ in sales → "declined"', right: 'a decline in sales', why: l('After "a" you need a noun, not a verb form.', '"a"-এর পরে noun লাগে, verb form না।') },
-        { wrong: 'the ______ of forests → "destroy"', right: 'the destruction of forests', why: l('the ___ of → noun. If the passage says "destruction", copy that exact word.', 'the ___ of → noun। Passage-এ "destruction" থাকলে হুবহু সেটাই লেখো।') },
+        { wrong: 'the ______ of forests → "destroy"', right: 'the destruction of forests', why: l('the ___ of → noun. If the passage says "destruction", copy that exact word.', 'the ___ of → noun। Passage-এ "destruction" থাকলে হুবহু সেটাই লিখুন।') },
         { wrong: 'many ______ were built → "house"', right: 'many houses were built', why: l('many + plural noun; "were" confirms plural.', 'many + plural noun; "were" plural নিশ্চিত করে।') },
       ],
     },
@@ -192,26 +192,26 @@ const r2: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pie-2-r1', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লেখো।'), sentence: 'The museum attracts a large ______ of visitors. → ___', accepted: ['noun'], pos: 'noun', wrongPos: { verb: 'verb', adjective: 'adjective', adverb: 'adverb' }, explanation: l('a large ___ of → noun (number).', 'a large ___ of → noun (number)।') }),
-        gap('pie-2-r2', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লেখো।'), sentence: 'Sea levels are rising ______. → ___', accepted: ['adverb'], pos: 'adverb', wrongPos: { noun: 'noun', verb: 'verb', adjective: 'adjective' }, explanation: l('rising + ___ → how → adverb.', 'rising + ___ → কীভাবে → adverb।') }),
-        gap('pie-2-r3', C, { prompt: l('Complete with the right form of "produce".', '"produce"-এর ঠিক form লেখো।'), sentence: 'There was a fall in rice ______ last year.', base: 'produce', accepted: ['production'], pos: 'noun', wrongPos: { produce: 'verb', productive: 'adjective' }, family: 'produce', explanation: l('a fall in rice ___ → noun: production.', 'a fall in rice ___ → noun: production।') }),
+        gap('pie-2-r1', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লিখুন।'), sentence: 'The museum attracts a large ______ of visitors. → ___', accepted: ['noun'], pos: 'noun', wrongPos: { verb: 'verb', adjective: 'adjective', adverb: 'adverb' }, explanation: l('a large ___ of → noun (number).', 'a large ___ of → noun (number)।') }),
+        gap('pie-2-r2', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লিখুন।'), sentence: 'Sea levels are rising ______. → ___', accepted: ['adverb'], pos: 'adverb', wrongPos: { noun: 'noun', verb: 'verb', adjective: 'adjective' }, explanation: l('rising + ___ → how → adverb.', 'rising + ___ → কীভাবে → adverb।') }),
+        gap('pie-2-r3', C, { prompt: l('Complete with the right form of "produce".', '"produce"-এর ঠিক form লিখুন।'), sentence: 'There was a fall in rice ______ last year.', base: 'produce', accepted: ['production'], pos: 'noun', wrongPos: { produce: 'verb', productive: 'adjective' }, family: 'produce', explanation: l('a fall in rice ___ → noun: production.', 'a fall in rice ___ → noun: production।') }),
       ],
     },
     {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('pie-2-c1', C, { prompt: l('The passage says "a significant decline". Your gap is "a significant ______ in exports". What do you write?', 'Passage-এ আছে "a significant decline"। তোমার gap "a significant ______ in exports"। কী লিখবে?'), options: ['decline', 'declined', 'declining'], answer: 'decline', explanation: l('Noun position, and copy the exact word from the passage.', 'Noun-এর জায়গা, আর passage-এর word হুবহু লেখো।') }),
-        choice('pie-2-c2', C, { prompt: l('Why read the gap sentence before the passage?', 'Passage-এর আগে gap-এর sentence কেন পড়বে?'), options: ['To know what kind of word to look for', 'To guess the answer without reading', 'To count the words in the passage'], answer: 'To know what kind of word to look for', explanation: l('You search faster and reject wrong forms.', 'দ্রুত খুঁজতে পারো আর ভুল form বাদ দিতে পারো।') }),
+        choice('pie-2-c1', C, { prompt: l('The passage says "a significant decline". Your gap is "a significant ______ in exports". What do you write?', 'Passage-এ আছে "a significant decline"। আপনার gap "a significant ______ in exports"। কী লিখবেন?'), options: ['decline', 'declined', 'declining'], answer: 'decline', explanation: l('Noun position, and copy the exact word from the passage.', 'Noun-এর জায়গা, আর passage-এর word হুবহু লিখুন।') }),
+        choice('pie-2-c2', C, { prompt: l('Why read the gap sentence before the passage?', 'Passage-এর আগে gap-এর sentence কেন পড়বে?'), options: ['To know what kind of word to look for', 'To guess the answer without reading', 'To count the words in the passage'], answer: 'To know what kind of word to look for', explanation: l('You search faster and reject wrong forms.', 'দ্রুত খুঁজতে পারেন আর ভুল form বাদ দিতে পারেন।') }),
         spot('pie-2-c3', C, { sentence: 'Summary: the museum saw a sharp increased in visitors.', wrong: 'increased', accepted: ['increase', 'rise'], pos: 'noun', wrongPos: { increased: 'verb' }, family: 'increase', explanation: l('a sharp ___ in → noun.', 'a sharp ___ in → noun।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pie-2-w1', C, {
-          prompt: l('Write one gap sentence of your own for a partner, like "The city saw a ______ in traffic." Then write the answer and its job.', 'একজন সঙ্গীর জন্য নিজের একটা gap sentence লেখো, যেমন "The city saw a ______ in traffic."। তারপর উত্তর আর তার কাজ লেখো।'),
+          prompt: l('Write one gap sentence of your own for a partner, like "The city saw a ______ in traffic." Then write the answer and its job.', 'একজন সঙ্গীর জন্য নিজের একটা gap sentence লিখুন, যেমন "The city saw a ______ in traffic."। তারপর উত্তর আর তার কাজ লিখুন।'),
           model: 'Many people complained about the ______ of the new bridge. Answer: cost (noun).',
           task: 'The student writes a gap-fill sentence (with ______) and gives an answer and its part of speech. Check that the given answer fits the gap grammatically, that the stated part of speech is correct, and that the sentence is grammatical.',
           target: l('A gap sentence + answer + its job', 'Gap sentence + উত্তর + তার কাজ'),
@@ -222,10 +222,10 @@ const r2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Five seconds on the gap first: its neighbours tell you the job and the form.', 'আগে gap-এ পাঁচ সেকেন্ড: আশেপাশের word কাজ আর form বলে দেয়।'),
-        l('Copy the passage word exactly; don’t change its form.', 'Passage-এর word হুবহু লেখো; form বদলাবে না।'),
+        l('Copy the passage word exactly; don’t change its form.', 'Passage-এর word হুবহু লিখুন; form বদলাবে না।'),
       ],
     },
   ],
@@ -234,7 +234,7 @@ const r2: Lesson = {
 const li: Lesson = {
   id: 'pie-3', unit: 'ielts', format: 'v2', concept: C, minutes: 6, difficulty: 'medium', skill: 'listening',
   title: l('Listening: predict the answer', 'Listening: উত্তর আন্দাজ করা'),
-  why: l('You get time to read the questions before each Listening section. Predicting the answer type there tells you what to listen for.', 'Listening-এর প্রতিটা section-এর আগে প্রশ্ন পড়ার সময় পাও। তখন উত্তরের ধরন আন্দাজ করলে বুঝবে কী শুনতে হবে।'),
+  why: l('You get time to read the questions before each Listening section. Predicting the answer type there tells you what to listen for.', 'Listening-এর প্রতিটা section-এর আগে প্রশ্ন পড়ার সময় পান। তখন উত্তরের ধরন আন্দাজ করলে বুঝবে কী শুনতে হবে।'),
   steps: [
     {
       kind: 'hook',
@@ -257,7 +257,7 @@ const li: Lesson = {
     {
       kind: 'concept',
       title: l('Predict the type, then listen', 'আগে ধরন আন্দাজ, তারপর শোনা'),
-      body: l('For each gap, write a tiny note: N (noun), # (number), £ (price), D (date/day), P (place), Adj (adjective), V (verb), Name (spelled out). Use grammar (a/an, many, on/in/at, to + verb) and meaning (Cost: £___ → number). Then listen for that type. Speakers often correct themselves ("Tuesday… no, sorry, Wednesday"), so keep listening after the first answer.', 'প্রতিটা gap-এ ছোট একটা note লেখো: N (noun), # (সংখ্যা), £ (দাম), D (তারিখ/দিন), P (জায়গা), Adj (adjective), V (verb), Name (বানান করে বলা)। Grammar (a/an, many, on/in/at, to + verb) আর অর্থ (Cost: £___ → সংখ্যা) ব্যবহার করো। তারপর সেই ধরনের word শোনো। বক্তা প্রায়ই নিজেকে শুধরে নেয় ("Tuesday… no, sorry, Wednesday"), তাই প্রথম উত্তরের পরেও শুনতে থাকো।'),
+      body: l('For each gap, write a tiny note: N (noun), # (number), £ (price), D (date/day), P (place), Adj (adjective), V (verb), Name (spelled out). Use grammar (a/an, many, on/in/at, to + verb) and meaning (Cost: £___ → number). Then listen for that type. Speakers often correct themselves ("Tuesday… no, sorry, Wednesday"), so keep listening after the first answer.', 'প্রতিটা gap-এ ছোট একটা note লিখুন: N (noun), # (সংখ্যা), £ (দাম), D (তারিখ/দিন), P (জায়গা), Adj (adjective), V (verb), Name (বানান করে বলা)। Grammar (a/an, many, on/in/at, to + verb) আর অর্থ (Cost: £___ → সংখ্যা) ব্যবহার করুন। তারপর সেই ধরনের word শুনুন। বক্তা প্রায়ই নিজেকে শুধরে নেয় ("Tuesday… no, sorry, Wednesday"), তাই প্রথম উত্তরের পরেও শুনতে থাকুন।'),
       points: [
         l('a/an ___ + noun → adjective (a quiet room); a/an ___ alone → singular noun.', 'a/an ___ + noun → adjective (a quiet room); a/an ___ একা → singular noun।'),
         l('Plural signals: many, several, two, "are".', 'Plural-এর সংকেত: many, several, two, "are"।'),
@@ -265,7 +265,7 @@ const li: Lesson = {
     },
     {
       kind: 'examples',
-      title: l('Predict these', 'এগুলো আন্দাজ করো'),
+      title: l('Predict these', 'এগুলো আন্দাজ করুন'),
       items: [
         { en: 'Parking is available at the ______.', note: l('at the ___ → place noun (station, back entrance).', 'at the ___ → জায়গার noun (station, back entrance)।') },
         { en: 'Please bring a ______ jacket.', note: l('a ___ jacket → adjective (warm, waterproof).', 'a ___ jacket → adjective (warm, waterproof)।') },
@@ -286,26 +286,26 @@ const li: Lesson = {
       items: [
         { wrong: 'Writing the first day you hear', right: 'Wait: speakers often change or correct it', why: l('IELTS includes distractors on purpose.', 'IELTS ইচ্ছা করে বিভ্রান্তিকর তথ্য রাখে।') },
         { wrong: 'several ______ → "book"', right: 'several books', why: l('several + plural: a missing -s is marked wrong.', 'several + plural: -s বাদ পড়লে ভুল ধরা হয়।') },
-        { wrong: 'a ______ room (hears "quietly")', right: 'a quiet room', why: l('A ___ room needs an adjective; check the form you write.', 'a ___ room-এ adjective লাগে; লেখা form পরীক্ষা করো।') },
+        { wrong: 'a ______ room (hears "quietly")', right: 'a quiet room', why: l('A ___ room needs an adjective; check the form you write.', 'a ___ room-এ adjective লাগে; লেখা form পরীক্ষা করুন।') },
       ],
     },
     {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pie-3-p1', C, { prompt: l('Predict the answer type.', 'উত্তরের ধরন আন্দাজ করো।'), sentence: 'Cost per night: £______', options: ['a number', 'a place', 'a verb'], answer: 'a number', explanation: l('£ + ___ → a price, a number.', '£ + ___ → দাম, সংখ্যা।') }),
-        choice('pie-3-p2', C, { prompt: l('Predict the answer type.', 'উত্তরের ধরন আন্দাজ করো।'), sentence: 'The library closes early on ______.', options: ['a day', 'an adjective', 'a verb'], answer: 'a day', explanation: l('on + ___ at the end → a day (Fridays).', 'শেষে on + ___ → দিন (Fridays)।') }),
+        choice('pie-3-p1', C, { prompt: l('Predict the answer type.', 'উত্তরের ধরন আন্দাজ করুন।'), sentence: 'Cost per night: £______', options: ['a number', 'a place', 'a verb'], answer: 'a number', explanation: l('£ + ___ → a price, a number.', '£ + ___ → দাম, সংখ্যা।') }),
+        choice('pie-3-p2', C, { prompt: l('Predict the answer type.', 'উত্তরের ধরন আন্দাজ করুন।'), sentence: 'The library closes early on ______.', options: ['a day', 'an adjective', 'a verb'], answer: 'a day', explanation: l('on + ___ at the end → a day (Fridays).', 'শেষে on + ___ → দিন (Fridays)।') }),
         choice('pie-3-p3', C, { prompt: l('Which job does the gap need?', 'Gap-এ কোন কাজের word লাগবে?'), sentence: 'The guide recommends a ______ hat in summer.', options: ['adjective', 'noun', 'verb'], answer: 'adjective', pos: 'adjective', wrongPos: { noun: 'noun', verb: 'verb' }, explanation: l('a ___ hat → adjective (wide, light).', 'a ___ hat → adjective (wide, light)।') }),
-        choice('pie-3-p4', C, { prompt: l('You hear: "The talk is on Tuesday… oh no, it has moved to Thursday." Talk day: ______', 'তুমি শুনলে: "The talk is on Tuesday… oh no, it has moved to Thursday." Talk day: ______'), options: ['Thursday', 'Tuesday'], answer: 'Thursday', explanation: l('The speaker corrected the first day.', 'বক্তা প্রথম দিনটা শুধরে নিয়েছে।') }),
+        choice('pie-3-p4', C, { prompt: l('You hear: "The talk is on Tuesday… oh no, it has moved to Thursday." Talk day: ______', 'আপনি শুনলে: "The talk is on Tuesday… oh no, it has moved to Thursday." Talk day: ______'), options: ['Thursday', 'Tuesday'], answer: 'Thursday', explanation: l('The speaker corrected the first day.', 'বক্তা প্রথম দিনটা শুধরে নিয়েছে।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pie-3-r1', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লেখো।'), sentence: 'Please ______ your name on the list. → ___', accepted: ['verb'], pos: 'verb', wrongPos: { noun: 'noun', adjective: 'adjective', adverb: 'adverb' }, explanation: l('Please + ___ + your name → verb (write, sign).', 'Please + ___ + your name → verb (write, sign)।') }),
-        gap('pie-3-r2', C, { prompt: l('You hear: "You’ll need two photographs." Complete: "Bring two ______."', 'তুমি শুনলে: "You’ll need two photographs." লেখো: "Bring two ______."'), sentence: 'Bring two ______.', accepted: ['photographs', 'photos'], pattern: 'noun-count', explanation: l('two + plural noun: photographs.', 'two + plural noun: photographs।') }),
-        gap('pie-3-r3', C, { prompt: l('You hear: "The room is very noisy, so we need somewhere quieter." Complete: "They want a ______ room."', 'তুমি শুনলে: "The room is very noisy, so we need somewhere quieter." লেখো: "They want a ______ room."'), sentence: 'They want a ______ room.', accepted: ['quieter', 'quiet'], pos: 'adjective', wrongPos: { quietly: 'adverb', quietness: 'noun' }, explanation: l('a ___ room → adjective.', 'a ___ room → adjective।') }),
+        gap('pie-3-r1', C, { prompt: l('Write the job the gap needs.', 'Gap-এ কোন কাজের word লাগবে লিখুন।'), sentence: 'Please ______ your name on the list. → ___', accepted: ['verb'], pos: 'verb', wrongPos: { noun: 'noun', adjective: 'adjective', adverb: 'adverb' }, explanation: l('Please + ___ + your name → verb (write, sign).', 'Please + ___ + your name → verb (write, sign)।') }),
+        gap('pie-3-r2', C, { prompt: l('You hear: "You’ll need two photographs." Complete: "Bring two ______."', 'আপনি শুনলে: "You’ll need two photographs." লিখুন: "Bring two ______."'), sentence: 'Bring two ______.', accepted: ['photographs', 'photos'], pattern: 'noun-count', explanation: l('two + plural noun: photographs.', 'two + plural noun: photographs।') }),
+        gap('pie-3-r3', C, { prompt: l('You hear: "The room is very noisy, so we need somewhere quieter." Complete: "They want a ______ room."', 'আপনি শুনলে: "The room is very noisy, so we need somewhere quieter." লিখুন: "They want a ______ room."'), sentence: 'They want a ______ room.', accepted: ['quieter', 'quiet'], pos: 'adjective', wrongPos: { quietly: 'adverb', quietness: 'noun' }, explanation: l('a ___ room → adjective.', 'a ___ room → adjective।') }),
       ],
     },
     {
@@ -314,15 +314,15 @@ const li: Lesson = {
       exercises: [
         choice('pie-3-c1', C, { prompt: l('"Meet at the ______ entrance." What will you listen for?', '"Meet at the ______ entrance." কী শোনার জন্য অপেক্ষা করবে?'), options: ['a describing word (north, main)', 'a time', 'a verb'], answer: 'a describing word (north, main)', explanation: l('the ___ entrance → a word describing the entrance.', 'the ___ entrance → entrance-কে describe করা word।') }),
         choice('pie-3-c2', C, { prompt: l('Why write "N" or "#" next to the gaps?', 'Gap-এর পাশে "N" বা "#" কেন লিখবে?'), options: ['So you know what type of answer to catch', 'Because the examiner reads it', 'To save the answers'], answer: 'So you know what type of answer to catch', explanation: l('Prediction focuses your listening.', 'আন্দাজ শোনাকে কেন্দ্রীভূত করে।') }),
-        gap('pie-3-c3', C, { prompt: l('You hear: "The meeting point is the car park behind the library." Complete: "Meet at the ______ (TWO WORDS)."', 'তুমি শুনলে: "The meeting point is the car park behind the library." লেখো: "Meet at the ______ (TWO WORDS)।"'), sentence: 'Meet at the ______.', accepted: ['car park'], explanation: l('at the ___ → a place noun; two words: car park.', 'at the ___ → জায়গার noun; দুই word: car park।') }),
+        gap('pie-3-c3', C, { prompt: l('You hear: "The meeting point is the car park behind the library." Complete: "Meet at the ______ (TWO WORDS)."', 'আপনি শুনলে: "The meeting point is the car park behind the library." লিখুন: "Meet at the ______ (TWO WORDS)।"'), sentence: 'Meet at the ______.', accepted: ['car park'], explanation: l('at the ___ → a place noun; two words: car park.', 'at the ___ → জায়গার noun; দুই word: car park।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pie-3-w1', C, {
-          prompt: l('Write a short form line with a gap (like "Membership fee: £______ per month") and say what type of answer it needs and why.', 'Gap সহ একটা ছোট form line লেখো (যেমন "Membership fee: £______ per month") আর বলো কোন ধরনের উত্তর লাগবে ও কেন।'),
+          prompt: l('Write a short form line with a gap (like "Membership fee: £______ per month") and say what type of answer it needs and why.', 'Gap সহ একটা ছোট form line লিখুন (যেমন "Membership fee: £______ per month") আর বলুন কোন ধরনের উত্তর লাগবে ও কেন।'),
           model: 'Collect your key from the ______ (a place noun, because "from the" comes before it).',
           task: 'The student writes one IELTS-Listening-style form line with a gap, then states the expected answer type and why. Check that the stated type really fits the grammar around the gap and that the English is correct.',
           target: l('A gap + the answer type + the clue', 'Gap + উত্তরের ধরন + সূত্র'),
@@ -333,10 +333,10 @@ const li: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Before the recording, mark each gap: N, #, D, P, Adj, V.', 'Recording-এর আগে প্রতিটা gap চিহ্নিত করো: N, #, D, P, Adj, V।'),
-        l('Check the form you write: plural -s, adjective not adverb.', 'লেখা form পরীক্ষা করো: plural -s, adverb না adjective।'),
+        l('Before the recording, mark each gap: N, #, D, P, Adj, V.', 'Recording-এর আগে প্রতিটা gap চিহ্নিত করুন: N, #, D, P, Adj, V।'),
+        l('Check the form you write: plural -s, adjective not adverb.', 'লেখা form পরীক্ষা করুন: plural -s, adverb না adjective।'),
       ],
     },
   ],
@@ -367,11 +367,11 @@ const w1: Lesson = {
     }),
     {
       kind: 'concept',
-      title: l('Check the job, not only the word', 'শুধু word না, কাজটাও দেখো'),
-      body: l('Most IELTS word-form errors come from three questions you can check: 1) after should/can/to → verb? (should improve, not should improvement). 2) describing a noun → adjective; describing a verb → adverb (a significant effect; increased significantly). 3) after a/the/of → noun (the development of). Also watch -ing: "People are increasingly using technology" (adverb + verb), not "People are increasing use of technology".', 'IELTS-এর বেশিরভাগ word-form ভুল তিনটা প্রশ্নে ধরা যায়: ১) should/can/to-এর পরে → verb? (should improve, should improvement না)। ২) noun-কে describe করলে → adjective; verb-কে describe করলে → adverb (a significant effect; increased significantly)। ৩) a/the/of-এর পরে → noun (the development of)। -ing-ও খেয়াল করো: "People are increasingly using technology" (adverb + verb), "People are increasing use of technology" না।'),
+      title: l('Check the job, not only the word', 'শুধু word না, কাজটাও দেখুন'),
+      body: l('Most IELTS word-form errors come from three questions you can check: 1) after should/can/to → verb? (should improve, not should improvement). 2) describing a noun → adjective; describing a verb → adverb (a significant effect; increased significantly). 3) after a/the/of → noun (the development of). Also watch -ing: "People are increasingly using technology" (adverb + verb), not "People are increasing use of technology".', 'IELTS-এর বেশিরভাগ word-form ভুল তিনটা প্রশ্নে ধরা যায়: ১) should/can/to-এর পরে → verb? (should improve, should improvement না)। ২) noun-কে describe করলে → adjective; verb-কে describe করলে → adverb (a significant effect; increased significantly)। ৩) a/the/of-এর পরে → noun (the development of)। -ing-ও খেয়াল করুন: "People are increasingly using technology" (adverb + verb), "People are increasing use of technology" না।'),
       points: [
         l('"This has a significant effectly impact" ✗ → "a significant effect" or "a significant impact" ✓ (one noun, one adjective).', '"This has a significant effectly impact" ✗ → "a significant effect" বা "a significant impact" ✓ (একটা noun, একটা adjective)।'),
-        l('Re-read each sentence once only for jobs: verb after should? adjective before the noun?', 'প্রতিটা sentence একবার শুধু কাজের জন্য পড়ো: should-এর পরে verb? noun-এর আগে adjective?'),
+        l('Re-read each sentence once only for jobs: verb after should? adjective before the noun?', 'প্রতিটা sentence একবার শুধু কাজের জন্য পড়ুন: should-এর পরে verb? noun-এর আগে adjective?'),
       ],
     },
     {
@@ -388,7 +388,7 @@ const w1: Lesson = {
       title: l('Where it matters', 'কোথায় দরকার'),
       uses: [
         { skill: 'writing', example: 'Task 2: "Governments should invest more in education."', note: l('Recommendations always use should/must + verb: a very common place for noun/verb mix-ups.', 'Recommendation-এ সবসময় should/must + verb: noun/verb গুলিয়ে ফেলার খুব common জায়গা।') },
-        { skill: 'writing', example: 'Task 1: "Sales rose significantly, a significant rise."', note: l('The same idea as verb + adverb or adjective + noun: use both for range, each in the right form.', 'একই idea verb + adverb বা adjective + noun হিসেবে: range-এর জন্য দুটোই ব্যবহার করো, প্রতিটা ঠিক form-এ।') },
+        { skill: 'writing', example: 'Task 1: "Sales rose significantly, a significant rise."', note: l('The same idea as verb + adverb or adjective + noun: use both for range, each in the right form.', 'একই idea verb + adverb বা adjective + noun হিসেবে: range-এর জন্য দুটোই ব্যবহার করুন, প্রতিটা ঠিক form-এ।') },
       ],
     },
     {
@@ -404,10 +404,10 @@ const w1: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pie-4-p1', C, { prompt: l('Choose the correct word.', 'সঠিক word বাছো।'), sentence: 'Schools must ______ students for the modern workplace.', options: ['prepare', 'preparation', 'prepared'], answer: 'prepare', pos: 'verb', wrongPos: { preparation: 'noun' }, family: 'prepare', why: { preparation: l('must + base verb, not a noun.', 'must + base verb, noun না।'), prepared: l('must + base form: must prepare.', 'must + base form: must prepare।') }, explanation: l('must + base verb.', 'must + base verb।') }),
-        choice('pie-4-p2', C, { prompt: l('Choose the correct word.', 'সঠিক word বাছো।'), sentence: 'Fast food has a ______ impact on children’s health.', options: ['negative', 'negatively', 'negativity'], answer: 'negative', pos: 'adjective', wrongPos: { negatively: 'adverb', negativity: 'noun' }, explanation: l('a ___ impact → adjective.', 'a ___ impact → adjective।') }),
-        choice('pie-4-p3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence বাছো।'), options: ['More people are increasingly working from home.', 'More people are increasing working from home.', 'More people are increase work from home.'], answer: 'More people are increasingly working from home.', explanation: l('adverb (increasingly) + are working.', 'adverb (increasingly) + are working।') }),
-        choice('pie-4-p4', C, { prompt: l('Choose the correct word.', 'সঠিক word বাছো।'), sentence: 'The ______ of new roads has reduced traffic.', options: ['construction', 'construct', 'constructive'], answer: 'construction', pos: 'noun', wrongPos: { construct: 'verb', constructive: 'adjective' }, family: 'construct', explanation: l('The ___ of → noun.', 'The ___ of → noun।') }),
+        choice('pie-4-p1', C, { prompt: l('Choose the correct word.', 'সঠিক word বেছে নিন।'), sentence: 'Schools must ______ students for the modern workplace.', options: ['prepare', 'preparation', 'prepared'], answer: 'prepare', pos: 'verb', wrongPos: { preparation: 'noun' }, family: 'prepare', why: { preparation: l('must + base verb, not a noun.', 'must + base verb, noun না।'), prepared: l('must + base form: must prepare.', 'must + base form: must prepare।') }, explanation: l('must + base verb.', 'must + base verb।') }),
+        choice('pie-4-p2', C, { prompt: l('Choose the correct word.', 'সঠিক word বেছে নিন।'), sentence: 'Fast food has a ______ impact on children’s health.', options: ['negative', 'negatively', 'negativity'], answer: 'negative', pos: 'adjective', wrongPos: { negatively: 'adverb', negativity: 'noun' }, explanation: l('a ___ impact → adjective.', 'a ___ impact → adjective।') }),
+        choice('pie-4-p3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence বেছে নিন।'), options: ['More people are increasingly working from home.', 'More people are increasing working from home.', 'More people are increase work from home.'], answer: 'More people are increasingly working from home.', explanation: l('adverb (increasingly) + are working.', 'adverb (increasingly) + are working।') }),
+        choice('pie-4-p4', C, { prompt: l('Choose the correct word.', 'সঠিক word বেছে নিন।'), sentence: 'The ______ of new roads has reduced traffic.', options: ['construction', 'construct', 'constructive'], answer: 'construction', pos: 'noun', wrongPos: { construct: 'verb', constructive: 'adjective' }, family: 'construct', explanation: l('The ___ of → noun.', 'The ___ of → noun।') }),
       ],
     },
     {
@@ -416,7 +416,7 @@ const w1: Lesson = {
       exercises: [
         spot('pie-4-r1', C, { sentence: 'Parents should encouragement their children to read.', wrong: 'encouragement', accepted: ['encourage'], pos: 'verb', wrongPos: { encouragement: 'noun' }, family: 'encourage', explanation: l('should + base verb: should encourage.', 'should + base verb: should encourage।') }),
         spot('pie-4-r2', C, { sentence: 'Technology has changed education dramatic.', wrong: 'dramatic', accepted: ['dramatically'], pos: 'adverb', wrongPos: { dramatic: 'adjective' }, explanation: l('It describes how education changed → adverb.', 'Education কীভাবে বদলালো তা বলছে → adverb।') }),
-        correct('pie-4-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'This policy had a significantly effect on crime.', accepted: ['This policy had a significant effect on crime.'], pos: 'adjective', wrongPos: {}, explanation: l('a + adjective + noun: a significant effect.', 'a + adjective + noun: a significant effect।') }),
+        correct('pie-4-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'This policy had a significantly effect on crime.', accepted: ['This policy had a significant effect on crime.'], pos: 'adjective', wrongPos: {}, explanation: l('a + adjective + noun: a significant effect.', 'a + adjective + noun: a significant effect।') }),
       ],
     },
     {
@@ -425,15 +425,15 @@ const w1: Lesson = {
       exercises: [
         choice('pie-4-c1', C, { prompt: l('Why is "The government should improvement public transport" wrong?', '"The government should improvement public transport" কেন ভুল?'), options: ['"should" must be followed by a verb', '"government" must be plural', '"transport" must be a verb'], answer: '"should" must be followed by a verb', explanation: l('should + base verb.', 'should + base verb।') }),
         spot('pie-4-c2', C, { sentence: 'Many cities have seen a sharply rise in rents.', wrong: 'sharply', accepted: ['sharp'], fixOptions: ['sharp', 'sharpen', 'sharpness'], pos: 'adjective', wrongPos: { sharpen: 'verb', sharpness: 'noun' }, explanation: l('a ___ rise → adjective.', 'a ___ rise → adjective।') }),
-        gap('pie-4-c3', C, { prompt: l('Write the correct form of "effect".', '"effect"-এর সঠিক form লেখো।'), sentence: 'Exercise is an ______ way to reduce stress.', base: 'effect', accepted: ['effective'], pos: 'adjective', wrongPos: { effect: 'noun', effectively: 'adverb' }, family: 'effect', explanation: l('an ___ way → adjective.', 'an ___ way → adjective।') }),
+        gap('pie-4-c3', C, { prompt: l('Write the correct form of "effect".', '"effect"-এর সঠিক form লিখুন।'), sentence: 'Exercise is an ______ way to reduce stress.', base: 'effect', accepted: ['effective'], pos: 'adjective', wrongPos: { effect: 'noun', effectively: 'adverb' }, family: 'effect', explanation: l('an ___ way → adjective.', 'an ___ way → adjective।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pie-4-w1', C, {
-          prompt: l('Task 2 style: write two sentences about traffic in your city. Use "should + verb" once and "a/an + adjective + noun" once.', 'Task 2 ধাঁচে: তোমার শহরের traffic নিয়ে দুটো sentence লেখো। একবার "should + verb" আর একবার "a/an + adjective + noun" ব্যবহার করো।'),
+          prompt: l('Task 2 style: write two sentences about traffic in your city. Use "should + verb" once and "a/an + adjective + noun" once.', 'Task 2 ধাঁচে: আপনার শহরের traffic নিয়ে দুটো sentence লিখুন। একবার "should + verb" আর একবার "a/an + adjective + noun" ব্যবহার করুন।'),
           model: 'Traffic in Dhaka has a serious effect on daily life. The government should build more metro lines.',
           task: 'The student writes two sentences about traffic: one with should + base verb, one with a/an + adjective + noun. Check every word form: is there a verb after should, an adjective before the noun, no -ly word before a noun, no noun where a verb is needed? Quote any wrong word and explain its job.',
           target: l('should + verb · a/an + adjective + noun', 'should + verb · a/an + adjective + noun'),
@@ -444,10 +444,10 @@ const w1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('should/can/must/to + verb; a/the/of + noun; noun ← adjective; verb ← adverb.', 'should/can/must/to + verb; a/the/of + noun; noun ← adjective; verb ← adverb।'),
-        l('Re-read once only for jobs before you submit.', 'জমা দেওয়ার আগে একবার শুধু কাজের জন্য পড়ো।'),
+        l('Re-read once only for jobs before you submit.', 'জমা দেওয়ার আগে একবার শুধু কাজের জন্য পড়ুন।'),
       ],
     },
   ],
@@ -479,7 +479,7 @@ const w2: Lesson = {
     {
       kind: 'concept',
       title: l('Subject + verb + noun phrase (+ purpose)', 'Subject + verb + noun phrase (+ উদ্দেশ্য)'),
-      body: l('A strong academic sentence often follows this frame: WHO (a noun phrase) + WHAT THEY DO (a verb, often after should/must/can) + WHAT (a noun phrase: adjective + noun) + WHY (to + verb). Build the noun phrase with an adjective before the noun (immediate action, public transport, a sharp rise). Every piece has one job; if a word has no job in the frame, it is probably wrong.', 'শক্তিশালী academic sentence প্রায়ই এই কাঠামো মানে: কে (noun phrase) + কী করে (verb, প্রায়ই should/must/can-এর পরে) + কী (noun phrase: adjective + noun) + কেন (to + verb)। Noun phrase বানাও noun-এর আগে adjective দিয়ে (immediate action, public transport, a sharp rise)। প্রতিটা অংশের একটা কাজ; কোনো word-এর কাঠামোতে কাজ না থাকলে সেটা সম্ভবত ভুল।'),
+      body: l('A strong academic sentence often follows this frame: WHO (a noun phrase) + WHAT THEY DO (a verb, often after should/must/can) + WHAT (a noun phrase: adjective + noun) + WHY (to + verb). Build the noun phrase with an adjective before the noun (immediate action, public transport, a sharp rise). Every piece has one job; if a word has no job in the frame, it is probably wrong.', 'শক্তিশালী academic sentence প্রায়ই এই কাঠামো মানে: কে (noun phrase) + কী করে (verb, প্রায়ই should/must/can-এর পরে) + কী (noun phrase: adjective + noun) + কেন (to + verb)। Noun phrase বানান noun-এর আগে adjective দিয়ে (immediate action, public transport, a sharp rise)। প্রতিটা অংশের একটা কাজ; কোনো word-এর কাঠামোতে কাজ না থাকলে সেটা সম্ভবত ভুল।'),
       points: [
         l('Helping/modal verbs (should, can, will) are followed by a main verb (take, reduce).', 'Helping/modal verb (should, can, will)-এর পরে main verb (take, reduce) বসে।'),
         l('to + verb explains the purpose: to reduce, to protect, to improve.', 'to + verb উদ্দেশ্য বোঝায়: to reduce, to protect, to improve।'),
@@ -515,9 +515,9 @@ const w2: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        order('pie-5-p1', C, { prompt: l('Build the sentence.', 'Sentence-টা বানাও।'), answer: 'Governments should invest more money in public transport.', explanation: l('WHO + should + verb + WHAT + where.', 'কে + should + verb + কী + কোথায়।') }),
-        choice('pie-5-p2', C, { prompt: l('Choose the word for the purpose part.', 'উদ্দেশ্যের অংশের জন্য word বাছো।'), sentence: 'Cities need more parks to ______ air quality.', options: ['improve', 'improvement', 'improving'], answer: 'improve', pos: 'verb', wrongPos: { improvement: 'noun' }, family: 'improve', explanation: l('to + base verb.', 'to + base verb।') }),
-        choice('pie-5-p3', C, { prompt: l('Choose the best noun phrase.', 'সবচেয়ে ভালো noun phrase বাছো।'), sentence: 'Companies should offer ______ to their staff.', options: ['regular training', 'regularly training', 'regular train'], answer: 'regular training', explanation: l('adjective + noun.', 'adjective + noun।') }),
+        order('pie-5-p1', C, { prompt: l('Build the sentence.', 'Sentence-টা বানান।'), answer: 'Governments should invest more money in public transport.', explanation: l('WHO + should + verb + WHAT + where.', 'কে + should + verb + কী + কোথায়।') }),
+        choice('pie-5-p2', C, { prompt: l('Choose the word for the purpose part.', 'উদ্দেশ্যের অংশের জন্য word বেছে নিন।'), sentence: 'Cities need more parks to ______ air quality.', options: ['improve', 'improvement', 'improving'], answer: 'improve', pos: 'verb', wrongPos: { improvement: 'noun' }, family: 'improve', explanation: l('to + base verb.', 'to + base verb।') }),
+        choice('pie-5-p3', C, { prompt: l('Choose the best noun phrase.', 'সবচেয়ে ভালো noun phrase বেছে নিন।'), sentence: 'Companies should offer ______ to their staff.', options: ['regular training', 'regularly training', 'regular train'], answer: 'regular training', explanation: l('adjective + noun.', 'adjective + noun।') }),
         tagWords('pie-5-p4', C, { sentence: 'Strict/adjective laws/noun can/verb protect/verb endangered/adjective species./noun', choices: JOBS, explanation: l('Strict laws (WHO) · can protect (verb) · endangered species (WHAT).', 'Strict laws (কে) · can protect (verb) · endangered species (কী)।') }),
       ],
     },
@@ -525,26 +525,26 @@ const w2: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pie-5-r1', C, { prompt: l('Write the adjective form of "immediately".', '"immediately"-এর adjective form লেখো।'), sentence: 'The government should take ______ action.', base: 'immediately', accepted: ['immediate'], pos: 'adjective', wrongPos: { immediately: 'adverb' }, explanation: l('___ action → adjective.', '___ action → adjective।') }),
-        gap('pie-5-r2', C, { prompt: l('Write the verb form of "reduction".', '"reduction"-এর verb form লেখো।'), sentence: 'We must act now to ______ waste.', base: 'reduction', accepted: ['reduce'], pos: 'verb', wrongPos: { reduction: 'noun' }, family: 'reduce', explanation: l('to + base verb.', 'to + base verb।') }),
-        correct('pie-5-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লেখো।'), sentence: 'The government should provides free healthcare to protect poor families.', accepted: ['The government should provide free healthcare to protect poor families.'], pattern: 'verb-form', explanation: l('should + base verb: provide.', 'should + base verb: provide।') }),
+        gap('pie-5-r1', C, { prompt: l('Write the adjective form of "immediately".', '"immediately"-এর adjective form লিখুন।'), sentence: 'The government should take ______ action.', base: 'immediately', accepted: ['immediate'], pos: 'adjective', wrongPos: { immediately: 'adverb' }, explanation: l('___ action → adjective.', '___ action → adjective।') }),
+        gap('pie-5-r2', C, { prompt: l('Write the verb form of "reduction".', '"reduction"-এর verb form লিখুন।'), sentence: 'We must act now to ______ waste.', base: 'reduction', accepted: ['reduce'], pos: 'verb', wrongPos: { reduction: 'noun' }, family: 'reduce', explanation: l('to + base verb.', 'to + base verb।') }),
+        correct('pie-5-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে লিখুন।'), sentence: 'The government should provides free healthcare to protect poor families.', accepted: ['The government should provide free healthcare to protect poor families.'], pattern: 'verb-form', explanation: l('should + base verb: provide.', 'should + base verb: provide।') }),
       ],
     },
     {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        order('pie-5-c1', C, { prompt: l('Build the sentence.', 'Sentence-টা বানাও।'), answer: 'Schools should teach basic cooking skills to improve health.', explanation: l('WHO + should + verb + adjective + noun + to + verb.', 'কে + should + verb + adjective + noun + to + verb।') }),
+        order('pie-5-c1', C, { prompt: l('Build the sentence.', 'Sentence-টা বানান।'), answer: 'Schools should teach basic cooking skills to improve health.', explanation: l('WHO + should + verb + adjective + noun + to + verb.', 'কে + should + verb + adjective + noun + to + verb।') }),
         choice('pie-5-c2', C, { prompt: l('In "The government should take immediate action", what job does "should" do?', '"The government should take immediate action"-এ "should" কী কাজ করে?'), options: ['a helping (modal) verb', 'the main verb', 'an adverb'], answer: 'a helping (modal) verb', explanation: l('should helps the main verb "take".', 'should main verb "take"-কে সাহায্য করে।') }),
         spot('pie-5-c3', C, { sentence: 'Local councils should build safety cycle lanes.', wrong: 'safety', accepted: ['safe'], pos: 'adjective', wrongPos: { safety: 'noun' }, family: 'safe', explanation: l('___ cycle lanes → adjective: safe.', '___ cycle lanes → adjective: safe।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pie-5-w1', C, {
-          prompt: l('Write one solution sentence for a problem in your area, using the frame: WHO + should + verb + adjective + noun + to + verb.', 'তোমার এলাকার একটা সমস্যার সমাধান নিয়ে একটা sentence লেখো, এই কাঠামোতে: কে + should + verb + adjective + noun + to + verb।'),
+          prompt: l('Write one solution sentence for a problem in your area, using the frame: WHO + should + verb + adjective + noun + to + verb.', 'আপনার এলাকার একটা সমস্যার সমাধান নিয়ে একটা sentence লিখুন, এই কাঠামোতে: কে + should + verb + adjective + noun + to + verb।'),
           model: 'The city council should build safe cycle lanes to reduce traffic jams.',
           task: 'The student writes one solution sentence following WHO + should + base verb + (adjective + noun) + to + verb. Check each part: a base verb after should, an adjective (not an adverb) before the noun, to + base verb for purpose, subject-verb logic. Quote any word in the wrong form and name the job it needs.',
           target: l('WHO + should + verb + adjective + noun + to + verb', 'কে + should + verb + adjective + noun + to + verb'),
@@ -555,7 +555,7 @@ const w2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('WHO + should + verb + adjective + noun + to + verb.', 'কে + should + verb + adjective + noun + to + verb।'),
         l('Every word needs a job in the frame.', 'কাঠামোতে প্রতিটা word-এর একটা কাজ থাকা চাই।'),

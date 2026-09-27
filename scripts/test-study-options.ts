@@ -67,7 +67,8 @@ test('every fact shown has a source and a verified date; every section is presen
     assert.ok(f.fact.source.name && f.fact.lastVerified, b.key);
     assert.notEqual(f.fact.status, 'not-verified');
   }
-  assert.ok(g.sources.length >= 3 && g.sources.every((s) => s.name));
+  assert.ok(g.sources.length >= 3 && g.sources.every((s) => s.source.name));
+  assert.ok(g.sources.some((s) => s.lastVerified), 'verification dates are kept for the sources list');
 });
 
 test('guide page: no accordions, one optional Mino link, not-verified rule rendered', () => {
@@ -79,6 +80,24 @@ test('guide page: no accordions, one optional Mino link, not-verified rule rende
   const bn = readFileSync('lib/i18n/locales/sa.bn.ts', 'utf8');
   assert.match(bn, /notVerified: 'এই তথ্য এখনো verified নয়'/);
   assert.match(bn, /fundsNotVerified: 'Official amount এখনো verified নয়'/);
+});
+
+test('respectful Bangla everywhere the student is addressed (আপনি, never তুমি/তোমার/তুই)', () => {
+  const files = ['lib/i18n/locales/sa.bn.ts', 'lib/i18n/locales/bn.ts', 'lib/content/roadmap.ts', 'lib/content/documents.ts', 'lib/content/kr-d2.ts', 'lib/content/kr-d4.ts', 'lib/content/kr-shared.ts', 'lib/content/countries.ts', 'components/onboarding/OnboardingFlow.tsx'];
+  for (const f of files) assert.ok(!/(^|[^\u0980-\u09FF])(তুমি|তোমার|তোমাকে|তোমাদের|তুই|তোকে)(?![\u0980-\u09FF])/.test(readFileSync(f, 'utf8')), f);
+  const persona = readFileSync('lib/ai/server/mino/knowledge/persona.ts', 'utf8');
+  assert.match(persona, /always addressing the student as "আপনি" \(never "তুমি"/);
+});
+
+test('sources stay in the data but not under every fact: one small link per section, full list at the end', () => {
+  const blocks = readFileSync('components/abroad/GuideBlocks.tsx', 'utf8');
+  assert.ok(!/<FactRow/.test(blocks), 'guide facts are rendered without a citation line each');
+  assert.match(blocks, /export function SectionSources/);
+  const page = readFileSync('app/(app)/abroad/countries/[code]/study/[option]/page.tsx', 'utf8');
+  assert.match(page, /<SectionSources sources=\{sectionSources\(id\)\} \/>/);
+  assert.match(page, /data-testid="guide-sources"/);
+  const g = programGuide(KR, 'degree-bachelors', undefined, NOW)!;
+  for (const s of g.sources) assert.ok(s.source.url && s.source.name && s.source.sourceType, 'url, name and type kept');
 });
 
 console.log(`\n${passed} passed`);

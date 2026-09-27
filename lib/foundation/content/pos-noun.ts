@@ -13,7 +13,7 @@ const n1: Lesson = {
     {
       kind: 'hook',
       title: l('A Listening answer', 'একটা Listening উত্তর'),
-      situation: l('You hear: "The meeting is about the new library." Your answer sheet says: The meeting is about the new ______. (ONE WORD)', 'তুমি শুনলে: "The meeting is about the new library." Answer sheet-এ লেখা: The meeting is about the new ______. (ONE WORD)'),
+      situation: l('You hear: "The meeting is about the new library." Your answer sheet says: The meeting is about the new ______. (ONE WORD)', 'আপনি শুনলে: "The meeting is about the new library." Answer sheet-এ লেখা: The meeting is about the new ______. (ONE WORD)'),
       question: l('Which word goes in the gap?', 'Gap-এ কোন word বসবে?'),
       options: ['library', 'new', 'about'], answer: 'library',
       diagnose: {
@@ -81,13 +81,13 @@ const n1: Lesson = {
           explanation: l('Pollution, problems and cities are names of things and places. "causes" is the action; "serious" describes problems.', 'Pollution, problems আর cities জিনিস আর জায়গার নাম। "causes" কাজ; "serious" problems-কে describe করে।'),
         }),
         choice('pn-1-p3', C, {
-          prompt: l('Listening: you hear "Please bring your passport." Complete the note.', 'Listening: তুমি শুনলে "Please bring your passport." Note-টা পূরণ করো।'),
+          prompt: l('Listening: you hear "Please bring your passport." Complete the note.', 'Listening: আপনি শুনলে "Please bring your passport." Note-টা পূরণ করুন।'),
           sentence: 'Bring your ______.', options: ['passport', 'please', 'bring'], answer: 'passport',
           pos: 'noun', wrongPos: { bring: 'verb' },
           explanation: l('"your" is followed by a thing: a noun.', '"your"-এর পরে একটা জিনিস আসে: noun।'),
         }),
         choice('pn-1-p4', C, {
-          prompt: l('Choose the word that fits.', 'যে word-টা বসবে সেটা বাছো।'),
+          prompt: l('Choose the word that fits.', 'যে word-টা বসবে সেটা বেছে নিন।'),
           sentence: 'The ______ of the new bridge took five years.', options: ['construct', 'construction', 'constructive'], answer: 'construction',
           pos: 'noun', wrongPos: { construct: 'verb', constructive: 'adjective' }, family: 'construct',
           explanation: l('"The … of" needs a noun: construction.', '"The … of"-এর মাঝে noun লাগে: construction।'),
@@ -100,12 +100,12 @@ const n1: Lesson = {
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
         gap('pn-1-r1', C, {
-          prompt: l('Write a noun (a person) that fits.', 'মানানসই একটা noun (মানুষ) লেখো।'),
+          prompt: l('Write a noun (a person) that fits.', 'মানানসই একটা noun (মানুষ) লিখুন।'),
           sentence: 'A ___ teaches students at a school.', accepted: ['teacher', 'tutor', 'instructor', 'headteacher', 'principal'], pos: 'noun',
           explanation: l('The gap needs a person who teaches: teacher.', 'Gap-এ যে পড়ায় সেই মানুষ লাগবে: teacher।'),
         }),
         gap('pn-1-r2', C, {
-          prompt: l('Listening: you hear "The tour starts at the main gate." Write ONE WORD.', 'Listening: তুমি শুনলে "The tour starts at the main gate." ONE WORD লেখো।'),
+          prompt: l('Listening: you hear "The tour starts at the main gate." Write ONE WORD.', 'Listening: আপনি শুনলে "The tour starts at the main gate." ONE WORD লিখুন।'),
           sentence: 'The tour starts at the main ___.', accepted: ['gate'], pos: 'noun',
           explanation: l('After "the main" we need a place: gate.', '"the main"-এর পরে একটা জায়গা লাগে: gate।'),
         }),
@@ -138,10 +138,10 @@ const n1: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pn-1-w1', C, {
-          prompt: l('Write one sentence about your hometown with at least two nouns.', 'তোমার নিজের এলাকা নিয়ে একটা sentence লেখো, অন্তত দুটো noun দিয়ে।'),
+          prompt: l('Write one sentence about your hometown with at least two nouns.', 'আপনার নিজের এলাকা নিয়ে একটা sentence লিখুন, অন্তত দুটো noun দিয়ে।'),
           model: 'Sylhet is famous for its tea gardens and friendly people.',
           task: 'The student writes one sentence about their hometown with at least two nouns. Check the nouns (plural forms, a/an/the before them) and basic grammar.',
           target: l('One sentence, two or more nouns', 'একটা sentence, দুই বা তার বেশি noun'),
@@ -152,7 +152,7 @@ const n1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('A noun names a person, place, thing or idea.', 'Noun হলো মানুষ, জায়গা, জিনিস বা idea-র নাম।'),
         l('After a / an / the, and between "the" and "of", you usually need a noun.', 'a / an / the-এর পরে, আর "the" ও "of"-এর মাঝে সাধারণত noun লাগে।'),
@@ -176,7 +176,7 @@ const n2: Lesson = {
       diagnose: {
         information: l('Right. "information" never takes -s.', 'ঠিক। "information"-এর সাথে কখনো -s বসে না।'),
         informations: l('Very common, but "information" is uncountable: no -s, ever.', 'খুব common ভুল, কিন্তু "information" uncountable: কখনোই -s বসে না।'),
-        'an information': l('Uncountable nouns do not take "a/an". You can say "a piece of information".', 'Uncountable noun-এর আগে "a/an" বসে না। বলতে পারো "a piece of information"।'),
+        'an information': l('Uncountable nouns do not take "a/an". You can say "a piece of information".', 'Uncountable noun-এর আগে "a/an" বসে না। বলতে পারেন "a piece of information"।'),
       },
     },
     identify({
@@ -217,7 +217,7 @@ const n2: Lesson = {
       kind: 'mistakes',
       title: l('Common mistakes', 'Common ভুল'),
       items: [
-        { wrong: 'She gave me a useful advice.', right: 'She gave me some useful advice.', why: l('advice is uncountable: no "a". Or say "a useful piece of advice".', 'advice uncountable: "a" বসে না। অথবা বলো "a useful piece of advice"।') },
+        { wrong: 'She gave me a useful advice.', right: 'She gave me some useful advice.', why: l('advice is uncountable: no "a". Or say "a useful piece of advice".', 'advice uncountable: "a" বসে না। অথবা বলুন "a useful piece of advice"।') },
         { wrong: 'The lab needs new equipments.', right: 'The lab needs new equipment.', why: l('equipment never takes -s.', 'equipment-এর সাথে কখনো -s বসে না।') },
         { wrong: 'The amount of cars has doubled.', right: 'The number of cars has doubled.', why: l('Cars can be counted, so "number".', 'Car গোনা যায়, তাই "number"।') },
       ],
@@ -227,23 +227,23 @@ const n2: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('pn-2-p1', C, {
-          tag: 'countable', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'),
+          tag: 'countable', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'),
           options: ['She gave me an advice.', 'She gave me some advice.', 'She gave me two advices.'], answer: 'She gave me some advice.',
           explanation: l('advice is uncountable: "some advice", "a piece of advice".', 'advice uncountable: "some advice", "a piece of advice"।'),
         }),
         choice('pn-2-p2', C, {
-          tag: 'countable', prompt: l('Choose the verb.', 'Verb-টা বাছো।'),
+          tag: 'countable', prompt: l('Choose the verb.', 'Verb-টা বেছে নিন।'),
           sentence: 'There ______ a lot of evidence for this idea.', options: ['is', 'are'], answer: 'is',
           explanation: l('evidence is uncountable, so it takes a singular verb.', 'evidence uncountable, তাই verb singular।'),
           why: { are: l('"a lot of" does not make evidence plural.', '"a lot of" evidence-কে plural বানায় না।') },
         }),
         choice('pn-2-p3', C, {
-          tag: 'countable', prompt: l('Task 1: choose the right word.', 'Task 1: ঠিক word-টা বাছো।'),
+          tag: 'countable', prompt: l('Task 1: choose the right word.', 'Task 1: ঠিক word-টা বেছে নিন।'),
           sentence: 'The ______ of people using buses rose sharply.', options: ['number', 'amount'], answer: 'number',
           explanation: l('people can be counted → number.', 'people গোনা যায় → number।'),
         }),
         choice('pn-2-p4', C, {
-          tag: 'countable', prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'),
+          tag: 'countable', prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'),
           sentence: 'How ______ luggage do you have?', options: ['much', 'many'], answer: 'much',
           explanation: l('luggage is uncountable → much.', 'luggage uncountable → much।'),
         }),
@@ -258,13 +258,13 @@ const n2: Lesson = {
           explanation: l('equipment is uncountable: no -s.', 'equipment uncountable: -s বসে না।'),
         }),
         gap('pn-2-r2', C, {
-          tag: 'countable', prompt: l('Write "number" or "amount".', '"number" বা "amount" লেখো।'),
+          tag: 'countable', prompt: l('Write "number" or "amount".', '"number" বা "amount" লিখুন।'),
           sentence: 'The ___ of water in the tank fell.', accepted: ['amount'],
           explanation: l('water cannot be counted → amount.', 'water গোনা যায় না → amount।'),
           why: { number: l('"number" is for things you can count, like bottles.', '"number" গোনা যায় এমন জিনিসের জন্য, যেমন bottles।') },
         }),
         correct('pn-2-r3', C, {
-          tag: 'countable', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'),
+          tag: 'countable', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'),
           sentence: 'I did many researches on this topic.',
           accepted: ['I did a lot of research on this topic.', 'I did lots of research on this topic.', 'I did much research on this topic.', 'I did some research on this topic.', 'I did a great deal of research on this topic.'],
           explanation: l('research is uncountable: "a lot of research", never "researches".', 'research uncountable: "a lot of research", কখনো "researches" না।'),
@@ -285,7 +285,7 @@ const n2: Lesson = {
           explanation: l('"news" is uncountable, so it takes "is".', '"news" uncountable, তাই "is" নেয়।'),
         }),
         choice('pn-2-c3', C, {
-          tag: 'countable', prompt: l('Complete the phrase.', 'Phrase-টা পূরণ করো।'),
+          tag: 'countable', prompt: l('Complete the phrase.', 'Phrase-টা পূরণ করুন।'),
           sentence: 'She gave me a useful ______ of advice.', options: ['piece', 'number', 'many'], answer: 'piece',
           explanation: l('To count advice: a piece of advice.', 'advice গুনতে: a piece of advice।'),
         }),
@@ -293,22 +293,22 @@ const n2: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pn-2-w1', C, {
           tag: 'countable',
-          prompt: l('Write one sentence about what you need for your IELTS study. Use one uncountable noun (advice, information, time, equipment…).', 'তোমার IELTS প্রস্তুতির জন্য কী দরকার, তা নিয়ে একটা sentence লেখো। একটা uncountable noun ব্যবহার করো (advice, information, time, equipment…)।'),
+          prompt: l('Write one sentence about what you need for your IELTS study. Use one uncountable noun (advice, information, time, equipment…).', 'আপনার IELTS প্রস্তুতির জন্য কী দরকার, তা নিয়ে একটা sentence লিখুন। একটা uncountable noun ব্যবহার করুন (advice, information, time, equipment…)।'),
           model: 'I need more time and some good advice to prepare for IELTS.',
           task: 'The student writes one sentence about their IELTS study using at least one uncountable noun (advice, information, time, equipment, research, knowledge...). Check that uncountable nouns have no -s and no a/an, and that the verb agrees.',
           target: l('One uncountable noun, used without -s or a/an', 'একটা uncountable noun, -s বা a/an ছাড়া'),
           checklist: [l('My uncountable noun has no -s', 'আমার uncountable noun-এ -s নেই'), l('I did not put a/an before it', 'এর আগে a/an বসাইনি')],
-          explanation: l('Use some / much / a lot of with uncountable nouns.', 'Uncountable noun-এর সাথে some / much / a lot of ব্যবহার করো।'),
+          explanation: l('Use some / much / a lot of with uncountable nouns.', 'Uncountable noun-এর সাথে some / much / a lot of ব্যবহার করুন।'),
         }),
       ],
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('information, advice, research, equipment, evidence, news: no -s, no a/an.', 'information, advice, research, equipment, evidence, news: -s নেই, a/an নেই।'),
         l('number / many for things you count; amount / much for things you do not.', 'যা গোনা যায় তার জন্য number / many; যা গোনা যায় না তার জন্য amount / much।'),
@@ -363,8 +363,8 @@ const n3: Lesson = {
       kind: 'ielts',
       title: l('Why this matters in IELTS', 'এটা IELTS-এ কেন দরকার?'),
       uses: [
-        { skill: 'listening', example: 'Bring two ______ (answer: photographs)', note: l('A missing -s can cost the mark. Check plurals when you transfer answers.', '-s বাদ গেলে নম্বর কাটা যেতে পারে। Answer transfer করার সময় plural দেখে নাও।') },
-        { skill: 'speaking', example: 'One of my favourite places is…', note: l('Part 2 answers often start like this. Get the plural right.', 'Part 2-এর উত্তর প্রায়ই এভাবে শুরু হয়। Plural ঠিক রাখো।') },
+        { skill: 'listening', example: 'Bring two ______ (answer: photographs)', note: l('A missing -s can cost the mark. Check plurals when you transfer answers.', '-s বাদ গেলে নম্বর কাটা যেতে পারে। Answer transfer করার সময় plural দেখে নিন।') },
+        { skill: 'speaking', example: 'One of my favourite places is…', note: l('Part 2 answers often start like this. Get the plural right.', 'Part 2-এর উত্তর প্রায়ই এভাবে শুরু হয়। Plural ঠিক রাখুন।') },
         { skill: 'writing', example: 'Many governments invest in public transport.', note: l('Task 2 generalisations use plural nouns.', 'Task 2-এ সাধারণ কথা বলতে plural noun লাগে।') },
       ],
     },
@@ -382,19 +382,19 @@ const n3: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('pn-3-p1', C, {
-          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Several ______ have joined the club.', options: ['student', 'students'], answer: 'students',
+          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Several ______ have joined the club.', options: ['student', 'students'], answer: 'students',
           explanation: l('several + plural noun.', 'several + plural noun।'),
         }),
         choice('pn-3-p2', C, {
-          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Each ______ has its own flag.', options: ['country', 'countries'], answer: 'country',
+          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Each ______ has its own flag.', options: ['country', 'countries'], answer: 'country',
           explanation: l('each + singular noun.', 'each + singular noun।'),
         }),
         choice('pn-3-p3', C, {
-          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Cox’s Bazar is one of the longest ______ in the world.', options: ['beach', 'beaches'], answer: 'beaches',
+          tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Cox’s Bazar is one of the longest ______ in the world.', options: ['beach', 'beaches'], answer: 'beaches',
           explanation: l('one of the + plural noun.', 'one of the + plural noun।'),
         }),
         choice('pn-3-p4', C, {
-          tag: 'plural', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'),
+          tag: 'plural', prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'),
           options: ['The childrens are playing.', 'The children are playing.', 'The child are playing.'], answer: 'The children are playing.',
           explanation: l('children is the plural of child. No -s.', 'children হলো child-এর plural। -s লাগে না।'),
         }),
@@ -404,9 +404,9 @@ const n3: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pn-3-r1', C, { tag: 'plural', prompt: l('Write the right form of "city".', '"city"-এর ঠিক form লেখো।'), sentence: 'Many ___ have serious traffic problems.', accepted: ['cities'], explanation: l('many + plural: cities (y → ies).', 'many + plural: cities (y → ies)।'), why: { city: l('After "many" the noun must be plural.', '"many"-এর পরে noun plural হতে হবে।'), citys: l('The plural of city is cities (y → ies).', 'city-র plural cities (y → ies)।') } }),
+        gap('pn-3-r1', C, { tag: 'plural', prompt: l('Write the right form of "city".', '"city"-এর ঠিক form লিখুন।'), sentence: 'Many ___ have serious traffic problems.', accepted: ['cities'], explanation: l('many + plural: cities (y → ies).', 'many + plural: cities (y → ies)।'), why: { city: l('After "many" the noun must be plural.', '"many"-এর পরে noun plural হতে হবে।'), citys: l('The plural of city is cities (y → ies).', 'city-র plural cities (y → ies)।') } }),
         spot('pn-3-r2', C, { tag: 'plural', sentence: 'Every students must bring a pen.', wrong: 'students', accepted: ['student'], explanation: l('every + singular noun.', 'every + singular noun।') }),
-        gap('pn-3-r3', C, { tag: 'plural', prompt: l('Listening: you hear "You will need two photographs." Write ONE WORD.', 'Listening: তুমি শুনলে "You will need two photographs." ONE WORD লেখো।'), sentence: 'Bring two ___.', accepted: ['photographs', 'photos'], explanation: l('two + plural: photographs. Without -s the answer is marked wrong.', 'two + plural: photographs। -s ছাড়া উত্তর ভুল ধরা হয়।'), why: { photograph: l('"two" needs the plural, and IELTS marks a missing -s wrong.', '"two"-এর সাথে plural লাগে, আর IELTS-এ -s বাদ গেলে ভুল ধরে।') } }),
+        gap('pn-3-r3', C, { tag: 'plural', prompt: l('Listening: you hear "You will need two photographs." Write ONE WORD.', 'Listening: আপনি শুনলে "You will need two photographs." ONE WORD লিখুন।'), sentence: 'Bring two ___.', accepted: ['photographs', 'photos'], explanation: l('two + plural: photographs. Without -s the answer is marked wrong.', 'two + plural: photographs। -s ছাড়া উত্তর ভুল ধরা হয়।'), why: { photograph: l('"two" needs the plural, and IELTS marks a missing -s wrong.', '"two"-এর সাথে plural লাগে, আর IELTS-এ -s বাদ গেলে ভুল ধরে।') } }),
       ],
     },
     {
@@ -419,16 +419,16 @@ const n3: Lesson = {
           explanation: l('"one of …" picks one from many, so the group is plural.', '"one of …" অনেকের মধ্যে থেকে একজনকে বাছে, তাই group-টা plural।'),
         }),
         spot('pn-3-c2', C, { tag: 'plural', sentence: 'Many peoples in Bangladesh speak two languages.', wrong: 'peoples', accepted: ['people'], fixOptions: ['people', 'person', 'a people'], explanation: l('people is already plural.', 'people আগে থেকেই plural।') }),
-        choice('pn-3-c3', C, { tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Both ______ agreed with the plan.', options: ['teacher', 'teachers'], answer: 'teachers', explanation: l('both + plural noun.', 'both + plural noun।') }),
+        choice('pn-3-c3', C, { tag: 'plural', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Both ______ agreed with the plan.', options: ['teacher', 'teachers'], answer: 'teachers', explanation: l('both + plural noun.', 'both + plural noun।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pn-3-w1', C, {
           tag: 'plural',
-          prompt: l('Write one sentence about your city with "one of the …".', '"one of the …" দিয়ে তোমার শহর নিয়ে একটা sentence লেখো।'),
+          prompt: l('Write one sentence about your city with "one of the …".', '"one of the …" দিয়ে আপনার শহর নিয়ে একটা sentence লিখুন।'),
           model: 'Chattogram is one of the busiest ports in South Asia.',
           task: 'The student writes one sentence about their city using "one of the ..." followed by a plural noun. Check the plural noun after "one of the", the singular verb after "one", and other noun forms.',
           target: l('"one of the" + plural noun', '"one of the" + plural noun'),
@@ -439,7 +439,7 @@ const n3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('many / several / two / both + plural; each / every / one + singular.', 'many / several / two / both + plural; each / every / one + singular।'),
         l('one of the + plural noun. people and children never take -s.', 'one of the + plural noun। people আর children-এ কখনো -s বসে না।'),
@@ -477,7 +477,7 @@ const n4: Lesson = {
       body: l('IELTS writing often turns actions into nouns: "Prices rose sharply" → "There was a sharp rise in prices." "The government decided" → "The government’s decision". Some words are the same as a noun and a verb (rise, fall, increase, decline, change); others change form (decide → decision, improve → improvement).', 'IELTS writing-এ প্রায়ই কাজকে noun বানানো হয়: "Prices rose sharply" → "There was a sharp rise in prices." "The government decided" → "The government’s decision"। কিছু word noun আর verb দুটোতেই এক (rise, fall, increase, decline, change); অন্যগুলোর form বদলায় (decide → decision, improve → improvement)।'),
       points: [
         l('Noun phrase pattern: a / an + adjective + noun + in + what changed: a slight fall in unemployment.', 'Noun phrase-এর pattern: a / an + adjective + noun + in + কী বদলালো: a slight fall in unemployment।'),
-        l('Use both patterns in Task 1 so your sentences do not all look the same.', 'Task 1-এ দুটো pattern-ই ব্যবহার করো, যাতে সব sentence একরকম না লাগে।'),
+        l('Use both patterns in Task 1 so your sentences do not all look the same.', 'Task 1-এ দুটো pattern-ই ব্যবহার করুন, যাতে সব sentence একরকম না লাগে।'),
       ],
     },
     {
@@ -493,8 +493,8 @@ const n4: Lesson = {
       kind: 'ielts',
       title: l('Where you will use this', 'কোথায় লাগবে'),
       uses: [
-        { skill: 'writing', example: 'There was a significant increase in the use of mobile banking.', note: l('Task 1: a noun phrase makes your language varied.', 'Task 1: noun phrase তোমার ভাষায় বৈচিত্র্য আনে।') },
-        { skill: 'reading', example: 'The ______ of the new policy was delayed. (introduction)', note: l('After "The … of" the answer is a noun. Predict the form before you search.', '"The … of"-এর পরে উত্তর noun। খোঁজার আগে form আন্দাজ করো।') },
+        { skill: 'writing', example: 'There was a significant increase in the use of mobile banking.', note: l('Task 1: a noun phrase makes your language varied.', 'Task 1: noun phrase আপনার ভাষায় বৈচিত্র্য আনে।') },
+        { skill: 'reading', example: 'The ______ of the new policy was delayed. (introduction)', note: l('After "The … of" the answer is a noun. Predict the form before you search.', '"The … of"-এর পরে উত্তর noun। খোঁজার আগে form আন্দাজ করুন।') },
         { skill: 'writing', example: 'The government’s decision to raise taxes…', note: l('Task 2: noun phrases sound more academic than "The government decided…".', 'Task 2: "The government decided…"-এর চেয়ে noun phrase বেশি academic শোনায়।') },
       ],
     },
@@ -512,17 +512,17 @@ const n4: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('pn-4-p1', C, {
-          prompt: l('Task 1: choose the noun.', 'Task 1: noun-টা বাছো।'), sentence: 'There was a steady ______ in the price of rice.', options: ['increase', 'increased', 'increasing'], answer: 'increase',
+          prompt: l('Task 1: choose the noun.', 'Task 1: noun-টা বেছে নিন।'), sentence: 'There was a steady ______ in the price of rice.', options: ['increase', 'increased', 'increasing'], answer: 'increase',
           pos: 'noun', wrongPos: { increased: 'verb', increasing: 'adjective' }, family: 'increase',
           explanation: l('a steady + noun: increase.', 'a steady + noun: increase।'),
         }),
         choice('pn-4-p2', C, {
-          prompt: l('Choose the noun form.', 'Noun form-টা বাছো।'), sentence: 'The government’s ______ to build a metro rail was popular.', options: ['decide', 'decision', 'decisive'], answer: 'decision',
+          prompt: l('Choose the noun form.', 'Noun form-টা বেছে নিন।'), sentence: 'The government’s ______ to build a metro rail was popular.', options: ['decide', 'decision', 'decisive'], answer: 'decision',
           pos: 'noun', wrongPos: { decide: 'verb', decisive: 'adjective' }, family: 'decide',
           explanation: l('After "The government’s" we need a noun: decision.', '"The government’s"-এর পরে noun লাগে: decision।'),
         }),
         choice('pn-4-p3', C, {
-          prompt: l('Choose the preposition.', 'Preposition-টা বাছো।'), sentence: 'There was a sharp fall ______ the number of visitors.', options: ['in', 'of', 'at'], answer: 'in',
+          prompt: l('Choose the preposition.', 'Preposition-টা বেছে নিন।'), sentence: 'There was a sharp fall ______ the number of visitors.', options: ['in', 'of', 'at'], answer: 'in',
           explanation: l('a rise / fall / increase IN something.', 'a rise / fall / increase IN কিছু।'),
         }),
         tagWords('pn-4-p4', C, {
@@ -535,10 +535,10 @@ const n4: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pn-4-r1', C, { prompt: l('Write the noun form of the word in brackets.', 'Bracket-এর word-এর noun form লেখো।'), base: 'improve', sentence: 'There has been a big ___ in air quality.', accepted: ['improvement'], pos: 'noun', wrongPos: { improve: 'verb', improved: 'adjective', improving: 'adjective' }, family: 'improve', explanation: l('a big + noun: improvement.', 'a big + noun: improvement।') }),
-        gap('pn-4-r2', C, { prompt: l('Write the noun form of the word in brackets.', 'Bracket-এর word-এর noun form লেখো।'), base: 'pollute', sentence: 'Air ___ is a serious problem in Dhaka.', accepted: ['pollution'], pos: 'noun', wrongPos: { pollute: 'verb', polluted: 'adjective' }, family: 'pollute', explanation: l('The subject needs a noun: pollution.', 'Subject-এর জায়গায় noun লাগে: pollution।') }),
+        gap('pn-4-r1', C, { prompt: l('Write the noun form of the word in brackets.', 'Bracket-এর word-এর noun form লিখুন।'), base: 'improve', sentence: 'There has been a big ___ in air quality.', accepted: ['improvement'], pos: 'noun', wrongPos: { improve: 'verb', improved: 'adjective', improving: 'adjective' }, family: 'improve', explanation: l('a big + noun: improvement.', 'a big + noun: improvement।') }),
+        gap('pn-4-r2', C, { prompt: l('Write the noun form of the word in brackets.', 'Bracket-এর word-এর noun form লিখুন।'), base: 'pollute', sentence: 'Air ___ is a serious problem in Dhaka.', accepted: ['pollution'], pos: 'noun', wrongPos: { pollute: 'verb', polluted: 'adjective' }, family: 'pollute', explanation: l('The subject needs a noun: pollution.', 'Subject-এর জায়গায় noun লাগে: pollution।') }),
         correct('pn-4-r3', C, {
-          prompt: l('Rewrite with a noun phrase: "There was a … in …".', 'Noun phrase দিয়ে আবার লেখো: "There was a … in …"।'), sentence: 'Sales rose sharply.',
+          prompt: l('Rewrite with a noun phrase: "There was a … in …".', 'Noun phrase দিয়ে আবার লিখুন: "There was a … in …"।'), sentence: 'Sales rose sharply.',
           accepted: ['There was a sharp rise in sales.', 'There was a sharp increase in sales.'],
           explanation: l('rose sharply → a sharp rise in.', 'rose sharply → a sharp rise in।'),
         }),
@@ -559,17 +559,17 @@ const n4: Lesson = {
           explanation: l('a significant + noun: increase.', 'a significant + noun: increase।'),
         }),
         choice('pn-4-c3', C, {
-          prompt: l('Reading: predict the form of the missing word.', 'Reading: বাদ পড়া word-এর form আন্দাজ করো।'), sentence: 'The ______ of the new policy was delayed.', options: ['a noun', 'a verb', 'an adverb'], answer: 'a noun',
+          prompt: l('Reading: predict the form of the missing word.', 'Reading: বাদ পড়া word-এর form আন্দাজ করুন।'), sentence: 'The ______ of the new policy was delayed.', options: ['a noun', 'a verb', 'an adverb'], answer: 'a noun',
           explanation: l('"The … of" → noun (for example: introduction).', '"The … of" → noun (যেমন: introduction)।'),
         }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pn-4-w1', C, {
-          prompt: l('Task 1 style: write one sentence with "There was a … in …" about any change you know (prices, students, traffic…).', 'Task 1 style: তুমি জানো এমন কোনো পরিবর্তন নিয়ে "There was a … in …" দিয়ে একটা sentence লেখো (দাম, student, traffic…)।'),
+          prompt: l('Task 1 style: write one sentence with "There was a … in …" about any change you know (prices, students, traffic…).', 'Task 1 style: আপনি জানেন এমন কোনো পরিবর্তন নিয়ে "There was a … in …" দিয়ে একটা sentence লিখুন (দাম, student, traffic…)।'),
           model: 'There was a gradual increase in the number of university students between 2010 and 2020.',
           task: 'The student writes one IELTS Task 1 style sentence using the pattern "There was a/an + adjective + noun (rise/fall/increase/decrease/decline) + in + noun". Check the noun form, the adjective, the preposition "in" and articles.',
           target: l('There was a + adjective + noun + in …', 'There was a + adjective + noun + in …'),
@@ -580,7 +580,7 @@ const n4: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('rise, fall, increase, decline, change: the same word works as a noun and a verb.', 'rise, fall, increase, decline, change: একই word noun আর verb দুটোই।'),
         l('Noun phrase: a sharp rise IN sales. "The … of" needs a noun: the improvement of roads.', 'Noun phrase: a sharp rise IN sales। "The … of"-এ noun লাগে: the improvement of roads।'),

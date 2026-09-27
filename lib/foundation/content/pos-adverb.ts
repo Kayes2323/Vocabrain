@@ -69,8 +69,8 @@ const v1: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pv-1-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'The number of visitors increased ______.', options: ['rapid', 'rapidly'], answer: 'rapidly', pos: 'adverb', wrongPos: { rapid: 'adjective' }, family: 'rapid', explanation: l('How did it increase? → the adverb rapidly.', 'কীভাবে বাড়লো? → adverb rapidly।'), why: { rapid: l('"rapid" describes a noun: a rapid increase.', '"rapid" noun-কে describe করে: a rapid increase।') } }),
-        choice('pv-1-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'She plays the guitar very ______.', options: ['good', 'well'], answer: 'well', pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('How she plays → well.', 'সে কীভাবে বাজায় → well।') }),
+        choice('pv-1-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'The number of visitors increased ______.', options: ['rapid', 'rapidly'], answer: 'rapidly', pos: 'adverb', wrongPos: { rapid: 'adjective' }, family: 'rapid', explanation: l('How did it increase? → the adverb rapidly.', 'কীভাবে বাড়লো? → adverb rapidly।'), why: { rapid: l('"rapid" describes a noun: a rapid increase.', '"rapid" noun-কে describe করে: a rapid increase।') } }),
+        choice('pv-1-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'She plays the guitar very ______.', options: ['good', 'well'], answer: 'well', pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('How she plays → well.', 'সে কীভাবে বাজায় → well।') }),
         tagWords('pv-1-p3', C, { sentence: 'Young/adjective people/noun adapt/verb quickly/adverb to new/adjective technology/noun.', choices: JOBS4, explanation: l('"quickly" describes the verb adapt → adverb.', '"quickly" verb adapt-কে describe করে → adverb।') }),
         choice('pv-1-p4', C, { prompt: l('Which word is the adverb?', 'কোন word-টা adverb?'), sentence: 'He finished the report late.', options: ['finished', 'report', 'late'], answer: 'late', pos: 'adverb', wrongPos: { finished: 'verb', report: 'noun' }, explanation: l('"late" tells us when he finished: an adverb without -ly.', '"late" বলে সে কখন শেষ করলো: -ly ছাড়া adverb।') }),
       ],
@@ -79,8 +79,8 @@ const v1: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pv-1-r1', C, { prompt: l('Write the adverb form.', 'Adverb form লেখো।'), base: 'careful', sentence: 'Read the question ___ before you answer.', accepted: ['carefully'], pos: 'adverb', wrongPos: { careful: 'adjective' }, family: 'careful', explanation: l('How to read → carefully.', 'কীভাবে পড়বে → carefully।') }),
-        gap('pv-1-r2', C, { prompt: l('Write the adverb form.', 'Adverb form লেখো।'), base: 'good', sentence: 'He speaks English very ___.', accepted: ['well'], pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('The adverb of good is well.', 'good-এর adverb হলো well।'), why: { goodly: l('The adverb of "good" is "well".', '"good"-এর adverb "well"।') } }),
+        gap('pv-1-r1', C, { prompt: l('Write the adverb form.', 'Adverb form লিখুন।'), base: 'careful', sentence: 'Read the question ___ before you answer.', accepted: ['carefully'], pos: 'adverb', wrongPos: { careful: 'adjective' }, family: 'careful', explanation: l('How to read → carefully.', 'কীভাবে পড়বে → carefully।') }),
+        gap('pv-1-r2', C, { prompt: l('Write the adverb form.', 'Adverb form লিখুন।'), base: 'good', sentence: 'He speaks English very ___.', accepted: ['well'], pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('The adverb of good is well.', 'good-এর adverb হলো well।'), why: { goodly: l('The adverb of "good" is "well".', '"good"-এর adverb "well"।') } }),
         spot('pv-1-r3', C, { sentence: 'Prices fell slight in the second half of the year.', wrong: 'slight', accepted: ['slightly'], pos: 'adverb', wrongPos: { slight: 'adjective' }, family: 'slight', explanation: l('How did prices fall? → slightly.', 'দাম কীভাবে কমলো? → slightly।') }),
       ],
     },
@@ -90,15 +90,15 @@ const v1: Lesson = {
       exercises: [
         choice('pv-1-c1', C, { prompt: l('Why is "fluently" an adverb here?', 'এখানে "fluently" adverb কেন?'), sentence: 'She speaks English fluently.', options: ['It tells us how she speaks', 'It describes the noun English', 'It is the name of a skill'], answer: 'It tells us how she speaks', explanation: l('It describes the verb "speaks".', 'এটা verb "speaks"-কে describe করে।') }),
         spot('pv-1-c2', C, { sentence: 'The population of the city grew steady after 2000.', wrong: 'steady', accepted: ['steadily'], fixOptions: ['steadily', 'steadiness', 'steadier'], pos: 'adverb', wrongPos: { steadiness: 'noun', steadier: 'adjective' }, family: 'steady', explanation: l('How did it grow? → steadily.', 'কীভাবে বাড়লো? → steadily।') }),
-        choice('pv-1-c3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'I didn’t do ______ in my first mock test.', options: ['good', 'well'], answer: 'well', pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('do + well (how you did).', 'do + well (তুমি কেমন করলে)।') }),
+        choice('pv-1-c3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'I didn’t do ______ in my first mock test.', options: ['good', 'well'], answer: 'well', pos: 'adverb', wrongPos: { good: 'adjective' }, explanation: l('do + well (how you did).', 'do + well (আপনি কেমন করলে)।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pv-1-w1', C, {
-          prompt: l('Write one sentence about how you study English, with one adverb (how or how often).', 'তুমি কীভাবে English পড়ো, তা নিয়ে একটা sentence লেখো, একটা adverb দিয়ে (কীভাবে বা কতবার)।'),
+          prompt: l('Write one sentence about how you study English, with one adverb (how or how often).', 'আপনি কীভাবে English পড়ুন, তা নিয়ে একটা sentence লিখুন, একটা adverb দিয়ে (কীভাবে বা কতবার)।'),
           model: 'I usually practise speaking with my friends, and I listen carefully to English podcasts.',
           task: 'The student writes one sentence about how they study English using at least one adverb of manner or frequency. Check that adverbs (not adjectives) describe verbs and are placed naturally.',
           target: l('One adverb that describes a verb', 'Verb-কে describe করে এমন একটা adverb'),
@@ -109,7 +109,7 @@ const v1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('An adverb describes a verb (how, when, how often), an adjective or a sentence.', 'Adverb verb (কীভাবে, কখন, কতবার), adjective বা পুরো sentence-কে describe করে।'),
         l('Most are adjective + -ly. good → well; fast, hard, late stay the same.', 'বেশিরভাগ adjective + -ly। good → well; fast, hard, late একই থাকে।'),
@@ -132,19 +132,19 @@ const v2: Lesson = {
       options: ['effectively', 'measures', 'reduce'], answer: 'effectively',
       diagnose: {
         effectively: l('Right. "measures" is a noun, so it needs an adjective: effective measures.', 'ঠিক। "measures" noun, তাই এর আগে adjective লাগে: effective measures।'),
-        measures: l('"measures" (= actions) is correct. Look at the word that describes it.', '"measures" (= পদক্ষেপ) ঠিক আছে। যে word এটাকে describe করছে সেটা দেখো।'),
+        measures: l('"measures" (= actions) is correct. Look at the word that describes it.', '"measures" (= পদক্ষেপ) ঠিক আছে। যে word এটাকে describe করছে সেটা দেখুন।'),
         reduce: l('"to reduce" is correct. The problem is before "measures".', '"to reduce" ঠিক আছে। সমস্যা "measures"-এর আগে।'),
       },
     },
     identify({
       sentence: 'The government/noun took/verb effective/adjective measures/noun, and traffic/noun fell/verb sharply/adverb.',
       choices: JOBS4,
-      pattern: l('"effective" sits next to a noun (measures) → adjective. "sharply" describes a verb (fell) → adverb. Look at the neighbour!', '"effective" একটা noun (measures)-এর পাশে → adjective। "sharply" একটা verb (fell)-কে describe করে → adverb। পাশের word-টা দেখো!'),
+      pattern: l('"effective" sits next to a noun (measures) → adjective. "sharply" describes a verb (fell) → adverb. Look at the neighbour!', '"effective" একটা noun (measures)-এর পাশে → adjective। "sharply" একটা verb (fell)-কে describe করে → adverb। পাশের word-টা দেখুন!'),
     }),
     {
       kind: 'concept',
-      title: l('Look at what it describes', 'দেখো কাকে describe করছে'),
-      body: l('Ask one question: what does the word describe? A noun → adjective (effective measures, a sharp rise). A verb → adverb (work effectively, rose sharply). An adjective → adverb (extremely important).', 'একটাই প্রশ্ন করো: word-টা কাকে describe করছে? Noun হলে → adjective (effective measures, a sharp rise)। Verb হলে → adverb (work effectively, rose sharply)। Adjective হলে → adverb (extremely important)।'),
+      title: l('Look at what it describes', 'দেখুন কাকে describe করছে'),
+      body: l('Ask one question: what does the word describe? A noun → adjective (effective measures, a sharp rise). A verb → adverb (work effectively, rose sharply). An adjective → adverb (extremely important).', 'একটাই প্রশ্ন করুন: word-টা কাকে describe করছে? Noun হলে → adjective (effective measures, a sharp rise)। Verb হলে → adverb (work effectively, rose sharply)। Adjective হলে → adverb (extremely important)।'),
       points: [
         l('After be, seem, look, feel, become, sound, smell, taste → adjective: I feel bad. The food smells good.', 'be, seem, look, feel, become, sound, smell, taste-এর পরে → adjective: I feel bad। The food smells good।'),
         l('hard = with effort (work hard). hardly = almost not (I hardly slept).', 'hard = পরিশ্রম করে (work hard)। hardly = প্রায় না (I hardly slept)।'),
@@ -166,7 +166,7 @@ const v2: Lesson = {
       title: l('Why this matters in IELTS', 'এটা IELTS-এ কেন দরকার?'),
       uses: [
         { skill: 'writing', example: 'Governments should invest heavily in effective public transport.', note: l('Task 2: one sentence often needs both. heavily → invest; effective → transport.', 'Task 2: একটা sentence-এ প্রায়ই দুটোই লাগে। heavily → invest; effective → transport।') },
-        { skill: 'writing', example: 'a dramatic increase / increased dramatically', note: l('Task 1: switch between the two patterns without mixing them.', 'Task 1: দুটো pattern বদলে বদলে ব্যবহার করো, কিন্তু মিশিয়ো না।') },
+        { skill: 'writing', example: 'a dramatic increase / increased dramatically', note: l('Task 1: switch between the two patterns without mixing them.', 'Task 1: দুটো pattern বদলে বদলে ব্যবহার করুন, কিন্তু মিশিয়ো না।') },
         { skill: 'speaking', example: 'I feel nervous before exams.', note: l('feel + adjective, not "I feel nervously".', 'feel + adjective, "I feel nervously" না।') },
       ],
     },
@@ -184,10 +184,10 @@ const v2: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pv-2-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'Schools need ______ teachers.', options: ['qualified', 'qualifiedly'], answer: 'qualified', pos: 'adjective', wrongPos: { qualifiedly: 'adverb' }, explanation: l('Before the noun "teachers" → adjective.', 'Noun "teachers"-এর আগে → adjective।') }),
-        choice('pv-2-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'The city grew ______ after the new bridge opened.', options: ['rapid', 'rapidly'], answer: 'rapidly', pos: 'adverb', wrongPos: { rapid: 'adjective' }, family: 'rapid', explanation: l('"grew" is a verb → adverb.', '"grew" verb → adverb।') }),
-        choice('pv-2-p3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'The government should find ______ solutions to pollution.', options: ['effective', 'effectively'], answer: 'effective', pos: 'adjective', wrongPos: { effectively: 'adverb' }, family: 'effect', explanation: l('Before the noun "solutions" → adjective.', 'Noun "solutions"-এর আগে → adjective।') }),
-        choice('pv-2-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'I felt ______ after I missed the bus.', options: ['bad', 'badly'], answer: 'bad', pos: 'adjective', wrongPos: { badly: 'adverb' }, explanation: l('feel + adjective (how you are), not an adverb.', 'feel + adjective (তুমি কেমন আছো), adverb না।') }),
+        choice('pv-2-p1', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'Schools need ______ teachers.', options: ['qualified', 'qualifiedly'], answer: 'qualified', pos: 'adjective', wrongPos: { qualifiedly: 'adverb' }, explanation: l('Before the noun "teachers" → adjective.', 'Noun "teachers"-এর আগে → adjective।') }),
+        choice('pv-2-p2', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'The city grew ______ after the new bridge opened.', options: ['rapid', 'rapidly'], answer: 'rapidly', pos: 'adverb', wrongPos: { rapid: 'adjective' }, family: 'rapid', explanation: l('"grew" is a verb → adverb.', '"grew" verb → adverb।') }),
+        choice('pv-2-p3', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'The government should find ______ solutions to pollution.', options: ['effective', 'effectively'], answer: 'effective', pos: 'adjective', wrongPos: { effectively: 'adverb' }, family: 'effect', explanation: l('Before the noun "solutions" → adjective.', 'Noun "solutions"-এর আগে → adjective।') }),
+        choice('pv-2-p4', C, { prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'I felt ______ after I missed the bus.', options: ['bad', 'badly'], answer: 'bad', pos: 'adjective', wrongPos: { badly: 'adverb' }, explanation: l('feel + adjective (how you are), not an adverb.', 'feel + adjective (আপনি কেমন আছেন), adverb না।') }),
         tagWords('pv-2-p5', C, { sentence: 'Prices/noun rose/verb dramatically/adverb, which was/verb a serious/adjective problem/noun.', choices: JOBS4, explanation: l('dramatically → verb rose (adverb); serious → noun problem (adjective).', 'dramatically → verb rose (adverb); serious → noun problem (adjective)।') }),
       ],
     },
@@ -195,8 +195,8 @@ const v2: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pv-2-r1', C, { prompt: l('Write the right form of "significant".', '"significant"-এর ঠিক form লেখো।'), base: 'significant', sentence: 'The number of cars increased ___ between 2010 and 2020.', accepted: ['significantly'], pos: 'adverb', wrongPos: { significant: 'adjective' }, family: 'significant', explanation: l('"increased" is a verb → significantly.', '"increased" verb → significantly।') }),
-        gap('pv-2-r2', C, { prompt: l('Write the right form of "efficient".', '"efficient"-এর ঠিক form লেখো।'), base: 'efficient', sentence: 'We need a more ___ system of waste collection.', accepted: ['efficient'], pos: 'adjective', wrongPos: { efficiently: 'adverb', efficiency: 'noun' }, family: 'efficient', explanation: l('"system" is a noun → adjective efficient.', '"system" noun → adjective efficient।') }),
+        gap('pv-2-r1', C, { prompt: l('Write the right form of "significant".', '"significant"-এর ঠিক form লিখুন।'), base: 'significant', sentence: 'The number of cars increased ___ between 2010 and 2020.', accepted: ['significantly'], pos: 'adverb', wrongPos: { significant: 'adjective' }, family: 'significant', explanation: l('"increased" is a verb → significantly.', '"increased" verb → significantly।') }),
+        gap('pv-2-r2', C, { prompt: l('Write the right form of "efficient".', '"efficient"-এর ঠিক form লিখুন।'), base: 'efficient', sentence: 'We need a more ___ system of waste collection.', accepted: ['efficient'], pos: 'adjective', wrongPos: { efficiently: 'adverb', efficiency: 'noun' }, family: 'efficient', explanation: l('"system" is a noun → adjective efficient.', '"system" noun → adjective efficient।') }),
         spot('pv-2-r3', C, { sentence: 'The government should take effectively measures to reduce traffic.', wrong: 'effectively', accepted: ['effective'], pos: 'adjective', wrongPos: { effectively: 'adverb' }, family: 'effect', explanation: l('Before the noun "measures" → effective.', 'Noun "measures"-এর আগে → effective।') }),
         spot('pv-2-r4', C, { sentence: 'The price of fuel rose dramatic last year.', wrong: 'dramatic', accepted: ['dramatically'], pos: 'adverb', wrongPos: { dramatic: 'adjective' }, family: 'dramatic', explanation: l('"rose" is a verb → dramatically.', '"rose" verb → dramatically।') }),
       ],
@@ -212,10 +212,10 @@ const v2: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pv-2-w1', C, {
-          prompt: l('Task 2 style: write one sentence about a problem in your city. Use one adjective before a noun and one adverb after a verb.', 'Task 2 style: তোমার শহরের একটা সমস্যা নিয়ে একটা sentence লেখো। একটা adjective noun-এর আগে আর একটা adverb verb-এর পরে ব্যবহার করো।'),
+          prompt: l('Task 2 style: write one sentence about a problem in your city. Use one adjective before a noun and one adverb after a verb.', 'Task 2 style: আপনার শহরের একটা সমস্যা নিয়ে একটা sentence লিখুন। একটা adjective noun-এর আগে আর একটা adverb verb-এর পরে ব্যবহার করুন।'),
           model: 'The city authorities should act quickly to find effective solutions to heavy traffic.',
           task: 'The student writes one Task 2 style sentence with at least one adjective describing a noun and one adverb describing a verb. Check adjective vs adverb choice carefully (e.g. effective measures, act quickly) and grammar.',
           target: l('One adjective + noun, one verb + adverb', 'একটা adjective + noun, একটা verb + adverb'),
@@ -226,7 +226,7 @@ const v2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Describes a noun → adjective. Describes a verb or an adjective → adverb.', 'Noun-কে describe করলে → adjective। Verb বা adjective-কে describe করলে → adverb।'),
         l('After be / feel / seem / look → adjective. hard ≠ hardly.', 'be / feel / seem / look-এর পরে → adjective। hard ≠ hardly।'),
@@ -282,7 +282,7 @@ const v3: Lesson = {
       title: l('Why this matters in IELTS', 'এটা IELTS-এ কেন দরকার?'),
       uses: [
         { skill: 'speaking', example: 'I usually go to the gym three times a week.', note: l('"How often…?" questions in Part 1 need frequency adverbs in the right place.', 'Part 1-এর "How often…?" প্রশ্নে frequency adverb ঠিক জায়গায় লাগে।') },
-        { skill: 'writing', example: 'Generally, older people prefer printed newspapers.', note: l('Task 2: sentence adverbs make your claims careful.', 'Task 2: sentence adverb তোমার দাবিকে সতর্ক করে।') },
+        { skill: 'writing', example: 'Generally, older people prefer printed newspapers.', note: l('Task 2: sentence adverbs make your claims careful.', 'Task 2: sentence adverb আপনার দাবিকে সতর্ক করে।') },
       ],
     },
     {
@@ -298,36 +298,36 @@ const v3: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pv-3-p1', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['I often watch English films.', 'I watch often English films.', 'Often I watch English films often.'], answer: 'I often watch English films.', explanation: l('often → before the main verb watch.', 'often → main verb watch-এর আগে।') }),
-        choice('pv-3-p2', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['She is always on time.', 'She always is on time.'], answer: 'She is always on time.', explanation: l('After "be": is always.', '"be"-এর পরে: is always।') }),
-        choice('pv-3-p3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['He speaks English fluently.', 'He speaks fluently English.'], answer: 'He speaks English fluently.', explanation: l('verb + object + adverb.', 'verb + object + adverb।') }),
-        choice('pv-3-p4', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বাছো।'), options: ['I have never been to Sylhet.', 'I have been never to Sylhet.', 'Never I have been to Sylhet.'], answer: 'I have never been to Sylhet.', explanation: l('After the helping verb "have".', 'Helping verb "have"-এর পরে।') }),
+        choice('pv-3-p1', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['I often watch English films.', 'I watch often English films.', 'Often I watch English films often.'], answer: 'I often watch English films.', explanation: l('often → before the main verb watch.', 'often → main verb watch-এর আগে।') }),
+        choice('pv-3-p2', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['She is always on time.', 'She always is on time.'], answer: 'She is always on time.', explanation: l('After "be": is always.', '"be"-এর পরে: is always।') }),
+        choice('pv-3-p3', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['He speaks English fluently.', 'He speaks fluently English.'], answer: 'He speaks English fluently.', explanation: l('verb + object + adverb.', 'verb + object + adverb।') }),
+        choice('pv-3-p4', C, { prompt: l('Choose the correct sentence.', 'সঠিক sentence-টা বেছে নিন।'), options: ['I have never been to Sylhet.', 'I have been never to Sylhet.', 'Never I have been to Sylhet.'], answer: 'I have never been to Sylhet.', explanation: l('After the helping verb "have".', 'Helping verb "have"-এর পরে।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        correct('pv-3-r1', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'I like very much football.', accepted: ['I like football very much.', 'I really like football.', 'I like football a lot.'], explanation: l('I like football very much.', 'I like football very much।') }),
-        correct('pv-3-r2', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'Usually I go to bed late.', accepted: ['I usually go to bed late.', 'Usually, I go to bed late.'], explanation: l('I usually go… (Usually at the start with a comma is also possible.)', 'I usually go… (শুরুতে comma দিয়ে Usually-ও চলে।)') }),
-        correct('pv-3-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'She checked carefully her answers.', accepted: ['She checked her answers carefully.', 'She carefully checked her answers.'], explanation: l('Not between the verb and its object.', 'Verb আর object-এর মাঝে না।') }),
+        correct('pv-3-r1', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'I like very much football.', accepted: ['I like football very much.', 'I really like football.', 'I like football a lot.'], explanation: l('I like football very much.', 'I like football very much।') }),
+        correct('pv-3-r2', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'Usually I go to bed late.', accepted: ['I usually go to bed late.', 'Usually, I go to bed late.'], explanation: l('I usually go… (Usually at the start with a comma is also possible.)', 'I usually go… (শুরুতে comma দিয়ে Usually-ও চলে।)') }),
+        correct('pv-3-r3', C, { prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'She checked carefully her answers.', accepted: ['She checked her answers carefully.', 'She carefully checked her answers.'], explanation: l('Not between the verb and its object.', 'Verb আর object-এর মাঝে না।') }),
       ],
     },
     {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('pv-3-c1', C, { prompt: l('Why is "I watch often films" wrong?', '"I watch often films" ভুল কেন?'), options: ['"often" is between the verb and its object', '"often" must go at the end of every sentence', '"films" should be singular'], answer: '"often" is between the verb and its object', explanation: l('Say "I often watch films."', 'বলো "I often watch films."') }),
-        choice('pv-3-c2', C, { prompt: l('Task 2: choose the best start.', 'Task 2: সবচেয়ে ভালো শুরুটা বাছো।'), options: ['Generally, young people adapt quickly to new technology.', 'Young people generally adapt to new quickly technology.', 'Young people adapt generally quickly to new technology generally.'], answer: 'Generally, young people adapt quickly to new technology.', explanation: l('Sentence adverb first with a comma; quickly after the verb.', 'Sentence adverb শুরুতে comma দিয়ে; quickly verb-এর পরে।') }),
+        choice('pv-3-c1', C, { prompt: l('Why is "I watch often films" wrong?', '"I watch often films" ভুল কেন?'), options: ['"often" is between the verb and its object', '"often" must go at the end of every sentence', '"films" should be singular'], answer: '"often" is between the verb and its object', explanation: l('Say "I often watch films."', 'বলুন "I often watch films."') }),
+        choice('pv-3-c2', C, { prompt: l('Task 2: choose the best start.', 'Task 2: সবচেয়ে ভালো শুরুটা বেছে নিন।'), options: ['Generally, young people adapt quickly to new technology.', 'Young people generally adapt to new quickly technology.', 'Young people adapt generally quickly to new technology generally.'], answer: 'Generally, young people adapt quickly to new technology.', explanation: l('Sentence adverb first with a comma; quickly after the verb.', 'Sentence adverb শুরুতে comma দিয়ে; quickly verb-এর পরে।') }),
         spot('pv-3-c3', C, { sentence: 'I go always to the library on Fridays.', wrong: 'go', accepted: ['always go'], fixOptions: ['always go', 'going always', 'went always'], explanation: l('"always" goes before the main verb: I always go.', '"always" main verb-এর আগে: I always go।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pv-3-w1', C, {
-          prompt: l('Speaking Part 1: "How often do you read?" Answer in one or two sentences with a frequency adverb.', 'Speaking Part 1: "How often do you read?" একটা frequency adverb দিয়ে এক-দুই sentence-এ উত্তর দাও।'),
+          prompt: l('Speaking Part 1: "How often do you read?" Answer in one or two sentences with a frequency adverb.', 'Speaking Part 1: "How often do you read?" একটা frequency adverb দিয়ে এক-দুই sentence-এ উত্তর দিন।'),
           model: 'I usually read the news on my phone every morning, but I rarely read printed books these days.',
           task: 'The student answers "How often do you read?" using frequency adverbs (always, usually, often, sometimes, rarely, never). Check adverb position: before the main verb, after be and after helping verbs, never between the verb and its object.',
           target: l('A frequency adverb in the right place', 'ঠিক জায়গায় একটা frequency adverb'),
@@ -338,7 +338,7 @@ const v3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('always / usually / never: before the main verb, after be and helping verbs.', 'always / usually / never: main verb-এর আগে, be আর helping verb-এর পরে।'),
         l('Never between a verb and its object: I like cricket very much.', 'Verb আর object-এর মাঝে কখনো না: I like cricket very much।'),
@@ -357,7 +357,7 @@ const v4: Lesson = {
       kind: 'hook',
       title: l('Two ways to describe a trend', 'Trend বলার দুটো উপায়'),
       situation: l('A chart: the number of tourists went up a little each year. Which pair is correct?', 'একটা chart: পর্যটকের সংখ্যা প্রতি বছর একটু একটু করে বেড়েছে। কোন জোড়াটা সঠিক?'),
-      question: l('Choose the correct pair.', 'সঠিক জোড়াটা বাছো।'),
+      question: l('Choose the correct pair.', 'সঠিক জোড়াটা বেছে নিন।'),
       options: ['rose gradually / a gradual rise', 'rose gradual / a gradually rise', 'rose gradually / a gradually rise'], answer: 'rose gradually / a gradual rise',
       diagnose: {
         'rose gradually / a gradual rise': l('Right. verb + adverb, or adjective + noun.', 'ঠিক। verb + adverb, অথবা adjective + noun।'),
@@ -393,9 +393,9 @@ const v4: Lesson = {
       kind: 'ielts',
       title: l('Where you will use this', 'কোথায় লাগবে'),
       uses: [
-        { skill: 'writing', example: 'Sales rose dramatically between 2015 and 2020.', note: l('Task 1: pick the adverb that matches the chart.', 'Task 1: chart-এর সাথে মেলে এমন adverb বাছো।') },
+        { skill: 'writing', example: 'Sales rose dramatically between 2015 and 2020.', note: l('Task 1: pick the adverb that matches the chart.', 'Task 1: chart-এর সাথে মেলে এমন adverb বেছে নিন।') },
         { skill: 'writing', example: 'Technology has generally improved communication.', note: l('Task 2: careful language is part of a strong argument.', 'Task 2: সতর্ক ভাষা শক্ত argument-এর অংশ।') },
-        { skill: 'speaking', example: 'I probably spend too much time on my phone.', note: l('Part 3: sound thoughtful, not absolute.', 'Part 3: চিন্তাশীল শোনাও, একরোখা না।') },
+        { skill: 'speaking', example: 'I probably spend too much time on my phone.', note: l('Part 3: sound thoughtful, not absolute.', 'Part 3: চিন্তাশীল শোনান, একরোখা না।') },
       ],
     },
     {
@@ -404,25 +404,25 @@ const v4: Lesson = {
       items: [
         { wrong: 'The price increased significant.', right: 'The price increased significantly.', why: l('verb + adverb.', 'verb + adverb।') },
         { wrong: 'There was a sharply decrease.', right: 'There was a sharp decrease.', why: l('noun + adjective.', 'noun + adjective।') },
-        { wrong: 'Everyone always uses social media.', right: 'Most young people use social media regularly.', why: l('Absolute claims are easy to attack. Be careful and precise.', 'একরোখা দাবি সহজে ভুল প্রমাণ হয়। সতর্ক আর নির্দিষ্ট হও।') },
+        { wrong: 'Everyone always uses social media.', right: 'Most young people use social media regularly.', why: l('Absolute claims are easy to attack. Be careful and precise.', 'একরোখা দাবি সহজে ভুল প্রমাণ হয়। সতর্ক আর নির্দিষ্ট হোন।') },
       ],
     },
     {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pv-4-p1', C, { prompt: l('The line drops a little. Choose the best adverb.', 'Line-টা একটু নিচে নেমেছে। সবচেয়ে ভালো adverb বাছো।'), sentence: 'Profits fell ______ in March.', options: ['slightly', 'dramatically', 'sharply'], answer: 'slightly', explanation: l('A small change → slightly.', 'ছোট পরিবর্তন → slightly।') }),
-        choice('pv-4-p2', C, { prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'The population increased ______ over the century.', options: ['steady', 'steadily'], answer: 'steadily', pos: 'adverb', wrongPos: { steady: 'adjective' }, family: 'steady', explanation: l('"increased" is a verb → steadily.', '"increased" verb → steadily।') }),
-        choice('pv-4-p3', C, { prompt: l('Choose the more careful claim for Task 2.', 'Task 2-এর জন্য বেশি সতর্ক দাবিটা বাছো।'), options: ['Social media is often harmful to teenagers.', 'Social media always destroys teenagers.'], answer: 'Social media is often harmful to teenagers.', explanation: l('"often" makes the claim fair and easy to support.', '"often" দাবিটাকে ন্যায্য আর সমর্থনযোগ্য করে।') }),
-        choice('pv-4-p4', C, { prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'There was a ______ drop in rainfall.', options: ['dramatic', 'dramatically'], answer: 'dramatic', pos: 'adjective', wrongPos: { dramatically: 'adverb' }, family: 'dramatic', explanation: l('"drop" is a noun here → adjective.', 'এখানে "drop" noun → adjective।') }),
+        choice('pv-4-p1', C, { prompt: l('The line drops a little. Choose the best adverb.', 'Line-টা একটু নিচে নেমেছে। সবচেয়ে ভালো adverb বেছে নিন।'), sentence: 'Profits fell ______ in March.', options: ['slightly', 'dramatically', 'sharply'], answer: 'slightly', explanation: l('A small change → slightly.', 'ছোট পরিবর্তন → slightly।') }),
+        choice('pv-4-p2', C, { prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'The population increased ______ over the century.', options: ['steady', 'steadily'], answer: 'steadily', pos: 'adverb', wrongPos: { steady: 'adjective' }, family: 'steady', explanation: l('"increased" is a verb → steadily.', '"increased" verb → steadily।') }),
+        choice('pv-4-p3', C, { prompt: l('Choose the more careful claim for Task 2.', 'Task 2-এর জন্য বেশি সতর্ক দাবিটা বেছে নিন।'), options: ['Social media is often harmful to teenagers.', 'Social media always destroys teenagers.'], answer: 'Social media is often harmful to teenagers.', explanation: l('"often" makes the claim fair and easy to support.', '"often" দাবিটাকে ন্যায্য আর সমর্থনযোগ্য করে।') }),
+        choice('pv-4-p4', C, { prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'There was a ______ drop in rainfall.', options: ['dramatic', 'dramatically'], answer: 'dramatic', pos: 'adjective', wrongPos: { dramatically: 'adverb' }, family: 'dramatic', explanation: l('"drop" is a noun here → adjective.', 'এখানে "drop" noun → adjective।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pv-4-r1', C, { prompt: l('Write the adverb form of the word in brackets.', 'Bracket-এর word-এর adverb form লেখো।'), base: 'gradual', sentence: 'The number of cyclists rose ___ between 2010 and 2020.', accepted: ['gradually'], pos: 'adverb', wrongPos: { gradual: 'adjective' }, family: 'gradual', explanation: l('verb "rose" + adverb gradually.', 'verb "rose" + adverb gradually।') }),
-        correct('pv-4-r2', C, { prompt: l('Rewrite with verb + adverb.', 'verb + adverb দিয়ে আবার লেখো।'), sentence: 'There was a sharp fall in sales.', accepted: ['Sales fell sharply.', 'Sales dropped sharply.', 'Sales decreased sharply.', 'Sales declined sharply.'], explanation: l('a sharp fall → fell sharply.', 'a sharp fall → fell sharply।') }),
+        gap('pv-4-r1', C, { prompt: l('Write the adverb form of the word in brackets.', 'Bracket-এর word-এর adverb form লিখুন।'), base: 'gradual', sentence: 'The number of cyclists rose ___ between 2010 and 2020.', accepted: ['gradually'], pos: 'adverb', wrongPos: { gradual: 'adjective' }, family: 'gradual', explanation: l('verb "rose" + adverb gradually.', 'verb "rose" + adverb gradually।') }),
+        correct('pv-4-r2', C, { prompt: l('Rewrite with verb + adverb.', 'verb + adverb দিয়ে আবার লিখুন।'), sentence: 'There was a sharp fall in sales.', accepted: ['Sales fell sharply.', 'Sales dropped sharply.', 'Sales decreased sharply.', 'Sales declined sharply.'], explanation: l('a sharp fall → fell sharply.', 'a sharp fall → fell sharply।') }),
         spot('pv-4-r3', C, { sentence: 'The number of visitors decreased significant in winter.', wrong: 'significant', accepted: ['significantly'], pos: 'adverb', wrongPos: { significant: 'adjective' }, family: 'significant', explanation: l('verb "decreased" + adverb significantly.', 'verb "decreased" + adverb significantly।') }),
       ],
     },
@@ -437,10 +437,10 @@ const v4: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pv-4-w1', C, {
-          prompt: l('Task 1: describe this trend in one sentence with verb + adverb: "Mobile banking users: 2 million (2015) → 10 million (2020)".', 'Task 1: verb + adverb দিয়ে এই trend-টা এক sentence-এ লেখো: "Mobile banking users: 2 million (2015) → 10 million (2020)"।'),
+          prompt: l('Task 1: describe this trend in one sentence with verb + adverb: "Mobile banking users: 2 million (2015) → 10 million (2020)".', 'Task 1: verb + adverb দিয়ে এই trend-টা এক sentence-এ লিখুন: "Mobile banking users: 2 million (2015) → 10 million (2020)"।'),
           model: 'The number of mobile banking users rose dramatically from 2 million in 2015 to 10 million in 2020.',
           task: 'The student describes the trend "mobile banking users rose from 2 million in 2015 to 10 million in 2020" in one sentence using a verb + adverb (e.g. rose dramatically). Check adverb form and choice, the verb tense (past), and the use of from/to/in with the figures.',
           target: l('verb + adverb (rose dramatically)', 'verb + adverb (rose dramatically)'),
@@ -451,10 +451,10 @@ const v4: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Task 1: verb + adverb (rose sharply) or adjective + noun (a sharp rise). Never mix them.', 'Task 1: verb + adverb (rose sharply) অথবা adjective + noun (a sharp rise)। কখনো মিশিয়ো না।'),
-        l('Task 2: often, generally, arguably make your claims fair.', 'Task 2: often, generally, arguably তোমার দাবিকে ন্যায্য করে।'),
+        l('Task 2: often, generally, arguably make your claims fair.', 'Task 2: often, generally, arguably আপনার দাবিকে ন্যায্য করে।'),
       ],
     },
   ],

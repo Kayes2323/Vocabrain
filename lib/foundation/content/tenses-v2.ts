@@ -45,18 +45,18 @@ const timeExercises: Exercise[] = [
   },
   {
     id: 't-1-p5', type: 'choice', tag: 'tense', concept: 'time',
-    prompt: l('Choose the best verb.', 'সবচেয়ে ভালো verb বাছো।'),
+    prompt: l('Choose the best verb.', 'সবচেয়ে ভালো verb বেছে নিন।'),
     sentence: 'I ___ English for two years, and I still enjoy it.',
     options: ['learned', 'am learning', 'have been learning'], answer: 'have been learning',
     explanation: l('Two years from the past until now, still continuing → have been learning.', 'অতীত থেকে এখন পর্যন্ত দুই বছর, এখনো চলছে → have been learning।'),
     why: {
-      learned: l('"learned" says it finished — but you still enjoy it and are still learning.', '"learned" বোঝায় শেষ হয়ে গেছে — কিন্তু তুমি এখনো শিখছ।'),
+      learned: l('"learned" says it finished — but you still enjoy it and are still learning.', '"learned" বোঝায় শেষ হয়ে গেছে — কিন্তু আপনি এখনো শিখছেন।'),
       'am learning': l('"am learning" is only about now; it can’t carry "for two years".', '"am learning" শুধু এখনের কথা; "for two years" বহন করতে পারে না।'),
     },
   },
   {
     id: 't-1-p6', type: 'choice', tag: 'tense', concept: 'time',
-    prompt: l('Task 1: choose the correct pair of verbs.', 'Task 1: সঠিক verb জোড়া বাছো।'),
+    prompt: l('Task 1: choose the correct pair of verbs.', 'Task 1: সঠিক verb জোড়া বেছে নিন।'),
     sentence: 'In 2015, sales ___ 200 units, but since then they ___ steadily.',
     options: ['were / have grown', 'are / grew', 'have been / grow'], answer: 'were / have grown',
     explanation: l('2015 is finished → were. "since then" = until now → have grown.', '2015 শেষ → were। "since then" = এখন পর্যন্ত → have grown।'),
@@ -70,19 +70,19 @@ const timeExercises: Exercise[] = [
 const timeRecall: Exercise[] = [
   {
     id: 't-1-r1', type: 'gap', tag: 'tense', concept: 'time',
-    prompt: l('Write the verb (study). No options this time!', 'Verb লেখো (study)। এবার কোনো option নেই!'),
+    prompt: l('Write the verb (study). No options this time!', 'Verb লিখুন (study)। এবার কোনো option নেই!'),
     sentence: 'I started university in 2023. I ___ there for three years now.',
     accepted: ['have studied', 'have been studying', "'ve studied", "'ve been studying"],
     explanation: l('From 2023 until now → have studied / have been studying.', '2023 থেকে এখন পর্যন্ত → have studied / have been studying।'),
     why: {
       'am studying': l('"am studying" doesn’t reach back to 2023. Use have (been) + verb.', '"am studying" 2023 পর্যন্ত পেছনে যায় না। have (been) + verb লাগে।'),
       study: l('"study" is a habit; here we need past → now.', '"study" অভ্যাস; এখানে অতীত → এখন লাগে।'),
-      studied: l('"studied" means it is finished — but you are still there.', '"studied" মানে শেষ — কিন্তু তুমি এখনো সেখানে।'),
+      studied: l('"studied" means it is finished — but you are still there.', '"studied" মানে শেষ — কিন্তু আপনি এখনো সেখানে।'),
     },
   },
   {
     id: 't-1-r2', type: 'gap', tag: 'tense', concept: 'time',
-    prompt: l('Write the verb (visit).', 'Verb লেখো (visit)।'),
+    prompt: l('Write the verb (visit).', 'Verb লিখুন (visit)।'),
     sentence: 'Last Friday, we ___ our grandparents in Bogura.',
     accepted: ['visited'],
     explanation: l('"Last Friday" is finished → visited.', '"Last Friday" শেষ → visited।'),
@@ -90,18 +90,18 @@ const timeRecall: Exercise[] = [
   },
   {
     id: 't-1-r3', type: 'correct', tag: 'tense', concept: 'time',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'I am living in Chattogram since 2021.',
     accepted: ['I have lived in Chattogram since 2021.', 'I have been living in Chattogram since 2021.'],
     explanation: l('"since 2021" = past until now → have lived / have been living.', '"since 2021" = অতীত থেকে এখন → have lived / have been living।'),
   },
   {
     id: 't-1-r4', type: 'gap', tag: 'tense', concept: 'time',
-    prompt: l('Write the verb (take) for a plan.', 'পরিকল্পনা বোঝাতে verb লেখো (take)।'),
+    prompt: l('Write the verb (take) for a plan.', 'পরিকল্পনা বোঝাতে verb লিখুন (take)।'),
     sentence: 'Next month, I ___ the IELTS test.',
     accepted: ['am going to take', 'will take', 'am taking', "'m going to take", "'m taking", "'ll take"],
     explanation: l('A future plan → am going to take / will take / am taking.', 'ভবিষ্যতের পরিকল্পনা → am going to take / will take / am taking।'),
-    why: { take: l('"take" alone is a habit; add "am going to" or "will".', 'শুধু "take" অভ্যাস বোঝায়; "am going to" বা "will" যোগ করো।'), took: l('"Next month" is in the future, not the past.', '"Next month" ভবিষ্যৎ, অতীত না।') },
+    why: { take: l('"take" alone is a habit; add "am going to" or "will".', 'শুধু "take" অভ্যাস বোঝায়; "am going to" বা "will" যোগ করুন।'), took: l('"Next month" is in the future, not the past.', '"Next month" ভবিষ্যৎ, অতীত না।') },
   },
 ];
 
@@ -120,12 +120,12 @@ export const understandingTime: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Let’s start with you', 'চলো আগে দেখি তুমি কীভাবে বলো'),
+      title: l('Let’s start with you', 'চলুন আগে দেখি আপনি কীভাবে বলুন'),
       situation: l(
         'You want to tell your IELTS teacher that you started learning English two years ago and you are still learning it.',
-        'তুমি তোমার IELTS teacher-কে বলতে চাও: "আমি দুই বছর ধরে ইংরেজি শিখছি।"',
+        'আপনি আপনার IELTS teacher-কে বলতে চান: "আমি দুই বছর ধরে ইংরেজি শিখছি।"',
       ),
-      question: l('Which one sounds correct? Try before we teach anything.', 'কোনটা ঠিক শোনায়? কিছু শেখার আগে নিজে একবার try করো।'),
+      question: l('Which one sounds correct? Try before we teach anything.', 'কোনটা ঠিক শোনায়? কিছু শেখার আগে নিজে একবার try করুন।'),
       options: ['I am learning English since two years.', 'I learn English for two years.', 'I have been learning English for two years.'],
       answer: 'I have been learning English for two years.',
       diagnose: {
@@ -139,13 +139,13 @@ export const understandingTime: Lesson = {
         ),
         'I have been learning English for two years.': l(
           'Exactly! "have been learning" connects the past to now: it started two years ago and it is still happening. In this lesson you’ll see WHY — so you can do it every time.',
-          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে। এই lesson-এ দেখবে কেন — যাতে প্রতিবার ঠিক বাছতে পারো।',
+          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে। এই lesson-এ দেখবে কেন — যাতে প্রতিবার ঠিক বাছতে পারেন।',
         ),
       },
     },
     {
       kind: 'discover',
-      title: l('Look at the time, not the Bangla word', 'বাংলা শব্দ না, সময়টা দেখো'),
+      title: l('Look at the time, not the Bangla word', 'বাংলা শব্দ না, সময়টা দেখুন'),
       items: [
         { en: 'I went to Cox’s Bazar last year.', note: l('Finished: last year is over.', 'শেষ হয়ে গেছে: last year শেষ।') },
         { en: 'I go to the gym three times a week.', note: l('Repeated: a habit.', 'বারবার হয়: একটা অভ্যাস।') },
@@ -162,7 +162,7 @@ export const understandingTime: Lesson = {
       answer: 0,
       pattern: l(
         'In English, the verb form follows the TIME PICTURE. First ask about time, then choose the form. The Bangla ending (-ছি, -লাম) can mislead you.',
-        'English-এ verb-এর form চলে TIME PICTURE অনুযায়ী। আগে সময় নিয়ে প্রশ্ন করো, তারপর form বাছো। বাংলার শেষাংশ (-ছি, -লাম) অনেক সময় ভুল পথে নেয়।',
+        'English-এ verb-এর form চলে TIME PICTURE অনুযায়ী। আগে সময় নিয়ে প্রশ্ন করুন, তারপর form বেছে নিন। বাংলার শেষাংশ (-ছি, -লাম) অনেক সময় ভুল পথে নেয়।',
       ),
     },
     {
@@ -170,7 +170,7 @@ export const understandingTime: Lesson = {
       title: l('Six questions that choose the tense', 'ছয়টা প্রশ্ন, যেগুলো tense বাছে'),
       body: l(
         'Before you write or say a verb, ask yourself about time. You don’t need the names of 12 tenses — you need these questions.',
-        'কোনো verb লেখা বা বলার আগে নিজেকে সময় নিয়ে প্রশ্ন করো। ১২টা tense-এর নাম মুখস্থ লাগবে না — এই প্রশ্নগুলোই লাগবে।',
+        'কোনো verb লেখা বা বলার আগে নিজেকে সময় নিয়ে প্রশ্ন করুন। ১২টা tense-এর নাম মুখস্থ লাগবে না — এই প্রশ্নগুলোই লাগবে।',
       ),
       points: [
         l('Is it finished? (yesterday, in 2010) → past', 'শেষ হয়ে গেছে? (yesterday, in 2010) → past'),
@@ -220,16 +220,16 @@ export const understandingTime: Lesson = {
         { wrong: 'In 2010, the population is 15 million.', right: 'In 2010, the population was 15 million.', why: l('A past year in Task 1 → past tense.', 'Task 1-এ অতীতের বছর → past tense।') },
       ],
     },
-    { kind: 'practice', mode: 'practice', title: l('Practice: find the time picture', 'Practice: time picture খোঁজো'), exercises: timeExercises },
+    { kind: 'practice', mode: 'practice', title: l('Practice: find the time picture', 'Practice: time picture খুঁজুন'), exercises: timeExercises },
     { kind: 'practice', mode: 'recall', title: l('Active recall: no options', 'Active recall: কোনো option নেই'), exercises: timeRecall },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: your English journey', 'এবার তোমার পালা: তোমার English journey'),
+      title: l('Your turn: your English journey', 'এবার আপনার পালা: আপনার English journey'),
       exercises: [
         {
           id: 't-1-y1', type: 'write', tag: 'tense', concept: 'time',
-          prompt: l('Write 2 sentences: when did you start learning English, and how long have you been learning it?', '২টা sentence লেখো: কবে English শেখা শুরু করেছিলে, আর কতদিন ধরে শিখছ?'),
+          prompt: l('Write 2 sentences: when did you start learning English, and how long have you been learning it?', '২টা sentence লিখুন: কবে English শেখা শুরু করেছিলেন, আর কতদিন ধরে শিখছেন?'),
           model: 'I started learning English in class one. I have been learning it for about twelve years, and now I am preparing for IELTS.',
           checklist: [l('Past Simple for when you started', 'কবে শুরু — Past Simple'), l('have been + -ing (or have + past participle) for how long', 'কতদিন ধরে — have been + -ing (বা have + past participle)'), l('for + a length / since + a starting point', 'for + দৈর্ঘ্য / since + শুরুর সময়')],
           explanation: l('Two time pictures in one answer — exactly what IELTS Speaking Part 1 needs.', 'এক answer-এ দুইটা time picture — IELTS Speaking Part 1-এ ঠিক এটাই লাগে।'),
@@ -242,9 +242,9 @@ export const understandingTime: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Choose the verb by TIME, not by the Bangla ending.', 'বাংলার শেষাংশ দেখে না, সময় দেখে verb বাছো।'),
+        l('Choose the verb by TIME, not by the Bangla ending.', 'বাংলার শেষাংশ দেখে না, সময় দেখে verb বেছে নিন।'),
         l('Finished → past. Now → -ing. Repeated → present simple. Past until now → have (been).', 'শেষ → past। এখন → -ing। বারবার → present simple। অতীত থেকে এখন → have (been)।'),
         l('since + starting point · for + length of time', 'since + শুরুর সময় · for + সময়ের দৈর্ঘ্য'),
       ],
@@ -256,7 +256,7 @@ export const understandingTime: Lesson = {
 const psPractice: Exercise[] = [
   {
     id: 't-2-p1', type: 'choice', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Choose the correct form.', 'সঠিক form বাছো।'),
+    prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'),
     sentence: 'My brother ___ in a bank in Motijheel.',
     options: ['work', 'works', 'working'], answer: 'works',
     explanation: l('"My brother" = he → works.', '"My brother" = he → works।'),
@@ -264,14 +264,14 @@ const psPractice: Exercise[] = [
   },
   {
     id: 't-2-p2', type: 'choice', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Choose the correct question.', 'সঠিক প্রশ্ন বাছো।'),
+    prompt: l('Choose the correct question.', 'সঠিক প্রশ্ন বেছে নিন।'),
     options: ['Does she speak Hindi?', 'Does she speaks Hindi?', 'Do she speak Hindi?'], answer: 'Does she speak Hindi?',
     explanation: l('"Does" already has the -s, so the verb stays "speak".', '"Does"-এই -s আছে, তাই verb "speak" থাকে।'),
     why: { 'Does she speaks Hindi?': l('Only one -s: it goes on "does", not on "speak".', '-s একবারই: "does"-এ বসে, "speak"-এ না।'), 'Do she speak Hindi?': l('"she" → "Does".', '"she" → "Does"।') },
   },
   {
     id: 't-2-p3', type: 'gap', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Write the correct form of "study".', '"study"-এর সঠিক form লেখো।'),
+    prompt: l('Write the correct form of "study".', '"study"-এর সঠিক form লিখুন।'),
     sentence: 'Rina ___ for two hours every night.',
     accepted: ['studies'],
     explanation: l('Consonant + y → -ies: study → studies.', 'Consonant + y → -ies: study → studies।'),
@@ -286,15 +286,15 @@ const psPractice: Exercise[] = [
   },
   {
     id: 't-2-p5', type: 'gap', tag: 'tense', concept: 'present-simple',
-    prompt: l('Task 1: write the correct form of "show".', 'Task 1: "show"-এর সঠিক form লেখো।'),
+    prompt: l('Task 1: write the correct form of "show".', 'Task 1: "show"-এর সঠিক form লিখুন।'),
     sentence: 'The table ___ the number of international students in five countries in 2020.',
     accepted: ['shows'],
     explanation: l('The table shows it NOW (even though the data is from 2020) → shows.', 'Table-টা এখন দেখাচ্ছে (data 2020-এর হলেও) → shows।'),
-    why: { showed: l('The data is past, but the table is in front of you now → shows.', 'Data অতীতের, কিন্তু table এখন তোমার সামনে → shows।'), show: l('"The table" is singular → shows.', '"The table" singular → shows।') },
+    why: { showed: l('The data is past, but the table is in front of you now → shows.', 'Data অতীতের, কিন্তু table এখন আপনার সামনে → shows।'), show: l('"The table" is singular → shows.', '"The table" singular → shows।') },
   },
   {
     id: 't-2-p6', type: 'choice', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Harder: choose the correct form.', 'একটু কঠিন: সঠিক form বাছো।'),
+    prompt: l('Harder: choose the correct form.', 'একটু কঠিন: সঠিক form বেছে নিন।'),
     sentence: 'Everyone in my family ___ tea in the evening.',
     options: ['drink', 'drinks', 'are drinking'], answer: 'drinks',
     explanation: l('"Everyone" is singular → drinks.', '"Everyone" singular → drinks।'),
@@ -305,22 +305,22 @@ const psPractice: Exercise[] = [
 const psRecall: Exercise[] = [
   {
     id: 't-2-r1', type: 'gap', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Write the verb (teach). No options!', 'Verb লেখো (teach)। কোনো option নেই!'),
+    prompt: l('Write the verb (teach). No options!', 'Verb লিখুন (teach)। কোনো option নেই!'),
     sentence: 'My sister ___ English at a college in Khulna.',
     accepted: ['teaches'],
     explanation: l('she + teach → teaches (-es after ch).', 'she + teach → teaches (ch-এর পরে -es)।'),
-    why: { teachs: l('After ch, sh, s, x, o → -es: teaches.', 'ch, sh, s, x, o-এর পরে -es: teaches।'), teach: l('"My sister" = she → add -es.', '"My sister" = she → -es যোগ করো।') },
+    why: { teachs: l('After ch, sh, s, x, o → -es: teaches.', 'ch, sh, s, x, o-এর পরে -es: teaches।'), teach: l('"My sister" = she → add -es.', '"My sister" = she → -es যোগ করুন।') },
   },
   {
     id: 't-2-r2', type: 'correct', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'He don’t live with his parents.',
     accepted: ["He doesn't live with his parents.", 'He does not live with his parents.'],
     explanation: l('he → doesn’t + base verb.', 'he → doesn’t + base verb।'),
   },
   {
     id: 't-2-r3', type: 'gap', tag: 'agreement', concept: 'present-simple',
-    prompt: l('Write the missing word to make a question.', 'প্রশ্ন বানাতে বাদ পড়া শব্দটা লেখো।'),
+    prompt: l('Write the missing word to make a question.', 'প্রশ্ন বানাতে বাদ পড়া শব্দটা লিখুন।'),
     sentence: '___ your brother work on Fridays?',
     accepted: ['Does'],
     explanation: l('"your brother" = he → Does … work?', '"your brother" = he → Does … work?'),
@@ -328,7 +328,7 @@ const psRecall: Exercise[] = [
   },
   {
     id: 't-2-r4', type: 'correct', tag: 'verb', concept: 'present-simple',
-    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করো।'),
+    prompt: l('Fix the sentence.', 'Sentence-টা ঠিক করুন।'),
     sentence: 'I am agree that university should be free.',
     accepted: ['I agree that university should be free.'],
     explanation: l('"agree" is the verb: I agree.', '"agree"-ই verb: I agree।'),
@@ -350,12 +350,12 @@ export const presentSimpleV2: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('A question you will hear', 'এই প্রশ্নটা তুমি শুনবেই'),
+      title: l('A question you will hear', 'এই প্রশ্নটা আপনি শুনবেই'),
       situation: l(
         'The IELTS examiner asks: "What do you do?" You work in a bank — it’s your permanent job.',
-        'IELTS examiner জিজ্ঞেস করলেন: "What do you do?" তুমি একটা ব্যাংকে চাকরি করো — এটা তোমার স্থায়ী কাজ।',
+        'IELTS examiner জিজ্ঞেস করলেন: "What do you do?" আপনি একটা ব্যাংকে চাকরি করুন — এটা আপনার স্থায়ী কাজ।',
       ),
-      question: l('What do you say?', 'তুমি কী বলবে?'),
+      question: l('What do you say?', 'আপনি কী বলবেন?'),
       options: ['I am working in a bank.', 'I work in a bank.', 'I working in a bank.'],
       answer: 'I work in a bank.',
       diagnose: {
@@ -364,12 +364,12 @@ export const presentSimpleV2: Lesson = {
           'অনেকেই এটা বলে, কারণ বাংলায় "আমি ব্যাংকে কাজ করছি" স্বাভাবিক শোনায়। কিন্তু English-এ "I’m working in a bank" শুনলে মনে হয় সাময়িক (এখনকার জন্য)। স্থায়ী কাজের জন্য English-এ present simple।',
         ),
         'I working in a bank.': l('Almost! "-ing" can’t stand alone — it needs am/is/are. But here the best answer doesn’t need -ing at all.', 'প্রায় হয়ে গেছে! "-ing" একা দাঁড়াতে পারে না — am/is/are লাগে। তবে এখানে সবচেয়ে ভালো answer-এ -ing-ই লাগে না।'),
-        'I work in a bank.': l('Right! A permanent job, a routine, a fact → present simple. Let’s see exactly when and how.', 'ঠিক! স্থায়ী কাজ, রুটিন, সত্য → present simple। চলো দেখি ঠিক কখন আর কীভাবে।'),
+        'I work in a bank.': l('Right! A permanent job, a routine, a fact → present simple. Let’s see exactly when and how.', 'ঠিক! স্থায়ী কাজ, রুটিন, সত্য → present simple। চলুন দেখি ঠিক কখন আর কীভাবে।'),
       },
     },
     {
       kind: 'discover',
-      title: l('Notice the pattern', 'Pattern-টা খেয়াল করো'),
+      title: l('Notice the pattern', 'Pattern-টা খেয়াল করুন'),
       items: [
         { en: 'I take the bus to university.', note: l('I → take', 'I → take') },
         { en: 'My father reads the newspaper every morning.', note: l('he → reads (+s)', 'he → reads (+s)') },
@@ -386,7 +386,7 @@ export const presentSimpleV2: Lesson = {
       answer: 0,
       pattern: l(
         'Present simple = routines, facts, permanent situations and opinions. And look again: with he / she / it (father, sun, graph) the verb gets -s.',
-        'Present simple = রুটিন, সত্য, স্থায়ী অবস্থা আর মতামত। আবার দেখো: he / she / it (father, sun, graph)-এর সাথে verb-এ -s যোগ হয়েছে।',
+        'Present simple = রুটিন, সত্য, স্থায়ী অবস্থা আর মতামত। আবার দেখুন: he / she / it (father, sun, graph)-এর সাথে verb-এ -s যোগ হয়েছে।',
       ),
     },
     {
@@ -443,11 +443,11 @@ export const presentSimpleV2: Lesson = {
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: your daily routine', 'এবার তোমার পালা: তোমার দৈনন্দিন রুটিন'),
+      title: l('Your turn: your daily routine', 'এবার আপনার পালা: আপনার দৈনন্দিন রুটিন'),
       exercises: [
         {
           id: 't-2-y1', type: 'write', tag: 'agreement', concept: 'present-simple',
-          prompt: l('Speaking Part 1: "Tell me about your daily routine." Write 3 sentences: one with I, one about a family member (he / she), and one with a frequency word.', 'Speaking Part 1: "Tell me about your daily routine." ৩টা sentence লেখো: একটা I দিয়ে, একটা পরিবারের কাউকে নিয়ে (he / she), আর একটায় frequency word।'),
+          prompt: l('Speaking Part 1: "Tell me about your daily routine." Write 3 sentences: one with I, one about a family member (he / she), and one with a frequency word.', 'Speaking Part 1: "Tell me about your daily routine." ৩টা sentence লিখুন: একটা I দিয়ে, একটা পরিবারের কাউকে নিয়ে (he / she), আর একটায় frequency word।'),
           model: 'I usually wake up at seven and go to university by bus. My mother works at a school, so she leaves home early. On Fridays, we always have lunch together.',
           checklist: [l('Base verb with I / we', 'I / we-এর সাথে base verb'), l('verb + s with he / she', 'he / she-এর সাথে verb + s'), l('A frequency word (usually, always, often…)', 'একটা frequency word (usually, always, often…)')],
           explanation: l('This is a natural Part 1 answer: routine + a family detail + frequency.', 'এটা একটা স্বাভাবিক Part 1 answer: রুটিন + পরিবারের detail + frequency।'),
@@ -460,7 +460,7 @@ export const presentSimpleV2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Routines, facts, permanent jobs, opinions → present simple.', 'রুটিন, সত্য, স্থায়ী কাজ, মতামত → present simple।'),
         l('he / she / it → verb + s. does / doesn’t → base verb.', 'he / she / it → verb + s। does / doesn’t → base verb।'),

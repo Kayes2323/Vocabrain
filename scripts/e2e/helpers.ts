@@ -14,7 +14,7 @@ export const SHOTS = process.env.E2E_SHOTS ?? path.join(process.cwd(), '.e2e-sho
 export type Lang = 'en' | 'bn';
 export const LABELS = {
   en: { continue: 'Continue', complete: 'Complete lesson', start: 'Start the challenge', reviewStart: /^Start \d+ questions/ },
-  bn: { continue: 'এগিয়ে যাও', complete: 'Lesson শেষ করো', start: 'Challenge শুরু করো', reviewStart: /প্রশ্ন শুরু|শুরু করো/ },
+  bn: { continue: 'এগিয়ে যান', complete: 'Lesson শেষ করুন', start: 'Challenge শুরু করুন', reviewStart: /প্রশ্ন শুরু|শুরু করুন/ },
 } as const;
 
 // ------------------------------------------------------------------ results
@@ -74,7 +74,7 @@ export async function signUp(p: Page, name: string, email: string, lang: Lang) {
     await p.getByRole('radio', { name: /5 hours/ }).click(); await c('Continue');
     await c('Later, take me Home');
   } else {
-    const go = () => p.getByRole('button', { name: 'এগিয়ে যাও', exact: true }).click();
+    const go = () => p.getByRole('button', { name: 'এগিয়ে যান', exact: true }).click();
     await p.getByRole('radio', { name: 'বাংলা' }).click(); await go();
     await p.getByRole('radio', { name: 'IELTS' }).click(); await go();
     await p.getByRole('radio', { name: '7.0' }).click(); await go();

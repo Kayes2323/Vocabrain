@@ -8,7 +8,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import type { ResolvedBlock, SectionStatus } from '@/lib/abroad/sections';
 import type { Bilingual, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
 import { cn } from '@/lib/utils';
-import { FactRow } from './FactRow';
+import { factSources, GuideFact, SectionSources } from './GuideBlocks';
 import { useBilingual } from './useBilingual';
 
 export const SECTION_TONE: Record<SectionStatus, 'success' | 'brand' | 'neutral' | 'warning'> = {
@@ -88,7 +88,7 @@ export function SectionCard({
             {section.facts.length > 0 ? (
               <div className="divide-y">
                 {section.facts.map((f, i) => (
-                  <FactRow key={i} item={f} sectionId={reviewAs ?? (section.id as CountrySectionId)} />
+                  <GuideFact key={i} item={f} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
                 ))}
               </div>
             ) : (
@@ -109,7 +109,7 @@ export function SectionCard({
               {b.facts.length > 0 ? (
                 <div className="divide-y">
                   {b.facts.map((f, i) => (
-                    <FactRow key={i} item={f} sectionId={reviewAs ?? (section.id as CountrySectionId)} />
+                    <GuideFact key={i} item={f} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
                   ))}
                 </div>
               ) : (
@@ -128,6 +128,7 @@ export function SectionCard({
               )}
             </div>
           ))}
+          <SectionSources {...factSources([...section.facts, ...(section.blocks ?? []).flatMap((b) => b.facts)])} />
           <div className="space-y-2 rounded-xl bg-brand-soft/60 p-3.5">
             <p className="inline-flex rounded-md bg-brand-soft px-2 py-0.5 text-[11px] font-semibold tracking-wider text-brand uppercase">{t('sa.hub.mino')}</p>
             <p className="text-sm text-foreground/80">

@@ -42,7 +42,7 @@ export const KR_D2: VisaCategory = {
       ],
       explanation: {
         en: 'D-2 is the student visa for a full degree at a Korean university. Your degree decides the D-2 type (for example D-2-3 for a master’s).',
-        bn: 'D-2 হলো Korea-র university-তে পুরো degree পড়ার student visa। তোমার degree অনুযায়ী D-2-এর ধরন ঠিক হয় (যেমন master’s হলে D-2-3)।',
+        bn: 'D-2 হলো Korea-র university-তে পুরো degree পড়ার student visa। আপনার degree অনুযায়ী D-2-এর ধরন ঠিক হয় (যেমন master’s হলে D-2-3)।',
       },
       blocks: [
         {
@@ -87,7 +87,7 @@ export const KR_D2: VisaCategory = {
       ],
       explanation: {
         en: 'In short: get admitted to a degree program first, then apply. The review checks your passport, your purpose and that you will go home when your stay ends.',
-        bn: 'সহজ কথায়: আগে degree program-এ admission নাও, তারপর apply করো। Review-তে তোমার passport, আসার উদ্দেশ্য আর মেয়াদ শেষে দেশে ফেরার বিষয়টা দেখা হয়।',
+        bn: 'সহজ কথায়: আগে degree program-এ admission নিন, তারপর apply করুন। Review-তে আপনার passport, আসার উদ্দেশ্য আর মেয়াদ শেষে দেশে ফেরার বিষয়টা দেখা হয়।',
       },
     },
     // 03 · Documents (general Korea requirement; Bangladesh-specific ones are kept apart, not verified yet)
@@ -105,7 +105,7 @@ export const KR_D2: VisaCategory = {
       ],
       explanation: {
         en: 'These are the documents Korea asks for in general. The Korean mission can ask for more depending on your program and your country, so check the Bangladesh-specific list before you apply.',
-        bn: 'এগুলো Korea-র সাধারণ document list। Program আর দেশ অনুযায়ী Korean mission আরও কিছু চাইতে পারে, তাই apply-এর আগে Bangladesh-এর আলাদা list দেখে নাও।',
+        bn: 'এগুলো Korea-র সাধারণ document list। Program আর দেশ অনুযায়ী Korean mission আরও কিছু চাইতে পারে, তাই apply-এর আগে Bangladesh-এর আলাদা list দেখে নিন।',
       },
       blocks: [
         {
@@ -147,7 +147,7 @@ export const KR_D2: VisaCategory = {
       ],
       explanation: {
         en: 'This is the official proof the visa asks for. It is not your full study budget, and the official amount is not verified yet: ask your university and the Korean embassy for the exact figure.',
-        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ। এটা তোমার পুরো পড়াশোনার budget নয়, আর official amount এখনো verified নয়। সঠিক অঙ্ক university আর Korean embassy থেকে জেনে নাও।',
+        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ। এটা আপনার পুরো পড়াশোনার budget নয়, আর official amount এখনো verified নয়। সঠিক অঙ্ক university আর Korean embassy থেকে জেনে নিন।',
       },
       blocks: [
         {
@@ -238,7 +238,7 @@ export const KR_D2: VisaCategory = {
       links: [KR_EASYLAW_WORK, KR_SIK_WORK],
       explanation: {
         en: 'Your weekly hours depend on your degree, your year and your Korean level. Answer the questions below to see the rule that fits you; you still need the permission before you start.',
-        bn: 'সপ্তাহে কত ঘণ্টা কাজ করা যাবে, তা তোমার degree, বর্ষ আর Korean level-এর উপর নির্ভর করে। নিচের প্রশ্নগুলোর উত্তর দাও; কাজ শুরুর আগে permission লাগবেই।',
+        bn: 'সপ্তাহে কত ঘণ্টা কাজ করা যাবে, তা আপনার degree, বর্ষ আর Korean level-এর উপর নির্ভর করে। নিচের প্রশ্নগুলোর উত্তর দিন; কাজ শুরুর আগে permission লাগবেই।',
       },
     },
   },

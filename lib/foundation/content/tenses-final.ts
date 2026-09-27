@@ -12,7 +12,7 @@ const T = { tag: 'tense' as const };
 
 export const TENSE_FINAL_PARTS: FinalPart[] = [
   {
-    id: 'A', title: l('Identify the time', 'সময় চিনে নাও'), intro: l('What time picture does the sentence show?', 'Sentence-টা কোন সময় দেখায়?'),
+    id: 'A', title: l('Identify the time', 'সময় চিনে নিন'), intro: l('What time picture does the sentence show?', 'Sentence-টা কোন সময় দেখায়?'),
     items: [
       at(1, choice('tfin-a1', 'present-simple', { ...T, prompt: l('What does the verb show?', 'Verb-টা কী দেখায়?'), sentence: 'My uncle drives a taxi in Chattogram.', options: ['a permanent situation', 'something happening only right now', 'a finished past action'], answer: 'a permanent situation', explanation: l('Present simple: his job, a permanent situation.', 'Present simple: তার চাকরি, স্থায়ী অবস্থা।') })),
       at(2, choice('tfin-a2', 'present-perfect', { ...T, prompt: l('What does the verb show?', 'Verb-টা কী দেখায়?'), sentence: 'Air pollution in Dhaka has become worse since 2015.', options: ['a change from the past up to now', 'a change that finished in 2015', 'a future prediction'], answer: 'a change from the past up to now', explanation: l('has become + since → from 2015 up to now.', 'has become + since → 2015 থেকে এখন পর্যন্ত।') })),
@@ -21,16 +21,16 @@ export const TENSE_FINAL_PARTS: FinalPart[] = [
     ],
   },
   {
-    id: 'B', title: l('Choose from context', 'প্রসঙ্গ দেখে বাছো'), intro: l('No hints: the sentence decides.', 'কোনো hint নেই: sentence-ই ঠিক করে।'),
+    id: 'B', title: l('Choose from context', 'প্রসঙ্গ দেখে বেছে নিন'), intro: l('No hints: the sentence decides.', 'কোনো hint নেই: sentence-ই ঠিক করে।'),
     items: [
-      at(1, choice('tfin-b1', 'present-continuous', { ...T, pattern: 'simple-vs-continuous', prompt: l('Choose the correct form.', 'সঠিক form বাছো।'), sentence: 'Shh! The baby ___.', options: ['sleeps', 'is sleeping', 'slept'], answer: 'is sleeping', explanation: l('"Shh!" = right now.', '"Shh!" = এই মুহূর্তে।') })),
-      at(2, choice('tfin-b2', 'past-simple', { ...T, pattern: 'past-vs-perfect', prompt: l('Choose the correct form.', 'সঠিক form বাছো।'), sentence: 'The government ___ the new metro line in December 2022.', options: ['has opened', 'opened', 'opens'], answer: 'opened', explanation: l('A finished date → past simple.', 'শেষ হওয়া তারিখ → past simple।') })),
-      at(2, choice('tfin-b3', 'future', { ...T, prompt: l('Choose the correct form.', 'সঠিক form বাছো।'), sentence: 'Look at those dark clouds — it ___ rain.', options: ['is going to', 'rains', 'rained'], answer: 'is going to', explanation: l('A prediction from what you can see now → going to.', 'এখন যা দেখছো তা থেকে ভবিষ্যদ্বাণী → going to।') })),
-      at(3, choice('tfin-b4', 'past-continuous', { ...T, prompt: l('Choose the correct pair.', 'সঠিক জোড়া বাছো।'), sentence: 'I ___ my homework when the lights ___ off.', options: ['was doing · went', 'did · were going', 'have done · went'], answer: 'was doing · went', explanation: l('Background in progress + the interruption.', 'চলতে থাকা পটভূমি + বাধা।') })),
+      at(1, choice('tfin-b1', 'present-continuous', { ...T, pattern: 'simple-vs-continuous', prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'), sentence: 'Shh! The baby ___.', options: ['sleeps', 'is sleeping', 'slept'], answer: 'is sleeping', explanation: l('"Shh!" = right now.', '"Shh!" = এই মুহূর্তে।') })),
+      at(2, choice('tfin-b2', 'past-simple', { ...T, pattern: 'past-vs-perfect', prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'), sentence: 'The government ___ the new metro line in December 2022.', options: ['has opened', 'opened', 'opens'], answer: 'opened', explanation: l('A finished date → past simple.', 'শেষ হওয়া তারিখ → past simple।') })),
+      at(2, choice('tfin-b3', 'future', { ...T, prompt: l('Choose the correct form.', 'সঠিক form বেছে নিন।'), sentence: 'Look at those dark clouds — it ___ rain.', options: ['is going to', 'rains', 'rained'], answer: 'is going to', explanation: l('A prediction from what you can see now → going to.', 'এখন যা দেখছেন তা থেকে ভবিষ্যদ্বাণী → going to।') })),
+      at(3, choice('tfin-b4', 'past-continuous', { ...T, prompt: l('Choose the correct pair.', 'সঠিক জোড়া বেছে নিন।'), sentence: 'I ___ my homework when the lights ___ off.', options: ['was doing · went', 'did · were going', 'have done · went'], answer: 'was doing · went', explanation: l('Background in progress + the interruption.', 'চলতে থাকা পটভূমি + বাধা।') })),
     ],
   },
   {
-    id: 'C', title: l('Correct the verb', 'Verb ঠিক করো'), intro: l('Tap the verb that is wrong and type the fix.', 'ভুল verb-এ tap করে ঠিক form লেখো।'),
+    id: 'C', title: l('Correct the verb', 'Verb ঠিক করুন'), intro: l('Tap the verb that is wrong and type the fix.', 'ভুল verb-এ tap করে ঠিক form লিখুন।'),
     items: [
       at(1, spot('tfin-c1', 'present-simple', { tag: 'agreement', pattern: 'sv-agreement', sentence: 'My sister live in Khulna with her husband.', wrong: 'live', accepted: ['lives'], explanation: l('she → lives.', 'she → lives।') })),
       at(2, spot('tfin-c2', 'past-simple', { ...T, pattern: 'verb-form', sentence: 'Did you enjoyed the concert last night?', wrong: 'enjoyed', accepted: ['enjoy'], explanation: l('Did + base verb.', 'Did + base verb।') })),
@@ -39,16 +39,16 @@ export const TENSE_FINAL_PARTS: FinalPart[] = [
     ],
   },
   {
-    id: 'D', title: l('Free recall', 'নিজে লেখো'), intro: l('Write the verb in the right form.', 'Verb-টা ঠিক form-এ লেখো।'),
+    id: 'D', title: l('Free recall', 'নিজে লিখুন'), intro: l('Write the verb in the right form.', 'Verb-টা ঠিক form-এ লিখুন।'),
     items: [
-      at(1, gap('tfin-d1', 'past-simple', { ...T, pattern: 'tense-time', prompt: l('Write the correct form of "buy".', '"buy"-এর সঠিক form লেখো।'), sentence: 'I ___ a new phone last month.', accepted: ['bought'], explanation: l('last month → bought.', 'last month → bought।') })),
-      at(2, gap('tfin-d2', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Write the correct form of "know".', '"know"-এর সঠিক form লেখো।'), sentence: 'We ___ each other since primary school.', accepted: ['have known', "'ve known"], explanation: l('since + state verb → have known.', 'since + state verb → have known।') })),
-      at(2, gap('tfin-d3', 'past-continuous', { ...T, prompt: l('Write the correct form of "cross".', '"cross"-এর সঠিক form লেখো।'), sentence: 'She fell while she ___ the road.', accepted: ['was crossing'], explanation: l('while + in progress → was crossing.', 'while + চলছিল → was crossing।') })),
-      at(3, gap('tfin-d4', 'past-perfect', { ...T, pattern: 'verb-form', prompt: l('Write the correct form of "leave".', '"leave"-এর সঠিক form লেখো।'), sentence: 'When I called her office, she ___. (already / leave)', accepted: ['had already left', 'had left already', 'had left'], explanation: l('Earlier past: had already left.', 'আরও আগের অতীত: had already left।') })),
+      at(1, gap('tfin-d1', 'past-simple', { ...T, pattern: 'tense-time', prompt: l('Write the correct form of "buy".', '"buy"-এর সঠিক form লিখুন।'), sentence: 'I ___ a new phone last month.', accepted: ['bought'], explanation: l('last month → bought.', 'last month → bought।') })),
+      at(2, gap('tfin-d2', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Write the correct form of "know".', '"know"-এর সঠিক form লিখুন।'), sentence: 'We ___ each other since primary school.', accepted: ['have known', "'ve known"], explanation: l('since + state verb → have known.', 'since + state verb → have known।') })),
+      at(2, gap('tfin-d3', 'past-continuous', { ...T, prompt: l('Write the correct form of "cross".', '"cross"-এর সঠিক form লিখুন।'), sentence: 'She fell while she ___ the road.', accepted: ['was crossing'], explanation: l('while + in progress → was crossing.', 'while + চলছিল → was crossing।') })),
+      at(3, gap('tfin-d4', 'past-perfect', { ...T, pattern: 'verb-form', prompt: l('Write the correct form of "leave".', '"leave"-এর সঠিক form লিখুন।'), sentence: 'When I called her office, she ___. (already / leave)', accepted: ['had already left', 'had left already', 'had left'], explanation: l('Earlier past: had already left.', 'আরও আগের অতীত: had already left।') })),
     ],
   },
   {
-    id: 'E', title: l('Explain', 'ব্যাখ্যা করো'), intro: l('Choose the real reason.', 'আসল কারণটা বাছো।'),
+    id: 'E', title: l('Explain', 'ব্যাখ্যা করুন'), intro: l('Choose the real reason.', 'আসল কারণটা বেছে নিন।'),
     items: [
       at(1, choice('tfin-e1', 'present-simple', { ...T, pattern: 'simple-vs-continuous', prompt: l('Why is "I am liking this song" wrong?', '"I am liking this song" কেন ভুল?'), options: ['"like" is a state verb, so it stays simple', '"song" must be plural', 'The past tense is needed'], answer: '"like" is a state verb, so it stays simple', explanation: l('I like this song.', 'I like this song।') })),
       at(2, choice('tfin-e2', 'past-simple', { ...T, pattern: 'past-vs-perfect', prompt: l('Why is "I have met him in 2020" wrong?', '"I have met him in 2020" কেন ভুল?'), options: ['"in 2020" is a finished time, so it needs the past simple', '"met" should be "meet"', '"him" should be "he"'], answer: '"in 2020" is a finished time, so it needs the past simple', explanation: l('I met him in 2020.', 'I met him in 2020।') })),
@@ -69,18 +69,18 @@ export const TENSE_FINAL_PARTS: FinalPart[] = [
     id: 'G', title: l('IELTS Writing', 'IELTS Writing'), intro: l('Task 1 and Task 2 sentences.', 'Task 1 আর Task 2-এর sentence।'),
     items: [
       at(1, choice('tfin-g1', 'present-simple', { ...T, prompt: l('Task 1 introduction (data 1995–2015):', 'Task 1 introduction (data 1995–2015):'), options: ['The bar chart shows the number of cinemas between 1995 and 2015.', 'The bar chart showed the number of cinemas between 1995 and 2015.', 'The bar chart has shown the number of cinemas between 1995 and 2015.'], answer: 'The bar chart shows the number of cinemas between 1995 and 2015.', explanation: l('The chart shows it now → shows.', 'Chart এখন দেখাচ্ছে → shows।') })),
-      at(2, correct('tfin-g2', 'past-simple', { ...T, pattern: 'past-vs-perfect', prompt: l('Rewrite the Task 1 sentence correctly.', 'Task 1 sentence-টা ঠিক করে লেখো।'), sentence: 'The number of cinemas has fallen from 60 in 1995 to 25 in 2015.', accepted: ['The number of cinemas fell from 60 in 1995 to 25 in 2015.', 'The number of cinemas decreased from 60 in 1995 to 25 in 2015.'], explanation: l('Finished years → fell.', 'শেষ হওয়া বছর → fell।') })),
-      at(2, gap('tfin-g3', 'future', { ...T, prompt: l('Complete the projection with "expect" + "rise".', '"expect" + "rise" দিয়ে projection-টা complete করো।'), sentence: 'Demand for electricity ___ by 40% by 2035.', accepted: ['is expected to rise', 'is projected to rise', 'will rise'], explanation: l('Future year → is expected to rise.', 'ভবিষ্যতের বছর → is expected to rise।') })),
-      at(3, correct('tfin-g4', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Rewrite the Task 2 sentence correctly.', 'Task 2 sentence-টা ঠিক করে লেখো।'), sentence: 'In recent years, many young people moved to cities to find work.', accepted: ['In recent years, many young people have moved to cities to find work.'], explanation: l('"In recent years" = up to now → have moved.', '"In recent years" = এখন পর্যন্ত → have moved।') })),
+      at(2, correct('tfin-g2', 'past-simple', { ...T, pattern: 'past-vs-perfect', prompt: l('Rewrite the Task 1 sentence correctly.', 'Task 1 sentence-টা ঠিক করে লিখুন।'), sentence: 'The number of cinemas has fallen from 60 in 1995 to 25 in 2015.', accepted: ['The number of cinemas fell from 60 in 1995 to 25 in 2015.', 'The number of cinemas decreased from 60 in 1995 to 25 in 2015.'], explanation: l('Finished years → fell.', 'শেষ হওয়া বছর → fell।') })),
+      at(2, gap('tfin-g3', 'future', { ...T, prompt: l('Complete the projection with "expect" + "rise".', '"expect" + "rise" দিয়ে projection-টা complete করুন।'), sentence: 'Demand for electricity ___ by 40% by 2035.', accepted: ['is expected to rise', 'is projected to rise', 'will rise'], explanation: l('Future year → is expected to rise.', 'ভবিষ্যতের বছর → is expected to rise।') })),
+      at(3, correct('tfin-g4', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Rewrite the Task 2 sentence correctly.', 'Task 2 sentence-টা ঠিক করে লিখুন।'), sentence: 'In recent years, many young people moved to cities to find work.', accepted: ['In recent years, many young people have moved to cities to find work.'], explanation: l('"In recent years" = up to now → have moved.', '"In recent years" = এখন পর্যন্ত → have moved।') })),
     ],
   },
   {
-    id: 'H', title: l('Speaking & building sentences', 'Speaking ও sentence বানানো'), intro: l('Answer like in the test.', 'পরীক্ষার মতো উত্তর দাও।'),
+    id: 'H', title: l('Speaking & building sentences', 'Speaking ও sentence বানানো'), intro: l('Answer like in the test.', 'পরীক্ষার মতো উত্তর দিন।'),
     items: [
-      at(1, order('tfin-h1', 'past-simple', { ...T, prompt: l('Build the Part 2 sentence.', 'Part 2-এর sentence-টা বানাও।'), answer: 'I visited my grandparents in Rangpur last winter.', explanation: l('Finished time → visited.', 'শেষ হওয়া সময় → visited।') })),
-      at(2, correct('tfin-h2', 'present-perfect-continuous', { ...T, pattern: 'tense-time', prompt: l('Examiner: "How long have you been learning English?" Fix the answer.', 'Examiner: "How long have you been learning English?" উত্তরটা ঠিক করো।'), sentence: 'I am learning English for eight years.', accepted: ['I have been learning English for eight years.', "I've been learning English for eight years."], explanation: l('for + until now → have been learning.', 'for + এখন পর্যন্ত → have been learning।') })),
-      at(2, order('tfin-h3', 'future', { ...T, prompt: l('Build the Part 1 answer about a plan.', 'পরিকল্পনা নিয়ে Part 1-এর উত্তর বানাও।'), answer: 'Next year I am going to study engineering.', explanation: l('A decided plan → going to.', 'ঠিক করা পরিকল্পনা → going to।') })),
-      at(3, correct('tfin-h4', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Examiner: "Have you ever been abroad?" Fix the answer (two verbs).', 'Examiner: "Have you ever been abroad?" উত্তরটা ঠিক করো (দুটো verb)।'), sentence: 'Yes, I have went to Nepal and I have stayed there in 2019.', accepted: ['Yes, I have been to Nepal and I stayed there in 2019.', 'Yes, I have been to Nepal, and I stayed there in 2019.'], explanation: l('Experience → have been to; the finished detail (in 2019) → stayed.', 'অভিজ্ঞতা → have been to; শেষ হওয়া বিস্তারিত (in 2019) → stayed।') })),
+      at(1, order('tfin-h1', 'past-simple', { ...T, prompt: l('Build the Part 2 sentence.', 'Part 2-এর sentence-টা বানান।'), answer: 'I visited my grandparents in Rangpur last winter.', explanation: l('Finished time → visited.', 'শেষ হওয়া সময় → visited।') })),
+      at(2, correct('tfin-h2', 'present-perfect-continuous', { ...T, pattern: 'tense-time', prompt: l('Examiner: "How long have you been learning English?" Fix the answer.', 'Examiner: "How long have you been learning English?" উত্তরটা ঠিক করুন।'), sentence: 'I am learning English for eight years.', accepted: ['I have been learning English for eight years.', "I've been learning English for eight years."], explanation: l('for + until now → have been learning.', 'for + এখন পর্যন্ত → have been learning।') })),
+      at(2, order('tfin-h3', 'future', { ...T, prompt: l('Build the Part 1 answer about a plan.', 'পরিকল্পনা নিয়ে Part 1-এর উত্তর বানান।'), answer: 'Next year I am going to study engineering.', explanation: l('A decided plan → going to.', 'ঠিক করা পরিকল্পনা → going to।') })),
+      at(3, correct('tfin-h4', 'present-perfect', { ...T, pattern: 'past-vs-perfect', prompt: l('Examiner: "Have you ever been abroad?" Fix the answer (two verbs).', 'Examiner: "Have you ever been abroad?" উত্তরটা ঠিক করুন (দুটো verb)।'), sentence: 'Yes, I have went to Nepal and I have stayed there in 2019.', accepted: ['Yes, I have been to Nepal and I stayed there in 2019.', 'Yes, I have been to Nepal, and I stayed there in 2019.'], explanation: l('Experience → have been to; the finished detail (in 2019) → stayed.', 'অভিজ্ঞতা → have been to; শেষ হওয়া বিস্তারিত (in 2019) → stayed।') })),
     ],
   },
 ];

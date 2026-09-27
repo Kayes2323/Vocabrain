@@ -14,7 +14,7 @@ const f1: Lesson = {
       kind: 'hook',
       title: l('Same word, different forms', 'একই word, ভিন্ন form'),
       situation: l('Reading summary: "The ______ of new towns has put pressure on water supplies." The passage uses the word "develop".', 'Reading summary: "The ______ of new towns has put pressure on water supplies." Passage-এ word-টা আছে "develop" হিসেবে।'),
-      question: l('What do you write?', 'তুমি কী লিখবে?'),
+      question: l('What do you write?', 'আপনি কী লিখবেন?'),
       options: ['development', 'develop', 'developed'], answer: 'development',
       diagnose: {
         development: l('Right. "The … of" needs a noun: development.', 'ঠিক। "The … of"-এর মাঝে noun লাগে: development।'),
@@ -29,8 +29,8 @@ const f1: Lesson = {
     }),
     {
       kind: 'concept',
-      title: l('Read the neighbours', 'পাশের word গুলো পড়ো'),
-      body: l('Before you choose a word, decide the JOB the gap needs, then choose the form. After a / an / the / my / this, or between "the" and "of" → noun. Before a noun, or after be / seem / become → adjective. After to / can / will / should → verb (base form). Describing a verb, or before an adjective → adverb.', 'Word বাছার আগে ঠিক করো gap-এর কোন কাজ দরকার, তারপর form বাছো। a / an / the / my / this-এর পরে, অথবা "the" আর "of"-এর মাঝে → noun। Noun-এর আগে, অথবা be / seem / become-এর পরে → adjective। to / can / will / should-এর পরে → verb (base form)। Verb-কে describe করলে বা adjective-এর আগে → adverb।'),
+      title: l('Read the neighbours', 'পাশের word গুলো পড়ুন'),
+      body: l('Before you choose a word, decide the JOB the gap needs, then choose the form. After a / an / the / my / this, or between "the" and "of" → noun. Before a noun, or after be / seem / become → adjective. After to / can / will / should → verb (base form). Describing a verb, or before an adjective → adverb.', 'Word বাছার আগে ঠিক করুন gap-এর কোন কাজ দরকার, তারপর form বেছে নিন। a / an / the / my / this-এর পরে, অথবা "the" আর "of"-এর মাঝে → noun। Noun-এর আগে, অথবা be / seem / become-এর পরে → adjective। to / can / will / should-এর পরে → verb (base form)। Verb-কে describe করলে বা adjective-এর আগে → adverb।'),
       points: [
         l('Family: success (noun) · succeed (verb) · successful (adjective) · successfully (adverb).', 'Family: success (noun) · succeed (verb) · successful (adjective) · successfully (adverb)।'),
         l('Family: economy (noun) · economic (adjective, about the economy) · economical (adjective, saving money) · economically (adverb).', 'Family: economy (noun) · economic (adjective, অর্থনীতি সংক্রান্ত) · economical (adjective, সাশ্রয়ী) · economically (adverb)।'),
@@ -50,7 +50,7 @@ const f1: Lesson = {
       kind: 'ielts',
       title: l('Why this matters in IELTS', 'এটা IELTS-এ কেন দরকার?'),
       uses: [
-        { skill: 'reading', example: 'The ______ of the new policy was delayed. → introduction', note: l('Decide "noun" first, then find the word in the passage.', 'আগে ঠিক করো "noun", তারপর passage-এ word খোঁজো।') },
+        { skill: 'reading', example: 'The ______ of the new policy was delayed. → introduction', note: l('Decide "noun" first, then find the word in the passage.', 'আগে ঠিক করুন "noun", তারপর passage-এ word খুঁজুন।') },
         { skill: 'listening', example: 'The course is very ______. (you hear "It really helps") → useful', note: l('After "very" + be → adjective.', 'be + "very"-এর পরে → adjective।') },
         { skill: 'writing', example: 'economic growth / economical cars', note: l('Lexical Resource: the right family member shows accuracy.', 'Lexical Resource: পরিবারের সঠিক সদস্য বাছলে accuracy দেখা যায়।') },
       ],
@@ -69,18 +69,18 @@ const f1: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('pf-1-p1', C, { tag: 'word-form', prompt: l('What job does the gap need?', 'Gap-এ কোন কাজের word লাগবে?'), sentence: 'Governments should ______ public health.', options: ['a verb', 'a noun', 'an adjective'], answer: 'a verb', explanation: l('After "should" → a verb (for example: improve, protect).', '"should"-এর পরে → verb (যেমন: improve, protect)।') }),
-        choice('pf-1-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'She gave a very ______ presentation.', options: ['success', 'succeed', 'successful', 'successfully'], answer: 'successful', pos: 'adjective', wrongPos: { success: 'noun', succeed: 'verb', successfully: 'adverb' }, family: 'success', explanation: l('Before the noun "presentation" → adjective successful.', 'Noun "presentation"-এর আগে → adjective successful।') }),
-        choice('pf-1-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'The country’s ______ grew by 5% last year.', options: ['economy', 'economic', 'economically'], answer: 'economy', pos: 'noun', wrongPos: { economic: 'adjective', economically: 'adverb' }, family: 'economy', explanation: l('After "The country’s" → noun: economy.', '"The country’s"-এর পরে → noun: economy।') }),
-        choice('pf-1-p4', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'We must ______ the environment for future generations.', options: ['protect', 'protection', 'protective'], answer: 'protect', pos: 'verb', wrongPos: { protection: 'noun', protective: 'adjective' }, family: 'protect', explanation: l('After "must" → verb: protect.', '"must"-এর পরে → verb: protect।') }),
+        choice('pf-1-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'She gave a very ______ presentation.', options: ['success', 'succeed', 'successful', 'successfully'], answer: 'successful', pos: 'adjective', wrongPos: { success: 'noun', succeed: 'verb', successfully: 'adverb' }, family: 'success', explanation: l('Before the noun "presentation" → adjective successful.', 'Noun "presentation"-এর আগে → adjective successful।') }),
+        choice('pf-1-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'The country’s ______ grew by 5% last year.', options: ['economy', 'economic', 'economically'], answer: 'economy', pos: 'noun', wrongPos: { economic: 'adjective', economically: 'adverb' }, family: 'economy', explanation: l('After "The country’s" → noun: economy.', '"The country’s"-এর পরে → noun: economy।') }),
+        choice('pf-1-p4', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'We must ______ the environment for future generations.', options: ['protect', 'protection', 'protective'], answer: 'protect', pos: 'verb', wrongPos: { protection: 'noun', protective: 'adjective' }, family: 'protect', explanation: l('After "must" → verb: protect.', '"must"-এর পরে → verb: protect।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pf-1-r1', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'develop', sentence: 'The ___ of new towns has put pressure on water supplies.', accepted: ['development'], pos: 'noun', wrongPos: { develop: 'verb', developed: 'adjective', developing: 'adjective' }, family: 'develop', explanation: l('"The … of" → noun: development.', '"The … of" → noun: development।') }),
-        gap('pf-1-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'success', sentence: 'She ___ passed the exam on her first attempt.', accepted: ['successfully'], pos: 'adverb', wrongPos: { successful: 'adjective', success: 'noun', succeed: 'verb' }, family: 'success', explanation: l('Describes the verb "passed" → adverb successfully.', 'Verb "passed"-কে describe করে → adverb successfully।') }),
-        gap('pf-1-r3', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'economy', sentence: 'Tourism brings many ___ benefits to the region.', accepted: ['economic'], pos: 'adjective', wrongPos: { economy: 'noun', economically: 'adverb' }, family: 'economy', explanation: l('Before the noun "benefits", about the economy → economic.', 'Noun "benefits"-এর আগে, অর্থনীতি সংক্রান্ত → economic।'), why: { economical: l('economical = cheap to run (an economical car). Here we mean "about the economy": economic.', 'economical = কম খরচে চলে (an economical car)। এখানে "অর্থনীতি সংক্রান্ত": economic।') } }),
+        gap('pf-1-r1', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'develop', sentence: 'The ___ of new towns has put pressure on water supplies.', accepted: ['development'], pos: 'noun', wrongPos: { develop: 'verb', developed: 'adjective', developing: 'adjective' }, family: 'develop', explanation: l('"The … of" → noun: development.', '"The … of" → noun: development।') }),
+        gap('pf-1-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'success', sentence: 'She ___ passed the exam on her first attempt.', accepted: ['successfully'], pos: 'adverb', wrongPos: { successful: 'adjective', success: 'noun', succeed: 'verb' }, family: 'success', explanation: l('Describes the verb "passed" → adverb successfully.', 'Verb "passed"-কে describe করে → adverb successfully।') }),
+        gap('pf-1-r3', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'economy', sentence: 'Tourism brings many ___ benefits to the region.', accepted: ['economic'], pos: 'adjective', wrongPos: { economy: 'noun', economically: 'adverb' }, family: 'economy', explanation: l('Before the noun "benefits", about the economy → economic.', 'Noun "benefits"-এর আগে, অর্থনীতি সংক্রান্ত → economic।'), why: { economical: l('economical = cheap to run (an economical car). Here we mean "about the economy": economic.', 'economical = কম খরচে চলে (an economical car)। এখানে "অর্থনীতি সংক্রান্ত": economic।') } }),
       ],
     },
     {
@@ -94,11 +94,11 @@ const f1: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pf-1-w1', C, {
           tag: 'word-form',
-          prompt: l('Write two sentences using two forms of "success" (success, succeed, successful, successfully).', '"success" পরিবারের দুটো form দিয়ে দুটো sentence লেখো (success, succeed, successful, successfully)।'),
+          prompt: l('Write two sentences using two forms of "success" (success, succeed, successful, successfully).', '"success" পরিবারের দুটো form দিয়ে দুটো sentence লিখুন (success, succeed, successful, successfully)।'),
           model: 'My cousin is a successful engineer. He says success comes from practice every day.',
           task: 'The student writes two sentences using two different forms of the word family success/succeed/successful/successfully. Check that each form does the right job (noun, verb, adjective, adverb) in its sentence.',
           target: l('Two forms of the same family', 'একই পরিবারের দুটো form'),
@@ -109,9 +109,9 @@ const f1: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Job first, form second. Read the words around the gap.', 'আগে কাজ, তারপর form। Gap-এর আশেপাশের word পড়ো।'),
+        l('Job first, form second. Read the words around the gap.', 'আগে কাজ, তারপর form। Gap-এর আশেপাশের word পড়ুন।'),
         l('the / a / my + noun · should / can + verb · before noun = adjective · with verb = adverb.', 'the / a / my + noun · should / can + verb · noun-এর আগে = adjective · verb-এর সাথে = adverb।'),
       ],
     },
@@ -127,7 +127,7 @@ const f2: Lesson = {
     {
       kind: 'hook',
       title: l('A word you have never seen', 'কখনো না দেখা একটা word'),
-      situation: l('In a Reading passage you meet: "The urbanisation of Asia happened very quickly." You don’t know "urbanisation".', 'Reading passage-এ পেলে: "The urbanisation of Asia happened very quickly." তুমি "urbanisation" জানো না।'),
+      situation: l('In a Reading passage you meet: "The urbanisation of Asia happened very quickly." You don’t know "urbanisation".', 'Reading passage-এ পেলে: "The urbanisation of Asia happened very quickly." আপনি "urbanisation" জানেন না।'),
       question: l('What job does "urbanisation" do?', '"urbanisation" কী কাজ করছে?'),
       options: ['noun', 'verb', 'adjective'], answer: 'noun',
       diagnose: {
@@ -147,7 +147,7 @@ const f2: Lesson = {
       body: l('Many endings show the job of a word. Noun: -tion/-sion, -ment, -ness, -ity, -ance/-ence, -er/-or (a person). Adjective: -ful, -less, -ous, -ive, -al, -able/-ible, -ic. Verb: -ise/-ize, -en, -ify, -ate. Adverb: usually -ly.', 'অনেক ending word-এর কাজ বলে দেয়। Noun: -tion/-sion, -ment, -ness, -ity, -ance/-ence, -er/-or (মানুষ)। Adjective: -ful, -less, -ous, -ive, -al, -able/-ible, -ic। Verb: -ise/-ize, -en, -ify, -ate। Adverb: সাধারণত -ly।'),
       points: [
         l('Clues, not rules: "friendly" and "lovely" end in -ly but are adjectives.', 'এগুলো সূত্র, নিয়ম না: "friendly" আর "lovely"-র শেষে -ly, কিন্তু এরা adjective।'),
-        l('Always check the job in the sentence too.', 'Sentence-এ word-টার কাজও সবসময় মিলিয়ে দেখো।'),
+        l('Always check the job in the sentence too.', 'Sentence-এ word-টার কাজও সবসময় মিলিয়ে দেখুন।'),
       ],
     },
     {
@@ -182,8 +182,8 @@ const f2: Lesson = {
       title: l('Guided practice', 'Guided practice'),
       exercises: [
         choice('pf-2-p1', C, { tag: 'word-form', prompt: l('Which ending makes a noun from "happy"?', '"happy" থেকে noun বানাতে কোন ending?'), options: ['happiness', 'happily', 'happiful'], answer: 'happiness', pos: 'noun', wrongPos: { happily: 'adverb' }, explanation: l('-ness makes nouns: happiness, kindness.', '-ness দিয়ে noun হয়: happiness, kindness।') }),
-        choice('pf-2-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Plastic causes serious ______ damage.', options: ['environment', 'environmental', 'environmentally'], answer: 'environmental', pos: 'adjective', wrongPos: { environment: 'noun', environmentally: 'adverb' }, family: 'environment', explanation: l('Before the noun "damage" → adjective environmental.', 'Noun "damage"-এর আগে → adjective environmental।') }),
-        choice('pf-2-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: '______ is high among young graduates.', options: ['Unemployment', 'Unemployed', 'Unemploy'], answer: 'Unemployment', pos: 'noun', wrongPos: { Unemployed: 'adjective' }, family: 'employ', explanation: l('The subject needs a noun: unemployment (-ment).', 'Subject-এ noun লাগে: unemployment (-ment)।') }),
+        choice('pf-2-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Plastic causes serious ______ damage.', options: ['environment', 'environmental', 'environmentally'], answer: 'environmental', pos: 'adjective', wrongPos: { environment: 'noun', environmentally: 'adverb' }, family: 'environment', explanation: l('Before the noun "damage" → adjective environmental.', 'Noun "damage"-এর আগে → adjective environmental।') }),
+        choice('pf-2-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: '______ is high among young graduates.', options: ['Unemployment', 'Unemployed', 'Unemploy'], answer: 'Unemployment', pos: 'noun', wrongPos: { Unemployed: 'adjective' }, family: 'employ', explanation: l('The subject needs a noun: unemployment (-ment).', 'Subject-এ noun লাগে: unemployment (-ment)।') }),
         tagWords('pf-2-p4', C, { tag: 'word-form', sentence: 'Globalisation/noun has made/verb international/adjective travel/noun affordable/adjective.', choices: JOBS4, explanation: l('-isation (noun), -al (adjective), -able (adjective).', '-isation (noun), -al (adjective), -able (adjective)।') }),
       ],
     },
@@ -191,8 +191,8 @@ const f2: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pf-2-r1', C, { tag: 'word-form', prompt: l('Write the noun form (use -ment).', 'Noun form লেখো (-ment দিয়ে)।'), base: 'govern', sentence: 'The ___ announced a new tax.', accepted: ['government'], pos: 'noun', wrongPos: { govern: 'verb' }, family: 'govern', explanation: l('After "The" → noun: government.', '"The"-এর পরে → noun: government।') }),
-        gap('pf-2-r2', C, { tag: 'word-form', prompt: l('Write the verb form (use -en).', 'Verb form লেখো (-en দিয়ে)।'), base: 'strong', sentence: 'Regular exercise helps to ___ your heart.', accepted: ['strengthen'], pos: 'verb', wrongPos: { strong: 'adjective', strength: 'noun' }, family: 'strong', explanation: l('After "to" → verb: strengthen (make stronger).', '"to"-এর পরে → verb: strengthen (আরো শক্ত করা)।') }),
+        gap('pf-2-r1', C, { tag: 'word-form', prompt: l('Write the noun form (use -ment).', 'Noun form লিখুন (-ment দিয়ে)।'), base: 'govern', sentence: 'The ___ announced a new tax.', accepted: ['government'], pos: 'noun', wrongPos: { govern: 'verb' }, family: 'govern', explanation: l('After "The" → noun: government.', '"The"-এর পরে → noun: government।') }),
+        gap('pf-2-r2', C, { tag: 'word-form', prompt: l('Write the verb form (use -en).', 'Verb form লিখুন (-en দিয়ে)।'), base: 'strong', sentence: 'Regular exercise helps to ___ your heart.', accepted: ['strengthen'], pos: 'verb', wrongPos: { strong: 'adjective', strength: 'noun' }, family: 'strong', explanation: l('After "to" → verb: strengthen (make stronger).', '"to"-এর পরে → verb: strengthen (আরো শক্ত করা)।') }),
         spot('pf-2-r3', C, { tag: 'word-form', sentence: 'Air pollution is a serious environment problem.', wrong: 'environment', accepted: ['environmental'], pos: 'adjective', wrongPos: { environmentally: 'adverb' }, family: 'environment', explanation: l('Before the noun "problem" → environmental.', 'Noun "problem"-এর আগে → environmental।') }),
       ],
     },
@@ -207,11 +207,11 @@ const f2: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pf-2-w1', C, {
           tag: 'word-form',
-          prompt: l('Write one Task 2 style sentence with a noun ending in -tion or -ment and an adjective ending in -al.', 'এমন একটা Task 2 style sentence লেখো যেখানে -tion বা -ment ending-এর noun আর -al ending-এর adjective আছে।'),
+          prompt: l('Write one Task 2 style sentence with a noun ending in -tion or -ment and an adjective ending in -al.', 'এমন একটা Task 2 style sentence লিখুন যেখানে -tion বা -ment ending-এর noun আর -al ending-এর adjective আছে।'),
           model: 'Environmental pollution is one of the biggest problems facing the government today.',
           task: 'The student writes one Task 2 style sentence that includes a noun ending in -tion or -ment and an adjective ending in -al. Check that each word form does the right job (noun as subject/object, adjective before a noun) and overall grammar.',
           target: l('-tion / -ment noun + -al adjective', '-tion / -ment noun + -al adjective'),
@@ -222,7 +222,7 @@ const f2: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Noun: -tion, -ment, -ness, -ity. Adjective: -ful, -ous, -ive, -al, -able. Verb: -ise, -en, -ify. Adverb: -ly.', 'Noun: -tion, -ment, -ness, -ity। Adjective: -ful, -ous, -ive, -al, -able। Verb: -ise, -en, -ify। Adverb: -ly।'),
         l('Endings are clues; the job in the sentence decides.', 'Ending সূত্র; sentence-এ কাজই শেষ কথা।'),
@@ -239,8 +239,8 @@ const f3: Lesson = {
   steps: [
     {
       kind: 'hook',
-      title: l('Say it another way', 'অন্যভাবে বলো'),
-      situation: l('Task 2: you already wrote "competition" twice. Now you want to say that companies try hard to win customers.', 'Task 2: "competition" দুবার লিখে ফেলেছো। এখন বলতে চাও company-গুলো customer পেতে জোর চেষ্টা করে।'),
+      title: l('Say it another way', 'অন্যভাবে বলুন'),
+      situation: l('Task 2: you already wrote "competition" twice. Now you want to say that companies try hard to win customers.', 'Task 2: "competition" দুবার লিখে ফেলেছেন। এখন বলতে চান company-গুলো customer পেতে জোর চেষ্টা করে।'),
       question: l('Which sentence uses another member of the family correctly?', 'কোন sentence পরিবারের অন্য সদস্যকে সঠিকভাবে ব্যবহার করেছে?'),
       options: ['Companies compete for customers.', 'Companies competition for customers.', 'Companies competitive for customers.'], answer: 'Companies compete for customers.',
       diagnose: {
@@ -256,11 +256,11 @@ const f3: Lesson = {
     }),
     {
       kind: 'concept',
-      title: l('Learn the whole family', 'পুরো পরিবার শেখো'),
-      body: l('When you learn a useful word, learn its family too, and note any gaps or traps. Examples: benefit (noun/verb) · beneficial (adj) · beneficially (adv). compete (verb) · competition (noun) · competitive (adj) · competitively (adv). economy (noun) · economic / economical (adj) · economically (adv). significant (adj) · significance (noun) · significantly (adv).', 'দরকারি একটা word শেখার সময় তার পরিবারও শেখো, আর কোনো ফাঁক বা ফাঁদ থাকলে লিখে রাখো। উদাহরণ: benefit (noun/verb) · beneficial (adj) · beneficially (adv)। compete (verb) · competition (noun) · competitive (adj) · competitively (adv)। economy (noun) · economic / economical (adj) · economically (adv)। significant (adj) · significance (noun) · significantly (adv)।'),
+      title: l('Learn the whole family', 'পুরো পরিবার শিখুন'),
+      body: l('When you learn a useful word, learn its family too, and note any gaps or traps. Examples: benefit (noun/verb) · beneficial (adj) · beneficially (adv). compete (verb) · competition (noun) · competitive (adj) · competitively (adv). economy (noun) · economic / economical (adj) · economically (adv). significant (adj) · significance (noun) · significantly (adv).', 'দরকারি একটা word শেখার সময় তার পরিবারও শিখুন, আর কোনো ফাঁক বা ফাঁদ থাকলে লিখে রাখুন। উদাহরণ: benefit (noun/verb) · beneficial (adj) · beneficially (adv)। compete (verb) · competition (noun) · competitive (adj) · competitively (adv)। economy (noun) · economic / economical (adj) · economically (adv)। significant (adj) · significance (noun) · significantly (adv)।'),
       points: [
         l('Not every family has all four forms; don’t invent words ("significate" is not a word).', 'প্রতিটা পরিবারের চারটা form থাকে না; word বানিয়ো না ("significate" কোনো word না)।'),
-        l('Keep a family table for your most useful IELTS words.', 'তোমার সবচেয়ে দরকারি IELTS word গুলোর জন্য family table রাখো।'),
+        l('Keep a family table for your most useful IELTS words.', 'আপনার সবচেয়ে দরকারি IELTS word গুলোর জন্য family table রাখুন।'),
       ],
     },
     {
@@ -286,25 +286,25 @@ const f3: Lesson = {
       items: [
         { wrong: 'Exercise is very benefit for health.', right: 'Exercise is very beneficial for health.', why: l('After "very" + is → adjective: beneficial.', 'is + "very"-এর পরে → adjective: beneficial।') },
         { wrong: 'The market is very competition.', right: 'The market is very competitive.', why: l('Describing the market → adjective.', 'Market-কে describe করছি → adjective।') },
-        { wrong: 'This is significance change.', right: 'This is a significant change.', why: l('Before a noun → adjective (and add "a").', 'Noun-এর আগে → adjective (আর "a" যোগ করো)।') },
+        { wrong: 'This is significance change.', right: 'This is a significant change.', why: l('Before a noun → adjective (and add "a").', 'Noun-এর আগে → adjective (আর "a" যোগ করুন)।') },
       ],
     },
     {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pf-3-p1', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Regular exercise is ______ for your heart.', options: ['beneficial', 'benefit', 'beneficially'], answer: 'beneficial', pos: 'adjective', wrongPos: { benefit: 'noun', beneficially: 'adverb' }, family: 'benefit', explanation: l('After "is" → adjective: beneficial.', '"is"-এর পরে → adjective: beneficial।') }),
-        choice('pf-3-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Many shops ______ with online stores.', options: ['compete', 'competition', 'competitive'], answer: 'compete', pos: 'verb', wrongPos: { competition: 'noun', competitive: 'adjective' }, family: 'compete', explanation: l('After the subject → verb: compete.', 'Subject-এর পরে → verb: compete।') }),
-        choice('pf-3-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Nobody understood the ______ of the discovery at first.', options: ['significance', 'significant', 'significantly'], answer: 'significance', pos: 'noun', wrongPos: { significant: 'adjective', significantly: 'adverb' }, family: 'significant', explanation: l('"the … of" → noun: significance.', '"the … of" → noun: significance।') }),
-        choice('pf-3-p4', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বাছো।'), sentence: 'Hybrid cars are more ______ than old diesel cars.', options: ['economical', 'economic', 'economy'], answer: 'economical', pos: 'adjective', wrongPos: { economy: 'noun' }, family: 'economy', explanation: l('Cheap to run → economical.', 'কম খরচে চলে → economical।'), why: { economic: l('economic = about the economy (economic growth).', 'economic = অর্থনীতি সংক্রান্ত (economic growth)।') } }),
+        choice('pf-3-p1', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Regular exercise is ______ for your heart.', options: ['beneficial', 'benefit', 'beneficially'], answer: 'beneficial', pos: 'adjective', wrongPos: { benefit: 'noun', beneficially: 'adverb' }, family: 'benefit', explanation: l('After "is" → adjective: beneficial.', '"is"-এর পরে → adjective: beneficial।') }),
+        choice('pf-3-p2', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Many shops ______ with online stores.', options: ['compete', 'competition', 'competitive'], answer: 'compete', pos: 'verb', wrongPos: { competition: 'noun', competitive: 'adjective' }, family: 'compete', explanation: l('After the subject → verb: compete.', 'Subject-এর পরে → verb: compete।') }),
+        choice('pf-3-p3', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Nobody understood the ______ of the discovery at first.', options: ['significance', 'significant', 'significantly'], answer: 'significance', pos: 'noun', wrongPos: { significant: 'adjective', significantly: 'adverb' }, family: 'significant', explanation: l('"the … of" → noun: significance.', '"the … of" → noun: significance।') }),
+        choice('pf-3-p4', C, { tag: 'word-form', prompt: l('Choose the right form.', 'ঠিক form-টা বেছে নিন।'), sentence: 'Hybrid cars are more ______ than old diesel cars.', options: ['economical', 'economic', 'economy'], answer: 'economical', pos: 'adjective', wrongPos: { economy: 'noun' }, family: 'economy', explanation: l('Cheap to run → economical.', 'কম খরচে চলে → economical।'), why: { economic: l('economic = about the economy (economic growth).', 'economic = অর্থনীতি সংক্রান্ত (economic growth)।') } }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pf-3-r1', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'compete', sentence: 'The job market is very ___ these days.', accepted: ['competitive'], pos: 'adjective', wrongPos: { competition: 'noun', compete: 'verb', competitively: 'adverb' }, family: 'compete', explanation: l('After "very" + is → adjective: competitive.', 'is + "very"-এর পরে → adjective: competitive।') }),
-        gap('pf-3-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'benefit', sentence: 'Tourism ___ local businesses. (present, it)', accepted: ['benefits'], pos: 'verb', wrongPos: { beneficial: 'adjective' }, family: 'benefit', explanation: l('After the subject → verb: benefits.', 'Subject-এর পরে → verb: benefits।') }),
+        gap('pf-3-r1', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'compete', sentence: 'The job market is very ___ these days.', accepted: ['competitive'], pos: 'adjective', wrongPos: { competition: 'noun', compete: 'verb', competitively: 'adverb' }, family: 'compete', explanation: l('After "very" + is → adjective: competitive.', 'is + "very"-এর পরে → adjective: competitive।') }),
+        gap('pf-3-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'benefit', sentence: 'Tourism ___ local businesses. (present, it)', accepted: ['benefits'], pos: 'verb', wrongPos: { beneficial: 'adjective' }, family: 'benefit', explanation: l('After the subject → verb: benefits.', 'Subject-এর পরে → verb: benefits।') }),
         spot('pf-3-r3', C, { tag: 'word-form', sentence: 'There has been a significance change in the climate.', wrong: 'significance', accepted: ['significant'], pos: 'adjective', wrongPos: { significantly: 'adverb' }, family: 'significant', explanation: l('Before the noun "change" → significant.', 'Noun "change"-এর আগে → significant।') }),
       ],
     },
@@ -319,11 +319,11 @@ const f3: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pf-3-w1', C, {
           tag: 'word-form',
-          prompt: l('Write two sentences with two members of the "benefit" family (benefit, beneficial).', '"benefit" পরিবারের দুই সদস্য (benefit, beneficial) দিয়ে দুটো sentence লেখো।'),
+          prompt: l('Write two sentences with two members of the "benefit" family (benefit, beneficial).', '"benefit" পরিবারের দুই সদস্য (benefit, beneficial) দিয়ে দুটো sentence লিখুন।'),
           model: 'Learning a second language has many benefits. It is especially beneficial for students who want to work abroad.',
           task: 'The student writes two sentences using two forms of the benefit family (benefit as noun or verb, beneficial). Check each form does the right job and collocations (beneficial for/to, benefits of).',
           target: l('Two family members, right jobs', 'পরিবারের দুই সদস্য, ঠিক কাজে'),
@@ -334,9 +334,9 @@ const f3: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Learn words in families: compete · competition · competitive · competitively.', 'Word পরিবার ধরে শেখো: compete · competition · competitive · competitively।'),
+        l('Learn words in families: compete · competition · competitive · competitively.', 'Word পরিবার ধরে শিখুন: compete · competition · competitive · competitively।'),
         l('economic (about the economy) ≠ economical (saves money).', 'economic (অর্থনীতি সংক্রান্ত) ≠ economical (টাকা বাঁচায়)।'),
       ],
     },
@@ -405,19 +405,19 @@ const f4: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pf-4-p1', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বাছো।'), sentence: 'regular →', options: ['irregular', 'unregular', 'disregular'], answer: 'irregular', explanation: l('Before r → ir-.', 'r-এর আগে → ir-।') }),
-        choice('pf-4-p2', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বাছো।'), sentence: 'honest →', options: ['dishonest', 'unhonest', 'inhonest'], answer: 'dishonest', explanation: l('honest → dishonest.', 'honest → dishonest।') }),
-        choice('pf-4-p3', C, { tag: 'word-form', prompt: l('Choose the right word.', 'ঠিক word-টা বাছো।'), sentence: 'Rising ______ is a problem for young graduates.', options: ['unemployment', 'disemployment', 'inemployment'], answer: 'unemployment', explanation: l('employment → unemployment.', 'employment → unemployment।') }),
-        choice('pf-4-p4', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বাছো।'), sentence: 'mature →', options: ['immature', 'unmature', 'dismature'], answer: 'immature', explanation: l('Before m → im-.', 'm-এর আগে → im-।') }),
+        choice('pf-4-p1', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বেছে নিন।'), sentence: 'regular →', options: ['irregular', 'unregular', 'disregular'], answer: 'irregular', explanation: l('Before r → ir-.', 'r-এর আগে → ir-।') }),
+        choice('pf-4-p2', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বেছে নিন।'), sentence: 'honest →', options: ['dishonest', 'unhonest', 'inhonest'], answer: 'dishonest', explanation: l('honest → dishonest.', 'honest → dishonest।') }),
+        choice('pf-4-p3', C, { tag: 'word-form', prompt: l('Choose the right word.', 'ঠিক word-টা বেছে নিন।'), sentence: 'Rising ______ is a problem for young graduates.', options: ['unemployment', 'disemployment', 'inemployment'], answer: 'unemployment', explanation: l('employment → unemployment.', 'employment → unemployment।') }),
+        choice('pf-4-p4', C, { tag: 'word-form', prompt: l('Choose the opposite.', 'বিপরীতটা বেছে নিন।'), sentence: 'mature →', options: ['immature', 'unmature', 'dismature'], answer: 'immature', explanation: l('Before m → im-.', 'm-এর আগে → im-।') }),
       ],
     },
     {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pf-4-r1', C, { tag: 'word-form', prompt: l('Write the opposite of the word in brackets.', 'Bracket-এর word-এর বিপরীত লেখো।'), base: 'legal', sentence: 'Selling fake medicine is ___.', accepted: ['illegal'], explanation: l('Before l → il-: illegal.', 'l-এর আগে → il-: illegal।'), why: { unlegal: l('legal → illegal (il- before l).', 'legal → illegal (l-এর আগে il-)।') } }),
-        gap('pf-4-r2', C, { tag: 'word-form', prompt: l('Write the opposite of the word in brackets.', 'Bracket-এর word-এর বিপরীত লেখো।'), base: 'possible', sentence: 'It is ___ to learn a language in one week.', accepted: ['impossible'], explanation: l('Before p → im-: impossible.', 'p-এর আগে → im-: impossible।') }),
-        correct('pf-4-r3', C, { tag: 'word-form', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লেখো।'), sentence: 'I am disagree with this idea.', accepted: ['I disagree with this idea.'], explanation: l('disagree is a verb.', 'disagree নিজেই verb।') }),
+        gap('pf-4-r1', C, { tag: 'word-form', prompt: l('Write the opposite of the word in brackets.', 'Bracket-এর word-এর বিপরীত লিখুন।'), base: 'legal', sentence: 'Selling fake medicine is ___.', accepted: ['illegal'], explanation: l('Before l → il-: illegal.', 'l-এর আগে → il-: illegal।'), why: { unlegal: l('legal → illegal (il- before l).', 'legal → illegal (l-এর আগে il-)।') } }),
+        gap('pf-4-r2', C, { tag: 'word-form', prompt: l('Write the opposite of the word in brackets.', 'Bracket-এর word-এর বিপরীত লিখুন।'), base: 'possible', sentence: 'It is ___ to learn a language in one week.', accepted: ['impossible'], explanation: l('Before p → im-: impossible.', 'p-এর আগে → im-: impossible।') }),
+        correct('pf-4-r3', C, { tag: 'word-form', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'I am disagree with this idea.', accepted: ['I disagree with this idea.'], explanation: l('disagree is a verb.', 'disagree নিজেই verb।') }),
       ],
     },
     {
@@ -425,17 +425,17 @@ const f4: Lesson = {
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
         choice('pf-4-c1', C, { tag: 'word-form', prompt: l('Why "illegal" with double l?', '"illegal"-এ দুটো l কেন?'), options: ['il- + legal: both letters stay', 'It is a spelling mistake', 'Because it is a noun'], answer: 'il- + legal: both letters stay', explanation: l('Same with un + necessary = unnecessary.', 'un + necessary = unnecessary-তেও একই।') }),
-        spot('pf-4-c2', C, { tag: 'word-form', sentence: 'Throwing rubbish in rivers is irresponsible and unlegal.', wrong: 'unlegal', accepted: ['illegal'], fixOptions: ['illegal', 'inlegal', 'dislegal'], explanation: l('legal → illegal (il- before l). Compare: responsible → irresponsible (ir- before r).', 'legal → illegal (l-এর আগে il-)। তুলনা করো: responsible → irresponsible (r-এর আগে ir-)।') }),
+        spot('pf-4-c2', C, { tag: 'word-form', sentence: 'Throwing rubbish in rivers is irresponsible and unlegal.', wrong: 'unlegal', accepted: ['illegal'], fixOptions: ['illegal', 'inlegal', 'dislegal'], explanation: l('legal → illegal (il- before l). Compare: responsible → irresponsible (ir- before r).', 'legal → illegal (l-এর আগে il-)। তুলনা করুন: responsible → irresponsible (r-এর আগে ir-)।') }),
         choice('pf-4-c3', C, { tag: 'word-form', prompt: l('Reading: which word means "not correct"?', 'Reading: কোন word-এর অর্থ "not correct"?'), options: ['inaccurate', 'accurately', 'accuracy'], answer: 'inaccurate', explanation: l('in- + accurate.', 'in- + accurate।') }),
       ],
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pf-4-w1', C, {
           tag: 'word-form',
-          prompt: l('Write one Task 2 sentence using two prefix words (e.g. illegal, irresponsible, unemployment, impossible).', 'দুটো prefix-যুক্ত word দিয়ে (যেমন illegal, irresponsible, unemployment, impossible) একটা Task 2 sentence লেখো।'),
+          prompt: l('Write one Task 2 sentence using two prefix words (e.g. illegal, irresponsible, unemployment, impossible).', 'দুটো prefix-যুক্ত word দিয়ে (যেমন illegal, irresponsible, unemployment, impossible) একটা Task 2 sentence লিখুন।'),
           model: 'It is irresponsible and illegal to dump factory waste into rivers.',
           task: 'The student writes one Task 2 sentence with two words that have negative prefixes (un-, in-, im-, il-, ir-, dis-). Check the prefix choice and spelling, and that the word does the right job in the sentence.',
           target: l('Two negative-prefix words', 'দুটো না-বোধক prefix-যুক্ত word'),
@@ -446,7 +446,7 @@ const f4: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('un- (unhappy), in- (inaccurate), im- before p/m (impossible), il- before l (illegal), ir- before r (irregular), dis- (disagree).', 'un- (unhappy), in- (inaccurate), p/m-এর আগে im- (impossible), l-এর আগে il- (illegal), r-এর আগে ir- (irregular), dis- (disagree)।'),
         l('A prefix changes the meaning, not the job.', 'Prefix অর্থ বদলায়, কাজ না।'),
@@ -476,12 +476,12 @@ const f5: Lesson = {
     identify({
       sentence: 'Investment/noun in parks/noun improves/verb the health/noun of residents/noun.',
       choices: JOBS4,
-      pattern: l('The summary uses different jobs from the passage (invest → investment, healthier → health). Match the job, then the meaning.', 'Summary passage থেকে ভিন্ন কাজ ব্যবহার করে (invest → investment, healthier → health)। আগে কাজ মেলাও, তারপর অর্থ।'),
+      pattern: l('The summary uses different jobs from the passage (invest → investment, healthier → health). Match the job, then the meaning.', 'Summary passage থেকে ভিন্ন কাজ ব্যবহার করে (invest → investment, healthier → health)। আগে কাজ মেলান, তারপর অর্থ।'),
     }),
     {
       kind: 'concept',
       title: l('Three checks for every completion answer', 'প্রতিটা completion উত্তরের তিনটা যাচাই'),
-      body: l('1) Job: what does the gap need (noun, verb, adjective, adverb)? 2) Form: singular or plural? which tense? 3) Limit: ONE WORD / NO MORE THAN TWO WORDS. In Reading you usually copy words from the passage, so if the passage form doesn’t fit, look for another place in the passage. In Writing, choose the right family member yourself.', '১) কাজ: gap-এ কী লাগবে (noun, verb, adjective, adverb)? ২) Form: singular নাকি plural? কোন tense? ৩) Limit: ONE WORD / NO MORE THAN TWO WORDS। Reading-এ সাধারণত passage থেকে word নিতে হয়, তাই passage-এর form না মিললে passage-এর অন্য জায়গায় খোঁজো। Writing-এ পরিবারের ঠিক সদস্যটা নিজে বাছো।'),
+      body: l('1) Job: what does the gap need (noun, verb, adjective, adverb)? 2) Form: singular or plural? which tense? 3) Limit: ONE WORD / NO MORE THAN TWO WORDS. In Reading you usually copy words from the passage, so if the passage form doesn’t fit, look for another place in the passage. In Writing, choose the right family member yourself.', '১) কাজ: gap-এ কী লাগবে (noun, verb, adjective, adverb)? ২) Form: singular নাকি plural? কোন tense? ৩) Limit: ONE WORD / NO MORE THAN TWO WORDS। Reading-এ সাধারণত passage থেকে word নিতে হয়, তাই passage-এর form না মিললে passage-এর অন্য জায়গায় খুঁজুন। Writing-এ পরিবারের ঠিক সদস্যটা নিজে বেছে নিন।'),
       points: [
         l('Listening: plural -s and spelling count. "two photographs", not "two photograph".', 'Listening: plural -s আর বানান গোনা হয়। "two photographs", "two photograph" না।'),
       ],
@@ -499,8 +499,8 @@ const f5: Lesson = {
       kind: 'ielts',
       title: l('Where you will use this', 'কোথায় লাগবে'),
       uses: [
-        { skill: 'reading', example: 'Summary, note, table and sentence completion.', note: l('Predict the job of each gap before you read the passage.', 'Passage পড়ার আগে প্রতিটা gap-এর কাজ আন্দাজ করো।') },
-        { skill: 'listening', example: 'Form completion: "Reason for visit: ______"', note: l('Usually a noun; check number and spelling.', 'সাধারণত noun; সংখ্যা আর বানান দেখো।') },
+        { skill: 'reading', example: 'Summary, note, table and sentence completion.', note: l('Predict the job of each gap before you read the passage.', 'Passage পড়ার আগে প্রতিটা gap-এর কাজ আন্দাজ করুন।') },
+        { skill: 'listening', example: 'Form completion: "Reason for visit: ______"', note: l('Usually a noun; check number and spelling.', 'সাধারণত noun; সংখ্যা আর বানান দেখুন।') },
         { skill: 'writing', example: 'Economic growth has improved living standards significantly.', note: l('Task 2: each family member in its right place shows accuracy.', 'Task 2: পরিবারের প্রতিটা সদস্য ঠিক জায়গায় থাকলে accuracy দেখা যায়।') },
       ],
     },
@@ -517,9 +517,9 @@ const f5: Lesson = {
       kind: 'practice',
       title: l('Guided practice', 'Guided practice'),
       exercises: [
-        choice('pf-5-p1', C, { tag: 'word-form', prompt: l('Predict the job of the gap.', 'Gap-এর কাজ আন্দাজ করো।'), sentence: 'Visitors can ______ the gardens for free.', options: ['a verb', 'a noun', 'an adjective'], answer: 'a verb', explanation: l('After "can" → verb.', '"can"-এর পরে → verb।') }),
+        choice('pf-5-p1', C, { tag: 'word-form', prompt: l('Predict the job of the gap.', 'Gap-এর কাজ আন্দাজ করুন।'), sentence: 'Visitors can ______ the gardens for free.', options: ['a verb', 'a noun', 'an adjective'], answer: 'a verb', explanation: l('After "can" → verb.', '"can"-এর পরে → verb।') }),
         choice('pf-5-p2', C, { tag: 'word-form', prompt: l('Passage: "The town grew rapidly." Summary: "The town experienced ______ growth." (ONE WORD)', 'Passage: "The town grew rapidly." Summary: "The town experienced ______ growth." (ONE WORD)'), options: ['rapid', 'rapidly', 'rapidity'], answer: 'rapid', pos: 'adjective', wrongPos: { rapidly: 'adverb', rapidity: 'noun' }, family: 'rapid', explanation: l('Before the noun "growth" → adjective: rapid.', 'Noun "growth"-এর আগে → adjective: rapid।') }),
-        choice('pf-5-p3', C, { tag: 'word-form', prompt: l('Listening: you hear "We offer lessons in painting and drawing." Complete: "Classes: ______ and drawing".', 'Listening: তুমি শুনলে "We offer lessons in painting and drawing." পূরণ করো: "Classes: ______ and drawing"।'), options: ['painting', 'paint', 'painted'], answer: 'painting', pos: 'noun', wrongPos: { paint: 'verb', painted: 'adjective' }, explanation: l('Parallel with "drawing" → painting.', '"drawing"-এর সাথে মিলিয়ে → painting।') }),
+        choice('pf-5-p3', C, { tag: 'word-form', prompt: l('Listening: you hear "We offer lessons in painting and drawing." Complete: "Classes: ______ and drawing".', 'Listening: আপনি শুনলে "We offer lessons in painting and drawing." পূরণ করুন: "Classes: ______ and drawing"।'), options: ['painting', 'paint', 'painted'], answer: 'painting', pos: 'noun', wrongPos: { paint: 'verb', painted: 'adjective' }, explanation: l('Parallel with "drawing" → painting.', '"drawing"-এর সাথে মিলিয়ে → painting।') }),
         choice('pf-5-p4', C, { tag: 'word-form', prompt: l('Which answer fits "NO MORE THAN TWO WORDS"?', 'কোন উত্তর "NO MORE THAN TWO WORDS"-এ বসে?'), sentence: 'The meeting will be held in the ______.', options: ['main hall', 'big main hall', 'hall of the main building'], answer: 'main hall', explanation: l('Two words maximum.', 'সর্বোচ্চ দুই word।') }),
       ],
     },
@@ -527,8 +527,8 @@ const f5: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        gap('pf-5-r1', C, { tag: 'word-form', prompt: l('Passage: "Cities that invest in parks…" Write ONE WORD (a noun from "invest").', 'Passage: "Cities that invest in parks…" ONE WORD লেখো ("invest" থেকে noun)।'), base: 'invest', sentence: '___ in parks improves public health.', accepted: ['investment', 'investing'], pos: 'noun', wrongPos: { invest: 'verb', invested: 'adjective' }, family: 'invest', explanation: l('The subject needs a noun: Investment.', 'Subject-এ noun লাগে: Investment।') }),
-        gap('pf-5-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লেখো।'), base: 'extreme', sentence: 'The museum is ___ popular with children.', accepted: ['extremely'], pos: 'adverb', wrongPos: { extreme: 'adjective' }, family: 'extreme', explanation: l('Before the adjective "popular" → adverb.', 'Adjective "popular"-এর আগে → adverb।') }),
+        gap('pf-5-r1', C, { tag: 'word-form', prompt: l('Passage: "Cities that invest in parks…" Write ONE WORD (a noun from "invest").', 'Passage: "Cities that invest in parks…" ONE WORD লিখুন ("invest" থেকে noun)।'), base: 'invest', sentence: '___ in parks improves public health.', accepted: ['investment', 'investing'], pos: 'noun', wrongPos: { invest: 'verb', invested: 'adjective' }, family: 'invest', explanation: l('The subject needs a noun: Investment.', 'Subject-এ noun লাগে: Investment।') }),
+        gap('pf-5-r2', C, { tag: 'word-form', prompt: l('Write the right form of the word in brackets.', 'Bracket-এর word-এর ঠিক form লিখুন।'), base: 'extreme', sentence: 'The museum is ___ popular with children.', accepted: ['extremely'], pos: 'adverb', wrongPos: { extreme: 'adjective' }, family: 'extreme', explanation: l('Before the adjective "popular" → adverb.', 'Adjective "popular"-এর আগে → adverb।') }),
         spot('pf-5-r3', C, { tag: 'word-form', sentence: 'Parks improve the healthy of local residents.', wrong: 'healthy', accepted: ['health'], pos: 'noun', wrongPos: { healthier: 'adjective', healthily: 'adverb' }, family: 'health', explanation: l('the … of → noun: health.', 'the … of → noun: health।') }),
       ],
     },
@@ -543,11 +543,11 @@ const f5: Lesson = {
     },
     {
       kind: 'practice', mode: 'personal',
-      title: l('Use it yourself', 'নিজে ব্যবহার করো'),
+      title: l('Use it yourself', 'নিজে ব্যবহার করুন'),
       exercises: [
         write('pf-5-w1', C, {
           tag: 'word-form',
-          prompt: l('Task 2: write one sentence about technology with a noun, an adjective and an adverb from different families (e.g. development, significant, rapidly).', 'Task 2: technology নিয়ে একটা sentence লেখো, ভিন্ন পরিবারের একটা noun, একটা adjective আর একটা adverb দিয়ে (যেমন development, significant, rapidly)।'),
+          prompt: l('Task 2: write one sentence about technology with a noun, an adjective and an adverb from different families (e.g. development, significant, rapidly).', 'Task 2: technology নিয়ে একটা sentence লিখুন, ভিন্ন পরিবারের একটা noun, একটা adjective আর একটা adverb দিয়ে (যেমন development, significant, rapidly)।'),
           model: 'The rapid development of technology has significantly changed the way people communicate.',
           task: 'The student writes one Task 2 sentence about technology that includes a noun, an adjective and an adverb formed from word families (e.g. development, significant, rapidly). Check each word form does its correct job and the sentence is grammatical.',
           target: l('A noun, an adjective and an adverb, each in its job', 'একটা noun, একটা adjective আর একটা adverb, প্রতিটা নিজের কাজে'),
@@ -558,7 +558,7 @@ const f5: Lesson = {
     },
     {
       kind: 'recall',
-      title: l('Remember', 'মনে রাখো'),
+      title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Completion: job → form → word limit.', 'Completion: কাজ → form → word limit।'),
         l('If the passage form doesn’t fit, the answer is somewhere else in the passage.', 'Passage-এর form না মিললে উত্তর passage-এর অন্য কোথাও।'),
