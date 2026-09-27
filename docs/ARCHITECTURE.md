@@ -49,7 +49,7 @@ Known issues left for follow-up:
   /grammar, /mock-tests                         (planned)
   /band-calculator     Band score calculator    (live, saves to profile)
 /mino                  Mino: next 3 actions, chat entry, context transparency
-/abroad                Study Abroad hub: journey + section groups
+/abroad                Study Abroad home: 10-stage journey, next action, dream country (see docs/STUDY_ABROAD.md)
   /countries           Country Explorer         (live, registry only)
   /country-match|universities|cost|scholarships|deadlines|applications|documents|visa|pre-departure  (planned)
 /profile               Account, goals, membership, tools, sign out
@@ -101,8 +101,8 @@ Defined in `lib/models/`. Implemented now: `UserProfile` (with `IELTSProfile`,
   (Encountered → Recognised → Understood → Retrievable → Usable → Transferable → Mastered) and per-word
   `MasteryDimension`s (recognition, meaning, collocation, writing, speaking, new context)
 - Reading: `ReadingPassage` (extends `ContentProvenance`), `ReadingAttempt`
-- Study abroad: `Country`, `University`, `Course`, `Intake`, `Deadline`, `Scholarship`, `Application`,
-  `StudentDocument`, `StudyAbroadTask`
+- Study abroad: `Country` (+ 24 `CountrySection`s, `RoadmapOverride`), `University`, `Program`,
+  `Scholarship`, `Deadline`, `VisaGuide`, `DocumentGuide` (see docs/STUDY_ABROAD.md)
 - Mino: `MinoConversation`, `MinoMessage`, `MinoRecommendation`
 
 ### Trust and provenance
@@ -160,7 +160,7 @@ login screen. If the Firebase env vars are absent, the app starts as a guest aut
 | Daily plan | `lib/engine/daily-plan.ts` | 3 tasks, checkable; 15-minute minimum day; catch-up after 3+ inactive days |
 | Information gaps | `lib/engine/profile-gaps.ts` | The single next missing fact, shown on Home and as Mino's first next step |
 | Active vocabulary | `lib/engine/vocabulary.ts` | Recall-first flashcards: seen vs. active (recalled ≥ missed) |
-| Study Abroad journey | `lib/engine/abroad-journey.ts` | Goal → Destination → IELTS → University → Scholarship → Application → Visa → Departure, completion-based |
+| Study Abroad journey | `lib/engine/abroad-journey.ts` | 10 stages for one dream country (Discover → Prepare to travel) + 16-step country roadmap; statuses computed, only ticks/dates stored |
 
 ### IELTS journey completion rules
 
