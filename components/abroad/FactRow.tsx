@@ -2,7 +2,7 @@
 
 import { AlertTriangle, CheckCircle2, ExternalLink } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { factNeedsReview } from '@/lib/abroad/sections';
+import { factStatus } from '@/lib/abroad/sections';
 import type { CountrySectionId, Money, SectionFact } from '@/lib/models';
 import { useBilingual } from './useBilingual';
 
@@ -25,10 +25,11 @@ export function FactRow({ item, sectionId }: { item: SectionFact; sectionId?: Co
   const text = useBilingual();
   const date = useFormatDate();
   const { fact } = item;
-  const stale = factNeedsReview(fact, sectionId);
+  const status = factStatus(fact, sectionId);
+  const stale = status === 'needs-review';
   const value = typeof fact.value === 'object' ? formatMoney(fact.value) : String(fact.value);
   return (
-    <div className="space-y-1.5 py-3 first:pt-0 last:pb-0" data-fact>
+    <div className="space-y-1.5 py-3 first:pt-0 last:pb-0" data-fact data-fact-status={status}>
       <p className="text-xs font-medium text-muted-foreground">{text(item.label)}</p>
       <p className="text-[15px] leading-relaxed">{value}</p>
       {fact.notes && <p className="text-sm text-muted-foreground">{fact.notes}</p>}
@@ -43,6 +44,7 @@ export function FactRow({ item, sectionId }: { item: SectionFact; sectionId?: Co
             fact.source.name
           )}{' '}
           · {t('sa.hub.verifiedOn', { date: date(fact.lastVerified) })}
+          {status === 'partly-verified' && <span className="block">{t('sa.sectionStatus.partial')}</span>}
           {stale && <span className="block">{t('sa.hub.needsReview')}</span>}
         </span>
       </p>

@@ -90,13 +90,44 @@ export const COUNTRY_SECTION_IDS = [
   'why', 'education', 'subjects', 'cities', 'universities', 'tuition', 'living', 'work', 'scholarships',
   'admission', 'english', 'documents', 'application', 'offer', 'visa', 'visa-fees', 'accommodation',
   'student-life', 'culture', 'safety', 'post-study', 'deadlines', 'faq', 'journey',
+  // Appended (never inserted) so 01–24 keep their numbers.
+  'arrival',
 ] as const;
 export type CountrySectionId = (typeof COUNTRY_SECTION_IDS)[number];
+
+/**
+ * Who a piece of content applies to. Values are ids the country defines (e.g.
+ * pathways "degree" / "language"); absent = applies to everyone. The engine
+ * never assumes a country-specific value.
+ */
+export interface Applicability {
+  pathways?: string[];
+  degreeLevels?: DegreeLevel[];
+}
 
 /** A fact in a section: what it is, and the sourced value. */
 export interface SectionFact {
   label: Bilingual;
   fact: SourcedValue<string | Money | number>;
+  appliesTo?: Applicability;
+}
+
+/**
+ * A titled, sourced block inside a section (e.g. "Korean language / TOPIK"
+ * inside Language requirements, "Who may this suit?" inside Why study here).
+ * Keeps the 01–24 section numbering stable while a country adds depth.
+ */
+export interface SectionBlock {
+  id: string;
+  title: Bilingual;
+  facts?: SectionFact[];
+  /** General guidance (not an official fact); shown labelled as such. */
+  guidance?: Bilingual;
+  /** Official pages to read, even before facts are verified. */
+  links?: SourceRef[];
+  /** A reviewer confirmed the facts answer the block fully. */
+  complete?: boolean;
+  appliesTo?: Applicability;
 }
 
 /** Reviewed content for one section of one country. */
@@ -108,6 +139,8 @@ export interface CountrySection {
   explanation?: Bilingual;
   /** Official pages to read, even before facts are verified. */
   links?: SourceRef[];
+  /** Deeper sourced blocks inside this section. */
+  blocks?: SectionBlock[];
 }
 
 export interface University extends Partial<ContentMeta> {

@@ -1,4 +1,16 @@
-import { COUNTRY_SECTION_IDS, type Country, type CountrySection, type CountrySectionId, type SectionFact, type SourcedValue } from '@/lib/models';
+import {
+  COUNTRY_SECTION_IDS,
+  type Applicability,
+  type Country,
+  type CountrySection,
+  type CountrySectionId,
+  type FactStatus,
+  type SectionBlock,
+  type SectionFact,
+  type SourceRef,
+  type SourcedValue,
+} from '@/lib/models';
+import type { DegreeLevel } from '@/lib/constants';
 
 /** The six tabs of a country hub, in order. */
 export const HUB_TABS = ['overview', 'universities', 'money', 'apply', 'visa', 'roadmap'] as const;
@@ -34,6 +46,7 @@ export const SECTION_DEFS: Record<CountrySectionId, { tab: HubTab; action?: { id
   deadlines: { tab: 'apply', action: { id: 'deadlines', href: '/abroad/deadlines?country={code}' } },
   faq: { tab: 'overview', action: { id: 'ask', href: '/mino?ask=abroad-fit&country={code}' } },
   journey: { tab: 'roadmap', action: { id: 'roadmap', href: '/abroad/countries/{code}/roadmap' } },
+  arrival: { tab: 'visa', action: { id: 'roadmap', href: '/abroad/countries/{code}/roadmap' } },
 };
 
 /** Sections of one tab, in the approved 01–24 order. */
@@ -50,27 +63,104 @@ export const REVIEW_AFTER_DAYS: Partial<Record<CountrySectionId, number>> = {
   deadlines: 60,
   'post-study': 180,
   work: 365,
+  arrival: 180,
 };
 const DEFAULT_REVIEW_DAYS = 365;
 const DAY = 86_400_000;
 
-/** True when a fact is past its review date, expired, or not yet in force. */
+/**
+ * True when a fact is past its review date, expired, not yet in force, or
+ * flagged by a reviewer. The review window counts from the latest of
+ * lastVerified and reviewedAt.
+ */
 export function factNeedsReview(fact: SourcedValue<unknown>, sectionId: CountrySectionId | undefined, now = new Date()): boolean {
   const t = now.getTime();
+  if (fact.status === 'needs-review') return true;
   if (fact.validUntil && Date.parse(fact.validUntil) < t) return true;
+  if (fact.validFrom && Date.parse(fact.validFrom) > t) return true;
   if (fact.reviewAt) return Date.parse(fact.reviewAt) <= t;
   const days = (sectionId && REVIEW_AFTER_DAYS[sectionId]) ?? DEFAULT_REVIEW_DAYS;
-  return Date.parse(fact.lastVerified) + days * DAY < t;
+  const checked = Math.max(Date.parse(fact.lastVerified), fact.reviewedAt ? Date.parse(fact.reviewedAt) : 0);
+  return checked + days * DAY < t;
 }
 
-export type SectionStatus = 'verified' | 'partial' | 'not-yet';
+/** The status a student sees for one fact: the reviewer's judgement, overridden by dates. */
+export function factStatus(fact: SourcedValue<unknown>, sectionId: CountrySectionId | undefined, now = new Date()): FactStatus {
+  if (fact.status === 'not-verified') return 'not-verified';
+  if (factNeedsReview(fact, sectionId, now)) return 'needs-review';
+  return fact.status ?? 'verified';
+}
 
-export interface ResolvedSection extends CountrySection {
+/** Status of a section or block (a group of facts). */
+export type SectionStatus = 'verified' | 'partial' | 'needs-review' | 'not-yet';
+
+/**
+ * Only facts a student may see count: "not-verified" facts are never shown
+ * (their source becomes an official page to read instead).
+ */
+export function groupStatus(facts: SectionFact[], complete: boolean | undefined, reviewAs: CountrySectionId | undefined, now = new Date()): SectionStatus {
+  if (facts.length === 0) return 'not-yet';
+  const statuses = facts.map((f) => factStatus(f.fact, reviewAs, now));
+  if (statuses.includes('needs-review')) return 'needs-review';
+  if (statuses.includes('partly-verified') || !complete) return 'partial';
+  return 'verified';
+}
+
+/** Splits facts into the ones to show and the sources of hidden (not-verified) ones. */
+export function visibleFacts(facts: SectionFact[]): { shown: SectionFact[]; pending: SourceRef[] } {
+  const shown: SectionFact[] = [];
+  const pending: SourceRef[] = [];
+  for (const f of facts) {
+    if (f.fact.status === 'not-verified') {
+      if (f.fact.source.url && !pending.some((p) => p.url === f.fact.source.url)) pending.push(f.fact.source);
+    } else shown.push(f);
+  }
+  return { shown, pending };
+}
+
+/** What we know about the student, for filtering content by applicability. */
+export interface ApplicabilityContext {
+  pathway?: string;
+  degreeLevel?: DegreeLevel;
+}
+
+/**
+ * Whether content applies to the student. Unknown student answers never hide
+ * content (they see everything, labelled with who it is for).
+ */
+export function appliesTo(app: Applicability | undefined, ctx: ApplicabilityContext = {}): boolean {
+  if (!app) return true;
+  if (app.pathways?.length && ctx.pathway && !app.pathways.includes(ctx.pathway)) return false;
+  if (app.degreeLevels?.length && ctx.degreeLevel && !app.degreeLevels.includes(ctx.degreeLevel)) return false;
+  return true;
+}
+
+export interface ResolvedBlock extends Omit<SectionBlock, 'facts'> {
+  status: SectionStatus;
+  facts: SectionFact[];
+  stale: number;
+}
+
+function resolveBlock(block: SectionBlock, reviewAs: CountrySectionId, now: Date): ResolvedBlock {
+  const { shown, pending } = visibleFacts(block.facts ?? []);
+  const links = [...(block.links ?? []), ...pending.filter((p) => !block.links?.some((l) => l.url === p.url))];
+  return {
+    ...block,
+    facts: shown,
+    ...(links.length ? { links } : {}),
+    status: groupStatus(shown, block.complete, reviewAs, now),
+    stale: shown.filter((f) => factNeedsReview(f.fact, reviewAs, now)).length,
+  };
+}
+
+export interface ResolvedSection extends Omit<CountrySection, 'blocks'> {
   id: CountrySectionId;
   number: string;
   tab: HubTab;
+  /** Status over the section's own facts and all its blocks. */
   status: SectionStatus;
   facts: SectionFact[];
+  blocks: ResolvedBlock[];
   /** Facts that must be checked again before they are relied on. */
   stale: number;
 }
@@ -98,15 +188,24 @@ function derivedFacts(country: Country): Partial<Record<CountrySectionId, Sectio
   };
 }
 
-/** Every section of a country, with its facts and a computed status. */
-export function countrySections(country: Country, now = new Date()): ResolvedSection[] {
+/**
+ * Every section of a country, with its facts, blocks and a computed status.
+ * A section is "verified" only when it and every block with facts are.
+ * With a context, facts and blocks for other pathways/degrees are left out.
+ */
+export function countrySections(country: Country, now = new Date(), ctx?: ApplicabilityContext): ResolvedSection[] {
   const derived = derivedFacts(country);
   return COUNTRY_SECTION_IDS.map((id) => {
-    const own = country.sections?.[id] ?? {};
-    const facts = [...(derived[id] ?? []), ...(own.facts ?? [])];
-    const stale = facts.filter((f) => factNeedsReview(f.fact, id, now)).length;
-    const status: SectionStatus = facts.length === 0 ? 'not-yet' : own.complete && stale === 0 ? 'verified' : 'partial';
-    return { ...own, id, number: sectionNumber(id), tab: SECTION_DEFS[id].tab, status, facts, stale };
+    const { blocks: ownBlocks, ...own } = country.sections?.[id] ?? {};
+    const { shown, pending } = visibleFacts([...(derived[id] ?? []), ...(own.facts ?? [])].filter((f) => appliesTo(f.appliesTo, ctx)));
+    const blocks = (ownBlocks ?? []).filter((b) => appliesTo(b.appliesTo, ctx)).map((b) => resolveBlock({ ...b, facts: b.facts?.filter((f) => appliesTo(f.appliesTo, ctx)) }, id, now));
+    const links = [...(own.links ?? []), ...pending.filter((p) => !own.links?.some((l) => l.url === p.url))];
+    const ownStatus = groupStatus(shown, own.complete, id, now);
+    const withFacts = [...(shown.length ? [ownStatus] : []), ...blocks.filter((b) => b.facts.length).map((b) => b.status)];
+    const status: SectionStatus =
+      withFacts.length === 0 ? 'not-yet' : withFacts.includes('needs-review') ? 'needs-review' : withFacts.every((x) => x === 'verified') ? 'verified' : 'partial';
+    const stale = shown.filter((f) => factNeedsReview(f.fact, id, now)).length + blocks.reduce((n, b) => n + b.stale, 0);
+    return { ...own, ...(links.length ? { links } : {}), id, number: sectionNumber(id), tab: SECTION_DEFS[id].tab, status, facts: shown, blocks, stale };
   });
 }
 

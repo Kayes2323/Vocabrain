@@ -21,6 +21,25 @@ Phase 3 (3A–3Q) turns Study Abroad from a country list into a guided journey:
 - Mino separates **VERIFIED** facts (with source + date) from **GENERAL
   GUIDANCE**, and says “not verified yet” instead of filling gaps.
 
+## Sourced facts (Korea Phase B1)
+
+- `SourcedValue` also carries `reviewedAt` (last re-read of the source), `status`
+  (`verified` · `partly-verified` · `not-verified` · `needs-review`) and an internal
+  `confidence` (never shown as a score).
+- `factStatus()` = the reviewer's judgement, overridden by dates: past the review
+  window (counted from the later of `lastVerified` / `reviewedAt`), past
+  `validUntil`, before `validFrom`, or flagged → **needs-review**.
+- A `not-verified` fact is never displayed; its source is offered as an official
+  page to read instead.
+- Group status (section / block / visa part): not-yet → partial → needs-review → verified
+  (`groupStatus()`); a section is verified only when every part with facts is.
+- **Blocks:** `CountrySection.blocks` add titled, sourced depth (facts, labelled
+  general guidance, official links) without new section ids.
+- **Applicability:** facts and blocks may carry `appliesTo { pathways, degreeLevels }`;
+  `countrySections(country, now, ctx)` filters them, and unknown answers hide nothing.
+- Section **25 · Arrival** was appended (Visa & life tab), so 01–24 keep their numbers.
+  Section 11 is now “Language requirements” (English + e.g. Korean/TOPIK blocks).
+
 ## Routes
 
 | Route | What |

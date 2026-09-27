@@ -5,13 +5,18 @@ import { ArrowRight, ChevronDown, ExternalLink, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import type { SectionStatus } from '@/lib/abroad/sections';
+import type { ResolvedBlock, SectionStatus } from '@/lib/abroad/sections';
 import type { Bilingual, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { FactRow } from './FactRow';
 import { useBilingual } from './useBilingual';
 
-export const SECTION_TONE: Record<SectionStatus, 'success' | 'brand' | 'neutral'> = { verified: 'success', partial: 'brand', 'not-yet': 'neutral' };
+export const SECTION_TONE: Record<SectionStatus, 'success' | 'brand' | 'neutral' | 'warning'> = {
+  verified: 'success',
+  partial: 'brand',
+  'needs-review': 'warning',
+  'not-yet': 'neutral',
+};
 
 /** What a card needs: a country section, a visa part, or any other sourced block. */
 export interface SectionCardData {
@@ -21,6 +26,7 @@ export interface SectionCardData {
   facts: SectionFact[];
   links?: SourceRef[];
   explanation?: Bilingual;
+  blocks?: ResolvedBlock[];
 }
 
 export interface SectionAction {
@@ -93,6 +99,34 @@ export function SectionCard({
               </a>
             ))}
           </div>
+          {section.blocks?.map((b) => (
+            <div key={b.id} className="space-y-2 border-l-2 pl-3" data-block={b.id} data-status={b.status}>
+              <div className="flex items-center gap-2">
+                <p className="min-w-0 flex-1 text-sm font-semibold">{text(b.title)}</p>
+                <StatusChip tone={SECTION_TONE[b.status]}>{t(`sa.sectionStatus.${b.status}`)}</StatusChip>
+              </div>
+              {b.facts.length > 0 ? (
+                <div className="divide-y">
+                  {b.facts.map((f, i) => (
+                    <FactRow key={i} item={f} sectionId={reviewAs ?? (section.id as CountrySectionId)} />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">{t('sa.sectionStatus.not-yet')}</p>
+              )}
+              {b.links?.map((l) => (
+                <a key={l.url ?? l.name} href={l.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-sm font-medium text-brand">
+                  {l.name} <ExternalLink className="size-3.5" aria-hidden />
+                </a>
+              ))}
+              {b.guidance && (
+                <p className="rounded-lg bg-muted/60 px-3 py-2 text-sm text-foreground/80">
+                  <span className="font-medium">{t('sa.hub.generalGuidance')}: </span>
+                  {text(b.guidance)}
+                </p>
+              )}
+            </div>
+          ))}
           <div className="space-y-2 rounded-xl bg-brand-soft/60 p-3.5">
             <p className="inline-flex rounded-md bg-brand-soft px-2 py-0.5 text-[11px] font-semibold tracking-wider text-brand uppercase">{t('sa.hub.mino')}</p>
             <p className="text-sm text-foreground/80">

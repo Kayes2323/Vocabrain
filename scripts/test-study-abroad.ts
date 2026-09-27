@@ -17,7 +17,8 @@ import { DOCUMENT_GUIDES } from '../lib/content/documents';
 import { ROADMAP_TEMPLATE } from '../lib/content/roadmap';
 import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
 import { countryHref, countryIndicators } from '../lib/abroad/countries';
-import { actionHref, countrySections, factNeedsReview, HUB_TABS, SECTION_DEFS, sectionsOfTab } from '../lib/abroad/sections';
+import { actionHref, appliesTo, countrySections, factNeedsReview, factStatus, groupStatus, HUB_TABS, SECTION_DEFS, sectionNumber, sectionsOfTab } from '../lib/abroad/sections';
+import type { Country, SectionFact } from '../lib/models';
 import { deadlineBucket, scholarshipStatus } from '../lib/abroad/status';
 import { COUNTRY_SECTION_IDS } from '../lib/models';
 
@@ -157,8 +158,11 @@ test('country cards only claim what is verified', () => {
 });
 
 // ---------------------------------------------------------------- 3C/3D hub + models
-test('hub: 24 sections in the approved order, spread over 6 tabs; every tab has sections', () => {
-  assert.equal(COUNTRY_SECTION_IDS.length, 24);
+test('hub: 24 sections in the approved order (+ Arrival appended as 25), spread over 6 tabs', () => {
+  assert.equal(COUNTRY_SECTION_IDS.length, 25);
+  assert.equal(sectionNumber('journey'), '24', 'appending never renumbers 01–24');
+  assert.equal(sectionNumber('arrival'), '25');
+  assert.deepEqual(sectionsOfTab('visa'), ['visa', 'visa-fees', 'accommodation', 'post-study', 'arrival']);
   assert.deepEqual([...HUB_TABS], ['overview', 'universities', 'money', 'apply', 'visa', 'roadmap']);
   assert.deepEqual(sectionsOfTab('money'), ['tuition', 'living', 'work', 'scholarships']);
   assert.deepEqual(sectionsOfTab('apply'), ['admission', 'english', 'documents', 'application', 'offer', 'deadlines']);
@@ -168,7 +172,7 @@ test('hub: 24 sections in the approved order, spread over 6 tabs; every tab has 
 });
 
 test('hub: the same template serves every country; statuses come from verified facts only', () => {
-  for (const c of COUNTRIES) assert.equal(countrySections(c, NOW).length, 24, c.code);
+  for (const c of COUNTRIES) assert.equal(countrySections(c, NOW).length, COUNTRY_SECTION_IDS.length, c.code);
   const kr = countrySections(getCountry('KR')!, NOW);
   assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0), 'no facts → not verified yet');
   const de = countrySections(getCountry('DE')!, NOW);
@@ -182,7 +186,7 @@ test('hub: an old fact needs review and is no longer "verified"; reviewAt overri
   const later = new Date('2027-10-01T00:00:00Z');
   const de = countrySections(getCountry('DE')!, later).find((s) => s.id === 'work')!;
   assert.equal(de.stale, 1);
-  assert.equal(de.status, 'partial');
+  assert.equal(de.status, 'needs-review');
   const f = { value: 'x', source: { name: 's', url: 'https://x', sourceType: 'official-government' as const }, lastVerified: '2026-09-26' };
   assert.equal(factNeedsReview(f, 'deadlines', new Date('2026-12-01')), true, 'deadlines: 60 days');
   assert.equal(factNeedsReview({ ...f, reviewAt: '2027-06-01' }, 'deadlines', new Date('2026-12-01')), false);
@@ -407,6 +411,89 @@ test('Mino summary: same numbers as the screens; student text is quoted; every a
   for (const href of Object.values(MINO_ACTIONS).filter((h) => h.startsWith('/abroad'))) {
     assert.ok(['/abroad', '/abroad/countries', '/abroad/country-match', '/abroad/compare', '/abroad/universities', '/abroad/scholarships', '/abroad/deadlines', '/abroad/documents', '/abroad/visa'].includes(href), href);
   }
+});
+
+// ---------------------------------------------------------------- Korea B1: sourced schema
+const SRC = { name: 'Official page', url: 'https://example.go.kr/page', sourceType: 'official-government' as const };
+const fact = (over: Partial<SectionFact['fact']> = {}): SectionFact => ({ label: { en: 'L', bn: 'L' }, fact: { value: 'v', source: SRC, lastVerified: '2026-09-27', ...over } });
+const KR_TEST = (sections: Country['sections']): Country => ({ ...getCountry('KR')!, sections });
+
+test('B1 fact status: stored judgement, overridden by dates; reviewedAt restarts the window; validFrom not yet in force', () => {
+  const now = new Date('2026-10-01T00:00:00Z');
+  assert.equal(factStatus(fact().fact, 'work', now), 'verified');
+  assert.equal(factStatus(fact({ status: 'partly-verified' }).fact, 'work', now), 'partly-verified');
+  assert.equal(factStatus(fact({ status: 'not-verified' }).fact, 'work', now), 'not-verified');
+  assert.equal(factStatus(fact({ status: 'needs-review' }).fact, 'work', now), 'needs-review', 'a reviewer can flag a change');
+  const old = fact({ lastVerified: '2025-01-01' }).fact;
+  assert.equal(factStatus(old, 'visa', now), 'needs-review', 'visa: 90-day window');
+  assert.equal(factStatus({ ...old, reviewedAt: '2026-09-20' }, 'visa', now), 'verified', 're-reviewed recently');
+  assert.equal(factStatus(fact({ validFrom: '2027-01-01' }).fact, 'work', now), 'needs-review', 'announced rule not in force yet');
+  assert.equal(factStatus(fact({ confidence: 'low' }).fact, 'work', now), 'verified', 'confidence is internal, never changes status');
+});
+
+test('B1 group status: not-yet / partial / needs-review / verified', () => {
+  const now = new Date('2026-10-01T00:00:00Z');
+  assert.equal(groupStatus([], true, 'work', now), 'not-yet');
+  assert.equal(groupStatus([fact()], false, 'work', now), 'partial', 'not reviewed as complete');
+  assert.equal(groupStatus([fact()], true, 'work', now), 'verified');
+  assert.equal(groupStatus([fact(), fact({ status: 'partly-verified' })], true, 'work', now), 'partial');
+  assert.equal(groupStatus([fact(), fact({ lastVerified: '2024-01-01' })], true, 'work', now), 'needs-review');
+});
+
+test('B1 not-verified facts are never shown; their official page is offered instead', () => {
+  const now = new Date('2026-10-01T00:00:00Z');
+  const kr = KR_TEST({ work: { facts: [fact({ status: 'not-verified', value: 'SECRET GUESS' })], complete: true } });
+  const work = countrySections(kr, now).find((s) => s.id === 'work')!;
+  assert.equal(work.facts.length, 0);
+  assert.equal(work.status, 'not-yet');
+  assert.equal(work.links?.[0].url, SRC.url);
+  assert.ok(!JSON.stringify(work).includes('SECRET GUESS'));
+});
+
+test('B1 sourced blocks: nested depth without new section ids; section status covers every block', () => {
+  const now = new Date('2026-10-01T00:00:00Z');
+  const kr = KR_TEST({
+    english: {
+      blocks: [
+        { id: 'ielts', title: { en: 'IELTS', bn: 'IELTS' }, facts: [fact()], complete: true },
+        { id: 'topik', title: { en: 'Korean language / TOPIK', bn: 'Korean / TOPIK' }, guidance: { en: 'g', bn: 'g' } },
+      ],
+    },
+    why: { blocks: [{ id: 'suits', title: { en: 'This may suit you if…', bn: '…' }, facts: [fact(), fact({ status: 'partly-verified' })], complete: true }] },
+  });
+  const secs = countrySections(kr, now);
+  const eng = secs.find((s) => s.id === 'english')!;
+  assert.equal(eng.number, '11');
+  assert.deepEqual(eng.blocks.map((b) => [b.id, b.status]), [['ielts', 'verified'], ['topik', 'not-yet']]);
+  assert.equal(eng.status, 'verified', 'an empty block does not lower the status of verified ones');
+  assert.equal(secs.find((s) => s.id === 'why')!.status, 'partial');
+  assert.equal(secs.find((s) => s.id === 'arrival')!.status, 'not-yet');
+});
+
+test('B1 applicability: pathway / degree filters; unknown answers hide nothing', () => {
+  const now = new Date('2026-10-01T00:00:00Z');
+  assert.equal(appliesTo(undefined, { pathway: 'degree' }), true);
+  assert.equal(appliesTo({ pathways: ['language'] }, { pathway: 'degree' }), false);
+  assert.equal(appliesTo({ pathways: ['language'] }, {}), true, 'unknown pathway → show, labelled');
+  assert.equal(appliesTo({ degreeLevels: ['masters'] }, { degreeLevel: 'bachelors' }), false);
+  const kr = KR_TEST({
+    visa: {
+      blocks: [
+        { id: 'degree-visa', title: { en: 'Degree', bn: 'Degree' }, appliesTo: { pathways: ['degree'] }, facts: [fact()] },
+        { id: 'language-visa', title: { en: 'Language', bn: 'Language' }, appliesTo: { pathways: ['language'] }, facts: [fact()] },
+      ],
+    },
+  });
+  const ids = (ctx?: { pathway?: string }) => countrySections(kr, now, ctx).find((s) => s.id === 'visa')!.blocks.map((b) => b.id);
+  assert.deepEqual(ids(), ['degree-visa', 'language-visa']);
+  assert.deepEqual(ids({ pathway: 'degree' }), ['degree-visa']);
+  assert.deepEqual(ids({ pathway: 'language' }), ['language-visa']);
+});
+
+test('B1 South Korea today: no invented facts anywhere', () => {
+  const kr = countrySections(getCountry('KR')!);
+  assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0));
+  assert.ok(visaParts(getCountry('KR')!).every((p) => p.facts.length === 0));
 });
 
 console.log(`\n${passed} passed`);

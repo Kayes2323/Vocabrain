@@ -1,6 +1,6 @@
 import { visaGuide } from '@/lib/content/visa';
 import { VISA_PART_IDS, type Country, type SectionFact, type SourceRef, type VisaPartId } from '@/lib/models';
-import { factNeedsReview, type SectionStatus } from './sections';
+import { factNeedsReview, groupStatus, visibleFacts, type SectionStatus } from './sections';
 
 export interface ResolvedVisaPart {
   id: VisaPartId;
@@ -26,10 +26,10 @@ export function visaParts(country: Country, now = new Date()): ResolvedVisaPart[
   };
   return VISA_PART_IDS.map((id, i) => {
     const own = guide?.parts[id] ?? {};
-    const facts = [...(derived[id] ?? []), ...(own.facts ?? [])];
+    const { shown: facts, pending } = visibleFacts([...(derived[id] ?? []), ...(own.facts ?? [])]);
     const stale = facts.filter((f) => factNeedsReview(f.fact, 'visa', now)).length;
-    const status: SectionStatus = facts.length === 0 ? 'not-yet' : own.complete && stale === 0 ? 'verified' : 'partial';
-    const links = id === 'portal' ? [...(own.links ?? []), ...(country.sections?.visa?.links ?? [])] : own.links;
-    return { id, number: String(i + 1).padStart(2, '0'), status, facts, stale, ...(links?.length ? { links } : {}), ...(own.explanation ? { explanation: own.explanation } : {}) };
+    const status: SectionStatus = groupStatus(facts, own.complete, 'visa', now);
+    const links = [...(id === 'portal' ? [...(own.links ?? []), ...(country.sections?.visa?.links ?? [])] : (own.links ?? [])), ...pending];
+    return { id, number: String(i + 1).padStart(2, '0'), status, facts, stale, ...(links.length ? { links } : {}), ...(own.explanation ? { explanation: own.explanation } : {}) };
   });
 }
