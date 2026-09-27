@@ -8,7 +8,8 @@ import '@/lib/pwa/native';
 export function PwaBoot() {
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production' || !('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+    // updateViaCache 'none': the browser always re-checks sw.js, so an update is picked up on the next visit.
+    navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch(() => undefined);
   }, []);
   return null;
 }

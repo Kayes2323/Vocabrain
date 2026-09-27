@@ -188,6 +188,20 @@ async function main() {
         await a.getByTestId('mino-card').waitFor({ timeout: 60_000 });
       };
 
+      // What Android reads when installing: the served manifest and the page's install metadata say "Mino".
+      const served = await (await a.request.get(`${BASE}/manifest.webmanifest`)).json();
+      check('served manifest: name and short_name are "Mino"', served.name === 'Mino' && served.short_name === 'Mino', JSON.stringify({ name: served.name, short_name: served.short_name }));
+      check('served manifest keeps install behaviour (id/scope/start_url /, standalone, 192+512 icons)', served.id === '/' && served.scope === '/' && served.start_url === '/' && served.display === 'standalone' && served.icons.some((i: { sizes: string }) => i.sizes === '192x192') && served.icons.some((i: { sizes: string }) => i.sizes === '512x512'));
+      await home();
+      const head = await a.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href'),
+        app: document.querySelector('meta[name="application-name"]')?.getAttribute('content'),
+        apple: document.querySelector('meta[name="apple-mobile-web-app-title"]')?.getAttribute('content'),
+        title: document.title,
+        old: /vocab ?brain/i.test(document.head.innerHTML + document.body.innerText),
+      }));
+      check('page links the manifest and names the app Mino (application-name, apple title, title); no "Vocab Brain"', head.manifest === '/manifest.webmanifest' && head.app === 'Mino' && head.apple === 'Mino' && /^Mino/.test(head.title) && !head.old, JSON.stringify(head));
+
       // Browser without the install API (e.g. iOS Safari, Firefox): nothing is offered, nothing breaks.
       await home();
       await a.waitForTimeout(2500);

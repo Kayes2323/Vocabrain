@@ -13,6 +13,10 @@ import {
   shouldOfferInstall,
 } from '../lib/pwa/install';
 import { en } from '../lib/i18n/locales/en';
+import { readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import manifest from '../app/manifest';
+import { APP_NAME } from '../lib/constants';
 import { bn } from '../lib/i18n/locales/bn';
 
 let passed = 0;
@@ -104,6 +108,74 @@ test('the card text exists at the top level in both languages (keys used by Inst
   assert.equal(bn.pwa.body, 'Mino-কে আপনার ফোনের home screen-এ রাখুন এবং আরও দ্রুত ব্যবহার করুন।');
   assert.equal(bn.pwa.notNow, 'পরে');
   assert.equal(en.pwa.titleDesktop, 'Install Mino');
+});
+
+test('manifest: the installed app is called "Mino" (name + short_name); install behaviour unchanged', () => {
+  const m = manifest();
+  assert.equal(APP_NAME, 'Mino');
+  assert.equal(m.name, 'Mino');
+  assert.equal(m.short_name, 'Mino');
+  assert.equal(m.id, '/', 'same app identity, so an installed copy updates instead of duplicating');
+  assert.equal(m.start_url, '/');
+  assert.equal(m.scope, '/');
+  assert.equal(m.display, 'standalone');
+  assert.equal(m.background_color, '#fafafc');
+  assert.equal(m.theme_color, '#1e2a4a');
+  const icons = (m.icons ?? []).map((i) => `${i.src} ${i.sizes}`);
+  assert.ok(icons.includes('/icon-192.png 192x192') && icons.includes('/icon-512.png 512x512'), icons.join(', '));
+  assert.ok(!/vocab ?brain/i.test(JSON.stringify(m)));
+});
+
+test('page metadata used for install (application-name, apple title, og site name) is Mino', () => {
+  const layout = readFileSync('app/layout.tsx', 'utf8');
+  assert.match(layout, /applicationName: APP_NAME/);
+  assert.match(layout, /appleWebApp: \{[^}]*title: APP_NAME/);
+  assert.match(layout, /siteName: APP_NAME/);
+  assert.ok(!/vocab ?brain/i.test(layout));
+});
+
+test('no app code, text or public file still shows the old name "Vocab Brain"', () => {
+  const hits: string[] = [];
+  const walk = (dir: string) => {
+    for (const f of readdirSync(dir)) {
+      const p = join(dir, f);
+      if (statSync(p).isDirectory()) walk(p);
+      else if (/\.(tsx?|mjs|js|json|svg|css|webmanifest|html)$/.test(f)) {
+        readFileSync(p, 'utf8').split('\n').forEach((line, i) => {
+          // Old storage keys (vocabbrain:…) and internal ids (vocab-brain) are kept on purpose: saved data depends on them.
+          const visible = line.replace(/vocabbrain:[\w:${}]*/gi, '').replace(/vocab-brain/g, '');
+          if (/vocab ?brain|vocabrain/i.test(visible)) hits.push(`${p}:${i + 1}`);
+        });
+      }
+    }
+  };
+  for (const d of ['app', 'components', 'lib', 'public']) walk(d);
+  // The Stripe logo URL is a placeholder domain, not a name shown as the app.
+  assert.deepEqual(hits.filter((h) => !h.startsWith('app/api/stripe/')), []);
+});
+
+test('the install card names Mino (en + bn), never the old name', () => {
+  assert.equal(en.pwa.titleDesktop, 'Install Mino');
+  assert.equal(en.pwa.titlePhone, 'Install Mino on your phone');
+  assert.ok(Object.values({ ...en.pwa, ...bn.pwa }).every((v) => !/vocab ?brain/i.test(v)));
+  assert.ok(Object.values({ ...en.pwa, ...bn.pwa }).filter((v) => /Mino/.test(v)).length >= 4);
+});
+
+test('service worker: one registration at /sw.js, re-checked on every visit (updates install cleanly)', () => {
+  const boot = readFileSync('components/pwa/PwaBoot.tsx', 'utf8');
+  assert.equal(boot.match(/serviceWorker\.register\(/g)?.length, 1);
+  assert.match(boot, /register\('\/sw\.js', \{ updateViaCache: 'none' \}\)/);
+  const all = ['app', 'components', 'lib'].flatMap((d) => {
+    const out: string[] = [];
+    const walk = (dir: string) => readdirSync(dir).forEach((f) => (statSync(join(dir, f)).isDirectory() ? walk(join(dir, f)) : out.push(join(dir, f))));
+    walk(d);
+    return out;
+  });
+  const registrars = all.filter((f) => /\.tsx?$/.test(f) && /serviceWorker\.register\(/.test(readFileSync(f, 'utf8')));
+  assert.deepEqual(registrars, ['components/pwa/PwaBoot.tsx'], 'no duplicate service workers');
+  const sw = readFileSync('public/sw.js', 'utf8');
+  assert.match(sw, /skipWaiting/);
+  assert.match(sw, /clients\.claim/);
 });
 
 console.log(`\n${passed} passed`);

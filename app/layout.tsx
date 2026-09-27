@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: APP_NAME,
-    title: `${APP_NAME} · IELTS, Vocabulary & Study Abroad with Mino`,
+    title: `${APP_NAME} · IELTS, Vocabulary & Study Abroad`,
     description: APP_TAGLINE,
     locale: 'en_US',
     alternateLocale: ['bn_BD'],
