@@ -1,4 +1,4 @@
-import { documentsFor, type DocumentNeed } from '@/lib/abroad/documents';
+import { documentsFor, type DocumentContext, type DocumentNeed } from '@/lib/abroad/documents';
 import { roadmapDefs } from '@/lib/abroad/roadmap';
 import { deadlineBucket, type DeadlineBucket } from '@/lib/abroad/status';
 import { getCountry } from '@/lib/content/countries';
@@ -179,10 +179,29 @@ export function allDeadlines(profile: UserProfile, now = new Date()): DeadlineIt
 // ------------------------------------------------------------------ documents
 
 export function setDocumentStatus(abroad: StudyAbroadProfile, kind: DocumentKind, status: DocumentStatus, now = new Date()): StudyAbroadProfile {
-  return { ...abroad, documents: { ...abroad.documents, [kind]: { status, updatedAt: now.toISOString() } } };
+  // Keep the student's valid-until date when the status changes.
+  return { ...abroad, documents: { ...abroad.documents, [kind]: { ...abroad.documents?.[kind], status, updatedAt: now.toISOString() } } };
 }
 
 export const documentStatus = (abroad: StudyAbroadProfile, kind: DocumentKind): DocumentStatus => abroad.documents?.[kind]?.status ?? 'not-started';
+
+/** What the student sees: their status, or "needs update" once their own valid-until date has passed. */
+export type DocumentViewStatus = DocumentStatus | 'needs-update';
+
+export function documentViewStatus(abroad: StudyAbroadProfile, kind: DocumentKind, now = new Date()): DocumentViewStatus {
+  const p = abroad.documents?.[kind];
+  if (p?.validUntil && deadlineBucket(p.validUntil, now) === 'missed') return 'needs-update';
+  return p?.status ?? 'not-started';
+}
+
+/** Sets (or clears) the student's own "valid until" date for a document. Status is kept. */
+export function setDocumentValidUntil(abroad: StudyAbroadProfile, kind: DocumentKind, date: string | undefined, now = new Date()): StudyAbroadProfile {
+  const prev = abroad.documents?.[kind] ?? { status: 'not-started' as const, updatedAt: now.toISOString() };
+  const next = { ...prev, updatedAt: now.toISOString() };
+  if (date && /^\d{4}-\d{2}-\d{2}$/.test(date)) next.validUntil = date;
+  else delete next.validUntil;
+  return { ...abroad, documents: { ...abroad.documents, [kind]: next } };
+}
 
 /**
  * The documents the student's route needs, in roadmap order: the dream
@@ -193,10 +212,31 @@ export function requiredDocuments(abroad: StudyAbroadProfile): DocumentKind[] {
   return requiredDocumentNeeds(abroad).map((n) => n.kind);
 }
 
+/**
+ * The student's route for one country, for documents and official costs:
+ * pathway, degree, and the reviewed universities / programs / scholarships
+ * they chose (entries they typed themselves carry no requirements).
+ */
+export function studentRouteContext(abroad: StudyAbroadProfile, code: string | undefined): DocumentContext {
+  if (!code) return abroad.degreeLevel ? { degreeLevel: abroad.degreeLevel } : {};
+  const upper = code.toUpperCase();
+  const mine = (abroad.universities ?? []).filter((u) => u.countryCode === upper && u.status !== 'not-proceeding' && u.status !== 'rejected');
+  const ids = <T,>(list: (T | undefined)[]) => [...new Set(list.filter((x): x is T => Boolean(x)))];
+  const universityIds = ids(mine.map((u) => u.universityId));
+  const programIds = ids(mine.map((u) => u.programId));
+  const scholarshipIds = abroad.savedScholarships ?? [];
+  return {
+    ...roadmapContext(abroad, upper),
+    ...(abroad.degreeLevel ? { degreeLevel: abroad.degreeLevel } : {}),
+    ...(universityIds.length ? { universityIds } : {}),
+    ...(programIds.length ? { programIds } : {}),
+    ...(scholarshipIds.length ? { scholarshipIds } : {}),
+  };
+}
+
 export function requiredDocumentNeeds(abroad: StudyAbroadProfile): DocumentNeed[] {
   const code = abroad.dreamCountryCode;
-  const country = code ? getCountry(code) : undefined;
-  return documentsFor(country, { ...(code ? roadmapContext(abroad, code) : {}), ...(abroad.degreeLevel ? { degreeLevel: abroad.degreeLevel } : {}) });
+  return documentsFor(code ? getCountry(code) : undefined, studentRouteContext(abroad, code));
 }
 
 // ------------------------------------------------------------------ next action

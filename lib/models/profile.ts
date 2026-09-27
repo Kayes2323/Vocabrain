@@ -93,7 +93,8 @@ export interface StudentStudyProfile {
   english?: { level?: EnglishLevel; /** Official IELTS overall, if taken. */ ielts?: number };
   korean?: KoreanLevel;
   preferences?: { city?: string; universityType?: UniversityTypePreference; studyLanguage?: StudyLanguagePreference };
-  budget?: { tuition?: Money; living?: Money };
+  /** Planning numbers the student chose: tuition per year, living per month, total money available. */
+  budget?: { tuition?: Money; living?: Money; total?: Money };
   updatedAt?: ISODate;
 }
 
@@ -135,6 +136,8 @@ export type DocumentStatus = 'not-started' | 'drafting' | 'ready';
 export interface DocumentProgress {
   status: DocumentStatus;
   updatedAt: ISODate;
+  /** The student's own "valid until" date (e.g. passport expiry, test result validity); past → needs update. */
+  validUntil?: string;
 }
 
 /**

@@ -27,10 +27,65 @@ export interface Country {
   roadmap?: RoadmapOverride;
   /** Ways to study here (e.g. degree vs language training), each tied to visa categories. */
   pathways?: StudyPathway[];
+  /** Official costs and planning estimates (see CountryCosts). */
+  costs?: CountryCosts;
+  /** Documents the country asks of every student (e.g. on arrival); pathway/visa ones live there. */
+  documents?: DocumentRequirement[];
   /** The country's own teaching language (ISO 639-1), for "English or local language" choices. */
   localLanguage?: string;
   /** Questions the "Can I work?" check may ask (options are country-defined). */
   workQuestions?: WorkQuestion[];
+}
+
+// ============================================================== costs
+// Three kinds of money that never mix: OFFICIAL (sourced requirement or fee),
+// ESTIMATE (a planning range with its basis), and the student's own BUDGET
+// (in their profile). Nothing is ever converted between currencies.
+
+export type CostCategory = 'tuition' | 'application' | 'visa' | 'living' | 'accommodation' | 'food' | 'transport' | 'utilities' | 'insurance' | 'other';
+/** "unspecified" = the source gives no period; such amounts are shown but never added up. */
+export type CostPeriod = 'once' | 'month' | 'semester' | 'year' | 'unspecified';
+
+export interface CostAmount {
+  amount: number;
+  currency: string;
+  period: CostPeriod;
+}
+
+/** An official amount: a fee, a tuition figure or a minimum the student must show. */
+export interface OfficialCost {
+  id: string;
+  category: CostCategory;
+  kind: 'fee' | 'tuition' | 'minimum-funds' | 'requirement';
+  label: Bilingual;
+  amount: SourcedValue<CostAmount>;
+  appliesTo?: DocumentApplicability;
+}
+
+/**
+ * A planning estimate: low / typical / high in one currency and period, with
+ * how it was worked out. Always labelled "Estimate"; never an official figure.
+ */
+export interface CostEstimate {
+  id: string;
+  category: CostCategory;
+  low: number;
+  typical: number;
+  high: number;
+  currency: string;
+  period: Exclude<CostPeriod, 'unspecified'>;
+  /** How the range was worked out (shown to the student). */
+  basis: Bilingual;
+  /** Where the underlying figures come from, if any. */
+  sources?: SourceRef[];
+  estimatedAt: ISODate;
+  reviewAt?: ISODate;
+  appliesTo?: DocumentApplicability;
+}
+
+export interface CountryCosts {
+  official?: OfficialCost[];
+  estimates?: CostEstimate[];
 }
 
 // ============================================================== pathways & visas
@@ -80,11 +135,14 @@ export interface DocumentRequirement {
   purpose: 'admission' | 'visa' | 'scholarship' | 'arrival' | 'general';
   /** The official statement of the requirement; absent = not verified yet. */
   requirement?: SourcedValue<string>;
+  /** Where it is submitted (e.g. the university's application portal) — from the source. */
+  submittedTo?: Bilingual;
   appliesTo?: DocumentApplicability;
 }
 
 export interface DocumentApplicability extends Applicability {
   visaCategoryIds?: string[];
+  universityIds?: string[];
   programIds?: string[];
   scholarshipIds?: string[];
 }
@@ -251,6 +309,8 @@ export interface University extends Partial<ContentMeta> {
   studyLanguages?: SourcedValue<string[]>;
   programIds?: ID[];
   scholarshipIds?: ID[];
+  /** Documents every applicant to this university needs (program ones live on the program). */
+  documents?: DocumentRequirement[];
   officialSource?: SourceRef;
   /** Reviewer status of the whole record (facts still carry their own). */
   status?: FactStatus;
@@ -317,7 +377,7 @@ export interface Scholarship extends Partial<ContentMeta> {
   coverage?: SourcedValue<string>;
   eligibility: SourcedValue<string>;
   requirements?: SourcedValue<string>;
-  documents?: DocumentKind[];
+  documents?: DocumentRequirement[];
   applicationMethod?: SourcedValue<string>;
   opensAt?: SourcedValue<ISODate>;
   deadline?: SourcedValue<ISODate>;

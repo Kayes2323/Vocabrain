@@ -14,6 +14,9 @@ import { countryFactsForMino } from '../lib/abroad/mino';
 import { answerQuestion, clearAnswer, missingQuestions, profileAnswer, PROFILE_QUESTIONS } from '../lib/abroad/profile-questions';
 import { checkFilter, explainMatch, filterPrograms, filtersFromProfile, programRows, universityCities } from '../lib/abroad/programs';
 import { compareUniversities } from '../lib/abroad/compare';
+import { costPlan, officialCosts, perYear } from '../lib/abroad/costs';
+import { documentExplanation, documentGroups, needsPathwayChoice } from '../lib/abroad/documents';
+import { documentViewStatus, requiredDocumentNeeds, setDocumentValidUntil, studentRouteContext } from '../lib/engine';
 import { studentProfileForMino, abroadSummary as summaryFor } from '../lib/abroad/summary';
 import type { Program, Scholarship, University } from '../lib/models';
 import { compareTable, parseCompare } from '../lib/abroad/compare';
@@ -718,7 +721,7 @@ test('B3 profile: every field optional; one question at a time; bad answers igno
   assert.equal(profileAnswer(a, 'studyLanguage'), 'en', 'clearing one answer keeps the others');
   const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify({ ...base(), abroad: a })) as UserProfile);
   assert.deepEqual(loaded.abroad.student?.result, { value: 3.6, scale: 'cgpa-4' });
-  assert.equal(Object.keys(PROFILE_QUESTIONS).length, 13);
+  assert.equal(Object.keys(PROFILE_QUESTIONS).length, 14);
 });
 
 test('B3 filters: study language, public/private, city, tuition (same currency only), scholarship — unknown is never guessed', () => {
@@ -826,6 +829,118 @@ test('B3 Mino: profile answers or "not provided"; student entries marked unverif
   const line = abroadSnapshotLine(p, NOW);
   assert.match(line, /profile: .*studyLanguage en/);
   assert.match(line, /pathway degree \(visa D-2\)/);
+});
+
+// ---------------------------------------------------------------- Korea B4: costs & documents (TEST ONLY fixtures)
+const SRC4 = { name: 'Official fee page (TEST ONLY)', url: 'https://example.go.kr/fees', sourceType: 'official-government' as const };
+const TEST_COSTS = (): Country => ({
+  ...getCountry('KR')!,
+  costs: {
+    official: [
+      { id: 'app-fee', category: 'application', kind: 'fee', label: { en: 'Application fee', bn: 'Application fee' }, amount: { value: { amount: 100, currency: 'USD', period: 'once' }, source: SRC4, lastVerified: '2026-09-27' } },
+      { id: 'visa-fee', category: 'visa', kind: 'fee', label: { en: 'Visa fee', bn: 'Visa fee' }, amount: { value: { amount: 999, currency: 'USD', period: 'once' }, source: SRC4, lastVerified: '2026-09-27', status: 'not-verified' } },
+      { id: 'd4-only', category: 'visa', kind: 'minimum-funds', label: { en: 'D-4 funds', bn: 'D-4 funds' }, amount: { value: { amount: 1, currency: 'USD', period: 'once' }, source: SRC4, lastVerified: '2026-09-27' }, appliesTo: { visaCategoryIds: ['kr-d4'] } },
+    ],
+    estimates: [
+      { id: 'living', category: 'living', low: 700, typical: 900, high: 1200, currency: 'USD', period: 'month', basis: { en: 'TEST ONLY', bn: 'TEST ONLY' }, estimatedAt: '2026-09-27' },
+      { id: 'food', category: 'food', low: 1, typical: 1, high: 1, currency: 'USD', period: 'month', basis: { en: 'TEST ONLY', bn: 'TEST ONLY' }, estimatedAt: '2026-09-27' },
+      { id: 'rent', category: 'accommodation', low: 300, typical: 400, high: 600, currency: 'USD', period: 'month', basis: { en: 'TEST ONLY', bn: 'TEST ONLY' }, estimatedAt: '2026-09-27' },
+      { id: 'bad', category: 'other', low: 5, typical: 1, high: 3, currency: 'USD', period: 'year', basis: { en: 'TEST ONLY', bn: 'TEST ONLY' }, estimatedAt: '2026-09-27' },
+    ],
+  },
+});
+
+test('B4 costs: official / estimate / my budget stay apart; not-verified amounts never shown; periods add up, currencies never convert', () => {
+  let a = base().abroad;
+  const empty = costPlan(getCountry('KR')!, a, {}, NOW);
+  assert.ok(empty.groups.every((g) => g.official.length === 0 && !g.estimateYear), 'shipped: no invented costs');
+  assert.equal(empty.incomplete, true);
+  a = answerQuestion(answerQuestion(a, 'livingBudget', { amount: 1000, currency: 'USD' }, NOW), 'totalBudget', { amount: 20000, currency: 'USD' }, NOW);
+  const plan = costPlan(TEST_COSTS(), a, { pathway: 'degree', visaCategoryId: 'kr-d2' }, NOW);
+  const g = (id: string) => plan.groups.find((x) => x.group === id)!;
+  assert.deepEqual(g('visa-application').official.map((o) => o.cost.id), ['app-fee'], 'not-verified visa fee hidden; D-4-only cost not on D-2');
+  assert.equal(g('visa-application').officialPending[0].url, SRC4.url, '…its official page offered instead');
+  assert.ok(!JSON.stringify(plan).includes('999'));
+  assert.deepEqual(g('living').estimateYear, { low: 8400, typical: 10800, high: 14400, currency: 'USD' }, 'all-in living replaces food (no double counting); month × 12');
+  assert.deepEqual(g('living').mine, { amount: 1000, currency: 'USD', period: 'month' }, 'my budget read, labelled as mine');
+  assert.equal(g('other').estimates.length, 0, 'an estimate with low > typical is rejected');
+  assert.deepEqual(plan.estimateTotal, { low: 12000, typical: 15600, high: 21600, currency: 'USD' });
+  assert.deepEqual(plan.difference, { low: -1600, typical: 4400, high: 8000, currency: 'USD' });
+  assert.equal(plan.currencyUnavailable, false);
+  assert.deepEqual(a.student?.budget?.living, { amount: 1000, currency: 'USD' }, 'the plan never changes the budget');
+  // Different currency → no total, no difference, no conversion.
+  const bdt = answerQuestion(a, 'totalBudget', { amount: 3_000_000, currency: 'BDT' }, NOW);
+  const p2 = costPlan(TEST_COSTS(), bdt, {}, NOW);
+  assert.equal(p2.currencyUnavailable, true);
+  assert.equal(p2.difference, undefined);
+  assert.equal(perYear(10, 'semester'), 20);
+  assert.equal(perYear(10, 'unspecified'), undefined, 'unknown period → never added');
+  // Registry money-to-show facts are official, period unspecified (shown, never summed).
+  const gb = officialCosts(getCountry('GB')!);
+  assert.equal(gb.length, 2);
+  assert.ok(gb.every((c) => c.kind === 'minimum-funds' && c.amount.value.period === 'unspecified'));
+});
+
+test('B4 registry integrity: every shipped cost is sourced, every estimate has a basis and a sane range', () => {
+  for (const c of COUNTRIES) {
+    for (const o of c.costs?.official ?? []) assert.ok(o.amount.source.url && o.amount.lastVerified, `${c.code} ${o.id}`);
+    for (const e of c.costs?.estimates ?? []) assert.ok(e.basis.en && e.estimatedAt && e.low <= e.typical && e.typical <= e.high, `${c.code} ${e.id}`);
+  }
+  assert.ok(COUNTRIES.every((c) => !c.costs), 'B4 ships no cost data');
+});
+
+test('B4 documents: university / program / scholarship / country sources, merged, conditional, explained', () => {
+  withRegistry(() => {
+    UNIVERSITIES[0].documents = [{ kind: 'transcript', purpose: 'admission', submittedTo: { en: 'University portal', bn: 'University portal' } }];
+    PROGRAMS[0].documents = [
+      { kind: 'transcript', purpose: 'admission', requirement: f3('Official transcripts') },
+      { kind: 'portfolio', purpose: 'admission', requirement: f3('GUESSED', { status: 'not-verified' }) },
+    ];
+    SCHOLARSHIPS[0].documents = [{ kind: 'scholarship-specific', purpose: 'scholarship' }];
+    const kr = { ...getCountry('KR')!, documents: [{ kind: 'photo' as const, purpose: 'arrival' as const }] };
+    let a = withAbroad(base(), { dreamCountryCode: 'KR' }).abroad;
+    assert.equal(needsPathwayChoice(kr, {}), true);
+    a = addUniversity(a, { name: 'Test Univ A', countryCode: 'KR', fit: 'match', universityId: 'u-a', programId: 'p-1' }, NOW);
+    a = { ...a, savedScholarships: ['s-1'] };
+    const ctx = studentRouteContext(a, 'KR');
+    assert.deepEqual([ctx.universityIds, ctx.programIds, ctx.scholarshipIds], [['u-a'], ['p-1'], ['s-1']]);
+    const needs = documentsFor(kr, ctx);
+    const transcript = needs.filter((n) => n.kind === 'transcript');
+    assert.equal(transcript.length, 1, 'one transcript, many reasons');
+    assert.deepEqual(transcript[0].reasons.map((r) => r.from), ['roadmap', 'university', 'program']);
+    const ex = documentExplanation(transcript[0]);
+    assert.deepEqual(ex.stages, ['apply']);
+    assert.equal(ex.submittedTo[0].en, 'University portal');
+    assert.equal(ex.requirements[0].value, 'Official transcripts');
+    assert.equal(ex.askedBy.find((x) => x.from === 'program')?.name, 'MSc Computer Science · Test Univ A');
+    const portfolio = needs.find((n) => n.kind === 'portfolio')!;
+    assert.equal(documentExplanation(portfolio).requirements.length, 0, 'a not-verified requirement is never passed on');
+    assert.ok(!JSON.stringify(needs).includes('GUESSED'));
+    assert.ok(needs.some((n) => n.kind === 'scholarship-specific' && n.reasons[0].from === 'scholarship'));
+    assert.ok(needs.some((n) => n.kind === 'photo' && documentExplanation(n).stages[0] === 'travel'), 'arrival documents are asked for at arrival');
+    assert.deepEqual(documentGroups(needs), { total: needs.length, route: 1, university: 2, scholarship: 1 });
+    // A dropped entry drops its documents.
+    const b = updateUniversity(a, a.universities![0].id, { status: 'not-proceeding' }, NOW);
+    assert.ok(!documentsFor(kr, studentRouteContext(b, 'KR')).some((n) => n.kind === 'portfolio'));
+    assert.equal(documentExplanation(requiredDocumentNeeds(withAbroad(base(), { dreamCountryCode: 'DE' }).abroad)[0]).generalOnly, true);
+  });
+});
+
+test('B4 document status: persisted; own expiry date → "needs update"; status kept', () => {
+  const now = new Date('2026-09-27T10:00:00');
+  let a = base().abroad;
+  a = setDocumentStatus(a, 'passport', 'ready', now);
+  a = setDocumentValidUntil(a, 'passport', '2026-09-01', now);
+  assert.equal(documentViewStatus(a, 'passport', now), 'needs-update');
+  assert.equal(a.documents?.passport?.status, 'ready', 'stored status untouched');
+  a = setDocumentStatus(a, 'passport', 'drafting', now);
+  assert.equal(a.documents?.passport?.validUntil, '2026-09-01', 'changing status keeps the date');
+  a = setDocumentValidUntil(a, 'passport', '2030-01-01', now);
+  assert.equal(documentViewStatus(a, 'passport', now), 'drafting');
+  a = setDocumentValidUntil(a, 'passport', undefined, now);
+  assert.equal(a.documents?.passport?.validUntil, undefined);
+  const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify({ ...base(), abroad: setDocumentValidUntil(a, 'passport', '2026-01-01', now) })) as UserProfile);
+  assert.equal(documentViewStatus(loaded.abroad, 'passport', now), 'needs-update');
 });
 
 console.log(`\n${passed} passed`);

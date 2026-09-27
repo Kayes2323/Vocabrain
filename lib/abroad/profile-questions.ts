@@ -29,6 +29,7 @@ export const PROFILE_QUESTION_IDS = [
   'korean',
   'tuitionBudget',
   'livingBudget',
+  'totalBudget',
 ] as const;
 export type ProfileQuestionId = (typeof PROFILE_QUESTION_IDS)[number];
 
@@ -146,6 +147,13 @@ export const PROFILE_QUESTIONS: Record<ProfileQuestionId, ProfileQuestion> = {
     write: (s, v) => ({ ...s, budget: { ...s.budget, living: v as Money } }),
     valid: isMoney,
   },
+  totalBudget: {
+    id: 'totalBudget',
+    kind: 'money',
+    read: (s) => s.budget?.total,
+    write: (s, v) => ({ ...s, budget: { ...s.budget, total: v as Money } }),
+    valid: isMoney,
+  },
 };
 
 /** The student's answer, or undefined ("Not provided"). */
@@ -180,6 +188,7 @@ export function clearAnswer(abroad: StudyAbroadProfile, id: ProfileQuestionId, n
     korean: () => delete s.korean,
     tuitionBudget: () => delete s.budget?.tuition,
     livingBudget: () => delete s.budget?.living,
+    totalBudget: () => delete s.budget?.total,
   };
   drop[id]();
   return { ...abroad, student: { ...s, updatedAt: now.toISOString() } };

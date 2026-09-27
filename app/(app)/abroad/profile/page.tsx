@@ -12,7 +12,7 @@ const GROUPS: { id: 'study' | 'background' | 'language' | 'budget'; questions: P
   { id: 'study', questions: ['studyLanguage', 'universityType', 'city'] },
   { id: 'background', questions: ['educationLevel', 'educationField', 'educationStatus', 'graduationYear', 'result'] },
   { id: 'language', questions: ['englishLevel', 'ielts', 'korean'] },
-  { id: 'budget', questions: ['tuitionBudget', 'livingBudget'] },
+  { id: 'budget', questions: ['tuitionBudget', 'livingBudget', 'totalBudget'] },
 ];
 
 /** Everything the student chose to share, each answer editable or removable; missing = "Not provided". */
