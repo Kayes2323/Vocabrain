@@ -7,7 +7,7 @@ import { Panel, StatusChip } from '@/components/ds';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { buildDailyPlan, setPlanMode, type DailyTaskKind } from '@/lib/engine';
+import { buildDailyPlan, dailyPlanState, setPlanMode, type DailyPlanState, type DailyTaskKind } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +18,12 @@ const ICONS: Record<DailyTaskKind, typeof BookText> = {
   speaking: Mic,
 };
 
+const CTA: Record<Exclude<DailyPlanState, 'completed'>, string> = {
+  'not-started': 'home.todayStart',
+  'in-progress': 'home.todayContinue',
+  finishing: 'home.todayFinish',
+};
+
 /** "What should I do today?" Tasks tick themselves off as the student completes them. */
 export function TodayCard({ profile }: { profile: UserProfile }) {
   const { t, n } = useLocale();
@@ -26,7 +32,9 @@ export function TodayCard({ profile }: { profile: UserProfile }) {
   const plan = buildDailyPlan(profile, brain);
   const doneCount = plan.tasks.filter((task) => task.done).length;
   const next = plan.tasks.find((task) => !task.done);
-  const vocabNext = next?.kind === 'vocabulary' && brain.due > 0;
+  const state = dailyPlanState(plan, profile);
+  // After today's plan: the next useful thing (words due for review, else more IELTS practice).
+  const after = brain.due > 0 ? { href: '/review', key: 'home.todayNextReview' } : { href: '/ielts', key: 'home.todayNextPractice' };
 
   return (
     <Panel className="space-y-4 p-0">
@@ -72,13 +80,19 @@ export function TodayCard({ profile }: { profile: UserProfile }) {
       </ul>
 
       <div className="space-y-3 px-5 pb-5">
-        <p className="text-sm text-muted-foreground" aria-live="polite">
-          {next ? t('home.todaySummary', { done: doneCount, total: plan.tasks.length }) : t('home.allDone')}
+        <p className={cn('text-sm', state === 'completed' ? 'font-medium text-success' : 'text-muted-foreground')} aria-live="polite" data-testid="today-status">
+          {state === 'completed' ? t('home.todayCompleted') : t('home.todaySummary', { done: doneCount, total: plan.tasks.length })}
         </p>
-        {next && (
+        {next && state !== 'completed' ? (
           <Button asChild size="lg" className="w-full">
-            <Link href={next.href}>
-              {vocabNext ? t('home.startReview') : doneCount === 0 ? t('home.startPlan') : t('home.continuePlan')} <ArrowRight />
+            <Link href={next.href} data-testid="today-cta" data-state={state}>
+              {t(CTA[state])} <ArrowRight />
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild size="lg" variant="outline" className="w-full">
+            <Link href={after.href} data-testid="today-cta" data-state="completed">
+              {t(after.key)} <ArrowRight />
             </Link>
           </Button>
         )}

@@ -138,6 +138,16 @@ export async function patchField(docPath: string, fieldPath: string, value: unkn
   if (!r.ok) throw new Error(`patch ${r.status} ${(await r.text()).slice(0, 200)}`);
 }
 
+/** Write a whole document (e.g. a Brain word under users/{uid}/vocabulary). */
+export async function putDoc(docPath: string, value: object) {
+  const r = await fetch(`${FS}/${docPath}`, {
+    method: 'PATCH',
+    headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: (toValue(JSON.parse(JSON.stringify(value))) as { mapValue: { fields: object } }).mapValue.fields }),
+  });
+  if (!r.ok) throw new Error(`put ${r.status} ${(await r.text()).slice(0, 200)}`);
+}
+
 /** Wait until the stored Foundation progress satisfies `ok` (writes are debounced). */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function waitForFoundation(uid: string, ok: (f: any) => boolean, timeoutMs = 15_000) {

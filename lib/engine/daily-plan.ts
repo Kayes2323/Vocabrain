@@ -130,3 +130,21 @@ export function setPlanMode(profile: UserProfile, mode: PlanMode, now = new Date
     study: { ...profile.study, days: { ...profile.study.days, [date]: { mode, done: log?.done ?? [] } } },
   };
 }
+
+/**
+ * Where the student is with today's plan, read from the plan itself and
+ * today's log (no separate progress store):
+ * - not-started: nothing done by the student today
+ * - in-progress: started, more than one task still open
+ * - finishing: started, only the last task stands between them and today's goal
+ * - completed: every task in today's plan is done
+ */
+export type DailyPlanState = 'not-started' | 'in-progress' | 'finishing' | 'completed';
+
+export function dailyPlanState(plan: DailyPlan, profile: UserProfile): DailyPlanState {
+  const open = plan.tasks.filter((task) => !task.done).length;
+  if (open === 0) return 'completed';
+  const started = (profile.study.days[plan.date]?.done.length ?? 0) > 0;
+  if (!started) return 'not-started';
+  return open === 1 ? 'finishing' : 'in-progress';
+}

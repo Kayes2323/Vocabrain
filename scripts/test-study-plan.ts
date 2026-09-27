@@ -1,8 +1,9 @@
 /** Study plan engine checks. Run: pnpm test:plan */
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildStudyPlan } from '../lib/engine/study-plan';
+import { buildDailyPlan, dailyPlanState, markActivityDone } from '../lib/engine/daily-plan';
 import { getTranslator } from '../lib/i18n';
 import { emptyProfile, type UserProfile } from '../lib/models';
 
@@ -86,6 +87,33 @@ test('missing data becomes stated assumptions, not guesses', () => {
   assert.ok(plan.focus.every((f) => f.kind === 'vocabulary' || /No data yet/.test(f.reason.map(text).join(' '))));
   assert.ok(![...plan.assumptions, ...plan.focus.flatMap((f) => f.reason)].some((m) => text(m) === m.key), 'all keys exist');
   assert.equal(JSON.stringify(plan).match(/guarantee/i), null);
+});
+
+// ---------------------------------------------------------------- Home: today's learning CTA
+test('home CTA state comes from today’s plan (no separate progress store): start → continue → finish → completed', () => {
+  const brain = { total: 5, due: 3 }; // 4 tasks: vocabulary, reading, writing, speaking
+  let p = emptyProfile('u1');
+  const state = () => dailyPlanState(buildDailyPlan(p, brain, NOW), p);
+  assert.equal(state(), 'not-started', 'new student');
+  p = markActivityDone(p, 'reading', NOW);
+  assert.equal(state(), 'in-progress', 'started, several tasks open');
+  p = markActivityDone(markActivityDone(p, 'vocabulary', NOW), 'writing', NOW);
+  assert.equal(state(), 'finishing', 'only the last task of the daily goal is open');
+  p = markActivityDone(p, 'speaking', NOW);
+  assert.equal(state(), 'completed');
+  // Yesterday's work doesn't count as having started today.
+  assert.equal(dailyPlanState(buildDailyPlan(p, brain, new Date('2026-09-27T09:00:00')), p), 'not-started');
+  // A task the plan marks done by itself (nothing due to review) is not "starting".
+  const q = emptyProfile('u2');
+  assert.equal(dailyPlanState(buildDailyPlan(q, { total: 5, due: 0 }, NOW), q), 'not-started');
+});
+
+test('home CTA texts: Bangla and English, no "Continue learning" on the home card', () => {
+  const bn = getTranslator('bn').t;
+  assert.deepEqual(['todayStart', 'todayContinue', 'todayFinish', 'todayCompleted'].map((k) => bn(`home.${k}`)), ['আজকের পড়া শুরু করুন', 'আজকের পড়া চালিয়ে যান', 'আজকের পড়া শেষ করুন', 'আজকের পড়া সম্পন্ন হয়েছে']);
+  assert.deepEqual(['todayStart', 'todayContinue', 'todayFinish', 'todayCompleted'].map((k) => tr(`home.${k}`)), ['Start today’s learning', 'Continue today’s learning', 'Finish today’s learning', 'Today’s learning completed']);
+  const card = readFileSync(join(process.cwd(), 'components/home/TodayCard.tsx'), 'utf8');
+  assert.doesNotMatch(card, /continuePlan|startPlan|allDone|continueTitle/);
 });
 
 console.log(`\n${passed} passed`);
