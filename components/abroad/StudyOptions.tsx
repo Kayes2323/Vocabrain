@@ -30,7 +30,7 @@ export function StudyOptions({ country }: { country: Country }) {
         {groups.map((g) => {
           const visa = g.pathway ? visaCategoriesFor(country, g.pathway.id).map((c) => c.code).join(', ') : '';
           return (
-            <div key={g.pathway?.id ?? 'general'} className="space-y-1.5" data-pathway={g.pathway?.id ?? 'general'}>
+            <div key={g.pathway?.id ?? 'general'} className="space-y-1.5" data-option-group={g.pathway?.id ?? 'general'}>
               {g.pathway && (
                 <p className="text-xs font-medium text-muted-foreground">
                   {text(g.pathway.name)}
