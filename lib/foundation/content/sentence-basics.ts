@@ -178,7 +178,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-2-e2',
             type: 'gap',
-            prompt: { en: 'Add the missing subject.', bn: 'বাদ পড়া subject বসাও।' },
+            prompt: { en: 'Add the missing subject.', bn: 'বাদ পড়া subject বসান।' },
             sentence: '___ is very hot in Bangladesh in April.',
             accepted: ['It'],
             explanation: { en: 'Weather needs "It": "It is very hot…"', bn: 'আবহাওয়ার কথা বলতে "It" লাগে: "It is very hot…"' },
@@ -196,7 +196,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-2-e4',
             type: 'gap',
-            prompt: { en: 'Fill the gap with "There" or "It".', bn: 'Gap-এ "There" বা "It" বসাও।' },
+            prompt: { en: 'Fill the gap with "There" or "It".', bn: 'Gap-এ "There" বা "It" বসান।' },
             sentence: '___ are many reasons why people move to cities.',
             accepted: ['There'],
             explanation: { en: '"There are + plural noun" says that something exists.', bn: 'কিছু আছে বোঝাতে "There are + plural noun"।' },
@@ -294,7 +294,7 @@ export const sentenceBasicsLessons: Lesson[] = [
           {
             id: 'sb-3-e3',
             type: 'gap',
-            prompt: { en: 'Complete with a "be" verb.', bn: 'একটা "be" verb বসাও।' },
+            prompt: { en: 'Complete with a "be" verb.', bn: 'একটা "be" verb বসান।' },
             sentence: 'My parents ___ both teachers.',
             accepted: ['are', 'were'],
             explanation: { en: 'Plural subject "My parents" → "are" (or "were" for the past).', bn: 'Plural subject "My parents" → "are" (past হলে "were")।' },

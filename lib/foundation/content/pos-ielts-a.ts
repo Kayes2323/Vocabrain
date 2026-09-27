@@ -12,7 +12,7 @@ const JOBS5: Pos[] = ['noun', 'verb', 'adjective', 'adverb', 'preposition'];
 const r1: Lesson = {
   id: 'pie-1', unit: 'ielts', format: 'v2', concept: C, minutes: 7, difficulty: 'medium', skill: 'reading',
   title: l('Reading: understand words you don’t know', 'Reading: অচেনা word বোঝা'),
-  why: l('Every Reading passage has words you have never seen. Their job and their neighbours still tell you a lot.', 'প্রতিটা Reading passage-এ এমন word থাকে যা আপনি আগে দেখোনি। তাদের কাজ আর আশেপাশের word তবুও অনেক কিছু বলে দেয়।'),
+  why: l('Every Reading passage has words you have never seen. Their job and their neighbours still tell you a lot.', 'প্রতিটা Reading passage-এ এমন word থাকে যা আপনি আগে দেখেননি। তাদের কাজ আর আশেপাশের word তবুও অনেক কিছু বলে দেয়।'),
   steps: [
     {
       kind: 'hook',
@@ -35,7 +35,7 @@ const r1: Lesson = {
     {
       kind: 'concept',
       title: l('Job first, meaning second', 'আগে কাজ, তারপর অর্থ'),
-      body: l('When a word is new, first find its job from its position: after the/a/rapid → noun; after to/can/has → verb; before a noun → adjective; next to a verb, often with -ly → adverb. Then use the neighbours to guess the general meaning. This does not give you the dictionary meaning, but it is often enough to follow the sentence and match it to a question.', 'নতুন word পেলে আগে জায়গা দেখে তার কাজ বের করুন: the/a/rapid-এর পরে → noun; to/can/has-এর পরে → verb; noun-এর আগে → adjective; verb-এর পাশে, প্রায়ই -ly সহ → adverb। তারপর আশেপাশের word দিয়ে সাধারণ অর্থ আন্দাজ করুন। এতে dictionary-র অর্থ পাবে না, কিন্তু sentence বুঝতে আর প্রশ্নের সাথে মেলাতে প্রায়ই এটুকুই যথেষ্ট।'),
+      body: l('When a word is new, first find its job from its position: after the/a/rapid → noun; after to/can/has → verb; before a noun → adjective; next to a verb, often with -ly → adverb. Then use the neighbours to guess the general meaning. This does not give you the dictionary meaning, but it is often enough to follow the sentence and match it to a question.', 'নতুন word পেলে আগে জায়গা দেখে তার কাজ বের করুন: the/a/rapid-এর পরে → noun; to/can/has-এর পরে → verb; noun-এর আগে → adjective; verb-এর পাশে, প্রায়ই -ly সহ → adverb। তারপর আশেপাশের word দিয়ে সাধারণ অর্থ আন্দাজ করুন। এতে dictionary-র অর্থ পাবেন না, কিন্তু sentence বুঝতে আর প্রশ্নের সাথে মেলাতে প্রায়ই এটুকুই যথেষ্ট।'),
       points: [
         l('Endings help: -tion/-ment/-ity = noun; -ous/-ive/-al = adjective; -ly = usually adverb; -ise/-ify = verb.', 'Ending সাহায্য করে: -tion/-ment/-ity = noun; -ous/-ive/-al = adjective; -ly = সাধারণত adverb; -ise/-ify = verb।'),
         l('Job + context narrows the meaning. It does not answer the question for you: always check the passage.', 'কাজ + প্রসঙ্গ অর্থটা সংকুচিত করে। প্রশ্নের উত্তর নিজে দেয় না: সবসময় passage দেখুন।'),

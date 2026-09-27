@@ -62,7 +62,7 @@ const pcRecall: Exercise[] = [
   },
   {
     id: 't-3-e4', type: 'gap', tag: 'tense', concept: 'present-continuous', pattern: 'simple-vs-continuous',
-    prompt: l('Complete with the present continuous of "increase".', '"increase"-এর present continuous বসাও।'),
+    prompt: l('Complete with the present continuous of "increase".', '"increase"-এর present continuous বসান।'),
     sentence: 'The cost of living ___ in many cities this year.',
     accepted: ['is increasing', "'s increasing"],
     explanation: l('A trend around now → "is increasing".', 'এখনকার trend → "is increasing"।'),
@@ -286,7 +286,7 @@ const psRecall: Exercise[] = [
   },
   {
     id: 't-4-e5', type: 'gap', tag: 'tense', concept: 'past-simple',
-    prompt: l('Complete with the past simple of "remain".', '"remain"-এর past simple বসাও।'),
+    prompt: l('Complete with the past simple of "remain".', '"remain"-এর past simple বসান।'),
     sentence: 'Between 1995 and 2000, the figure ___ stable at around 40%.',
     accepted: ['remained'],
     explanation: l('Finished period → "remained".', 'শেষ হওয়া সময় → "remained"।'),
@@ -485,7 +485,7 @@ const pcoPractice: Exercise[] = [
 const pcoRecall: Exercise[] = [
   {
     id: 't-5-e2', type: 'gap', tag: 'agreement', concept: 'past-continuous', pattern: 'sv-agreement',
-    prompt: l('Complete with was or were.', 'was বা were বসাও।'),
+    prompt: l('Complete with was or were.', 'was বা were বসান।'),
     sentence: 'My friends ___ playing cricket when the storm started.',
     accepted: ['were'],
     explanation: l('Plural subject → "were".', 'Plural subject → "were"।'),
@@ -701,7 +701,7 @@ const ppRecall: Exercise[] = [
   },
   {
     id: 't-6-e4', type: 'gap', tag: 'agreement', concept: 'present-perfect', pattern: 'sv-agreement',
-    prompt: l('Complete with have or has.', 'have বা has বসাও।'),
+    prompt: l('Complete with have or has.', 'have বা has বসান।'),
     sentence: 'The number of cars ___ doubled since 2000.',
     accepted: ['has'],
     explanation: l('"The number" is singular → "has".', '"The number" singular → "has"।'),
@@ -910,7 +910,7 @@ const pfPractice: Exercise[] = [
 const pfRecall: Exercise[] = [
   {
     id: 't-7-e2', type: 'gap', tag: 'tense', concept: 'past-perfect', pattern: 'verb-form',
-    prompt: l('Complete with the past perfect of "rise".', '"rise"-এর past perfect বসাও।'),
+    prompt: l('Complete with the past perfect of "rise".', '"rise"-এর past perfect বসান।'),
     sentence: 'By 2015, the price of petrol ___ to over 100 taka.',
     accepted: ['had risen'],
     explanation: l('"By 2015" → had + past participle (risen).', '"By 2015" → had + past participle (risen)।'),
@@ -1119,7 +1119,7 @@ const fuRecall: Exercise[] = [
   },
   {
     id: 't-8-e4', type: 'gap', tag: 'tense', concept: 'future', pattern: 'verb-form',
-    prompt: l('Complete with "will" + verb.', '"will" + verb বসাও।'),
+    prompt: l('Complete with "will" + verb.', '"will" + verb বসান।'),
     sentence: 'I think robots ___ (do) many household jobs in the future.',
     accepted: ['will do'],
     explanation: l('Opinion about the future → "I think … will …".', 'ভবিষ্যৎ নিয়ে মতামত → "I think … will …"।'),

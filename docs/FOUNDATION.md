@@ -63,13 +63,13 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement, Prepositions and Connectors (9 lessons + a Final Mastery Challenge
-each), Vocabulary Foundation. Complex Sentences, Punctuation and Common Errors
+Agreement, Prepositions, Connectors and Complex Sentences (9 lessons + a Final
+Mastery Challenge each), Vocabulary Foundation. Punctuation and Common Errors
 show "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
 shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
-`docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md` and
-`docs/CONNECTORS_CURRICULUM.md`.
+`docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
+`docs/CONNECTORS_CURRICULUM.md` and `docs/COMPLEX_CURRICULUM.md`.
 
 ## Tests
 
@@ -290,6 +290,22 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 - **E2E.** `scripts/e2e/connectors.e2e.ts` (shared flow in `module-spec.ts`).
 - **Answers with punctuation.** Grading keeps commas and semicolons, so every accepted
   rewrite lists each correct punctuation (". However," / "; however," / ", but").
+
+## Phase F: Complex Sentences
+
+- **Module 8** (`complex.ts` cx-1…cx-6, `complex-apply.ts` cx-7…cx-9): 8 taught v2 lessons +
+  the review test. Six concepts (`cx-clause`, `cx-adverbial`, `cx-time-if`, `cx-relative`,
+  `cx-relative-comma`, `cx-noun-clause`, tag `complex-sentence`). See
+  `docs/COMPLEX_CURRICULUM.md`.
+- **Patterns.** `cx-fragment-runon`, `cx-comma`, `cx-clause-form`, `cx-clause-tense`,
+  `cx-relative-form`, `cx-word-order` (+ fix guides).
+- **Challenge.** `complex-sentences` in `CHALLENGES` (6 parts × 4 items).
+- **Mino.** Complex-sentence tasks add clause rules (accuracy first; fragments, run-ons,
+  will after when / if, repeated pronouns, relative words, indirect-question word order).
+- **E2E.** `scripts/e2e/complex.e2e.ts` (shared flow in `module-spec.ts`).
+- **Respectful Bangla.** The shared unit check rejects তুমি / তোমার / তুই in every grammar
+  module; older Foundation lessons were cleaned of informal verb forms (বসাও → বসান,
+  দেখবে → দেখবেন, শিখলে → শিখলেন).
 
 ## Known issue: `pnpm lint`
 

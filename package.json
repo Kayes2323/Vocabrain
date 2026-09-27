@@ -28,9 +28,10 @@
     "test:e2e:agreement": "bash scripts/e2e/run.sh agreement",
     "test:e2e:prepositions": "bash scripts/e2e/run.sh prepositions",
     "test:e2e:connectors": "bash scripts/e2e/run.sh connectors",
+    "test:e2e:complex": "bash scripts/e2e/run.sh complex",
     "test:e2e:abroad": "bash scripts/e2e/run.sh abroad",
     "test:e2e:home": "bash scripts/e2e/run.sh home",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors abroad home"
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex abroad home"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

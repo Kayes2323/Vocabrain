@@ -45,6 +45,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'conn-double': { title: l('Two linkers for one link (although … but)', 'একটা যোগসূত্রে দুটো linker (although … but)'), modules: ['connectors'] },
   'conn-form': { title: l('Connector grammar and punctuation', 'Connector-এর grammar আর punctuation'), modules: ['connectors'] },
   'conn-fragment': { title: l('Half sentences (Because … . on its own)', 'অর্ধেক sentence (একা Because … .)'), modules: ['connectors'] },
+  'cx-fragment-runon': { title: l('Fragments and run-on sentences', 'ভাঙা sentence আর run-on'), modules: ['complex-sentences'] },
+  'cx-comma': { title: l('Commas with clauses', 'Clause-এর সাথে comma'), modules: ['complex-sentences'] },
+  'cx-clause-form': { title: l('Purpose and reason clauses (to, so that)', 'উদ্দেশ্য আর কারণের clause (to, so that)'), modules: ['complex-sentences'] },
+  'cx-clause-tense': { title: l('Tenses in when / if clauses', 'when / if clause-এ tense'), modules: ['complex-sentences'] },
+  'cx-relative-form': { title: l('Relative clauses (who, which, no repeated pronoun)', 'Relative clause (who, which, pronoun আবার না)'), modules: ['complex-sentences'] },
+  'cx-word-order': { title: l('Word order in indirect questions', 'Indirect question-এ word order'), modules: ['complex-sentences'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -335,6 +341,60 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('In Bangla, "কেন?" is answered with "কারণ …" alone, and that habit becomes "Because it is cheap." in essays.', 'বাংলায় "কেন?"-র উত্তর একা "কারণ …" দিয়ে দেওয়া হয়, আর সেই অভ্যাস essay-তে "Because it is cheap." হয়ে যায়।'),
     recognise: l('A sentence that starts with Because / Although / Such as and has no second clause is a fragment.', 'Because / Although / Such as দিয়ে শুরু হওয়া sentence-এ দ্বিতীয় clause না থাকলে সেটা ভাঙা sentence।'),
     avoid: l('Replace the full stop before "because" with nothing: join it to the sentence before.', '"because"-এর আগের full stop সরিয়ে দিন: আগের sentence-এর সাথে জুড়ে দিন।'),
+  },
+  'cx-fragment-runon': {
+    rule: l(
+      'Every sentence needs a main clause (subject + verb that can stand alone). Two main clauses need a full stop, a semicolon or a joining word (, and / , but / , so / because) — never a comma alone. A because- / which- / although-part cannot stand alone.',
+      'প্রতিটা sentence-এ মূল clause লাগে (একা দাঁড়াতে পারে এমন subject + verb)। দুটো মূল clause-এ full stop, semicolon বা জোড়ার word লাগে (, and / , but / , so / because) — শুধু comma কখনো না। because- / which- / although-অংশ একা দাঁড়াতে পারে না।',
+    ),
+    why: l('Written Bangla joins many clauses with commas and lets "কারণ …" stand alone, so English sentences run on or break off.', 'লিখিত বাংলায় অনেক clause comma দিয়ে জোড়া আর "কারণ …" একা দাঁড়ায়, তাই English sentence হয় টানা চলে নয়তো ভেঙে যায়।'),
+    recognise: l('Count the subject + verb pairs between full stops. Two main clauses with only a comma = run-on; a clause that starts with because / which and nothing else = fragment.', 'Full stop-এর মাঝে subject + verb জোড়া গুনুন। শুধু comma-সহ দুটো মূল clause = run-on; because / which দিয়ে শুরু আর কিছু নেই = ভাঙা sentence।'),
+    avoid: l('Build sentences one clause at a time, and join each new main clause with and / but / so / because or a full stop.', 'এক এক clause করে sentence বানান, আর প্রতিটা নতুন মূল clause and / but / so / because বা full stop দিয়ে জোড়ুন।'),
+  },
+  'cx-comma': {
+    rule: l(
+      'Dependent clause first → comma after it (When it rains, …). Relative clauses: extra information → commas + who / which (never that); which one? → no commas.',
+      'নির্ভরশীল clause আগে → তার পরে comma (When it rains, …)। Relative clause: বাড়তি তথ্য → comma + who / which (কখনো that না); কোনটা? → comma না।',
+    ),
+    why: l('Bangla uses commas freely and has no defining / non-defining split, so commas land in random places.', 'বাংলায় comma স্বাধীনভাবে বসে আর defining / non-defining ভাগ নেই, তাই comma এলোমেলো জায়গায় পড়ে।'),
+    recognise: l('Does the clause tell you WHICH one? No commas. Is it an extra fact about a name or the only one? Commas.', 'Clause কি বলে কোনটা? Comma না। নাম বা একমাত্রটা সম্পর্কে বাড়তি তথ্য? Comma।'),
+    avoid: l('After a name (Dhaka, my mother), use ", which / who …,". Put a comma after an if / when / because-clause that comes first.', 'নামের পরে (Dhaka, my mother) ", which / who …," দিন। শুরুতে if / when / because-clause থাকলে তার পরে comma দিন।'),
+  },
+  'cx-clause-form': {
+    rule: l(
+      'Purpose + verb → to / in order to + base verb (to study). Purpose + clause → so that + subject + can / could + base verb. Reason → because / since + clause. Contrast → although + clause (no but).',
+      'উদ্দেশ্য + verb → to / in order to + base verb (to study)। উদ্দেশ্য + clause → so that + subject + can / could + base verb। কারণ → because / since + clause। বিপরীত → although + clause (but না)।',
+    ),
+    why: l('"পড়ার জন্য" feels like "for study", and "যাতে … পারি" becomes "so that I can to".', '"পড়ার জন্য" মনে হয় "for study", আর "যাতে … পারি" হয়ে যায় "so that I can to"।'),
+    recognise: l('Is there a verb after for? Change it to to. Is there "to" after can / could? Remove it.', 'for-এর পরে verb আছে? to-তে বদলান। can / could-এর পরে "to" আছে? বাদ দিন।'),
+    avoid: l('Learn the frames: to + verb, so that + subject + can + verb, for + noun.', 'Frame শিখুন: to + verb, so that + subject + can + verb, for + noun।'),
+  },
+  'cx-clause-tense': {
+    rule: l(
+      'After when / after / before / until / as soon as / if / unless, use the present for the future (When I finish, …; If it rains, …). Imagined: If + past, would + base verb — never "if … would".',
+      'when / after / before / until / as soon as / if / unless-এর পরে ভবিষ্যতের জন্য present (When I finish, …; If it rains, …)। কল্পিত: If + past, would + base verb — কখনো "if … would" না।',
+    ),
+    why: l('Bangla marks the future in both halves ("যখন আমি শেষ করব, আমি যাব"), so "When I will finish" feels natural.', 'বাংলায় দুই অংশেই ভবিষ্যৎ ("যখন আমি শেষ করব, আমি যাব"), তাই "When I will finish" স্বাভাবিক মনে হয়।'),
+    recognise: l('Find when / if / until / as soon as: is there will or would right after it? That is the error.', 'when / if / until / as soon as খুঁজুন: ঠিক পরে কি will বা would আছে? ওটাই ভুল।'),
+    avoid: l('Keep will / would in the main clause only.', 'will / would শুধু মূল clause-এ রাখুন।'),
+  },
+  'cx-relative-form': {
+    rule: l(
+      'who (people), which (things), that (both, no commas), whose (possession), where (places). The relative word replaces the pronoun: the man who lives (not who he lives), the book that I read (not that I read it).',
+      'who (মানুষ), which (জিনিস), that (দুটোই, comma ছাড়া), whose (মালিকানা), where (জায়গা)। Relative word pronoun-এর জায়গা নেয়: the man who lives (who he lives না), the book that I read (that I read it না)।',
+    ),
+    why: l('Bangla puts the describing clause before the noun and repeats it ("যে লোকটা …, সে …"), so English gets two subjects.', 'বাংলায় বর্ণনার clause noun-এর আগে বসে আর আবার বলা হয় ("যে লোকটা …, সে …"), তাই English-এ দুটো subject চলে আসে।'),
+    recognise: l('After who / which / that, is there another he / she / it / they? After the clause, is the subject repeated (", he is")?', 'who / which / that-এর পরে কি আবার he / she / it / they আছে? Clause-এর পরে কি subject আবার এসেছে (", he is")?'),
+    avoid: l('Read the clause without the relative word: it should be missing exactly one word (he / it / his / there).', 'Relative word ছাড়া clause পড়ুন: ঠিক একটা word বাদ থাকা উচিত (he / it / his / there)।'),
+  },
+  'cx-word-order': {
+    rule: l(
+      'Inside a sentence, a question becomes a statement: question word (or if / whether) + subject + verb, with no do / does / did: I don’t know where she lives; Can you tell me what time it is?',
+      'Sentence-এর ভেতরে প্রশ্ন statement হয়: question word (বা if / whether) + subject + verb, do / does / did ছাড়া: I don’t know where she lives; Can you tell me what time it is?',
+    ),
+    why: l('Bangla keeps the same word order in "স্টেশন কোথায়?" and "জানি না স্টেশন কোথায়", so question order stays inside statements.', 'বাংলায় "স্টেশন কোথায়?" আর "জানি না স্টেশন কোথায়"-এ একই word order, তাই statement-এর ভেতরে প্রশ্নের order থেকে যায়।'),
+    recognise: l('After know / tell me / wonder / sure / clear, look for is / does / should BEFORE the subject.', 'know / tell me / wonder / sure / clear-এর পরে subject-এর আগে is / does / should আছে কিনা দেখুন।'),
+    avoid: l('Put the subject first, then the verb; drop do / does / did; use if / whether for yes / no.', 'আগে subject, তারপর verb; do / does / did বাদ দিন; হ্যাঁ / না-র জন্য if / whether।'),
   },
 };
 

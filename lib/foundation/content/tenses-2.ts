@@ -17,7 +17,7 @@ export const tensesLessons2: Lesson[] = [
     id: 't-12',
     kind: 'test',
     title: l('Tenses review test', 'Tenses review test'),
-    why: l('Check what you have learned. Your mistakes here decide what Mino suggests you review.', 'কী শিখলে যাচাই করুন। এখানের ভুল দেখেই Mino ঠিক করবে কী review করতে বলবে।'),
+    why: l('Check what you have learned. Your mistakes here decide what Mino suggests you review.', 'কী শিখলেন যাচাই করুন। এখানের ভুল দেখেই Mino ঠিক করবে কী review করতে বলবে।'),
     minutes: 12,
     difficulty: 'medium',
     skill: 'grammar',
@@ -27,7 +27,7 @@ export const tensesLessons2: Lesson[] = [
         title: l('How this test works', 'এই test কীভাবে চলবে'),
         body: l(
           '12 questions from every lesson in this module. You see the answer after each question. Score 80% or more to complete the module; if you score less, Mino will suggest short reviews for the tenses you missed.',
-          'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। প্রতিটা প্রশ্নের পরে answer দেখবে। ৮০% বা বেশি পেলে module শেষ; কম পেলে যেগুলো ভুল হয়েছে, Mino সেই tense-গুলোর ছোট review suggest করবে।',
+          'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। প্রতিটা প্রশ্নের পরে answer দেখবেন। ৮০% বা বেশি পেলে module শেষ; কম পেলে যেগুলো ভুল হয়েছে, Mino সেই tense-গুলোর ছোট review suggest করবে।',
         ),
       },
       practice(

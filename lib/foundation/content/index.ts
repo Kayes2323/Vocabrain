@@ -18,6 +18,8 @@ import { PREPOSITION_CONCEPTS, prepData, prepDuration, prepMovement, prepPartner
 import { prepInIelts, prepMistakes, prepReview } from './prepositions-apply';
 import { CONNECTOR_CONCEPTS, connAdd, connCause, connCohesion, connContrast, connExample, connGrammar } from './connectors';
 import { connInIelts, connMistakes, connReview } from './connectors-apply';
+import { COMPLEX_CONCEPTS, cxClauses, cxNounClauses, cxReasonPurpose, cxRelative, cxRelativeComma, cxTimeIf } from './complex';
+import { cxInIelts, cxMistakes, cxReview } from './complex-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -147,8 +149,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Grammatical range in Writing — accuracy first.', 'Writing-এ grammatical range — আগে accuracy।'),
     skill: 'grammar',
     tags: ['complex-sentence'],
-    lessons: [],
-    planned: [t('Reason and contrast clauses', 'কারণ আর বিপরীতের clause'), t('Time and condition clauses', 'সময় আর শর্তের clause'), t('Relative clauses: who, which, that', 'Relative clause: who, which, that'), t('Combining sentences accurately', 'সঠিকভাবে sentence জোড়া')],
+    lessons: [cxClauses, cxReasonPurpose, cxTimeIf, cxRelative, cxRelativeComma, cxNounClauses, cxMistakes, cxInIelts, cxReview],
   },
   {
     id: 'punctuation',
@@ -256,7 +257,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

@@ -139,7 +139,7 @@ export const understandingTime: Lesson = {
         ),
         'I have been learning English for two years.': l(
           'Exactly! "have been learning" connects the past to now: it started two years ago and it is still happening. In this lesson you’ll see WHY — so you can do it every time.',
-          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে। এই lesson-এ দেখবে কেন — যাতে প্রতিবার ঠিক বাছতে পারেন।',
+          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে। এই lesson-এ দেখবেন কেন — যাতে প্রতিবার ঠিক বাছতে পারেন।',
         ),
       },
     },

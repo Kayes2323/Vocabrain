@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 41);
+  assert.equal(CONCEPTS.length, 47);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const complexSentences = MODULES.find((m) => m.id === 'complex-sentences')!;
+  const punctuation = MODULES.find((m) => m.id === 'punctuation')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(complexSentences, fp), undefined);
+  assert.equal(stepBeforeModule(punctuation, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 6);
+  assert.equal(CHALLENGES.length, 7);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -805,6 +805,51 @@ test('Connectors Final Mastery Challenge: 6 parts × 4 items at levels 1–3, st
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Connectors Final Mastery Challenge: last 81%/);
 });
 
+// ---------------------------------------------------------------- complex sentences
+test('Complex Sentences: 8 taught v2 lessons + a review test, full v2 shape, why-wrong feedback, respectful Bangla', () => {
+  const { mod } = checkV2Module('complex-sentences', ['cx-1', 'cx-2', 'cx-3', 'cx-4', 'cx-5', 'cx-6', 'cx-7', 'cx-8', 'cx-9'], 'complex-sentence', 'cx-', ['cx-7']);
+  assert.equal(mod.number, 8);
+  assert.equal(grade2(ex('cx-3-r1'), 'stops'), true);
+  assert.equal(grade2(ex('cx-3-r1'), 'will stop'), false, 'no will after when');
+  assert.equal(grade2(ex('cx-6-r3'), 'I don’t know why he is angry.'), true, 'curly or straight apostrophe');
+  assert.equal(grade2(ex('cx-6-r3'), "I don't know why is he angry."), false, 'question order is not accepted');
+  assert.equal(grade2(ex('cx-1-r3'), 'I love my hometown because it is very green.'), true, 'more than one correct fix of a comma splice');
+});
+
+test('Complex Sentences: concepts are mastery-capable and reviewable; the pattern fix and summary line work', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'complex-sentence').map((c) => c.id);
+  assert.deepEqual(ids, ['cx-clause', 'cx-adverbial', 'cx-time-if', 'cx-relative', 'cx-relative-comma', 'cx-noun-clause']);
+  const exs = MODULES.find((m) => m.id === 'complex-sentences')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'cx-4-p1', 'which', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'cx-4-p3', 'who', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'cx-4-p4', 'which', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'complex-sentences', NOW).find((x) => x.pair === 'cx-relative-form')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Complex Sentences pattern: Relative clauses \(who, which, no repeated pronoun\) ×3.*fix\/cx-relative-form/);
+  for (const k of ['cx-fragment-runon', 'cx-comma', 'cx-clause-form', 'cx-clause-tense', 'cx-relative-form', 'cx-word-order']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'complex-sentence' && exercisePattern(q) === k));
+  }
+});
+
+test('Complex Sentences Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals', () => {
+  const ch = getChallenge('complex-sentences')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 74, level: 2, parts: {} }, NOW, 'complex-sentences');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Complex Sentences Final Mastery Challenge: last 74%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -882,6 +927,16 @@ asyncTests.push(['Mino connector feedback: logic, grammar, punctuation, pairs an
   assert.match(seen!.system!, /FRAGMENT/);
   assert.doesNotMatch(seen!.system!, /Preposition feedback|Article feedback/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['but it is']);
+}]);
+asyncTests.push(['Mino complex-sentence feedback: accuracy first, repeated pronouns, will after when, word order', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'My aunt, who works as a nurse, lives in Khulna.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'who she works', fix: 'who works', why: 'who is the subject' }], practice: { sentence: 'The man ___ lives next door is a pilot.', answers: ['who'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('cx-4-y1') as Extract<Exercise, { type: 'write' }>, 'My aunt, who she works as a nurse, lives in Khulna.', 'bn');
+  assert.match(seen!.system!, /Complex-sentence feedback \(target: Relative clauses/);
+  assert.match(seen!.system!, /Accuracy first/);
+  assert.match(seen!.system!, /REPEATED pronoun/);
+  assert.match(seen!.system!, /question word order inside a statement/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['who she works']);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

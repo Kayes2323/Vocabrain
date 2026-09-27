@@ -204,7 +204,7 @@ export const articleMistakes: Lesson = {
         'আপনার answer-এর প্রতিটা noun পাঁচটা প্রশ্ন দিয়ে যাচাই করুন। বাংলাভাষীদের প্রায় সব article ভুল এতে ধরা পড়ে।',
       ),
       points: [
-        l('1. One countable thing with nothing before it? Add a / an / the / my (a doctor).', '১. গোনা যায় এমন একটা জিনিসের আগে কিছু নেই? a / an / the / my বসাও (a doctor)।'),
+        l('1. One countable thing with nothing before it? Add a / an / the / my (a doctor).', '১. গোনা যায় এমন একটা জিনিসের আগে কিছু নেই? a / an / the / my বসান (a doctor)।'),
         l('2. "the" before a general idea (the pollution, the education)? Remove it.', '২. সাধারণ ধারণার আগে "the" (the pollution, the education)? সরান।'),
         l('3. a / an before advice, information, news, furniture, equipment, research, traffic? Use some / a piece of / nothing.', '৩. advice, information, news, furniture, equipment, research, traffic-এর আগে a / an? some / a piece of / কিছুই না ব্যবহার করুন।'),
         l('4. a or an? Say the next word: a university, an hour.', '৪. a নাকি an? পরের word-টা বলুন: a university, an hour।'),
@@ -595,7 +595,7 @@ export const articlesReview: Lesson = {
   id: 'ar-9',
   kind: 'test',
   title: l('Articles review test', 'Articles review test'),
-  why: l('Check what you have learned. Your mistakes here decide what Mino suggests you review.', 'কী শিখলে যাচাই করুন। এখানের ভুল দেখেই Mino ঠিক করবে কী review করতে বলবে।'),
+  why: l('Check what you have learned. Your mistakes here decide what Mino suggests you review.', 'কী শিখলেন যাচাই করুন। এখানের ভুল দেখেই Mino ঠিক করবে কী review করতে বলবে।'),
   minutes: 10,
   difficulty: 'medium',
   skill: 'grammar',
@@ -605,7 +605,7 @@ export const articlesReview: Lesson = {
       title: l('How this test works', 'এই test কীভাবে চলবে'),
       body: l(
         '12 questions from every lesson in this module. You see the answer after each question. Score 80% or more to complete the module; if you score less, Mino will suggest short reviews for the articles you missed.',
-        'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। প্রতিটা প্রশ্নের পরে answer দেখবে। ৮০% বা বেশি পেলে module শেষ; কম পেলে যেগুলো ভুল হয়েছে, Mino সেগুলোর ছোট review suggest করবে।',
+        'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। প্রতিটা প্রশ্নের পরে answer দেখবেন। ৮০% বা বেশি পেলে module শেষ; কম পেলে যেগুলো ভুল হয়েছে, Mino সেগুলোর ছোট review suggest করবে।',
       ),
     },
     {

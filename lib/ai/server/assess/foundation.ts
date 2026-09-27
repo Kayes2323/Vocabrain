@@ -71,7 +71,16 @@ Connector feedback (target: ${concept.title.en}):
 - Keep linking errors apart from other errors — give each its own fix.
 - The follow-up gap practises the same linking decision in a NEW sentence; the answer is one linker (a word or short phrase).
 `
-              : '';
+              : concept?.tag === 'complex-sentence'
+                ? `
+Complex-sentence feedback (target: ${concept.title.en}):
+- Accuracy first: praise correct complex sentences, and never push the student to make sentences longer. A correct simple sentence is better than a broken complex one.
+- For each clause error, quote the words, give the fix and name ONE rule: a missing main clause (fragment) or two main clauses joined by a comma alone (run-on / comma splice); will / would inside a when / if / until clause (use the present; imagined: If + past, would); a REPEATED pronoun in a relative clause ("who he", "that … it", "My uncle, he …"); the wrong relative word (which for people, that after a comma, where for things); question word order inside a statement ("where is the station" → "where the station is", no do / does); purpose with "for + verb" or "can to".
+- Bangla puts the describing clause before the noun, repeats the subject, keeps question order in statements and joins clauses with commas; mention the Bangla cause briefly when it helps.
+- Keep clause errors apart from other errors — give each its own fix.
+- The follow-up gap practises the same clause decision in a NEW sentence; the answer is one word or a short phrase.
+`
+                : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

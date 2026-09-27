@@ -4,6 +4,7 @@ import { FINAL_PARTS, type FinalPart } from './pos-final';
 import { TENSE_FINAL_PARTS } from './tenses-final';
 import { AGREEMENT_FINAL_PARTS } from './agreement-final';
 import { ARTICLE_FINAL_PARTS } from './articles-final';
+import { COMPLEX_FINAL_PARTS } from './complex-final';
 import { CONNECTOR_FINAL_PARTS } from './connectors-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 
@@ -64,6 +65,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Connectors Final Mastery Challenge', 'Connectors Final Mastery Challenge'), name: l('Connectors', 'Connectors'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: CONNECTOR_FINAL_PARTS,
     concepts: ['conn-add', 'conn-contrast', 'conn-cause', 'conn-example', 'conn-grammar', 'conn-cohesion'],
+  },
+  {
+    id: 'complex-sentences', moduleId: 'complex-sentences', mark: 'X★', minutes: 15, areas: 'concept',
+    title: l('Complex Sentences Final Mastery Challenge', 'Complex Sentences Final Mastery Challenge'), name: l('Complex Sentences', 'Complex Sentences'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: COMPLEX_FINAL_PARTS,
+    concepts: ['cx-clause', 'cx-adverbial', 'cx-time-if', 'cx-relative', 'cx-relative-comma', 'cx-noun-clause'],
   },
 ];
 

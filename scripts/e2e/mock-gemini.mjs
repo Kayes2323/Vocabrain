@@ -14,6 +14,8 @@
 //   only when the prompt carried the preposition rules.
 // - Connector tasks ("Although …, but …", a stand-alone "Because …") get
 //   linking feedback only when the prompt carried the connector rules.
+// - Complex-sentence tasks ("who she works", "When I will finish") get clause
+//   feedback only when the prompt carried the complex-sentence rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -128,6 +130,28 @@ http
             feedback: bn ? 'ভালো চেষ্টা! because-অংশটা একা sentence হতে পারে না।' : 'Good try! The because-part cannot stand alone.',
             fixes: [{ quote: 'cities. Because there', fix: 'cities because there are more jobs', why: bn ? 'একা "Because …." একটা ভাঙা sentence; মূল clause-এর সাথে জুড়ুন।' : 'A stand-alone "Because …." is a fragment; attach it to the main clause.' }],
             practice: { sentence: 'I take the metro ___ it is faster.', answers: ['because', 'since', 'as'] },
+          }) }]);
+        }
+        const complexRules = /Complex-sentence feedback \(target: /.test(system);
+        if (complexRules && /\bwho (he|she|they) (\w+)/i.test(student)) {
+          const [, , verb] = student.match(/\bwho (he|she|they) (\w+)/i);
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bwho (he|she|they) /i, 'who '),
+            feedback: bn ? 'ভালো চেষ্টা! relative clause-এ subject দুইবার এসেছে।' : 'Good try! The relative clause has its subject twice.',
+            fixes: [{ quote: `who she ${verb}`, fix: `who ${verb}`, why: bn ? "'who' নিজেই subject, তাই 'she' বাদ দিন (বাংলার 'যে …, সে …' থেকে আসে)।" : "'who' is already the subject, so remove 'she'." }],
+            practice: { sentence: 'The man ___ lives next door is a pilot.', answers: ['who', 'that'] },
+          }) }]);
+        }
+        if (complexRules && /\bWhen I will\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bWhen I will (\w+)/i, 'When I $1'),
+            feedback: bn ? 'ভালো চেষ্টা! when-এর পরে will বসে না।' : 'Good try! No will after when.',
+            fixes: [{ quote: 'When I will finish', fix: 'When I finish', why: bn ? 'ভবিষ্যতের time clause-এ present simple: "When I finish …, I will …"।' : 'A future time clause takes the present simple: "When I finish …, I will …".' }],
+            practice: { sentence: 'I will call you as soon as I ___ (arrive).', answers: ['arrive'] },
           }) }]);
         }
         const bad = /\b(go|am learning)\b/.test(student);
