@@ -10,6 +10,8 @@
 //   when the prompt carried the article rules.
 // - Agreement tasks ("… of schools have improved", "My father work …") get
 //   subject–verb feedback only when the prompt carried the agreement rules.
+// - Preposition tasks ("rose with 35 …", "in 7 am") get preposition feedback
+//   only when the prompt carried the preposition rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -82,6 +84,27 @@ http
             feedback: bn ? 'ভালো চেষ্টা! একজন মানুষ হলে verb-এ -s লাগবে।' : 'Good try! One person needs verb + s.',
             fixes: [{ quote: 'father work', fix: 'father works', why: bn ? "'my father' একজন (he), তাই verb + s: 'works'।" : "'my father' is one person (he), so verb + s: 'works'." }],
             practice: { sentence: 'My mother ___ (cook) every evening.', answers: ['cooks'] },
+          }) }]);
+        }
+        const prepositionRules = /Preposition feedback \(target: /.test(system);
+        if (prepositionRules && /\brose with\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\brose with\b/i, 'rose by'),
+            feedback: bn ? 'ভালো চেষ্টা! এই সংখ্যাটা পরিবর্তন, তাই by লাগবে।' : 'Good try! This number is the change, so it needs by.',
+            fixes: [{ quote: 'rose with', fix: 'rose by', why: bn ? "৩৫ point হলো পরিবর্তনের পরিমাণ (change), তাই 'rose by'।" : "35 points is the size of the change, so 'rose by'." }],
+            practice: { sentence: 'Sales fell ___ 10% last year.', answers: ['by'] },
+          }) }]);
+        }
+        if (prepositionRules && /\bin 7 am\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bin 7 am\b/i, 'at 7 am'),
+            feedback: bn ? 'ভালো চেষ্টা! ঘড়ির সময়ে at লাগে।' : 'Good try! Clock times take at.',
+            fixes: [{ quote: 'in 7 am', fix: 'at 7 am', why: bn ? "৭টা একটা নির্দিষ্ট সময়-বিন্দু, তাই 'at 7 am'।" : "7 am is an exact point in time, so 'at 7 am'." }],
+            practice: { sentence: 'The class starts ___ 9 am.', answers: ['at'] },
           }) }]);
         }
         const bad = /\b(go|am learning)\b/.test(student);

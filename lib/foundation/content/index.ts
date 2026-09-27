@@ -14,6 +14,8 @@ import { aAnMeaning, aOrAn, ARTICLE_CONCEPTS, theArticle, zeroArticle } from './
 import { articleChoice, articleMistakes, articlesInIelts, articlesMixed, articlesReview } from './articles-apply';
 import { AGREEMENT_CONCEPTS, svaBasics, svaCompound, svaIndefinite, svaLongSubjects, svaQuantity } from './agreement';
 import { svaInIelts, svaMistakes, svaMixed, svaReview } from './agreement-apply';
+import { PREPOSITION_CONCEPTS, prepData, prepDuration, prepMovement, prepPartners, prepPlace, prepTime } from './prepositions';
+import { prepInIelts, prepMistakes, prepReview } from './prepositions-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -121,8 +123,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Task 1 needs "by 20%", "from 2000 to 2010", "between 5 and 10".', 'Task 1-এ লাগে "by 20%", "from 2000 to 2010", "between 5 and 10"।'),
     skill: 'grammar',
     tags: ['preposition'],
-    lessons: [],
-    planned: [t('Time: in, on, at, during', 'সময়: in, on, at, during'), t('Place and movement', 'জায়গা আর চলাচল'), t('Prepositions for data (by, from, to, between)', 'Data-র preposition (by, from, to, between)'), t('Common IELTS preposition errors', 'IELTS-এর common preposition ভুল')],
+    lessons: [prepTime, prepDuration, prepPlace, prepMovement, prepPartners, prepData, prepMistakes, prepInIelts, prepReview],
   },
   {
     id: 'connectors',
@@ -254,7 +255,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

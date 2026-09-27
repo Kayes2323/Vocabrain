@@ -63,12 +63,12 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement (9 lessons + its Final Mastery Challenge), Vocabulary Foundation.
-Prepositions, Connectors, Complex Sentences, Punctuation and Common Errors
-show "Soon".
+Agreement (9 lessons + its Final Mastery Challenge), Prepositions (9 lessons +
+its Final Mastery Challenge), Vocabulary Foundation. Connectors, Complex
+Sentences, Punctuation and Common Errors show "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
-shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md` and
-`docs/AGREEMENT_CURRICULUM.md`.
+shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+`docs/AGREEMENT_CURRICULUM.md` and `docs/PREPOSITIONS_CURRICULUM.md`.
 
 ## Tests
 
@@ -260,6 +260,20 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 - **Mino.** Agreement tasks add agreement rules to the sentence check (quote the verb, name
   its real subject, one or more; British collective plurals are not marked wrong).
 - **E2E.** `scripts/e2e/agreement.e2e.ts` (`pnpm test:e2e:agreement`); part of `pnpm test:e2e`.
+
+## Phase D: Prepositions
+
+- **Module 6** (`prepositions.ts` pr-1…pr-6, `prepositions-apply.ts` pr-7…pr-9): 8 taught v2
+  lessons + the review test. Six concepts (`prep-time`, `prep-duration`, `prep-place`,
+  `prep-movement`, `prep-partner`, `prep-data`, tag `preposition`). The Parts of Speech unit
+  (ppp-1…ppp-3) stays the short introduction. See `docs/PREPOSITIONS_CURRICULUM.md`.
+- **Patterns.** `prep-time-words`, `prep-place-words`, `prep-word-partner`, `prep-data-words`,
+  `prep-extra` (+ fix guides); `prep-choice` from Parts of Speech also shows here.
+- **Challenge.** `prepositions` in `CHALLENGES` (6 parts × 4 items, `finals.prepositions`).
+- **Mino.** Preposition tasks add preposition rules to the sentence check (the one deciding
+  reason, extra / missing prepositions, change vs level for data).
+- **E2E.** `scripts/e2e/prepositions.e2e.ts` runs the shared grammar-module flow in
+  `scripts/e2e/module-spec.ts` (later modules reuse it with their own data).
 
 ## Known issue: `pnpm lint`
 

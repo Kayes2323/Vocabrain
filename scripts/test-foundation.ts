@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 29);
+  assert.equal(CONCEPTS.length, 35);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const prepositions = MODULES.find((m) => m.id === 'prepositions')!;
+  const connectors = MODULES.find((m) => m.id === 'connectors')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(prepositions, fp), undefined);
+  assert.equal(stepBeforeModule(connectors, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 4);
+  assert.equal(CHALLENGES.length, 5);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -672,6 +672,92 @@ test('Agreement: respectful Bangla only (আপনি), never তুমি / ত
   assert.doesNotMatch(src, /তুমি|তোমার|তোমাকে|তোমাদের|তুই|তোর|তোকে|করো\b|দেখো\b|লেখো\b|বলো\b|দেখবে\b|পারবে\b/);
 });
 
+// ---------------------------------------------------------------- shared checks for v2 grammar modules
+/** The v2 shape every taught lesson of a grammar module must have (Articles, Agreement, Prepositions …). */
+function checkV2Module(moduleId: string, ids: string[], tag: string, conceptPrefix: string, slipExempt: string[]) {
+  const mod = MODULES.find((m) => m.id === moduleId)!;
+  const taught = mod.lessons.filter((x) => x.kind !== 'test');
+  const exs = mod.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  assert.equal(mod.planned, undefined, `${moduleId}: no placeholder lessons`);
+  assert.deepEqual(mod.lessons.map((x) => x.id), ids);
+  assert.equal(mod.lessons.at(-1)!.kind, 'test');
+  for (const x of taught) {
+    assert.equal(x.format, 'v2', `${x.id} is v2`);
+    const kinds = x.steps.map((st) => st.kind);
+    assert.equal(kinds[0], 'hook', `${x.id} starts with a real situation`);
+    for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'recall']) assert.ok(kinds.includes(k as never), `${x.id} has ${k}`);
+    const ielts = x.steps.find((st) => st.kind === 'ielts');
+    assert.equal(new Set(ielts && ielts.kind === 'ielts' ? ielts.uses.map((u) => u.skill) : []).size, 4, `${x.id} covers the 4 skills`);
+    const concept = x.steps.find((st) => st.kind === 'concept');
+    assert.ok((concept && concept.kind === 'concept' && concept.points?.some((pt) => /Bangla speakers slip/.test(pt.en))) || slipExempt.includes(x.id), `${x.id} explains why Bangla speakers slip`);
+    const practice = x.steps.filter((st) => st.kind === 'practice');
+    assert.ok(practice.some((st) => st.mode === 'recall'), `${x.id} has free recall`);
+    assert.ok(practice.some((st) => st.exercises.some((e) => e.type === 'correct' || e.type === 'spot')), `${x.id} has error correction`);
+    assert.ok(practice.some((st) => st.mode === 'personal' && st.exercises.some((e) => e.type === 'write' && e.mino)), `${x.id} has a Mino-checked sentence`);
+    const mistakes = x.steps.find((st) => st.kind === 'mistakes');
+    assert.ok(mistakes && mistakes.kind === 'mistakes' && mistakes.items.length >= 3, `${x.id} has a mistake lab`);
+    for (const st of practice.filter((p) => p.mode === 'practice')) {
+      for (const e of st.exercises) if (e.type === 'choice') assert.ok(e.why && Object.keys(e.why).length > 0, `${e.id} explains why the wrong answer is wrong`);
+    }
+  }
+  assert.ok(exs.every((e) => e.tag === tag && e.concept?.startsWith(conceptPrefix)), `${moduleId}: every question has its concept`);
+  for (const e of exs) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+  const src = MODULES.find((m) => m.id === moduleId)!.lessons.map((x) => JSON.stringify(x)).join('\n');
+  assert.doesNotMatch(src, /তুমি|তোমার|তোমাকে|তোমাদের|তুই|তোর|তোকে/, `${moduleId}: respectful Bangla only`);
+  return { mod, taught, exs };
+}
+
+// ---------------------------------------------------------------- prepositions
+test('Prepositions: 8 taught v2 lessons + a review test, full v2 shape, why-wrong feedback, respectful Bangla', () => {
+  const { mod } = checkV2Module('prepositions', ['pr-1', 'pr-2', 'pr-3', 'pr-4', 'pr-5', 'pr-6', 'pr-7', 'pr-8', 'pr-9'], 'preposition', 'prep-', ['pr-7']);
+  assert.equal(mod.number, 6);
+  // "The number is the change or the level": by and to are never interchangeable.
+  assert.equal(grade2(ex('pr-6-p1'), 'to'), true);
+  assert.equal(grade2(ex('pr-6-p1'), 'by'), false);
+  assert.equal(grade2(ex('pr-4-r1'), 'over'), true, 'across or over the bridge');
+  assert.equal(grade2(ex('pr-5-r3'), 'In this essay, I will discuss the advantages of online learning.'), true);
+});
+
+test('Prepositions: every concept is mastery-capable and reviewable; the pattern fix and summary line work', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'preposition' && c.id.startsWith('prep-')).map((c) => c.id);
+  assert.deepEqual(ids, ['prep-time', 'prep-duration', 'prep-place', 'prep-movement', 'prep-partner', 'prep-data']);
+  const exs = MODULES.find((m) => m.id === 'prepositions')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'pr-6-p1', 'by', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'pr-6-p3', 'to', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'pr-6-p4', 'of', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'prepositions', NOW).find((x) => x.pair === 'prep-data-words')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Prepositions pattern: Prepositions for data \(by, to, at\) ×3.*fix\/prep-data-words/);
+  const qs = fixQuestions(fp, 'prep-data-words', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => q.tag === 'preposition' && exercisePattern(q) === 'prep-data-words'));
+  for (const k of ['prep-time-words', 'prep-place-words', 'prep-word-partner', 'prep-data-words', 'prep-extra']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    assert.ok(fixQuestions(empty(), k, NOW).length === 5, `${k} has 5 fix questions`);
+  }
+  assert.ok(POS_NAMED_PATTERNS['prep-choice'].modules.includes('prepositions'), 'the Parts of Speech preposition pattern also shows here');
+  const w = recordAnswer(empty(), { source: 'pr-3', exercise: ex('pr-3-p1'), answer: 'at', correct: false, attempt: 1, now: NOW });
+  assert.equal(w.mistakes.at(-1)!.concept, 'prep-place');
+  assert.equal(w.mistakes.at(-1)!.pattern, 'prep-place-words');
+});
+
+test('Prepositions Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals.prepositions', () => {
+  const ch = getChallenge('prepositions')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 78, level: 2, parts: {} }, NOW, 'prepositions');
+  assert.equal(finalRecord(fp, 'prepositions')!.score, 78);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Prepositions Final Mastery Challenge: last 78%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -728,6 +814,16 @@ asyncTests.push(['Mino agreement feedback: names the verb, its real subject and 
   assert.doesNotMatch(seen!.system!, /Tense feedback|Article feedback/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['have improved']);
   assert.equal(fb.practice?.answers[0], 'has');
+}]);
+asyncTests.push(['Mino preposition feedback: the deciding reason, extra prepositions, change vs level', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'It rose by 15 points to 55%.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'rose with', fix: 'rose by', why: 'the change → by' }], practice: { sentence: 'Sales fell ___ 10%.', answers: ['by'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('pr-6-y1') as Extract<Exercise, { type: 'write' }>, 'It rose with 15 points.', 'bn');
+  assert.match(seen!.system!, /Preposition feedback \(target: Prepositions for data/);
+  assert.match(seen!.system!, /EXTRA prepositions/);
+  assert.match(seen!.system!, /the change \(by\), the new level \(to\)/);
+  assert.doesNotMatch(seen!.system!, /Tense feedback|Article feedback|agreement feedback/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['rose with']);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

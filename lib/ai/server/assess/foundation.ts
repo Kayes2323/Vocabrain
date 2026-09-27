@@ -51,7 +51,17 @@ Subject–verb agreement feedback (target: ${concept.title.en}):
 - Keep agreement errors apart from any other error (tense, article, word form) — give each its own fix.
 - The follow-up gap practises the same agreement decision in a NEW sentence (answers such as is / are, has / have or a verb + s).
 `
-          : '';
+          : concept?.tag === 'preposition'
+            ? `
+Preposition feedback (target: ${concept.title.en}):
+- For each preposition error, quote the phrase, give the fix and the ONE reason that decides it: the size of the time (in years / months, on days / dates, at clock times), a length vs a starting point (for vs since, "X ago"), the kind of place (in = inside an area, on = surface / level, at = point or activity place), the path (to, into, through, across; arrive in / at, never arrive to), the word it partners (depend on, interested in, responsible for, an effect on), or, for data, whether the number is the change (by), the new level (to) or a peak / level (at).
+- Bangla uses one ending (-এ / -তে, থেকে, আগে) where English needs different prepositions, so name the English chunk rather than a Bangla translation.
+- Flag EXTRA prepositions as their own fix: discuss about, reach to, enter into, emphasise on, go to home, affect on. Flag MISSING ones too: listen music, wait me.
+- Accept regional variants: "at / on the weekend", "different from / to".
+- Keep preposition errors apart from any other error — give each its own fix.
+- The follow-up gap practises the same preposition decision in a NEW sentence; the answer is one preposition.
+`
+            : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

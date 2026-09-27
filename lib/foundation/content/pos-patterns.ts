@@ -24,7 +24,7 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'verb-form': { title: l('Verb form after helping verbs', 'Helping verb-এর পরে verb form'), modules: ['parts-of-speech', 'tenses'], unit: 'verb' },
   'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech', 'articles'], unit: 'noun' },
   'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), modules: ['parts-of-speech'], unit: 'pronoun' },
-  'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), modules: ['parts-of-speech'], unit: 'preposition' },
+  'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), modules: ['parts-of-speech', 'prepositions'], unit: 'preposition' },
   'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), modules: ['parts-of-speech'], unit: 'conjunction' },
   'past-vs-perfect': { title: l('Past Simple or Present Perfect', 'Past Simple নাকি Present Perfect'), modules: ['tenses'] },
   'simple-vs-continuous': { title: l('Simple or continuous', 'Simple নাকি continuous'), modules: ['tenses'] },
@@ -36,6 +36,11 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'sva-indefinite': { title: l('everyone, each, every and group nouns', 'everyone, each, every আর group noun'), modules: ['agreement'] },
   'sva-long-subject': { title: l('Finding the real subject in long subjects', 'লম্বা subject-এ আসল subject খোঁজা'), modules: ['agreement'] },
   'sva-quantity': { title: l('Amounts, numbers and percentages', 'পরিমাণ, সংখ্যা আর শতাংশ'), modules: ['agreement'] },
+  'prep-time-words': { title: l('Prepositions of time (in / on / at, for / since)', 'সময়ের preposition (in / on / at, for / since)'), modules: ['prepositions'] },
+  'prep-place-words': { title: l('Prepositions of place and movement', 'জায়গা আর চলাচলের preposition'), modules: ['prepositions'] },
+  'prep-word-partner': { title: l('Word partners (depend on, interested in)', 'Word partner (depend on, interested in)'), modules: ['prepositions'] },
+  'prep-data-words': { title: l('Prepositions for data (by, to, at)', 'Data-র preposition (by, to, at)'), modules: ['prepositions'] },
+  'prep-extra': { title: l('Extra or missing prepositions (discuss about, reach to)', 'অতিরিক্ত বা বাদ পড়া preposition (discuss about, reach to)'), modules: ['prepositions'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -245,6 +250,51 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Task 1 subjects are full of plurals (students, countries, years), so the verb follows the plural noun instead of "the number" or "the percentage".', 'Task 1-এর subject-এ অনেক plural থাকে (students, countries, years), তাই verb "the number" বা "the percentage"-এর বদলে plural noun মেনে ফেলে।'),
     recognise: l('the number / the percentage / the proportion / the amount → one figure. a number of → several. With X% of, look at the noun after "of".', 'the number / the percentage / the proportion / the amount → একটা সংখ্যা। a number of → কয়েকটা। X% of-এ "of"-এর পরের noun দেখুন।'),
     avoid: l('Learn the Task 1 frames: "The number of … has risen", "The figures for … were", "X% of the population was".', 'Task 1-এর frame শিখুন: "The number of … has risen", "The figures for … were", "X% of the population was"।'),
+  },
+  'prep-time-words': {
+    rule: l(
+      'in = long periods (in 2020, in May, in the morning) · on = one day (on Friday, on 16 December) · at = a point (at 7 pm, at night). for + a length (for three years) · since + a start (since 2019) · X ago. No preposition before this / next / last / every.',
+      'in = লম্বা সময় (in 2020, in May, in the morning) · on = একটা দিন (on Friday, on 16 December) · at = একটা বিন্দু (at 7 pm, at night)। for + দৈর্ঘ্য (for three years) · since + শুরু (since 2019) · X ago। this / next / last / every-এর আগে preposition না।',
+    ),
+    why: l('Bangla marks every time with one ending (২০২০-এ, সোমবারে, পাঁচটায়), and "থেকে" / "আগে" become "since five years" and "before two years".', 'বাংলায় সব সময় একটা ending দিয়ে বোঝানো হয় (২০২০-এ, সোমবারে, পাঁচটায়), আর "থেকে" / "আগে" হয়ে যায় "since five years" আর "before two years"।'),
+    recognise: l('Look at the time word: how big is it (year / day / clock)? Is it a length or a starting point?', 'সময়ের word-টা দেখুন: কত বড় (বছর / দিন / ঘড়ি)? এটা দৈর্ঘ্য নাকি শুরুর বিন্দু?'),
+    avoid: l('Picture the triangle in → on → at, and ask "how long?" (for) or "since when?" (since) before you write.', 'লেখার আগে in → on → at ত্রিভুজ কল্পনা করুন, আর জিজ্ঞেস করুন "কতক্ষণ?" (for) নাকি "কবে থেকে?" (since)।'),
+  },
+  'prep-place-words': {
+    rule: l(
+      'in = inside an area or space (in Dhaka, in the room, in a car) · on = a surface or level (on the wall, on the 3rd floor, on the bus) · at = a point or activity place (at the gate, at home, at work). go to · arrive in (city) / at (building), never arrive to.',
+      'in = এলাকা বা জায়গার ভেতরে (in Dhaka, in the room, in a car) · on = উপরিতল বা স্তর (on the wall, on the 3rd floor, on the bus) · at = বিন্দু বা কাজের জায়গা (at the gate, at home, at work)। go to · arrive in (শহর) / at (building), কখনো arrive to না।',
+    ),
+    why: l('One Bangla ending (-এ / -তে) covers ঘরে, টেবিলে and স্টেশনে, so "at Dhaka" and "in the second floor" sound right.', 'বাংলার একটা ending (-এ / -তে) ঘরে, টেবিলে আর স্টেশনে সব বোঝায়, তাই "at Dhaka" আর "in the second floor" ঠিক মনে হয়।'),
+    recognise: l('Ask about the place: a space around you, a surface / level, or a point?', 'জায়গাটা নিয়ে জিজ্ঞেস করুন: চারপাশে জায়গা, উপরিতল / স্তর, নাকি একটা বিন্দু?'),
+    avoid: l('Learn the fixed ones as chunks: live in + city, on + floor, at home / work / school, on the bus, in a car.', 'নির্দিষ্টগুলো chunk হিসেবে শিখুন: live in + শহর, on + floor, at home / work / school, on the bus, in a car।'),
+  },
+  'prep-word-partner': {
+    rule: l(
+      'Some words always take the same preposition: interested in, good at, afraid of, responsible for, depend on, focus on, listen to, wait for, an effect / impact on, a reason for, a solution to, access to.',
+      'কিছু word সবসময় একই preposition নেয়: interested in, good at, afraid of, responsible for, depend on, focus on, listen to, wait for, an effect / impact on, a reason for, a solution to, access to।',
+    ),
+    why: l('We translate Bangla endings word by word ("এর উপর নির্ভর" → depend of, "সাথে বিয়ে" → married with).', 'আমরা বাংলার ending শব্দে শব্দে অনুবাদ করি ("এর উপর নির্ভর" → depend of, "সাথে বিয়ে" → married with)।'),
+    recognise: l('Look at the word BEFORE the preposition (depend, interested, effect). It chooses the preposition, not the meaning.', 'Preposition-এর আগের word দেখুন (depend, interested, effect)। অর্থ না, ওই word-ই preposition ঠিক করে।'),
+    avoid: l('Learn and write the chunk, never the word alone: write "depend on" in your notes, not "depend".', 'একা word না, chunk শিখুন আর লিখুন: note-এ "depend" না, "depend on" লিখুন।'),
+  },
+  'prep-data-words': {
+    rule: l(
+      'rise / fall by + the size of the change · to + the new level · peak / stand at + a level · from X to Y · between X and Y · a rise of (amount) in (thing) · reach + number (no preposition).',
+      'rise / fall by + পরিবর্তনের পরিমাণ · to + নতুন মান · peak / stand at + একটা মান · from X to Y · between X and Y · a rise of (পরিমাণ) in (জিনিস) · reach + সংখ্যা (preposition না)।',
+    ),
+    why: l('Bangla "১০% বেড়ে ৫০% হয়েছে" has one pattern, so "increased with 10%" and "rose by 50%" (meaning to) appear in reports.', 'বাংলা "১০% বেড়ে ৫০% হয়েছে"-তে একটাই pattern, তাই report-এ "increased with 10%" আর "rose by 50%" (to বোঝাতে) চলে আসে।'),
+    recognise: l('For every number, ask: is this the change, the new level, or a peak?', 'প্রতিটা সংখ্যার জন্য জিজ্ঞেস করুন: এটা পরিবর্তন, নতুন মান, নাকি সর্বোচ্চ বিন্দু?'),
+    avoid: l('Check your Task 1 numbers against the chart: "by" + difference, "to" + the number on the chart.', 'Task 1-এর সংখ্যা chart-এর সাথে মেলান: "by" + পার্থক্য, "to" + chart-এর সংখ্যা।'),
+  },
+  'prep-extra': {
+    rule: l(
+      'No preposition after: discuss, reach, enter, emphasise, affect, influence, attend, marry, approach; go / come home; this / next / last / every. But: listen to, wait for, depend on.',
+      'এগুলোর পরে preposition না: discuss, reach, enter, emphasise, affect, influence, attend, marry, approach; go / come home; this / next / last / every। কিন্তু: listen to, wait for, depend on।',
+    ),
+    why: l('Bangla "নিয়ে", "-এ", "-তে" feel like they need an English word, so we add about, to, into, on.', 'বাংলা "নিয়ে", "-এ", "-তে"-র জন্য English word লাগবে মনে হয়, তাই about, to, into, on বসিয়ে ফেলি।'),
+    recognise: l('After discuss, reach, enter, emphasise and affect, the object comes straight after the verb.', 'discuss, reach, enter, emphasise আর affect-এর পরে object সরাসরি verb-এর পরে বসে।'),
+    avoid: l('Proofread for these verbs and delete the extra word: discuss the issue, reach Dhaka, go home.', 'এই verb-গুলো খুঁজে অতিরিক্ত word মুছে দিন: discuss the issue, reach Dhaka, go home।'),
   },
 };
 

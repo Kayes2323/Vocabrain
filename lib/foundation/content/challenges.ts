@@ -4,6 +4,7 @@ import { FINAL_PARTS, type FinalPart } from './pos-final';
 import { TENSE_FINAL_PARTS } from './tenses-final';
 import { AGREEMENT_FINAL_PARTS } from './agreement-final';
 import { ARTICLE_FINAL_PARTS } from './articles-final';
+import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -50,6 +51,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Subject–Verb Agreement Final Mastery Challenge', 'Subject–Verb Agreement Final Mastery Challenge'), name: l('Subject–Verb Agreement', 'Subject–Verb Agreement'), tagline: l('18 adaptive questions, a report rule by rule', '১৮টা adaptive প্রশ্ন, নিয়ম ধরে ধরে report'),
     parts: AGREEMENT_FINAL_PARTS,
     concepts: ['sva-basic', 'sva-compound', 'sva-indefinite', 'sva-long', 'sva-quantity'],
+  },
+  {
+    id: 'prepositions', moduleId: 'prepositions', mark: 'P★', minutes: 15, areas: 'concept',
+    title: l('Prepositions Final Mastery Challenge', 'Prepositions Final Mastery Challenge'), name: l('Prepositions', 'Prepositions'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: PREPOSITION_FINAL_PARTS,
+    concepts: ['prep-time', 'prep-duration', 'prep-place', 'prep-movement', 'prep-partner', 'prep-data'],
   },
 ];
 
