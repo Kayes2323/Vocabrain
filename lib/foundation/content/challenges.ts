@@ -6,6 +6,7 @@ import { AGREEMENT_FINAL_PARTS } from './agreement-final';
 import { ARTICLE_FINAL_PARTS } from './articles-final';
 import { COMPLEX_FINAL_PARTS } from './complex-final';
 import { CONNECTOR_FINAL_PARTS } from './connectors-final';
+import { PUNCTUATION_FINAL_PARTS } from './punctuation-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 
 /**
@@ -71,6 +72,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Complex Sentences Final Mastery Challenge', 'Complex Sentences Final Mastery Challenge'), name: l('Complex Sentences', 'Complex Sentences'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: COMPLEX_FINAL_PARTS,
     concepts: ['cx-clause', 'cx-adverbial', 'cx-time-if', 'cx-relative', 'cx-relative-comma', 'cx-noun-clause'],
+  },
+  {
+    id: 'punctuation', moduleId: 'punctuation', mark: '¶★', minutes: 15, areas: 'concept',
+    title: l('Punctuation Final Mastery Challenge', 'Punctuation Final Mastery Challenge'), name: l('Punctuation', 'Punctuation'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: PUNCTUATION_FINAL_PARTS,
+    concepts: ['pn-capital', 'pn-end', 'pn-comma', 'pn-comma-error', 'pn-apostrophe', 'pn-colon'],
   },
 ];
 

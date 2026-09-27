@@ -20,6 +20,8 @@ import { CONNECTOR_CONCEPTS, connAdd, connCause, connCohesion, connContrast, con
 import { connInIelts, connMistakes, connReview } from './connectors-apply';
 import { COMPLEX_CONCEPTS, cxClauses, cxNounClauses, cxReasonPurpose, cxRelative, cxRelativeComma, cxTimeIf } from './complex';
 import { cxInIelts, cxMistakes, cxReview } from './complex-apply';
+import { PUNCTUATION_CONCEPTS, pnApostrophes, pnCapitals, pnColonsParagraphs, pnCommaErrors, pnCommas, pnEndMarks } from './punctuation';
+import { pnMistakes, pnProofread, pnReview } from './punctuation-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -160,8 +162,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Clear punctuation makes Writing easy to follow.', 'পরিষ্কার punctuation Writing সহজে বোঝা যায় এমন করে।'),
     skill: 'grammar',
     tags: ['punctuation'],
-    lessons: [],
-    planned: [t('Full stops and capitals', 'Full stop আর capital letter'), t('Commas', 'Comma'), t('Apostrophes, colons and semicolons', 'Apostrophe, colon আর semicolon'), t('Paragraph basics', 'Paragraph-এর basics')],
+    lessons: [pnCapitals, pnEndMarks, pnCommas, pnCommaErrors, pnApostrophes, pnColonsParagraphs, pnMistakes, pnProofread, pnReview],
   },
   {
     id: 'common-errors',
@@ -257,7 +258,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

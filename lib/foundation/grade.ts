@@ -13,6 +13,22 @@ export function normaliseAnswer(s: string): string {
     .trim();
 }
 
+/**
+ * Strict form for punctuation and capitalisation practice: capitals and final
+ * punctuation count; spacing and curly quotes are still forgiven.
+ */
+export function strictAnswer(s: string): string {
+  return s
+    .replace(/[’‘]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** The comparison form an exercise is graded with. */
+export const answerKey = (ex: Exercise, s: string) => ('strict' in ex && ex.strict ? strictAnswer(s) : normaliseAnswer(s));
+
 /** Words of an order exercise, split on spaces (punctuation stays on its word). */
 export const orderWords = (sentence: string) => sentence.split(/\s+/).filter(Boolean);
 
@@ -40,7 +56,7 @@ export function gradeExercise(ex: Exercise, answer: string | undefined): boolean
       return answer === ex.answer;
     case 'gap':
     case 'correct':
-      return ex.accepted.some((x) => normaliseAnswer(x) === a);
+      return ex.accepted.some((x) => answerKey(ex, x) === answerKey(ex, answer));
     case 'order':
       return [ex.answer, ...(ex.alsoAccepted ?? [])].some((x) => normaliseAnswer(x) === a);
     case 'tag': {
@@ -49,7 +65,7 @@ export function gradeExercise(ex: Exercise, answer: string | undefined): boolean
     }
     case 'spot': {
       const { index, fix } = parseSpot(answer);
-      return index === ex.wrong && ex.accepted.some((x) => normaliseAnswer(x) === normaliseAnswer(fix));
+      return index === ex.wrong && ex.accepted.some((x) => answerKey(ex, x) === answerKey(ex, fix));
     }
   }
 }

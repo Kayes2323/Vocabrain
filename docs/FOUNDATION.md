@@ -63,13 +63,14 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement, Prepositions, Connectors and Complex Sentences (9 lessons + a Final
-Mastery Challenge each), Vocabulary Foundation. Punctuation and Common Errors
-show "Soon".
+Agreement, Prepositions, Connectors, Complex Sentences and Punctuation (9
+lessons + a Final Mastery Challenge each), Vocabulary Foundation. Common Errors
+shows "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
 shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
-`docs/CONNECTORS_CURRICULUM.md` and `docs/COMPLEX_CURRICULUM.md`.
+`docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md` and
+`docs/PUNCTUATION_CURRICULUM.md`.
 
 ## Tests
 
@@ -306,6 +307,21 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 - **Respectful Bangla.** The shared unit check rejects তুমি / তোমার / তুই in every grammar
   module; older Foundation lessons were cleaned of informal verb forms (বসাও → বসান,
   দেখবে → দেখবেন, শিখলে → শিখলেন).
+
+## Phase G: Punctuation & Capitalisation
+
+- **Module 9** (`punctuation.ts` pu-1…pu-6, `punctuation-apply.ts` pu-7…pu-9): 8 taught v2
+  lessons + the review test. Six concepts (`pn-capital`, `pn-end`, `pn-comma`,
+  `pn-comma-error`, `pn-apostrophe`, `pn-colon`, tag `punctuation`). Lesson ids use `pu-`
+  because `pn-` is taken by the Parts of Speech noun unit. See
+  `docs/PUNCTUATION_CURRICULUM.md`.
+- **Strict grading.** Gap, correct and spot exercises accept `strict: true`: capitals and
+  final punctuation count, spacing and curly quotes are still forgiven (`strictAnswer`,
+  `answerKey` in `grade.ts`). Used only where the answer IS the capital or the end mark.
+- **Patterns.** `pn-capitals`, `pn-end-mark`, `pn-run-on`, `pn-comma-use`, `pn-apostrophes`,
+  `pn-colon-semi` (+ fix guides). **Challenge** `punctuation` (6 parts × 4 items).
+- **Mino.** Punctuation tasks judge punctuation and capitals only, one rule per issue.
+- **E2E.** `scripts/e2e/punctuation.e2e.ts` (shared flow in `module-spec.ts`).
 
 ## Known issue: `pnpm lint`
 

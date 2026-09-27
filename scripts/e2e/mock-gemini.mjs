@@ -16,6 +16,8 @@
 //   linking feedback only when the prompt carried the connector rules.
 // - Complex-sentence tasks ("who she works", "When I will finish") get clause
 //   feedback only when the prompt carried the complex-sentence rules.
+// - Punctuation tasks ("My mothers cooking", a lower-case "i am") get
+//   punctuation feedback only when the prompt carried the punctuation rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -152,6 +154,27 @@ http
             feedback: bn ? 'ভালো চেষ্টা! when-এর পরে will বসে না।' : 'Good try! No will after when.',
             fixes: [{ quote: 'When I will finish', fix: 'When I finish', why: bn ? 'ভবিষ্যতের time clause-এ present simple: "When I finish …, I will …"।' : 'A future time clause takes the present simple: "When I finish …, I will …".' }],
             practice: { sentence: 'I will call you as soon as I ___ (arrive).', answers: ['arrive'] },
+          }) }]);
+        }
+        const punctuationRules = /Punctuation feedback \(target: /.test(system);
+        if (punctuationRules && /\bmothers cooking\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bmothers cooking\b/, 'mother’s cooking'),
+            feedback: bn ? 'ভালো চেষ্টা! মালিকানায় apostrophe লাগবে।' : 'Good try! Possession needs an apostrophe.',
+            fixes: [{ quote: 'mothers cooking', fix: 'mother’s cooking', why: bn ? "একজন owner (mother) → mother’s; বাংলার 'মায়ের'-এর মতো।" : 'One owner (your mother) → mother’s.' }],
+            practice: { sentence: 'My ___ (father) car is blue.', answers: ['father’s', "father's"] },
+          }) }]);
+        }
+        if (punctuationRules && /(^|[.?!]\s+)i am\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/(^|[.?!]\s+)i am\b/, '$1I am'),
+            feedback: bn ? 'ভালো চেষ্টা! I আর sentence-এর প্রথম word সবসময় capital।' : 'Good try! I and the first word are always capitals.',
+            fixes: [{ quote: 'i am interested', fix: 'I am interested', why: bn ? 'বাংলায় capital নেই, কিন্তু English-এ I সবসময় capital।' : 'The pronoun I is always a capital letter.' }],
+            practice: { sentence: 'My brother and ___ (i) share a room.', answers: ['I'] },
           }) }]);
         }
         const bad = /\b(go|am learning)\b/.test(student);

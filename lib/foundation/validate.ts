@@ -2,7 +2,7 @@ import { CONCEPTS, MODULES } from './content';
 import { CHALLENGES } from './content/challenges';
 import { POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { DIAGNOSTIC_ITEMS } from './diagnostic';
-import { canonicalAnswer, gradeExercise, normaliseAnswer, spotCorrected } from './grade';
+import { answerKey, canonicalAnswer, gradeExercise, normaliseAnswer, spotCorrected } from './grade';
 import type { Exercise, L, Lesson } from './model';
 
 const filled = (l: L | undefined) => Boolean(l && l.en.trim() && l.bn.trim());
@@ -22,7 +22,7 @@ function checkExercise(ex: Exercise, where: string, errors: string[]) {
   if (ex.type === 'spot') {
     if (!ex.words[ex.wrong]) errors.push(`${at}: spot wrong index out of range`);
     if (ex.fixOptions && !ex.fixOptions.includes(ex.accepted[0])) errors.push(`${at}: spot fix options must include the answer`);
-    if (ex.accepted.some((a) => normaliseAnswer(a) === normaliseAnswer(ex.words[ex.wrong]))) errors.push(`${at}: spot fix equals the wrong word`);
+    if (ex.accepted.some((a) => answerKey(ex, a) === answerKey(ex, ex.words[ex.wrong]))) errors.push(`${at}: spot fix equals the wrong word`);
     for (const fix of ex.accepted) {
       const words = spotCorrected(ex, fix).toLowerCase().replace(/[.,;:!?()"]/g, '').split(/\s+/);
       if (words.some((w, i) => i > 0 && w === words[i - 1])) errors.push(`${at}: spot fix "${fix}" repeats a word (the fix may need a deletion)`);

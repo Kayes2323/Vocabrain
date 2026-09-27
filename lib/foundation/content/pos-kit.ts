@@ -7,7 +7,7 @@ import type {
 
 export const l = (en: string, bn: string): L => ({ en, bn });
 
-type Common = { explanation: L; tag?: ErrorTag; pos?: Pos; wrongPos?: Record<string, Pos>; family?: string; pattern?: string };
+type Common = { explanation: L; tag?: ErrorTag; pos?: Pos; wrongPos?: Record<string, Pos>; family?: string; pattern?: string; strict?: boolean };
 
 export const choice = (id: string, concept: string, o: Common & { prompt: L; sentence?: string; options: string[]; answer: string; why?: Record<string, L> }): ChoiceExercise => ({
   id, type: 'choice', concept, tag: o.tag ?? 'part-of-speech', ...o,

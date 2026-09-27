@@ -51,6 +51,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'cx-clause-tense': { title: l('Tenses in when / if clauses', 'when / if clause-এ tense'), modules: ['complex-sentences'] },
   'cx-relative-form': { title: l('Relative clauses (who, which, no repeated pronoun)', 'Relative clause (who, which, pronoun আবার না)'), modules: ['complex-sentences'] },
   'cx-word-order': { title: l('Word order in indirect questions', 'Indirect question-এ word order'), modules: ['complex-sentences'] },
+  'pn-capitals': { title: l('Capital letters', 'Capital letter'), modules: ['punctuation'] },
+  'pn-end-mark': { title: l('Full stops and question marks', 'Full stop আর question mark'), modules: ['punctuation'] },
+  'pn-run-on': { title: l('Comma splices and run-on sentences', 'Comma splice আর run-on sentence'), modules: ['punctuation'] },
+  'pn-comma-use': { title: l('Where commas go (and where they don’t)', 'Comma কোথায় বসে (আর কোথায় না)'), modules: ['punctuation'] },
+  'pn-apostrophes': { title: l('Apostrophes (’s, s’, its / it’s)', 'Apostrophe (’s, s’, its / it’s)'), modules: ['punctuation'] },
+  'pn-colon-semi': { title: l('Colons and semicolons', 'Colon আর semicolon'), modules: ['punctuation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -395,6 +401,60 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Bangla keeps the same word order in "স্টেশন কোথায়?" and "জানি না স্টেশন কোথায়", so question order stays inside statements.', 'বাংলায় "স্টেশন কোথায়?" আর "জানি না স্টেশন কোথায়"-এ একই word order, তাই statement-এর ভেতরে প্রশ্নের order থেকে যায়।'),
     recognise: l('After know / tell me / wonder / sure / clear, look for is / does / should BEFORE the subject.', 'know / tell me / wonder / sure / clear-এর পরে subject-এর আগে is / does / should আছে কিনা দেখুন।'),
     avoid: l('Put the subject first, then the verb; drop do / does / did; use if / whether for yes / no.', 'আগে subject, তারপর verb; do / does / did বাদ দিন; হ্যাঁ / না-র জন্য if / whether।'),
+  },
+  'pn-capitals': {
+    rule: l(
+      'Capital letters: the first word of a sentence, the pronoun I, names of people and places, days, months, festivals, languages and nationalities. Small letters: seasons, school subjects (except languages) and general nouns (a university, the government).',
+      'Capital letter: sentence-এর প্রথম word, pronoun I, মানুষ আর জায়গার নাম, দিন, মাস, উৎসব, ভাষা আর জাতীয়তা। ছোট হাতের: ঋতু, বিষয় (ভাষা ছাড়া) আর সাধারণ noun (a university, the government)।',
+    ),
+    why: l('Bangla script has no capital letters, and typing on a phone in lower case makes "i" and "dhaka" automatic.', 'বাংলা লিপিতে capital letter নেই, আর phone-এ ছোট হাতের অক্ষরে লেখায় "i" আর "dhaka" অভ্যাস হয়ে যায়।'),
+    recognise: l('Scan the start of every sentence, every "I", and every name, day, month and language.', 'প্রতিটা sentence-এর শুরু, প্রতিটা "I", আর প্রতিটা নাম, দিন, মাস আর ভাষা দেখুন।'),
+    avoid: l('Do one proofreading pass only for capitals: first words, I, names.', 'শুধু capital-এর জন্য একবার proofread করুন: প্রথম word, I, নাম।'),
+  },
+  'pn-end-mark': {
+    rule: l(
+      'Every sentence ends with a full stop or a question mark. Use ? only for direct questions and "Could you …?" requests; indirect questions inside statements (I wonder where he is.) end with a full stop.',
+      'প্রতিটা sentence full stop বা question mark দিয়ে শেষ হয়। ? শুধু সরাসরি প্রশ্ন আর "Could you …?" অনুরোধে; statement-এর ভেতরে indirect question (I wonder where he is.) full stop দিয়ে শেষ হয়।',
+    ),
+    why: l('Bangla ends sentences with the দাঁড়ি (।), which gets forgotten when typing English, and a sentence that feels like a question in Bangla keeps its "?".', 'বাংলায় দাঁড়ি (।) দিয়ে sentence শেষ হয়, যেটা English type করার সময় বাদ পড়ে, আর বাংলায় প্রশ্নের মতো শোনানো sentence-এ "?" থেকে যায়।'),
+    recognise: l('Look at the last character of every sentence. Does the WHOLE sentence ask something, or does it report?', 'প্রতিটা sentence-এর শেষ অক্ষর দেখুন। পুরো sentence কি কিছু জিজ্ঞেস করে, নাকি জানায়?'),
+    avoid: l('After I wonder / I asked / I don’t know / I would like to know, always end with a full stop.', 'I wonder / I asked / I don’t know / I would like to know-এর পরে সবসময় full stop দিন।'),
+  },
+  'pn-run-on': {
+    rule: l(
+      'Two complete sentences cannot be joined by a comma alone. Use a full stop, a semicolon, or a comma + and / but / so.',
+      'দুটো পূর্ণ sentence শুধু comma দিয়ে জোড়া যায় না। Full stop, semicolon, বা comma + and / but / so দিন।',
+    ),
+    why: l('Bangla uses a comma for every pause, and long Bangla sentences join many ideas before one দাঁড়ি.', 'বাংলায় প্রতিটা বিরতিতে comma বসে, আর লম্বা বাংলা sentence একটা দাঁড়ির আগে অনেক idea জোড়ে।'),
+    recognise: l('For each comma, check the words on both sides: if both have a subject + verb and no joining word, it is a splice.', 'প্রতিটা comma-র দুই পাশের word দেখুন: দুই দিকেই subject + verb আর জোড়ার word না থাকলে সেটা splice।'),
+    avoid: l('When in doubt, use a full stop and start a new sentence with a capital.', 'সন্দেহ হলে full stop দিয়ে capital দিয়ে নতুন sentence শুরু করুন।'),
+  },
+  'pn-comma-use': {
+    rule: l(
+      'Commas help in lists (A, B and C), after an opening phrase or clause (In 2010, …), before and / but / so joining two clauses, and around extra information. Never between a subject and its verb, and never before a that-clause.',
+      'Comma সাহায্য করে তালিকায় (A, B and C), শুরুর phrase বা clause-এর পরে (In 2010, …), দুটো clause জোড়া and / but / so-এর আগে, আর বাড়তি তথ্যের চারপাশে। Subject আর তার verb-এর মাঝে, বা that-clause-এর আগে কখনো না।',
+    ),
+    why: l('English commas follow grammar; Bangla commas follow breathing, so they land after long subjects and before "that".', 'English comma grammar মেনে চলে; বাংলা comma শ্বাস মেনে চলে, তাই লম্বা subject-এর পরে আর "that"-এর আগে বসে যায়।'),
+    recognise: l('Name the job of each comma: list, opening, before a joining word, or extra information. If it has none of these jobs, delete it.', 'প্রতিটা comma-র কাজ বলুন: তালিকা, শুরু, জোড়ার word-এর আগে, বা বাড়তি তথ্য। কোনো কাজ না থাকলে মুছে দিন।'),
+    avoid: l('Put the comma BEFORE but / so (not after), and write numbers as 12,500.', 'but / so-এর আগে comma দিন (পরে না), আর সংখ্যা লিখুন 12,500।'),
+  },
+  'pn-apostrophes': {
+    rule: l(
+      'One owner → ’s (my father’s shop) · plural owner ending in s → s’ (the students’ results) · plural without s → ’s (children’s). No apostrophe in plurals, decades (1990s) or its / yours / theirs. it’s = it is.',
+      'একজন মালিক → ’s (my father’s shop) · s-এ শেষ হওয়া plural মালিক → s’ (the students’ results) · s ছাড়া plural → ’s (children’s)। Plural, দশক (1990s) বা its / yours / theirs-এ apostrophe না। it’s = it is।',
+    ),
+    why: l('Bangla shows possession with endings (রহিমের) and has no apostrophe, so it is dropped from possessives and added to plurals.', 'বাংলায় মালিকানা ending দিয়ে বোঝানো হয় (রহিমের) আর apostrophe নেই, তাই মালিকানা থেকে বাদ পড়ে আর plural-এ বসে যায়।'),
+    recognise: l('For every word ending in s, ask: is something owned? More than one owner? Or is it just a plural?', 's-এ শেষ হওয়া প্রতিটা word-এর জন্য জিজ্ঞেস করুন: কিছুর মালিকানা? একাধিক মালিক? নাকি শুধু plural?'),
+    avoid: l('Test it’s by saying "it is" — if that sounds wrong, write its.', '"it is" বলে it’s যাচাই করুন — ভুল শোনালে its লিখুন।'),
+  },
+  'pn-colon-semi': {
+    rule: l(
+      'Colon: after a complete sentence, before a list or explanation (never straight after are / include). Semicolon: between two closely related complete sentences, or before however / therefore (small letter after it).',
+      'Colon: পূর্ণ sentence-এর পরে, তালিকা বা ব্যাখ্যার আগে (are / include-এর ঠিক পরে কখনো না)। Semicolon: ঘনিষ্ঠ সম্পর্কের দুটো পূর্ণ sentence-এর মাঝে, বা however / therefore-এর আগে (পরে ছোট হাতের অক্ষর)।',
+    ),
+    why: l('Colons and semicolons are rarely taught in Bangla-medium schools, so they are used as decoration or as commas.', 'বাংলা মাধ্যম স্কুলে colon আর semicolon কম শেখানো হয়, তাই এগুলো সাজসজ্জা বা comma হিসেবে ব্যবহার হয়।'),
+    recognise: l('Before a colon, could the sentence end with a full stop? Before and after a semicolon, are there two full sentences?', 'Colon-এর আগে কি sentence full stop দিয়ে শেষ হতে পারত? Semicolon-এর আগে আর পরে কি দুটো পূর্ণ sentence?'),
+    avoid: l('Use at most one colon and one semicolon per essay, and only when you are sure.', 'Essay-তে সর্বোচ্চ একটা colon আর একটা semicolon, আর শুধু নিশ্চিত হলে।'),
   },
 };
 

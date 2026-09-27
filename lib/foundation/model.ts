@@ -75,6 +75,8 @@ export interface ChoiceExercise extends ExerciseBase {
 export interface GapExercise extends ExerciseBase {
   type: 'gap';
   accepted: string[];
+  /** Grade with capitals and final punctuation (punctuation and capitalisation practice). */
+  strict?: boolean;
   /** Transform: the word to change into the right form (shown as "success →"). */
   base?: string;
   /** Why a common wrong answer is wrong, keyed by that answer (normalised). */
@@ -94,6 +96,8 @@ export interface OrderExercise extends ExerciseBase {
 export interface CorrectExercise extends ExerciseBase {
   type: 'correct';
   accepted: string[];
+  /** Grade with capitals and final punctuation (punctuation and capitalisation practice). */
+  strict?: boolean;
   why?: Record<string, L>;
 }
 
@@ -119,6 +123,8 @@ export interface SpotExercise extends ExerciseBase {
   wrong: number;
   accepted: string[];
   fixOptions?: string[];
+  /** Grade the fix with capitals and final punctuation. */
+  strict?: boolean;
 }
 
 /** Free production: the student writes their own sentence and compares with a model. Not auto-graded. */

@@ -80,7 +80,16 @@ Complex-sentence feedback (target: ${concept.title.en}):
 - Keep clause errors apart from other errors — give each its own fix.
 - The follow-up gap practises the same clause decision in a NEW sentence; the answer is one word or a short phrase.
 `
-                : '';
+                : concept?.tag === 'punctuation'
+                  ? `
+Punctuation feedback (target: ${concept.title.en}):
+- Judge punctuation and capital letters only; do not rewrite the student's grammar or ideas unless a punctuation fix needs it.
+- For each issue, quote the exact words and give ONE rule: capitals (first word, I, names, places, days, months, languages, nationalities — small for seasons, school subjects and general nouns); end marks (full stop after statements and indirect questions, ? only for direct questions and "Could you …?"); commas (lists, after an opening phrase or clause, before and / but / so joining clauses, around extra information — never a comma splice, never between a subject and its verb, never before that); apostrophes (’s / s’ for owners, none for plurals or decades, its vs it’s); colons after a complete sentence, semicolons between two related sentences.
+- Bangla has no capital letters or apostrophes and uses commas for pauses; mention this briefly when it explains the error.
+- Treat straight and curly apostrophes and quotes as the same.
+- The follow-up gap practises the same punctuation decision in a NEW sentence; the answer is one word or a punctuation mark.
+`
+                  : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

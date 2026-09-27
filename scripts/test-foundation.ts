@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 47);
+  assert.equal(CONCEPTS.length, 53);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const punctuation = MODULES.find((m) => m.id === 'punctuation')!;
+  const commonErrors = MODULES.find((m) => m.id === 'common-errors')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(punctuation, fp), undefined);
+  assert.equal(stepBeforeModule(commonErrors, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 7);
+  assert.equal(CHALLENGES.length, 8);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -850,6 +850,70 @@ test('Complex Sentences Final Mastery Challenge: 6 parts × 4 items at levels 1�
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Complex Sentences Final Mastery Challenge: last 74%/);
 });
 
+// ---------------------------------------------------------------- punctuation
+test('Punctuation: 8 taught v2 lessons + a review test, full v2 shape, why-wrong feedback, respectful Bangla', () => {
+  const { mod } = checkV2Module('punctuation', ['pu-1', 'pu-2', 'pu-3', 'pu-4', 'pu-5', 'pu-6', 'pu-7', 'pu-8', 'pu-9'], 'punctuation', 'pn-', ['pu-7']);
+  assert.equal(mod.number, 9);
+});
+
+test('Punctuation: strict grading counts capitals and end marks; normal grading still forgives them elsewhere', () => {
+  // Strict (capitals / end marks): the lowercase or unpunctuated answer is wrong.
+  assert.equal(grade2(ex('pu-1-r3'), 'I visited Sylhet last Friday.'), true);
+  assert.equal(grade2(ex('pu-1-r3'), 'i visited sylhet last friday.'), false, 'capitals count');
+  assert.equal(grade2(ex('pu-1-r3'), 'I visited Sylhet last Friday'), false, 'the full stop counts');
+  assert.equal(grade2(ex('pu-1-r3'), '  I visited  Sylhet last Friday .'), true, 'spacing is still forgiven');
+  assert.equal(grade2(ex('pu-1-r1'), 'June'), true);
+  assert.equal(grade2(ex('pu-1-r1'), 'june'), false);
+  assert.equal(grade2(ex('pu-2-r4'), '?'), true);
+  assert.equal(grade2(ex('pu-2-r4'), '.'), false, 'the end mark itself is graded');
+  // A strict spot: tapping "i" and choosing "I".
+  const sp = ex('pu-1-c2') as Extract<Exercise, { type: 'spot' }>;
+  assert.equal(grade2(sp, `${sp.wrong}:I`), true);
+  assert.equal(grade2(sp, `${sp.wrong}:i`), false);
+  // Non-strict exercises keep the old tolerance.
+  assert.equal(grade2(ex('t-2-r2'), 'he doesn’t live with his parents'), true);
+  // Apostrophes: curly and straight are the same; position matters.
+  assert.equal(grade2(ex('pu-5-r1'), "it's"), true);
+  assert.equal(grade2(ex('pu-5-r1'), 'it’s'), true);
+  assert.equal(grade2(ex('pu-5-r1'), 'its'), false);
+  assert.equal(grade2(ex('pu-8-r3'), "countries'"), true);
+  assert.equal(grade2(ex('pu-8-r3'), "country's"), false);
+});
+
+test('Punctuation: concepts are mastery-capable and reviewable; the pattern fix and summary line work', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'punctuation').map((c) => c.id);
+  assert.deepEqual(ids, ['pn-capital', 'pn-end', 'pn-comma', 'pn-comma-error', 'pn-apostrophe', 'pn-colon']);
+  const exs = MODULES.find((m) => m.id === 'punctuation')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'pu-5-p1', 'it’s', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'pu-5-p2', 'brothers', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'pu-5-p3', 'student’s', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'punctuation', NOW).find((x) => x.pair === 'pn-apostrophes')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Punctuation pattern: Apostrophes \(’s, s’, its \/ it’s\) ×3.*fix\/pn-apostrophes/);
+  for (const k of ['pn-capitals', 'pn-end-mark', 'pn-run-on', 'pn-comma-use', 'pn-apostrophes', 'pn-colon-semi']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'punctuation' && exercisePattern(q) === k));
+  }
+});
+
+test('Punctuation Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals', () => {
+  const ch = getChallenge('punctuation')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 88, level: 3, parts: {} }, NOW, 'punctuation');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Punctuation Final Mastery Challenge: last 88%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -937,6 +1001,15 @@ asyncTests.push(['Mino complex-sentence feedback: accuracy first, repeated prono
   assert.match(seen!.system!, /REPEATED pronoun/);
   assert.match(seen!.system!, /question word order inside a statement/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['who she works']);
+}]);
+asyncTests.push(['Mino punctuation feedback: punctuation only, one rule per issue, curly = straight', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'My name is Rahim.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'rahim', fix: 'Rahim', why: 'names take capitals' }], practice: { sentence: 'I live in ___ (dhaka).', answers: ['Dhaka'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('pu-1-y1') as Extract<Exercise, { type: 'write' }>, 'my name is rahim', 'bn');
+  assert.match(seen!.system!, /Punctuation feedback \(target: Capital letters\)/);
+  assert.match(seen!.system!, /Judge punctuation and capital letters only/);
+  assert.match(seen!.system!, /straight and curly apostrophes/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['rahim']);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {
