@@ -85,7 +85,7 @@ export function factSources(facts: SectionFact[]): { sources: SourceRef[]; lastV
  * repeated under every fact (it is at the end of the section and of the
  * guide); only a fact that must be re-checked says so here.
  */
-export function GuideFact({ item, reviewAs }: { item: SectionFact; reviewAs?: CountrySectionId }) {
+export function GuideFact({ item, reviewAs, shared }: { item: SectionFact; reviewAs?: CountrySectionId; /** Note / re-check line shown once for the block instead. */ shared?: boolean }) {
   const { t } = useLocale();
   const text = useBilingual();
   const { fact } = item;
@@ -95,13 +95,40 @@ export function GuideFact({ item, reviewAs }: { item: SectionFact; reviewAs?: Co
     <div className="space-y-1 py-3 first:pt-0 last:pb-0" data-fact data-fact-status={status}>
       <p className="text-xs font-medium text-muted-foreground">{text(item.label)}</p>
       <p className="text-[15px] leading-relaxed">{value}</p>
-      {fact.notes && <p className="text-sm text-muted-foreground">{fact.notes}</p>}
-      {status === 'needs-review' && (
+      {fact.notes && !shared && <p className="text-sm text-muted-foreground">{fact.notes}</p>}
+      {status === 'needs-review' && !shared && (
         <p className="flex items-start gap-1.5 text-xs text-warning">
           <AlertTriangle className="mt-px size-3.5 shrink-0" aria-hidden /> {t('sa.guide.checkAgain')}
         </p>
       )}
       {status === 'partly-verified' && <p className="text-xs text-muted-foreground">{t('sa.sectionStatus.partial')}</p>}
+    </div>
+  );
+}
+
+/**
+ * A block's facts. When every fact carries the same note and the same
+ * re-check status (e.g. one official list), that line is said once at the end.
+ */
+export function BlockFacts({ facts, reviewAs }: { facts: SectionFact[]; reviewAs?: CountrySectionId }) {
+  const { t } = useLocale();
+  const notes = new Set(facts.map((f) => f.fact.notes ?? ''));
+  const stale = facts.map((f) => factStatus(f.fact, reviewAs) === 'needs-review');
+  const shared = facts.length > 1 && notes.size === 1 && (stale.every(Boolean) || stale.every((x) => !x));
+  const note = shared ? [...notes][0] : '';
+  return (
+    <div className="space-y-2">
+      <div className="divide-y">
+        {facts.map((f, i) => (
+          <GuideFact key={i} item={f} reviewAs={reviewAs} shared={shared} />
+        ))}
+      </div>
+      {shared && note && <p className="text-sm text-muted-foreground">{note}</p>}
+      {shared && stale[0] && (
+        <p className="flex items-start gap-1.5 text-xs text-warning">
+          <AlertTriangle className="mt-px size-3.5 shrink-0" aria-hidden /> {t('sa.guide.checkAgain')}
+        </p>
+      )}
     </div>
   );
 }
@@ -137,13 +164,7 @@ export function GuideBlocks({ blocks, showTitles }: { blocks: GuideBlock[]; show
         return (
           <div key={b.key} className="space-y-3" data-guide-block={b.key} data-status={b.status}>
             {title && <h3 className="text-base font-semibold">{title}</h3>}
-            {b.facts.length > 0 && (
-              <div className="divide-y">
-                {b.facts.map((f, i) => (
-                  <GuideFact key={i} item={f} reviewAs={b.reviewAs} />
-                ))}
-              </div>
-            )}
+            {b.facts.length > 0 && <BlockFacts facts={b.facts} reviewAs={b.reviewAs} />}
             {b.explanation && (
               <div className="rounded-xl bg-muted/60 px-4 py-3">
                 <p className="text-xs font-medium text-muted-foreground">{t('sa.guide.plain')}</p>

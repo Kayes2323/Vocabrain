@@ -94,7 +94,7 @@ test('sources stay in the data but not under every fact: one small link per sect
   assert.ok(!/<FactRow/.test(blocks), 'guide facts are rendered without a citation line each');
   assert.match(blocks, /export function SectionSources/);
   const page = readFileSync('app/(app)/abroad/countries/[code]/study/[option]/page.tsx', 'utf8');
-  assert.match(page, /<SectionSources sources=\{sectionSources\(id\)\} \/>/);
+  assert.match(page, /<SectionSources sources=\{sectionSources\(id\)\}/);
   assert.match(page, /data-testid="guide-sources"/);
   const g = programGuide(KR, 'degree-bachelors', undefined, NOW)!;
   for (const s of g.sources) assert.ok(s.source.url && s.source.name && s.source.sourceType, 'url, name and type kept');

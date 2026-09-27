@@ -8,7 +8,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import type { ResolvedBlock, SectionStatus } from '@/lib/abroad/sections';
 import type { Bilingual, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
 import { cn } from '@/lib/utils';
-import { factSources, GuideFact, SectionSources } from './GuideBlocks';
+import { BlockFacts, factSources, SectionSources } from './GuideBlocks';
 import { useBilingual } from './useBilingual';
 
 export const SECTION_TONE: Record<SectionStatus, 'success' | 'brand' | 'neutral' | 'warning'> = {
@@ -86,11 +86,7 @@ export function SectionCard({
           <div className="space-y-2">
             <p className="inline-flex rounded-md bg-success-soft px-2 py-0.5 text-[11px] font-semibold tracking-wider text-success uppercase">{t('sa.hub.official')}</p>
             {section.facts.length > 0 ? (
-              <div className="divide-y">
-                {section.facts.map((f, i) => (
-                  <GuideFact key={i} item={f} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
-                ))}
-              </div>
+              <BlockFacts facts={section.facts} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
             ) : (
               <p className="text-sm text-muted-foreground">{t('sa.hub.notVerifiedBody')}</p>
             )}
@@ -107,11 +103,7 @@ export function SectionCard({
                 <StatusChip tone={SECTION_TONE[b.status]}>{t(`sa.sectionStatus.${b.status}`)}</StatusChip>
               </div>
               {b.facts.length > 0 ? (
-                <div className="divide-y">
-                  {b.facts.map((f, i) => (
-                    <GuideFact key={i} item={f} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
-                  ))}
-                </div>
+                <BlockFacts facts={b.facts} reviewAs={reviewAs ?? (section.id as CountrySectionId)} />
               ) : (
                 <p className="text-sm text-muted-foreground">{t('sa.sectionStatus.not-yet')}</p>
               )}
