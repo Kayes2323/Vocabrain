@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Vocabrain Premium',
+              name: 'Mino Premium',
               description: `Premium access to all IELTS vocabulary lessons and features (${plan})`,
               images: ['https://vocabrain.com/logo.png'], // Replace with actual logo
             },

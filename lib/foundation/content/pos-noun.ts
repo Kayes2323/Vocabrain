@@ -1,7 +1,7 @@
 import type { Lesson } from '../model';
 import { choice, correct, gap, identify, JOBS3, JOBS4, l, spot, tagWords, write } from './pos-kit';
 
-/** Parts of Speech · Noun: 4 lessons. Original Vocab Brain content. */
+/** Parts of Speech · Noun: 4 lessons. Original Mino content. */
 const C = 'pos-noun';
 
 // ======================================================================= 1

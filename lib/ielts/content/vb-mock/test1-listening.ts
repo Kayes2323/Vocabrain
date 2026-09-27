@@ -1,8 +1,8 @@
 import type { ObjectiveSection } from '../../model';
 
 /**
- * Vocab Brain Academic Mock Test 1 — Listening. Original content written for
- * Vocab Brain in the style and difficulty of the IELTS Listening test
+ * Mino Academic Mock Test 1 — Listening. Original content written for
+ * Mino in the style and difficulty of the IELTS Listening test
  * (4 parts, 40 questions). Not Cambridge material.
  */
 const W = 'female' as const;

@@ -32,7 +32,7 @@ TestBook → PracticeTest → section (listening | reading | writing | speaking)
 Every book and test carries `ContentProvenance`. `isPublishable()` hides
 publisher content unless `licenseStatus: 'licensed'`; `pending-review` is never
 shown. **Do not add Cambridge IELTS passages, questions, audio or answer keys
-without a licence.** The current library holds one original Vocab Brain test
+without a licence.** The current library holds one original Mino test
 (`lib/ielts/content/demo/practice-test-1.ts`).
 
 Add a book: create its tests as data, list the book in `lib/ielts/content/index.ts`,
@@ -82,7 +82,7 @@ Firestore rules validate the shape and make a submitted attempt final (no edits)
 
 ## Mock tests (`lib/ielts/content/vb-mock`)
 
-Vocab Brain Academic Mock Test 1: original, full-length content written to
+Mino Academic Mock Test 1: original, full-length content written to
 Cambridge IELTS level (40 Listening + 40 Reading questions, Writing Task 1/2,
 Speaking Parts 1–3). Every answer has an explanation with evidence; the
 validator checks numbering and that "from the passage" answers appear in the

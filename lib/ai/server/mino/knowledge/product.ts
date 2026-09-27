@@ -1,4 +1,4 @@
-// Layer 2: Vocab Brain product knowledge. The app map is generated from the
+// Layer 2: Mino product knowledge. The app map is generated from the
 // same registries the UI renders (lib/navigation.ts, the test library), so
 // Mino can never call a planned feature available. Guides describe real flows
 // and are checked against real routes in scripts/test-mino-knowledge.ts.
@@ -21,7 +21,7 @@ function sectionLine(s: SectionDef): string {
 export function appMapLayer(): string {
   const tabs = PRIMARY_NAV.map((n) => navCopy[n.labelKey.replace('nav.', '')] ?? n.labelKey).join(' · ');
   const tests = BOOKS.flatMap((b) => b.tests.flatMap((t) => testSkills(t).map((s) => `${t.title} (${s})`))).join(', ');
-  return `APP MAP (Vocab Brain, current build). Main tabs: ${tabs}.
+  return `APP MAP (Mino, current build). Main tabs: ${tabs}.
 Home [AVAILABLE] /: goal, IELTS journey stage, Today's Learning (daily plan: Vocabulary Review → Reading → use a word in Writing → Speaking; "I only have 15 minutes" switches to a 15-minute plan), Mino's note.
 IELTS [AVAILABLE] /ielts: target/estimate/weeks left, "Find your starting point" diagnostic, journey, and sections:
 ${[...IELTS_SECTIONS, ...IELTS_TOOLS].map(sectionLine).join('\n')}
@@ -115,7 +115,7 @@ export const APP_GUIDES: AppGuide[] = [
       'Every lesson is open (no locks); the dashboard recommends one next step. An unfinished lesson resumes where the student left it, on any device.',
       'Tenses for IELTS (/ielts/foundation/tenses), 15 lessons in this order: Understanding Time, Present Simple, Present Continuous, Past Simple, Past Continuous, Present Perfect, Present Perfect Continuous, Past Perfect, Future Forms, Tense Comparisons (choosing by meaning), Common Tense Mistakes, Tenses in IELTS Writing, Tenses in IELTS Speaking, Mixed Practice (no tense hints), Review Test.',
       'Each tense lesson: a real situation first (hook) → discover the pattern → when to use it and when NOT to (with the reason Bangla speakers slip) → examples → IELTS use in Reading, Listening, Writing and Speaking → common mistakes → option practice → free recall with no options → error correction → mini challenge → a personal sentence Mino checks (with one follow-up question) → summary.',
-      'Tenses Final Mastery Challenge at /ielts/foundation/challenge/tenses: 8 parts (identify the time, choose from context, correct the verb, free recall, explain, Reading & Listening, IELTS Writing, Speaking & building sentences), 24 adaptive questions (harder after correct answers, easier after misses). Report: overall %, by part, by tense, strongest and weakest tense, the student’s own mistakes, tenses to review, recommended practice, and "Ask Mino about my Tenses report". It is a Vocab Brain learning assessment, not an official IELTS score.',
+      'Tenses Final Mastery Challenge at /ielts/foundation/challenge/tenses: 8 parts (identify the time, choose from context, correct the verb, free recall, explain, Reading & Listening, IELTS Writing, Speaking & building sentences), 24 adaptive questions (harder after correct answers, easier after misses). Report: overall %, by part, by tense, strongest and weakest tense, the student’s own mistakes, tenses to review, recommended practice, and "Ask Mino about my Tenses report". It is a Mino learning assessment, not an official IELTS score.',
       'Articles (/ielts/foundation/articles), 9 lessons in this order: a or an? (the sound decides), a / an: one of many, the: the one we both know, No article: talking in general, a / the / nothing by meaning, Article mistakes Bangla speakers make, Articles in IELTS Writing and Speaking, Mixed practice (no hints), Review Test. Same v2 lesson shape as Tenses, with a personal sentence Mino checks in every taught lesson. Concepts: article-a-an, article-a, article-the, article-zero (mastery and spaced review like tenses).',
       'Articles Final Mastery Challenge at /ielts/foundation/challenge/articles: 6 parts (a or an, one of many or the one, general or particular, free recall, fix the sentence, IELTS Writing & Speaking), 18 adaptive questions; report topic by topic with strongest/weakest, own mistakes, what to practise and "Ask Mino about my Articles report". A learning assessment, not an IELTS score. Article patterns: missing-article, general-the, a-an-sound, plus noun-count (a/an with uncountable nouns like advice, information).',
       'Tense mistakes are tracked as named patterns (past-vs-perfect = Past Simple or Present Perfect, simple-vs-continuous, tense-time = the time word decides the tense, plus verb-form and sv-agreement). 3 in 14 days opens a 5-question fix at /ielts/foundation/fix/<pattern>.',

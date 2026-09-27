@@ -8,7 +8,7 @@ import { choice, correct, gap, l, order, spot, write } from './pos-kit';
  * Speaking, ar-8 mixed practice (no hints), and ar-9 the module review test.
  * They have no lesson concept of their own: every question keeps the concept
  * it tests (a-an, a, the, zero), so each answer feeds the right review.
- * Original Vocab Brain content.
+ * Original Mino content.
  */
 const A = { tag: 'article' as const };
 

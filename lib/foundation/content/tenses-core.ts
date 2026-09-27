@@ -6,7 +6,7 @@ import { l } from './pos-kit';
  * Continuous … t-8 Future forms. The exercises of the old v1 lessons keep their
  * ids (students’ history stays linked); new ones are added around them.
  * Every lesson ends with a personal sentence that Mino checks, so its concept
- * can reach mastery. Original Vocab Brain content.
+ * can reach mastery. Original Mino content.
  */
 
 // ======================================================================= 3

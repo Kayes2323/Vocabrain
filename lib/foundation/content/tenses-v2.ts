@@ -4,7 +4,7 @@ import type { Exercise, L, Lesson } from '../model';
  * Tenses, lessons 1–2 in the problem-first (v2) format:
  * Hook → Diagnose → Discover → Explain → Real life → IELTS → Mistake Lab →
  * Practice (easy → hard) → Active recall → Personal use (Mino) → Remember.
- * Original Vocab Brain content.
+ * Original Mino content.
  */
 
 const l = (en: string, bn: string): L => ({ en, bn });

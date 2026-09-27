@@ -15,7 +15,7 @@ export type DiagnosticItem = (ChoiceExercise | GapExercise | OrderExercise) & {
 
 export const DIAGNOSTIC_AREAS: FoundationArea[] = ['grammar', 'vocabulary', 'sentence', 'reading', 'listening'];
 
-/** Short text for the reading items. Original, written for Vocab Brain. */
+/** Short text for the reading items. Original, written for Mino. */
 export const DIAGNOSTIC_READING = {
   title: 'Living with rivers',
   text: 'Bangladesh has one of the largest river systems in the world. Every year, heavy monsoon rain causes the rivers to rise, and in some years large areas are flooded. Floods damage homes and crops, but they also bring fresh soil that makes farmland more productive. In recent decades, the government has built shelters and early-warning systems, and the number of deaths caused by floods has fallen sharply. However, experts warn that rising sea levels may make flooding more frequent in the future.',

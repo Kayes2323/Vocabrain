@@ -1,8 +1,8 @@
 import type { ObjectiveSection } from '../../model';
 
 /**
- * Vocab Brain Academic Mock Test 1 — Reading. Three original passages written
- * for Vocab Brain at IELTS Academic level (40 questions, 60 minutes).
+ * Mino Academic Mock Test 1 — Reading. Three original passages written
+ * for Mino at IELTS Academic level (40 questions, 60 minutes).
  * Not Cambridge material.
  */
 export const mock1Reading: ObjectiveSection = {

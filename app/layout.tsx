@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: APP_NAME,
   title: {
-    default: `${APP_NAME} · IELTS, Vocabulary & Study Abroad with Mino`,
+    default: `${APP_NAME} · IELTS, Vocabulary & Study Abroad`,
     template: `%s · ${APP_NAME}`,
   },
   description: APP_TAGLINE,

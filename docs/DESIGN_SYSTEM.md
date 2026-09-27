@@ -1,4 +1,4 @@
-# Vocab Brain: Design System
+# Mino: Design System
 
 Premium, modern EdTech with the calm of a productivity app. Mobile-first, accessible, not childish.
 

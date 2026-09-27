@@ -1,7 +1,7 @@
 import type { Lesson, Pos } from '../model';
 import { choice, correct, gap, identify, l, spot, tagWords, write } from './pos-kit';
 
-/** Parts of Speech · Conjunction: 3 short lessons; continues in Connectors and Complex Sentences. Original Vocab Brain content. */
+/** Parts of Speech · Conjunction: 3 short lessons; continues in Connectors and Complex Sentences. Original Mino content. */
 const C = 'pos-conjunction';
 const JOBS: Pos[] = ['noun', 'verb', 'adjective', 'conjunction'];
 

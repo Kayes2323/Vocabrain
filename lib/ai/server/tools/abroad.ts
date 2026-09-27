@@ -60,7 +60,7 @@ export const getCountryData: MinoTool = {
     const q = String(args.country ?? '').trim().toLowerCase();
     const alias: Record<string, string> = { uk: 'GB', britain: 'GB', england: 'GB', usa: 'US', america: 'US' };
     const country = COUNTRIES.find((c) => c.code.toLowerCase() === q || c.name.toLowerCase() === q || c.code === alias[q]);
-    if (!country) return { found: false, note: 'Not in the Vocab Brain destination list.' };
+    if (!country) return { found: false, note: 'Not in the Mino destination list.' };
     const pathway = String(args.pathway ?? '').trim() || undefined;
     const degreeLevel = String(args.degreeLevel ?? '').trim() || undefined;
     const korean = String(args.korean ?? '').trim() || undefined;

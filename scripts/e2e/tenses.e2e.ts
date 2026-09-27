@@ -164,7 +164,7 @@ async function main() {
     check('report: my mistakes and what to practise next', /Your mistakes/i.test(reportText) && /Practise next/i.test(reportText));
     check(
       'report says it is a learning assessment, not an IELTS score',
-      reportText.includes('This is a Vocab Brain learning assessment, not an official IELTS score.'),
+      reportText.includes('This is a Mino learning assessment, not an official IELTS score.'),
     );
     check('report offers "Ask Mino about my Tenses report"', await p.getByRole('link', { name: 'Ask Mino about my Tenses report' }).isVisible());
     await shot(p, 'en-05-challenge-report');

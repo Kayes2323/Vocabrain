@@ -10,9 +10,9 @@ const ALL_BOOKS: TestBook[] = [
   {
     id: 'vb-practice',
     series: 'vocab-brain',
-    title: 'Vocab Brain Practice Tests',
+    title: 'Mino Practice Tests',
     order: 0,
-    source: 'Vocab Brain',
+    source: 'Mino',
     sourceType: 'vocab-brain-original',
     licenseStatus: 'original',
     dateAdded: '2026-09-26',
@@ -21,9 +21,9 @@ const ALL_BOOKS: TestBook[] = [
   {
     id: 'vb-mock',
     series: 'vocab-brain',
-    title: 'Vocab Brain Academic Mock Tests',
+    title: 'Mino Academic Mock Tests',
     order: 1,
-    source: 'Vocab Brain',
+    source: 'Mino',
     sourceType: 'vocab-brain-original',
     licenseStatus: 'original',
     dateAdded: '2026-09-26',

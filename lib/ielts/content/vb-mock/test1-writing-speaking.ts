@@ -1,7 +1,7 @@
 import type { SpeakingSection, WritingSection } from '../../model';
 
 /**
- * Vocab Brain Academic Mock Test 1 — Writing and Speaking. Original tasks in
+ * Mino Academic Mock Test 1 — Writing and Speaking. Original tasks in
  * the format and difficulty of IELTS Academic. Task 1 data is illustrative and
  * written for practice. Not Cambridge material.
  */

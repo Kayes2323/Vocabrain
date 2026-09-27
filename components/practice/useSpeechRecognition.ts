@@ -26,7 +26,7 @@ function getRecognitionCtor(): (new () => Recognition) | undefined {
 
 /**
  * Speech-to-text for Speaking practice. Audio is processed by the browser's
- * speech service; nothing is recorded or uploaded by Vocab Brain.
+ * speech service; nothing is recorded or uploaded by Mino.
  */
 export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { keepAlive?: boolean } = {}) {
   const [supported, setSupported] = useState(false);

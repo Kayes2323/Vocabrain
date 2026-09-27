@@ -88,6 +88,6 @@ export interface WordInfo {
   antonyms: string[];
   collocations: string[];
   exampleSentence?: string;
-  /** Where the definition came from, e.g. "Vocab Brain glossary". */
+  /** Where the definition came from, e.g. "Mino glossary". */
   dictionarySource: 'glossary' | 'word-bank' | 'dictionary-api' | 'none';
 }

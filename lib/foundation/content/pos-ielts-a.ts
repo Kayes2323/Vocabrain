@@ -3,7 +3,7 @@ import { choice, correct, gap, identify, l, order, spot, tagWords, write } from 
 
 /**
  * Parts of Speech in IELTS (1/2): Reading, Listening, Writing accuracy, sentence building.
- * No new theory: the jobs from earlier units, used on IELTS-style sentences. Original Vocab Brain content.
+ * No new theory: the jobs from earlier units, used on IELTS-style sentences. Original Mino content.
  */
 const C = 'pos-ielts';
 const JOBS: Pos[] = ['noun', 'verb', 'adjective', 'adverb'];

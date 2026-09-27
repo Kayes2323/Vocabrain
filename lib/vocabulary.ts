@@ -1,4 +1,4 @@
-// Vocabulary data for Vocabrain
+// Vocabulary data for Mino
 export interface VocabWord {
   word: string;
   meaning: string;

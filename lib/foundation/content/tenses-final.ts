@@ -5,7 +5,7 @@ import type { FinalItem, FinalPart } from './pos-final';
  * Tenses · Final Mastery Challenge. Eight parts, 4 items each at levels 1–3;
  * 3 are served per part adaptively (24 questions). Every item carries the
  * concept it tests, so the report can show tense-by-tense results. Many items
- * are free recall. New items, not copied from the lessons. Original Vocab Brain content.
+ * are free recall. New items, not copied from the lessons. Original Mino content.
  */
 const at = <T extends FinalItem>(level: 1 | 2 | 3, e: Omit<T, 'level'>): T => ({ ...e, level }) as T;
 const T = { tag: 'tense' as const };

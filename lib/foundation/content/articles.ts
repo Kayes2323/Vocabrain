@@ -6,7 +6,7 @@ import { choice, correct, gap, l, spot, write } from './pos-kit';
  * (problem-first) format: ar-1 a or an (the sound), ar-2 a/an (one of many),
  * ar-3 the (we both know which one), ar-4 no article (talking in general).
  * Bangla has no articles, so every lesson names why Bangla speakers slip.
- * Original Vocab Brain content.
+ * Original Mino content.
  */
 
 export const ARTICLE_CONCEPTS: Concept[] = [

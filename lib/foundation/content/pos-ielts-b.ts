@@ -1,7 +1,7 @@
 import type { Lesson, Pos } from '../model';
 import { choice, correct, gap, identify, l, order, spot, tagWords, write } from './pos-kit';
 
-/** Parts of Speech in IELTS (2/2): Speaking, word forms, grammar + vocabulary, application challenge. Original Vocab Brain content. */
+/** Parts of Speech in IELTS (2/2): Speaking, word forms, grammar + vocabulary, application challenge. Original Mino content. */
 const C = 'pos-ielts';
 const JOBS: Pos[] = ['noun', 'verb', 'adjective', 'adverb'];
 

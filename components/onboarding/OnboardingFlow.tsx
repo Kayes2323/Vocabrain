@@ -110,7 +110,7 @@ export function OnboardingFlow() {
               {getTranslator('en').t('onboarding.minoHello')}
             </MinoSays>
           }
-          title="তুমি কোন ভাষায় Vocab Brain ব্যবহার করতে চাও? · Which language would you like to use?"
+          title="তুমি কোন ভাষায় Mino ব্যবহার করতে চাও? · Which language would you like to use?"
           description={t('onboarding.language.description')}
           primaryLabel={t('common.continue')}
           onPrimary={() => go('goal')}

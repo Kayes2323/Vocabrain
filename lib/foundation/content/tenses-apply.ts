@@ -6,7 +6,7 @@ import { l } from './pos-kit';
  * mistakes, t-10 Tenses in Writing, t-11 Tenses in Speaking. They teach no new
  * tense, so the lesson has no single concept: each question keeps the concept it
  * really practises (past-simple, present-perfect…), and the personal sentences
- * checked by Mino count as application for those concepts. Original Vocab Brain content.
+ * checked by Mino count as application for those concepts. Original Mino content.
  */
 
 // ======================================================================= 9

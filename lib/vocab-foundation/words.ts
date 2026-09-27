@@ -1,6 +1,6 @@
 // Vocabulary Foundation: the first 10 words. Chosen for IELTS relevance,
 // academic usefulness, frequency and reuse across Writing, Speaking, Reading
-// and Listening (B1–B2 level). Original Vocab Brain content.
+// and Listening (B1–B2 level). Original Mino content.
 import type { L } from '@/lib/foundation/model';
 
 export type VocabCategory =

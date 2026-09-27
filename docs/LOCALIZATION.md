@@ -1,6 +1,6 @@
 # Localization (বাংলা + English)
 
-Vocab Brain's first users are Bangladeshi students. Every screen works in **Bangla** and **English**.
+Mino's first users are Bangladeshi students. Every screen works in **Bangla** and **English**.
 
 ## How it works
 

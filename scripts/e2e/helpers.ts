@@ -58,7 +58,7 @@ export const noHorizontalScroll = (p: Page) => p.evaluate(() => document.documen
 // ------------------------------------------------------------------ accounts
 export async function signUp(p: Page, name: string, email: string, lang: Lang) {
   await p.goto(BASE + '/', { waitUntil: 'load' });
-  await p.getByText('Welcome to Vocab Brain').waitFor({ timeout: 90_000 });
+  await p.getByText('Welcome to Mino').waitFor({ timeout: 90_000 });
   await p.getByRole('tab', { name: 'Create account' }).click();
   await p.fill('#signup-name', name);
   await p.fill('#signup-email', email);
@@ -87,7 +87,7 @@ export async function signUp(p: Page, name: string, email: string, lang: Lang) {
 
 export async function signIn(p: Page, email: string) {
   await p.goto(BASE + '/', { waitUntil: 'load' });
-  await p.getByText('Welcome to Vocab Brain').waitFor({ timeout: 90_000 });
+  await p.getByText('Welcome to Mino').waitFor({ timeout: 90_000 });
   await p.fill('#signin-email', email);
   await p.fill('#signin-password', 'secret123');
   await p.getByRole('button', { name: 'Sign in', exact: true }).click();

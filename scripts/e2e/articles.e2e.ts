@@ -102,7 +102,7 @@ async function main() {
     const reportText = await p.locator('main').innerText();
     check('report: overall %, by part, topic by topic', /\d+%/.test(reportText) && /By part/i.test(reportText) && /Topic by topic/i.test(reportText));
     check('report: strongest / weakest, my mistakes, what to practise', /Strongest|Needs work/i.test(reportText) && /Your mistakes/i.test(reportText) && /Practise next/i.test(reportText));
-    check('report says it is a learning assessment, not an IELTS score', reportText.includes('This is a Vocab Brain learning assessment, not an official IELTS score.'));
+    check('report says it is a learning assessment, not an IELTS score', reportText.includes('This is a Mino learning assessment, not an official IELTS score.'));
     check('report offers "Ask Mino about my Articles report"', await p.getByRole('link', { name: 'Ask Mino about my Articles report' }).isVisible());
     await shot(p, 'ar-en-04-challenge-report');
     f = await waitForFoundation(uid, (x) => x.finals?.articles?.attempts === 1);

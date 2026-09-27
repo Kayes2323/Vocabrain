@@ -6,7 +6,7 @@ import { choice, correct, gap, l, order, spot } from './pos-kit';
  * Articles · Final Mastery Challenge. Six parts, 4 items each at levels 1–3;
  * 3 are served per part adaptively (18 questions). Every item carries the
  * article concept it tests, so the report can show results topic by topic.
- * New items, not copied from the lessons. Original Vocab Brain content.
+ * New items, not copied from the lessons. Original Mino content.
  */
 const at = <T extends FinalItem>(level: 1 | 2 | 3, e: Omit<T, 'level'>): T => ({ ...e, level }) as T;
 const A = { tag: 'article' as const };

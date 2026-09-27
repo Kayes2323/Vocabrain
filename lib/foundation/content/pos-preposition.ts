@@ -1,7 +1,7 @@
 import type { Lesson, Pos } from '../model';
 import { choice, correct, gap, identify, l, spot, tagWords, write } from './pos-kit';
 
-/** Parts of Speech · Preposition: 3 short lessons; details continue in the Prepositions module. Original Vocab Brain content. */
+/** Parts of Speech · Preposition: 3 short lessons; details continue in the Prepositions module. Original Mino content. */
 const C = 'pos-preposition';
 const JOBS: Pos[] = ['noun', 'verb', 'preposition'];
 

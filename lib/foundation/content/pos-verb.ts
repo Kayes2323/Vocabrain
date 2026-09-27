@@ -1,7 +1,7 @@
 import type { Lesson } from '../model';
 import { choice, correct, gap, identify, JOBS4, l, spot, tagWords, write } from './pos-kit';
 
-/** Parts of Speech · Verb: 5 lessons. Tenses are taught in the Tenses module. Original Vocab Brain content. */
+/** Parts of Speech · Verb: 5 lessons. Tenses are taught in the Tenses module. Original Mino content. */
 const C = 'pos-verb';
 
 // ======================================================================= 1

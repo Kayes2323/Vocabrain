@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// Vocab Brain Firestore Security Rules.
+// Mino Firestore Security Rules.
 // Every student can read and write only their own data. Nothing is trusted
 // from the client except what these rules verify against request.auth.
 service cloud.firestore {

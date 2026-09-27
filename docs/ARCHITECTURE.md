@@ -1,6 +1,6 @@
-# Vocab Brain: Architecture
+# Mino: Architecture
 
-Vocab Brain is growing from an IELTS vocabulary trainer into a student platform:
+Mino is growing from an IELTS vocabulary trainer into a student platform:
 **IELTS preparation + vocabulary mastery + AI mentorship (Mino) + study-abroad planning.**
 This document records the Phase 1 audit, the target architecture and the rules that keep
 the system coherent as features are added.
@@ -174,7 +174,7 @@ login screen. If the Firebase env vars are absent, the app starts as a guest aut
 
 Percent = (completed stages + progress within the current stage) ÷ 5. No arbitrary numbers.
 
-## 7b. Phase 3: Vocab Brain core
+## 7b. Phase 3: Mino core
 
 READ → DISCOVER → SAVE → UNDERSTAND → RECALL → USE → REVIEW → MASTER
 

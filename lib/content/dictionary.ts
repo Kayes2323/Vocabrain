@@ -6,7 +6,7 @@ import type { GlossaryEntry } from './passages';
 /**
  * Word lookup for Save to Brain, in order of trust:
  * 1. the passage's own glossary (written for that context, with Bangla),
- * 2. the Vocab Brain IELTS word bank,
+ * 2. the Mino IELTS word bank,
  * 3. the topic lessons (Bangla meanings),
  * 4. the free dictionaryapi.dev service (English only), with a short timeout.
  * Returns undefined when nothing is found; the student can still save the

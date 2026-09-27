@@ -1,7 +1,7 @@
 import type { ReadingPassage } from '@/lib/models';
 
 /**
- * Reading passages. All current passages are original Vocab Brain texts
+ * Reading passages. All current passages are original Mino texts
  * written in an IELTS Academic style. Licensed content (e.g. Cambridge) can
  * be added later with `licenseStatus: 'licensed'` and its publisher as
  * `source`; the reader and Save to Brain work the same for any passage.
@@ -31,7 +31,7 @@ export const PASSAGES: Passage[] = [
     topic: 'Environment',
     difficulty: 'band-6',
     estimatedMinutes: 6,
-    source: 'Vocab Brain',
+    source: 'Mino',
     sourceType: 'vocab-brain-original',
     licenseStatus: 'original',
     dateAdded: '2026-09-26',
@@ -148,7 +148,7 @@ export const PASSAGES: Passage[] = [
     topic: 'Education',
     difficulty: 'band-6',
     estimatedMinutes: 6,
-    source: 'Vocab Brain',
+    source: 'Mino',
     sourceType: 'vocab-brain-original',
     licenseStatus: 'original',
     dateAdded: '2026-09-26',
@@ -264,7 +264,7 @@ export const PASSAGES: Passage[] = [
     topic: 'Work & Career',
     difficulty: 'band-7',
     estimatedMinutes: 7,
-    source: 'Vocab Brain',
+    source: 'Mino',
     sourceType: 'vocab-brain-original',
     licenseStatus: 'original',
     dateAdded: '2026-09-26',

@@ -62,4 +62,4 @@ sentence, IELTS Writing & Speaking — 4 items each at levels 1–3; 3 served pe
 part (18), adaptive. Report: overall %, by part, topic by topic, strongest and
 weakest, the student's own mistakes, topics to review, recommended practice,
 "Ask Mino about my Articles report". Stored in `foundation.finals.articles`.
-It is a Vocab Brain learning assessment, not an official IELTS score.
+It is a Mino learning assessment, not an official IELTS score.

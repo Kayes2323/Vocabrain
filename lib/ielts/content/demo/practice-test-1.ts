@@ -1,7 +1,7 @@
 import type { PracticeTest } from '../../model';
 
 /**
- * Vocab Brain Practice Test 1: original content written for Vocab Brain in an
+ * Mino Practice Test 1: original content written for Mino in an
  * IELTS Academic style. Used to develop and test the engine; not Cambridge material.
  */
 export const practiceTest1: PracticeTest = {
@@ -10,7 +10,7 @@ export const practiceTest1: PracticeTest = {
   number: 1,
   title: 'Practice Test 1',
   module: 'academic',
-  source: 'Vocab Brain',
+  source: 'Mino',
   sourceType: 'vocab-brain-original',
   licenseStatus: 'original',
   dateAdded: '2026-09-26',

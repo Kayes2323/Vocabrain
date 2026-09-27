@@ -1,6 +1,6 @@
 import type { Exercise, L, Lesson } from '../model';
 
-/** Tenses module: the review test (t-12). Lessons 3–11 are v2 in tenses-core.ts and tenses-apply.ts. Original Vocab Brain content. */
+/** Tenses module: the review test (t-12). Lessons 3–11 are v2 in tenses-core.ts and tenses-apply.ts. Original Mino content. */
 
 const l = (en: string, bn: string): L => ({ en, bn });
 const practice = (exercises: Exercise[], title = l('Practice', 'Practice')) => ({ kind: 'practice' as const, title, exercises });

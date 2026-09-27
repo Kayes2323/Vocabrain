@@ -84,4 +84,4 @@ explain, Reading & Listening, IELTS Writing, Speaking & building sentences —
 wrong → easier). Report: overall %, by part, tense by tense, strongest and
 weakest tense, the student's own mistakes, tenses to review, recommended
 practice, "Ask Mino about my Tenses report". Stored in `foundation.finals.tenses`.
-It is a Vocab Brain learning assessment, not an official IELTS score.
+It is a Mino learning assessment, not an official IELTS score.

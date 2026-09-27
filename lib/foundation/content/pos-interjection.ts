@@ -1,7 +1,7 @@
 import type { Lesson, Pos } from '../model';
 import { choice, correct, gap, identify, l, spot, write } from './pos-kit';
 
-/** Parts of Speech · Interjection: 1 lesson. Original Vocab Brain content. */
+/** Parts of Speech · Interjection: 1 lesson. Original Mino content. */
 const C = 'pos-interjection';
 const JOBS: Pos[] = ['noun', 'verb', 'adjective', 'interjection'];
 

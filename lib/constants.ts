@@ -1,7 +1,7 @@
 // Product-wide constants. Anything that names the product, Mino, or IELTS
 // structure lives here so screens never hard-code it.
 
-export const APP_NAME = 'Vocab Brain';
+export const APP_NAME = 'Mino';
 export const APP_TAGLINE =
   'IELTS preparation, vocabulary mastery and study-abroad planning, guided by Mino, your personal AI mentor.';
 

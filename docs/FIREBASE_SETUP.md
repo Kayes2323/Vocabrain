@@ -1,6 +1,6 @@
 # Firebase setup
 
-Vocab Brain uses **Firebase Authentication** (email/password, optional Google) and **Cloud Firestore**.
+Mino uses **Firebase Authentication** (email/password, optional Google) and **Cloud Firestore**.
 The app reads its configuration from environment variables; nothing is hard-coded.
 
 ## 1. Create the project

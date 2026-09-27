@@ -1,7 +1,7 @@
 import type { Concept, Exercise, L, Lesson } from '../model';
 
 /**
- * Module 2 — Tenses for IELTS, lessons 3–6 (v1 format; 1–2 are in tenses-v2.ts). Original Vocab Brain lessons. Tenses are taught
+ * Module 2 — Tenses for IELTS, lessons 3–6 (v1 format; 1–2 are in tenses-v2.ts). Original Mino lessons. Tenses are taught
  * through IELTS tasks (Task 1 data, Speaking about experience, time changes in
  * Listening and Reading), not memorised tables.
  */

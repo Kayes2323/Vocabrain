@@ -1,7 +1,7 @@
 import type { Lesson } from '../model';
 
 /**
- * Module 1 — Sentence Basics. Original Vocab Brain lessons. Every lesson says
+ * Module 1 — Sentence Basics. Original Mino lessons. Every lesson says
  * what the idea is, why it matters in IELTS, where it appears, how to use it,
  * and ends with practice the student does themselves.
  */

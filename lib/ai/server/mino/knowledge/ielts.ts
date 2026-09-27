@@ -43,7 +43,7 @@ export const IELTS_CARDS: KnowledgeCard[] = [
       o('Each skill gets a band from 0 to 9, in half bands. Overall = the average of the four, rounded to the nearest half band (an average ending in .25 rounds up to .5, .75 rounds up to the next whole band).'),
       o('Listening and Reading bands come from the raw score out of 40 using conversion tables that vary slightly between tests (roughly 30/40 ≈ 7.0 in Listening and Academic Reading).'),
       o('Writing and Speaking are marked by trained examiners on four criteria each, equally weighted.'),
-      v('Scores in Vocab Brain are practice estimates or self-assessments, never official IELTS results.'),
+      v('Scores in Mino are practice estimates or self-assessments, never official IELTS results.'),
     ],
   },
   {
@@ -149,7 +149,7 @@ export const IELTS_CARDS: KnowledgeCard[] = [
   },
   {
     id: 'vocabulary-method',
-    title: 'How Vocab Brain teaches vocabulary',
+    title: 'How Mino teaches vocabulary',
     keywords: ['remember', 'forget', 'memorise', 'memorize', 'word list', 'active recall', 'spaced', 'review', 'mone thake', 'brain'],
     points: [
       v('No random word lists. The cycle is: meet a word in context → Save to Brain (with its sentence and source) → understand → recall it from memory → use it in Writing and Speaking → review on a schedule.'),

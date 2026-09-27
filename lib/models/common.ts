@@ -62,7 +62,7 @@ export type FactStatus = 'verified' | 'partly-verified' | 'not-verified' | 'need
 export type LicenseStatus =
   | 'licensed'
   | 'public-sample' // officially published sample material, used as permitted
-  | 'original' // written by Vocab Brain
+  | 'original' // written by Mino
   | 'pending-review';
 
 /** Metadata every piece of learning content must carry. */

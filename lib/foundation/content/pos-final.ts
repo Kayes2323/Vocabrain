@@ -5,7 +5,7 @@ import { choice, correct, gap, l, order, spot, tagWords } from './pos-kit';
  * Parts of Speech · Final Mastery Challenge. Ten parts (A–J); each has 4 items at
  * levels 1 (easy) – 3 (hard). The challenge serves 3 per part, adaptively: a right
  * answer moves the level up, a wrong one moves it down. Many items are free recall.
- * Items are new (not copied from lessons). Original Vocab Brain content.
+ * Items are new (not copied from lessons). Original Mino content.
  */
 export type FinalItem = Exercise & { level: 1 | 2 | 3 };
 export interface FinalPart {

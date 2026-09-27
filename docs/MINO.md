@@ -95,7 +95,7 @@ Registered in `lib/ai/server/tools/index.ts`:
 | `getStudentProfile` | `users/{uid}`: goal, target band, estimates (never official), study time, abroad plan |
 | `getVocabulary` | `users/{uid}/vocabulary`: one saved word's details, or a summary (due, hardest, recent) |
 | `getMinoMemory` | `users/{uid}/mino/memory` |
-| `getAppGuide` | Vocab Brain workflows (no student data) |
+| `getAppGuide` | Mino workflows (no student data) |
 | `getIELTSGuide` | IELTS / vocabulary / study-abroad knowledge cards (no student data) |
 | `getTestHistory` | `users/{uid}/testSessions`: attempts, and one attempt's wrong answers with explanations |
 | `getQuestionPerformance` | accuracy per question type / part across attempts |

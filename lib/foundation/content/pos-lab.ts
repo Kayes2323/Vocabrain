@@ -5,7 +5,7 @@ import { choice, correct, gap, l, spot } from './pos-kit';
  * Common Mistakes Lab: 8 repair stations. Each repair: tap the word that breaks
  * the sentence → type the fix → say why → explanation. Wrong answers store the
  * pattern (a job pair or a named pattern), which opens a 5-question fix.
- * Original Vocab Brain content.
+ * Original Mino content.
  */
 const C = 'pos-lab';
 

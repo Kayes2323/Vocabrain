@@ -4,7 +4,7 @@ import { l } from './pos-kit';
 /**
  * Tenses for IELTS, the last three lessons (v2): t-13 Present Perfect Continuous,
  * t-14 Tense Comparisons (meaning, not formulas), t-15 Mixed Practice (the student
- * decides the tense from context; no question names the tense). Original Vocab Brain content.
+ * decides the tense from context; no question names the tense). Original Mino content.
  */
 
 // ======================================================================= 13

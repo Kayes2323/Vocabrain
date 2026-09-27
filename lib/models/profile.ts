@@ -3,7 +3,7 @@ import type { ID, ISODate, Money } from './common';
 
 export type Locale = 'en' | 'bn';
 
-/** Why the student came to Vocab Brain. IELTS is the primary path today. */
+/** Why the student came to Mino. IELTS is the primary path today. */
 export type StudentGoal = 'ielts' | 'abroad' | 'english' | 'unsure';
 
 export type SkillBands = Partial<Record<IELTSSkill, number>>;

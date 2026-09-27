@@ -2,12 +2,12 @@ import { findKnowledge, IELTS_CARDS } from '../mino/knowledge/ielts';
 import { APP_GUIDES, findGuide } from '../mino/knowledge/product';
 import type { MinoTool } from './types';
 
-/** How a Vocab Brain feature works, from the real current build. */
+/** How a Mino feature works, from the real current build. */
 export const getAppGuide: MinoTool = {
   declaration: {
     name: 'getAppGuide',
     description:
-      'How to do something in the Vocab Brain app and whether it exists yet. Use for "where/how do I…" questions (save words, My Brain, review, practice tests, progress, diagnostic, goals, study abroad tools).',
+      'How to do something in the Mino app and whether it exists yet. Use for "where/how do I…" questions (save words, My Brain, review, practice tests, progress, diagnostic, goals, study abroad tools).',
     parameters: {
       type: 'object',
       properties: { topic: { type: 'string', description: `What the student wants to do. Known topics: ${APP_GUIDES.map((g) => g.id).join(', ')}.` } },
