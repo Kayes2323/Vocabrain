@@ -21,7 +21,7 @@ export const PHASE_TONE: Record<PhaseStatus, 'success' | 'brand' | 'neutral'> = 
 export function PhaseStepper({ journey, className }: { journey: PhaseJourney; className?: string }) {
   const { t } = useLocale();
   return (
-    <ol className={cn('grid grid-cols-3 gap-x-2 gap-y-3 sm:grid-cols-6', className)} aria-label={t('sa.phase.label')} data-testid="journey-phases">
+    <ol className={cn('grid grid-cols-3 gap-x-2 gap-y-1 sm:grid-cols-6', className)} aria-label={t('sa.phase.label')} data-testid="journey-phases">
       {journey.phases.map((p) => {
         const here = !journey.complete && p.id === journey.current.id;
         const done = p.status === 'completed' || p.status === 'ready';

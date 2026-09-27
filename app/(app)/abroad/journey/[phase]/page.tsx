@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { PageHeader, Panel, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { HubBar } from '@/components/abroad/HubBar';
 import { PHASE_TONE } from '@/components/abroad/PhaseStepper';
 import { RoadmapStepItem } from '@/components/abroad/RoadmapStepItem';
 import { getCountry } from '@/lib/content/countries';
@@ -72,10 +71,8 @@ export default function JourneyPhasePage() {
             {isCurrent && <span className="text-xs font-medium text-brand">{t('sa.phase.now')}</span>}
           </span>
         }
-        className="mb-0"
+        className="mb-2"
       />
-      <HubBar />
-
       <Panel className="space-y-5 p-5 sm:p-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
         <p className="text-[15px] leading-relaxed text-foreground/85">{t(`sa.phase.${phase.id}.body`)}</p>
         <div className="space-y-2">

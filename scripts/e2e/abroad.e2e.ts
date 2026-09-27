@@ -295,7 +295,8 @@ async function main() {
     check('journey: goal set, country not chosen → "Choose your country" first (setup, not a phase)', (await p.getByTestId('abroad-journey').getAttribute('data-current-phase')) === 'setup-country' && /Choose your country/.test(journeyText), journeyText.slice(0, 160));
     check('journey shows the goal line (degree · subject · intake)', /Master.*Computer Science.*2027/.test(await p.getByTestId('journey-goal').innerText()), await p.getByTestId('journey-goal').innerText());
     check('six phases: English · Documents · University · Apply · Visa · Departure', (await p.locator('[data-phase]').allInnerTexts()).map((x) => x.trim()).join('|') === 'English|Documents|University|Apply|Visa|Departure', (await p.locator('[data-phase]').allInnerTexts()).join('|'));
-    check('nothing is marked done from missing data', (await p.locator('[data-phase][data-status="not-started"]').count()) === 6);
+    // English follows IELTS (this student set a target in onboarding → in progress); nothing is completed or ready from missing data.
+    check('nothing is marked done from missing data', (await p.locator('[data-phase][data-status="completed"], [data-phase][data-status="ready"]').count()) === 0 && (await p.locator('[data-phase="english"]').getAttribute('data-status')) === 'in-progress' && (await p.locator('[data-phase][data-status="not-started"]').count()) === 5);
     check('one primary action (Explore countries)', (await p.getByTestId('abroad-continue').count()) === 1 && (await p.getByTestId('abroad-continue').getAttribute('href')) === '/abroad/countries');
     await p.getByRole('button', { name: 'Make Germany my dream country' }).click();
     let a = await waitForAbroad(uid, (x) => x.dreamCountryCode === 'DE');
@@ -324,12 +325,14 @@ async function main() {
     check('phase page: the existing roadmap steps of this phase (eligibility + budget done by the stage mark)', (await p.locator('[data-step]').evaluateAll((els) => els.map((e) => `${e.getAttribute('data-step')}:${e.getAttribute('data-status')}`).join(','))).startsWith('eligibility:done,budget:done,programs:'), await p.locator('[data-step]').evaluateAll((els) => els.map((e) => e.getAttribute('data-step')).join(',')));
     check('phase page: a single contextual Ask Mino', (await p.getByTestId('phase-ask-mino').count()) === 1 && (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 1);
     check('phase page desktop: no sideways scroll', await noHorizontalScroll(p));
+    await p.waitForTimeout(500);
     await shot(p, 'sa-journey-02-phase-university');
     await p.getByRole('link', { name: 'Journey', exact: true }).first().click();
     await p.waitForURL(/\/abroad$/);
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('back to Journey from the phase page', true);
     check('desktop: no sideways scroll', await noHorizontalScroll(p));
+    await p.waitForTimeout(500);
     await shot(p, 'sa-3a-02-journey-light');
     await setDark(p, true);
     const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -470,6 +473,7 @@ async function main() {
     await shot(p, 'sa-3e-01-roadmap');
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
+    await p.getByText('Needs attention').first().waitFor({ timeout: 15_000 }).catch(() => undefined);
     check('home: the step date is under "Needs attention"', /Needs attention/.test(await p.locator('main').innerText()) && /Write your SOP and CV/.test(await p.locator('main').innerText()), (await p.locator('main').innerText()).slice(0, 400));
     await p.goto(`${BASE}/abroad/journey/documents`, { waitUntil: 'load' });
     await p.getByTestId('journey-phase').waitFor({ timeout: 60_000 });
@@ -885,12 +889,14 @@ async function main() {
     check('bn: next phase line in Bangla', /এরপর: Documents প্রস্তুত/.test(await q.getByTestId('journey-next').innerText()));
     check('bn mobile: six phases fit (three per row), large enough to tap', await q.locator('[data-phase] a').evaluateAll((els) => els.length === 6 && els.every((e) => { const r = e.getBoundingClientRect(); return r.height >= 44 && r.right <= document.documentElement.clientWidth; })));
     check('bn mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await q.waitForTimeout(500);
     await shot(q, 'sa-3a-04-mobile-bn');
     await q.locator('[data-phase="documents"] a').click();
     await q.waitForURL('**/abroad/journey/documents');
     await q.getByTestId('journey-phase').waitFor({ timeout: 60_000 });
     check('bn mobile phase page: Documents প্রস্তুত, what you’ll do, checklist, documents', (await q.getByRole('heading', { level: 1 }).innerText()) === 'Documents প্রস্তুত' && (await q.getByTestId('phase-do').locator('li').count()) === 4 && (await q.locator('[data-step]').count()) >= 4 && (await q.getByTestId('phase-documents').locator('[data-phase-doc]').count()) >= 4);
     check('bn mobile phase page: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await q.waitForTimeout(500);
     await shot(q, 'sa-journey-03-phase-documents-mobile-bn', false);
     await q.goto(`${BASE}/abroad`, { waitUntil: 'load' });
     await q.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
