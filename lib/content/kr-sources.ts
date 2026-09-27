@@ -75,3 +75,16 @@ export const KR_EMBASSY_BD_GKS_U_2027 = gov(
   'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760106',
 );
 export const KR_SIK_SCHOLARSHIPS = gov('Study in Korea (NIIED) – Scholarships (GKS)', 'https://www.studyinkorea.go.kr/en/plan/scholarship.do');
+
+// C2.5 · Universities. National / private and English-track participation come from one official NIIED page.
+export const KR_SIK_ENGLISH_TRACK = gov(
+  'Study in Korea (NIIED) – English Track Pavilion, online education fair (university list with National / Private labels)',
+  'https://www.studyinkorea.go.kr/ko/expo/specialExpo.do?expo_no=123&img_se=SPEC&message=&langCd=ko',
+);
+/** A university's own website (always official for itself). */
+export const uniSite = (name: string, url: string): SourceRef => ({ name, url, sourceType: 'official-university' });
+
+/** krFact for a value that is not a string (a list, an amount, a requirement). */
+export function krValue<T>(value: T, source: SourceRef, confidence: 'high' | 'medium', opts: Parameters<typeof krFact>[3] = {}): SourcedValue<T> {
+  return { ...krFact('', source, confidence, opts), value };
+}

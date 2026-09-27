@@ -821,8 +821,20 @@ async function main() {
     check('student’s choice wins over the profile', (await filters.getByRole('button', { name: 'Either' }).getAttribute('aria-pressed')) === 'true');
     z = await kb(() => true);
     check('…without changing the saved profile', z.student?.preferences?.studyLanguage === 'en');
-    check('no invented universities for South Korea', /No verified university profiles for South Korea yet/.test(await p.getByTestId('uni-verified-empty').innerText()));
-    check('no ranking anywhere', !/rank|best university|top \d/i.test(await p.locator('main').innerText()));
+    // C2.5 · university registry: official facts only, alphabetical, filterable, never ranked.
+    const reg = p.getByTestId('uni-registry');
+    const regIds = await reg.locator('[data-registry-university]').evaluateAll((els) => els.map((e) => e.getAttribute('data-registry-university')));
+    check('KR registry: 10 universities, listed alphabetically (not ranked)', regIds.length === 10 && regIds[0] === 'kr-chonnam' && regIds[9] === 'kr-yonsei' && /Listed alphabetically, not ranked/.test(await reg.innerText()), regIds.join(','));
+    check('KR registry card: city · type from Study in Korea, English-taught note, official + admissions links', /Seoul · Public \(national\)/.test(await reg.locator('[data-registry-university="kr-snu"]').innerText()) && /Has English-taught programs/.test(await reg.locator('[data-registry-university="kr-snu"]').innerText()) && (await reg.locator('[data-registry-university="kr-snu"] a[href="https://en.snu.ac.kr/admission"]').count()) === 1);
+    await filters.getByRole('button', { name: 'Public' }).click();
+    check('type filter: Public → only national universities', (await reg.locator('[data-registry-university]').count()) === 5 && (await reg.locator('[data-registry-university][data-ownership="private"]').count()) === 0);
+    await filters.locator('select').selectOption('Busan');
+    check('city filter: Busan + Public → Pusan National University only', (await reg.locator('[data-registry-university]').evaluateAll((els) => els.map((e) => e.getAttribute('data-registry-university')))).join(',') === 'kr-pnu');
+    await filters.locator('select').selectOption('');
+    await filters.getByRole('button', { name: 'All', exact: true }).click();
+    const progIds = await p.locator('[data-program]').evaluateAll((els) => els.map((e) => e.getAttribute('data-program')));
+    check('C2.6 programs: only officially checked programs, with the university and city', progIds.includes('kr-yonsei-uic') || progIds.includes('kr-woosong-solbridge-bba') || /No reviewed programs fit these filters yet/.test(await p.getByTestId('program-finder').innerText()), progIds.join(','));
+    check('no ranking anywhere (only the "not ranked" note)', !/rank|best university|top \d/i.test((await p.locator('main').innerText()).replace(/not ranked/gi, '')));
     await p.getByRole('button', { name: 'Add a university' }).click();
     await p.getByLabel('University name').fill('Korea Test Univ');
     await p.getByRole('button', { name: 'Add to my list' }).click();

@@ -7,9 +7,9 @@ import { Panel, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { missingQuestions } from '@/lib/abroad/profile-questions';
-import { explainMatch, filterPrograms, filtersFromProfile, programRows, universityCities, type MatchVerdict, type ProgramFilters, type ProgramRow } from '@/lib/abroad/programs';
+import { explainMatch, filterPrograms, filterUniversities, filtersFromProfile, programRows, universityCities, usable, type MatchVerdict, type ProgramFilters, type ProgramRow } from '@/lib/abroad/programs';
 import { addUniversity, isSameShortlistEntry } from '@/lib/engine';
-import type { Country } from '@/lib/models';
+import type { Country, University } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { ProfileQuestion } from './ProfileQuestion';
 
@@ -56,6 +56,49 @@ export function ProgramFinder({ country }: { country: Country }) {
   const rows = programRows(country.code);
   const { fits, unknown } = filterPrograms(rows, filters);
   const cities = universityCities(country.code);
+  const unis = filterUniversities(country.code, filters);
+  const hasUnis = unis.fits.length + unis.unknown.length > 0 || cities.length > 0;
+  const savedUni = (u: University) => (a.universities ?? []).some((x) => isSameShortlistEntry(x, { name: u.name, countryCode: u.countryCode, universityId: u.id }));
+  const uniCard = (u: University) => {
+    const o = usable(u.ownership);
+    const langs = usable(u.studyLanguages);
+    return (
+      <li key={u.id} className="space-y-2 rounded-2xl border bg-card p-4" data-registry-university={u.id} data-ownership={o ?? 'unknown'}>
+        <div className="flex items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold">{u.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {[u.city, o === 'public' ? t('sa.uniFilter.national') : o === 'private' ? t('sa.uniFilter.privateUni') : undefined].filter(Boolean).join(' · ')}
+            </p>
+            {langs?.includes('en') && <p className="text-sm">{t('sa.uniFilter.englishTrack')}</p>}
+          </div>
+          <Button
+            size="sm"
+            variant={savedUni(u) ? 'secondary' : 'outline'}
+            disabled={savedUni(u)}
+            onClick={() =>
+              updateProfile((p) => ({
+                ...p,
+                abroad: addUniversity(p.abroad, { name: u.name, countryCode: u.countryCode, fit: 'match', universityId: u.id, officialUrl: u.officialUrl, status: 'interested' }),
+              }))
+            }
+          >
+            {savedUni(u) ? t('sa.uniFilter.saved') : t('sa.uniFilter.save')}
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1">
+          <a href={u.officialUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-brand">
+            {t('sa.unis.officialSite')} <ExternalLink className="size-3.5" aria-hidden />
+          </a>
+          {u.applicationPortalUrl && (
+            <a href={u.applicationPortalUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm font-medium text-brand">
+              {t('sa.uniFilter.admissions')} <ExternalLink className="size-3.5" aria-hidden />
+            </a>
+          )}
+        </div>
+      </li>
+    );
+  };
   const localName = country.localLanguage ? (LANGUAGE_NAMES[country.localLanguage] ?? country.localLanguage.toUpperCase()) : undefined;
   const askLanguage = !askedLater && own?.studyLanguage === undefined && missingQuestions(a, ['studyLanguage']).length > 0;
 
@@ -151,9 +194,25 @@ export function ProgramFinder({ country }: { country: Country }) {
         {!own && (filters.studyLanguage || filters.ownership || filters.city) && <p className="text-xs text-muted-foreground">{t('sa.uniFilter.fromProfile')}</p>}
       </Panel>
 
+      {hasUnis && (
+        <section className="space-y-2" data-testid="uni-registry">
+          <div className="space-y-0.5 px-1">
+            <p className="text-sm font-semibold">{t('sa.uniFilter.universities')}</p>
+            <p className="text-xs text-muted-foreground">{t('sa.uniFilter.universitiesBody')}</p>
+          </div>
+          {unis.fits.length ? <ul className="space-y-2">{unis.fits.map(uniCard)}</ul> : <Panel className="text-sm text-muted-foreground">{t('sa.uniFilter.universitiesNone')}</Panel>}
+          {unis.unknown.length > 0 && (
+            <>
+              <p className="px-1 text-sm font-semibold text-muted-foreground">{t('sa.uniFilter.cantCheck')}</p>
+              <ul className="space-y-2">{unis.unknown.map(uniCard)}</ul>
+            </>
+          )}
+        </section>
+      )}
+
       {rows.length === 0 ? (
         <Panel className="text-sm text-muted-foreground" data-testid="uni-verified-empty">
-          {t('sa.unis.verifiedEmpty', { country: country.name })}
+          {hasUnis ? t('sa.uniFilter.programsEmpty') : t('sa.unis.verifiedEmpty', { country: country.name })}
         </Panel>
       ) : (
         <>

@@ -348,6 +348,8 @@ export interface Program extends Partial<ContentMeta> {
   studyLanguages?: SourcedValue<string[]>;
   duration?: SourcedValue<number>; // months
   tuition?: SourcedValue<Money>;
+  /** The period the tuition figure covers, as the source states it (absent = not stated). */
+  tuitionPeriod?: CostPeriod;
   english?: SourcedValue<EnglishRequirement>;
   otherLanguage?: SourcedValue<OtherLanguageRequirement>;
   admission?: SourcedValue<string>;

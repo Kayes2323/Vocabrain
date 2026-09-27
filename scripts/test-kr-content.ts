@@ -6,6 +6,8 @@ import { KR_EMBASSY_BD_GKS_U_2027, KR_NIIED_GUIDEBOOK, KR_SIK_SCHOLARSHIPS } fro
 import { KR_SCHOLARSHIPS } from '../lib/content/kr-scholarships';
 import { DEADLINES } from '../lib/content/deadlines';
 import { scholarshipStatus } from '../lib/abroad/status';
+import { KR_UNIVERSITIES } from '../lib/content/kr-universities';
+import { explainMatch, filterUniversities, programRows } from '../lib/abroad/programs';
 import { programGuide } from '../lib/abroad/study-options';
 import { countrySections, factStatus } from '../lib/abroad/sections';
 import type { SectionFact } from '../lib/models';
@@ -120,6 +122,33 @@ test('C2.4 costs: tuition range follows the degree; language course fee only on 
   assert.ok(!labels('degree-masters', 'costs').includes('GKS undergraduate (Bangladesh, 2027)'));
   const living = KR_SECTIONS.living!.facts!.find((f) => f.label.en === 'By item, per month')!;
   assert.match(living.fact.notes!, /add up to more than the average/);
+});
+
+test('C2.5 universities: alphabetical (never ranked); type from Study in Korea; city from the university’s own site', () => {
+  const names = KR_UNIVERSITIES.map((u) => u.name);
+  assert.deepEqual(names, [...names].sort((a, b) => a.localeCompare(b)));
+  assert.ok(KR_UNIVERSITIES.length >= 10);
+  for (const u of KR_UNIVERSITIES) {
+    assert.ok(!('rank' in u) && !('ranking' in u) && !('score' in u));
+    assert.ok(u.ownership?.source.url?.includes('studyinkorea.go.kr') && u.city && u.officialSource?.sourceType === 'official-university', u.id);
+    assert.ok(u.officialUrl.startsWith('https://') && u.applicationPortalUrl?.startsWith('https://'), u.id);
+  }
+  assert.deepEqual(filterUniversities('KR', { city: 'Busan' }).fits.map((u) => u.id), ['kr-donga', 'kr-pnu']);
+  assert.equal(filterUniversities('KR', { ownership: 'public' }).fits.length, 5);
+  assert.equal(filterUniversities('KR', { studyLanguage: 'local' }).unknown.length, 10, 'Korean-taught not stated per university → can’t check, never guessed');
+});
+
+test('C2.6 programs: only fields read on the official page; semester tuition is never compared with a yearly budget', () => {
+  const rows = programRows('KR');
+  const uic = rows.find((r) => r.program.id === 'kr-yonsei-uic')!;
+  assert.equal(uic.program.tuitionPeriod, 'semester');
+  assert.equal(uic.program.english, undefined, 'no minimum score is set → none stored');
+  const rich = { student: { budget: { tuition: { amount: 999_000_000, currency: 'KRW' } } } } as never;
+  assert.equal(explainMatch(uic, rich).find((m) => m.dimension === 'budget')!.verdict, 'check');
+  const bba = rows.find((r) => r.program.id === 'kr-woosong-solbridge-bba')!;
+  assert.deepEqual(bba.program.english!.value, { test: 'IELTS', overall: 5.5 });
+  assert.equal(bba.program.tuition, undefined, 'tuition not read → not stored');
+  for (const r of rows) assert.ok(r.program.officialSource?.url && r.program.studyLanguages?.source.url);
 });
 
 console.log(`\n${passed} passed`);

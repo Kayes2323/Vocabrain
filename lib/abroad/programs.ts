@@ -73,7 +73,10 @@ export function checkFilter(row: ProgramRow, key: FilterKey, f: ProgramFilters, 
       const local = getCountry(university.countryCode)?.localLanguage;
       const want = f.studyLanguage === 'en' ? 'en' : local;
       if (!langs || !want) return 'unknown';
-      return langs.includes(want) ? 'yes' : 'no';
+      if (langs.includes(want)) return 'yes';
+      // A partly verified list names some teaching languages, not all of them: a missing one is unknown, not "no".
+      const partial = (row.program.studyLanguages ?? row.university.studyLanguages)?.status === 'partly-verified';
+      return partial ? 'unknown' : 'no';
     }
     case 'ownership': {
       if (!f.ownership || f.ownership === 'any') return 'yes';
@@ -122,6 +125,28 @@ export function filterPrograms(rows: ProgramRow[], f: ProgramFilters, now = new 
     const unk = results.filter(([, r]) => r === 'unknown').map(([k]) => k);
     if (unk.length) unknown.push({ ...row, unknownFilters: unk });
     else fits.push(row);
+  }
+  return { fits, unknown };
+}
+
+/** The filters a university record itself can answer (degree, subject, tuition and scholarships belong to programs). */
+export const UNIVERSITY_FILTERS = ['studyLanguage', 'ownership', 'city'] as const;
+
+/**
+ * The country's reviewed universities against the university-level filters,
+ * in registry order (no ranking). `unknown` = can't be checked on verified data.
+ */
+export function filterUniversities(countryCode: string, f: ProgramFilters, now = new Date()) {
+  const code = countryCode.toUpperCase();
+  const fits: University[] = [];
+  const unknown: (University & { unknownFilters: FilterKey[] })[] = [];
+  for (const university of UNIVERSITIES.filter((u) => u.countryCode === code)) {
+    const row: ProgramRow = { university, program: { id: '', universityId: university.id, title: '', degreeLevel: 'bachelors', subject: '' } };
+    const results = UNIVERSITY_FILTERS.map((k) => [k, checkFilter(row, k, f, now)] as const);
+    if (results.some(([, r]) => r === 'no')) continue;
+    const unk = results.filter(([, r]) => r === 'unknown').map(([k]) => k);
+    if (unk.length) unknown.push({ ...university, unknownFilters: unk });
+    else fits.push(university);
   }
   return { fits, unknown };
 }
@@ -180,6 +205,7 @@ export function explainMatch(row: ProgramRow, abroad: StudyAbroadProfile, now = 
   if (!fee) push('budget', 'no-data');
   else if (!budget) push('budget', 'no-profile');
   else if (budget.currency !== fee.currency) push('budget', 'check'); // never converted
+  else if (row.program.tuitionPeriod !== 'year') push('budget', 'check'); // the budget is per year; never re-computed
   else push('budget', fee.amount <= budget.amount ? 'fits' : 'check');
 
   const city = s.preferences?.city;

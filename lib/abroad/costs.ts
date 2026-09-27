@@ -88,7 +88,7 @@ export function officialCosts(country: Country, ctx: DocumentContext = {}): Offi
   );
   for (const id of ctx.programIds ?? []) {
     const p = PROGRAMS.find((x) => x.id === id);
-    if (p?.tuition) list.push({ id: `tuition-${p.id}`, category: 'tuition', kind: 'tuition', label: { en: p.title, bn: p.title }, amount: { ...p.tuition, value: { ...p.tuition.value, period: 'unspecified' } } });
+    if (p?.tuition) list.push({ id: `tuition-${p.id}`, category: 'tuition', kind: 'tuition', label: { en: p.title, bn: p.title }, amount: { ...p.tuition, value: { ...p.tuition.value, period: p.tuitionPeriod ?? 'unspecified' } } });
   }
   return list;
 }

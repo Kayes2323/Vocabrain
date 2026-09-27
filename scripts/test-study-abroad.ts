@@ -707,20 +707,22 @@ function withRegistry(fn: () => void) {
     { id: 'u-b', name: 'Test Univ B', countryCode: 'KR', city: 'Busan', officialUrl: 'https://b.example.ac.kr', ownership: f3('private' as const, { status: 'not-verified' }), sample: true },
   ];
   const P: Program[] = [
-    { id: 'p-1', universityId: 'u-a', title: 'MSc Computer Science', degreeLevel: 'masters', subject: 'Computer Science', studyLanguages: f3(['en']), tuition: f3({ amount: 5_000_000, currency: 'KRW' }), english: f3({ test: 'IELTS' as const, overall: 6.5 }), admission: f3('Bachelor’s degree in a related field'), sample: true },
+    { id: 'p-1', universityId: 'u-a', title: 'MSc Computer Science', degreeLevel: 'masters', subject: 'Computer Science', studyLanguages: f3(['en']), tuition: f3({ amount: 5_000_000, currency: 'KRW' }), tuitionPeriod: 'year', english: f3({ test: 'IELTS' as const, overall: 6.5 }), admission: f3('Bachelor’s degree in a related field'), sample: true },
     { id: 'p-2', universityId: 'u-a', title: 'MA Korean Studies', degreeLevel: 'masters', subject: 'Korean Studies', studyLanguages: f3(['ko']), otherLanguage: f3({ language: 'ko', test: 'TOPIK', level: 4 }), sample: true },
     { id: 'p-3', universityId: 'u-b', title: 'BBA', degreeLevel: 'bachelors', subject: 'Business', tuition: f3({ amount: 4000, currency: 'USD' }, { lastVerified: '2024-01-01' }), sample: true },
   ];
   const S: Scholarship[] = [{ id: 's-1', name: 'Test scholarship', provider: 'university', degreeLevels: ['masters'], funding: 'partial', eligibility: f3('International students'), officialUrl: 'https://a.example.ac.kr/sch', sample: true }];
+  // Test data only: the shipped records are set aside and put back afterwards.
+  const saved = [UNIVERSITIES.splice(0), PROGRAMS.splice(0), SCHOLARSHIPS.splice(0)] as const;
   UNIVERSITIES.push(...U);
   PROGRAMS.push(...P);
   SCHOLARSHIPS.push(...S);
   try {
     fn();
   } finally {
-    UNIVERSITIES.length = 0;
-    PROGRAMS.length = 0;
-    SCHOLARSHIPS.length = 0;
+    UNIVERSITIES.splice(0, UNIVERSITIES.length, ...saved[0]);
+    PROGRAMS.splice(0, PROGRAMS.length, ...saved[1]);
+    SCHOLARSHIPS.splice(0, SCHOLARSHIPS.length, ...saved[2]);
   }
 }
 
@@ -771,7 +773,10 @@ test('B3 filters: study language, public/private, city, tuition (same currency o
     assert.deepEqual(universityCities('KR'), ['Busan', 'Seoul']);
     assert.deepEqual(programRows('DE'), []);
   });
-  assert.deepEqual(programRows('KR'), [], 'shipped registry is empty: no invented universities');
+  // C2.5/C2.6: the shipped KR registry — every record official, nothing marked as sample.
+  const shipped = programRows('KR');
+  assert.deepEqual(shipped.map((r) => r.program.id), ['kr-yonsei-uic', 'kr-woosong-solbridge-bba']);
+  assert.ok(shipped.every((r) => !r.program.sample && !r.university.sample && r.program.officialSource?.url?.startsWith('https://')));
 });
 
 test('B3 profile → filters: pre-filled from answers, never the other way round', () => {
