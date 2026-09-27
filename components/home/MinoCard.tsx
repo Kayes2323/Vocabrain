@@ -2,25 +2,30 @@
 
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Panel } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { minoReact } from '@/components/mino/Mino';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { getMinoInsight, nextProfileGap } from '@/lib/engine';
+import { buildDailyPlan, getMinoInsight, nextProfileGap } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
 
-/** Mino's one-line guidance, plus the single next missing piece of profile. */
+/**
+ * Mino on Home only when it helps: a reminder, a personal recommendation, or
+ * something the student needs to do. When today's plan is done and nothing
+ * is missing, Mino stays in its own tab instead.
+ */
 export function MinoCard({ profile }: { profile: UserProfile }) {
   const { t, m } = useLocale();
   const gap = nextProfileGap(profile);
   const brain = useBrainContext();
   const name = profile.displayName;
+  const dayDone = buildDailyPlan(profile, brain).tasks.every((task) => task.done);
+  if (!gap && dayDone) return null;
 
   return (
     // Hover / tap → Mino blinks; an open profile gap gets one soft attention pulse.
-    <Panel variant="brand" className="space-y-4" onPointerEnter={() => minoReact('blink')} data-testid="mino-card">
+    <Panel variant="brand" className="space-y-3" onPointerEnter={() => minoReact('blink')} data-testid="mino-card">
       <div className="flex items-start gap-3">
         <MinoMark mode={gap ? 'attention' : 'idle'} />
         <div className="min-w-0 space-y-1">
@@ -42,9 +47,6 @@ export function MinoCard({ profile }: { profile: UserProfile }) {
         </Link>
       )}
 
-      <Button asChild variant="brand" className="w-full sm:w-auto">
-        <Link href="/mino">{t('home.askMino')}</Link>
-      </Button>
     </Panel>
   );
 }

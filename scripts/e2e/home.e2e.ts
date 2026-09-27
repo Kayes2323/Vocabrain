@@ -15,7 +15,7 @@ async function cta(p: Page) {
   await p.goto(BASE + '/', { waitUntil: 'load' });
   const el = p.getByTestId('today-cta');
   await el.waitFor({ timeout: 60_000 });
-  return { text: (await el.innerText()).trim(), state: await el.getAttribute('data-state'), href: await el.getAttribute('href'), status: (await p.getByTestId('today-status').innerText()).trim() };
+  return { text: (await el.innerText()).trim(), state: await el.getAttribute('data-state'), href: await el.getAttribute('href'), status: (await p.getByTestId('today-status').count()) ? (await p.getByTestId('today-status').innerText()).trim() : '' };
 }
 
 async function run(p: Page, lang: 'bn' | 'en', tag: string) {
@@ -26,6 +26,7 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
 
   let c = await cta(p);
   check(`${tag}: new student → "${T.start}"`, c.text === T.start && c.state === 'not-started', JSON.stringify(c));
+  await shot(p, `home-start-${tag}`, false);
   check(`${tag}: no "Continue learning" on the home card`, !/continue learning|শেখা চালিয়ে যান/i.test(await p.locator('main').innerText()));
 
   // Reading done, Brain still empty → reading + vocabulary: only one task left.
@@ -56,7 +57,19 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   check(`${tag}: Quick access has 3 IELTS shortcuts (Foundation, Practice Test, Speaking Test)`, ids.join(',') === 'foundation,tests,speaking', ids.join(','));
   check(`${tag}: Quick access has no Study Abroad and no main-menu copies`, (await qa.locator('a[href^="/abroad"], a[href="/ielts"], a[href="/mino"], a[href="/"]').count()) === 0);
   const y = async (id: string) => (await p.getByTestId(id).boundingBox())!.y;
-  check(`${tag}: order — today's learning, then Quick access, then Study Abroad at the bottom`, (await y('today-cta')) < (await y('quick-access')) && (await y('quick-access')) < (await y('home-abroad')));
+  const mobile = tag.includes('mobile');
+  check(`${tag}: order — greeting, Quick access, today's learning, progress${mobile ? ', Study Abroad last' : ''}`,
+    (await p.getByRole('heading', { level: 1 }).boundingBox())!.y < (await y('quick-access')) && (await y('quick-access')) < (await y('today-card')) && (await y('today-card')) < (await y('progress-card')) && (!mobile || (await y('progress-card')) < (await y('home-abroad'))));
+  check(`${tag}: today's tasks are one tap away, not filling the screen`, (await p.locator('[data-task]').count()) === 0);
+  await p.getByTestId('today-details').click();
+  check(`${tag}: "show tasks" reveals the 4 daily tasks`, (await p.locator('[data-task]').count()) === 4);
+  check(`${tag}: header and progress in the student's language`, lang === 'bn' ? /আজকের পড়া/.test(await p.getByTestId('today-card').innerText()) : /Today's Learning/.test(await p.getByTestId('today-card').innerText()));
+  check(`${tag}: day done and nothing missing → no Mino card on Home (Mino stays in its tab)`, (await p.getByTestId('mino-card').count()) === 0 || /complete|profile/i.test(await p.getByTestId('mino-card').innerText()));
+  check(`${tag}: no "Ask Mino" button on Home (it is in the navigation)`, (await p.locator('main a[href="/mino"]').count()) === 0);
+  if (mobile) {
+    const nav = p.getByRole('navigation').last();
+    check(`${tag}: bottom nav — Home active with a pill, 5 items with icon + label`, (await nav.locator('a').count()) === 5 && (await nav.locator('a[aria-current="page"]').getAttribute('href')) === '/' && (await nav.locator('a[aria-current="page"] .bg-brand-soft').count()) === 1);
+  }
   check(`${tag}: Foundation offered once on Home`, (await p.locator('main a[href="/ielts/foundation"]').count()) === 1);
   const h = (await qa.boundingBox())!.height;
   check(`${tag}: Quick access stays compact (one row)`, h < 170, h);

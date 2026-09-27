@@ -14,7 +14,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label={t('nav.primary')}
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/90 pb-safe backdrop-blur-lg md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-card/95 pb-safe shadow-[0_-4px_20px_rgb(15_23_42/0.06)] backdrop-blur-lg md:hidden"
     >
       <ul className="mx-auto grid h-16 max-w-lg grid-cols-5">
         {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured }) => {
@@ -26,13 +26,13 @@ export function BottomNav() {
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors active:scale-95',
-                  active ? 'text-brand' : 'text-muted-foreground hover:text-foreground',
+                  active ? 'text-brand' : 'text-foreground/65 hover:text-foreground',
                 )}
               >
                 {featured ? (
                   <span
                     className={cn(
-                      'flex h-7 w-11 items-center justify-center rounded-full transition-colors',
+                      'flex h-7 w-12 items-center justify-center rounded-full transition-colors',
                       active && 'bg-brand-soft',
                     )}
                   >
@@ -41,7 +41,7 @@ export function BottomNav() {
                 ) : (
                   <span
                     className={cn(
-                      'flex h-7 w-11 items-center justify-center rounded-full transition-colors',
+                      'flex h-7 w-12 items-center justify-center rounded-full transition-colors',
                       active && 'bg-brand-soft text-brand',
                     )}
                   >

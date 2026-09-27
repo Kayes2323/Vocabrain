@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="flex min-h-dvh bg-background">
               <SideNav />
               <main className="min-w-0 flex-1">
-                <div className="mx-auto w-full max-w-2xl px-4 pt-6 pb-nav md:px-8 md:pt-10 md:pb-16 lg:max-w-5xl">
+                <div className="mx-auto w-full max-w-2xl px-4 pt-safe-top pb-nav md:px-8 md:pt-10 md:pb-16 lg:max-w-5xl">
                   {children}
                 </div>
               </main>

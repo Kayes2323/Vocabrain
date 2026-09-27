@@ -32,18 +32,18 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
   const journey = ieltsJourney(profile);
 
   return (
-    <Panel className="space-y-5">
-      <div>
-        <p className="text-sm text-muted-foreground">{t('home.yourGoal')}</p>
-        <p className="text-2xl font-semibold tracking-tight tabular-nums">{t('home.goalValue', { band: formatBand(target) })}</p>
-      </div>
-      <div className="space-y-2">
-        <div className="flex items-baseline justify-between gap-3">
-          <span className="text-sm font-medium">{t('journey.preparation')}</span>
-          <span className="text-sm font-semibold tabular-nums">{journey.percent}%</span>
+    <Panel className="space-y-4" data-testid="progress-card">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-sm text-muted-foreground">{t('home.yourGoal')}</p>
+          <p className="text-xl font-semibold tracking-tight tabular-nums">{t('home.goalValue', { band: formatBand(target) })}</p>
         </div>
-        <ProgressBar value={journey.percent} label={t('journey.preparation')} />
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">{t('journey.preparation')}</p>
+          <p className="text-xl font-semibold tabular-nums">{journey.percent}%</p>
+        </div>
       </div>
+      <ProgressBar value={journey.percent} label={t('journey.preparation')} />
       <Collapsible>
         <CollapsibleTrigger className="group flex w-full items-center justify-between gap-3 text-left text-[15px]">
           <span>{t('home.currentStage', { stage: t(`journey.stages.${journey.current}`) })}</span>

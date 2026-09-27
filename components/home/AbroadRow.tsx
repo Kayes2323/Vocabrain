@@ -11,12 +11,14 @@ export function AbroadRow() {
     <Link
       href="/abroad"
       data-testid="home-abroad"
-      className="flex items-center gap-3 rounded-2xl border border-dashed bg-background px-4 py-3 text-sm transition-colors hover:bg-muted/60"
+      className="flex items-center gap-3 rounded-2xl border bg-card px-4 py-3 transition-colors hover:bg-muted/60"
     >
-      <Plane className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-tint-yellow text-tint-yellow-fg" aria-hidden>
+        <Plane className="size-4" />
+      </span>
       <span className="min-w-0 flex-1">
-        <span className="font-medium">{t('home.abroadTitle')}</span>
-        <span className="text-muted-foreground"> · {t('home.abroadBody')}</span>
+        <span className="block text-sm font-semibold">{t('home.abroadTitle')}</span>
+        <span className="block text-xs text-muted-foreground">{t('home.abroadBody')}</span>
       </span>
       <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
     </Link>

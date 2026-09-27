@@ -35,12 +35,11 @@ export default function HomePage() {
 
   if (!profile) return <ScreenSkeleton />;
 
-  const noGoal = profile.ielts.targetBand === undefined;
   const name = profile.displayName || (isGuest ? undefined : firstName(user?.displayName, user?.email));
 
   return (
     <div className="space-y-5">
-      <h1 className="pb-1 text-2xl font-semibold tracking-tight md:text-3xl">
+      <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
         {t(greetingKey())}
         {name ? `, ${name}` : ''} 👋
       </h1>
@@ -51,20 +50,18 @@ export default function HomePage() {
         </Callout>
       )}
 
+      {/* Greeting → Quick access → today's learning → progress → Mino (when useful) → Study Abroad. */}
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
         <div className="space-y-5">
-          {/* Without a goal, setting one comes first; otherwise today's learning leads. */}
-          {noGoal && <JourneyCard profile={profile} />}
-          <TodayCard profile={profile} />
           <QuickAccess />
-          {!noGoal && <JourneyCard profile={profile} />}
+          <TodayCard profile={profile} />
+          <JourneyCard profile={profile} />
         </div>
-        <div className="lg:sticky lg:top-10">
+        <div className="space-y-5 lg:sticky lg:top-10">
           <MinoCard profile={profile} />
+          <AbroadRow />
         </div>
       </div>
-
-      <AbroadRow />
     </div>
   );
 }
