@@ -63,12 +63,13 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement (9 lessons + its Final Mastery Challenge), Prepositions (9 lessons +
-its Final Mastery Challenge), Vocabulary Foundation. Connectors, Complex
-Sentences, Punctuation and Common Errors show "Soon".
+Agreement, Prepositions and Connectors (9 lessons + a Final Mastery Challenge
+each), Vocabulary Foundation. Complex Sentences, Punctuation and Common Errors
+show "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
 shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
-`docs/AGREEMENT_CURRICULUM.md` and `docs/PREPOSITIONS_CURRICULUM.md`.
+`docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md` and
+`docs/CONNECTORS_CURRICULUM.md`.
 
 ## Tests
 
@@ -274,6 +275,21 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   reason, extra / missing prepositions, change vs level for data).
 - **E2E.** `scripts/e2e/prepositions.e2e.ts` runs the shared grammar-module flow in
   `scripts/e2e/module-spec.ts` (later modules reuse it with their own data).
+
+## Phase E: Connectors
+
+- **Module 7** (`connectors.ts` cn-1…cn-6, `connectors-apply.ts` cn-7…cn-9): 8 taught v2
+  lessons + the review test. Six concepts (`conn-add`, `conn-contrast`, `conn-cause`,
+  `conn-example`, `conn-grammar`, `conn-cohesion`, tag `connector`). The Parts of Speech
+  conjunction unit stays the short introduction. See `docs/CONNECTORS_CURRICULUM.md`.
+- **Patterns.** `conn-meaning`, `conn-double`, `conn-form`, `conn-fragment` (+ fix guides);
+  `conj-logic` from Parts of Speech also shows here.
+- **Challenge.** `connectors` in `CHALLENGES` (6 parts × 4 items, `finals.connectors`).
+- **Mino.** Connector tasks add linking rules (logic, grammar after the linker, comma
+  splices, pairs, fragments; natural referencing over connector overuse).
+- **E2E.** `scripts/e2e/connectors.e2e.ts` (shared flow in `module-spec.ts`).
+- **Answers with punctuation.** Grading keeps commas and semicolons, so every accepted
+  rewrite lists each correct punctuation (". However," / "; however," / ", but").
 
 ## Known issue: `pnpm lint`
 

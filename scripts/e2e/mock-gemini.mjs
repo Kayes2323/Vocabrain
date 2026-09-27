@@ -12,6 +12,8 @@
 //   subject–verb feedback only when the prompt carried the agreement rules.
 // - Preposition tasks ("rose with 35 …", "in 7 am") get preposition feedback
 //   only when the prompt carried the preposition rules.
+// - Connector tasks ("Although …, but …", a stand-alone "Because …") get
+//   linking feedback only when the prompt carried the connector rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -105,6 +107,27 @@ http
             feedback: bn ? 'ভালো চেষ্টা! ঘড়ির সময়ে at লাগে।' : 'Good try! Clock times take at.',
             fixes: [{ quote: 'in 7 am', fix: 'at 7 am', why: bn ? "৭টা একটা নির্দিষ্ট সময়-বিন্দু, তাই 'at 7 am'।" : "7 am is an exact point in time, so 'at 7 am'." }],
             practice: { sentence: 'The class starts ___ 9 am.', answers: ['at'] },
+          }) }]);
+        }
+        const connectorRules = /Connector feedback \(target: /.test(system);
+        if (connectorRules && /\bAlthough\b[^.]*,\s*but\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/,\s*but\b/i, ','),
+            feedback: bn ? 'ভালো চেষ্টা! একটা বিপরীতে একটাই contrast word লাগে।' : 'Good try! One contrast needs only one contrast word.',
+            fixes: [{ quote: 'expensive, but many', fix: 'expensive, many', why: bn ? "'Although' আগেই বিপরীত দেখায় (যদিও … কিন্তু-র মতো দুটো লাগে না), তাই 'but' বাদ দিন।" : "'Although' already shows the contrast — use one contrast word, so remove 'but'." }],
+            practice: { sentence: '___ it was raining, we played football.', answers: ['although', 'though', 'even though'] },
+          }) }]);
+        }
+        if (connectorRules && /\.\s*Because\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\.\s*Because\b/, ' because'),
+            feedback: bn ? 'ভালো চেষ্টা! because-অংশটা একা sentence হতে পারে না।' : 'Good try! The because-part cannot stand alone.',
+            fixes: [{ quote: 'cities. Because there', fix: 'cities because there are more jobs', why: bn ? 'একা "Because …." একটা ভাঙা sentence; মূল clause-এর সাথে জুড়ুন।' : 'A stand-alone "Because …." is a fragment; attach it to the main clause.' }],
+            practice: { sentence: 'I take the metro ___ it is faster.', answers: ['because', 'since', 'as'] },
           }) }]);
         }
         const bad = /\b(go|am learning)\b/.test(student);

@@ -4,6 +4,7 @@ import { FINAL_PARTS, type FinalPart } from './pos-final';
 import { TENSE_FINAL_PARTS } from './tenses-final';
 import { AGREEMENT_FINAL_PARTS } from './agreement-final';
 import { ARTICLE_FINAL_PARTS } from './articles-final';
+import { CONNECTOR_FINAL_PARTS } from './connectors-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 
 /**
@@ -57,6 +58,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Prepositions Final Mastery Challenge', 'Prepositions Final Mastery Challenge'), name: l('Prepositions', 'Prepositions'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: PREPOSITION_FINAL_PARTS,
     concepts: ['prep-time', 'prep-duration', 'prep-place', 'prep-movement', 'prep-partner', 'prep-data'],
+  },
+  {
+    id: 'connectors', moduleId: 'connectors', mark: 'C★', minutes: 15, areas: 'concept',
+    title: l('Connectors Final Mastery Challenge', 'Connectors Final Mastery Challenge'), name: l('Connectors', 'Connectors'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: CONNECTOR_FINAL_PARTS,
+    concepts: ['conn-add', 'conn-contrast', 'conn-cause', 'conn-example', 'conn-grammar', 'conn-cohesion'],
   },
 ];
 

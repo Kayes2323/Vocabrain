@@ -25,7 +25,7 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech', 'articles'], unit: 'noun' },
   'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), modules: ['parts-of-speech'], unit: 'pronoun' },
   'prep-choice': { title: l('Choosing the preposition', 'সঠিক preposition বাছা'), modules: ['parts-of-speech', 'prepositions'], unit: 'preposition' },
-  'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), modules: ['parts-of-speech'], unit: 'conjunction' },
+  'conj-logic': { title: l('Joining ideas with the right word', 'ঠিক word দিয়ে idea জোড়া'), modules: ['parts-of-speech', 'connectors'], unit: 'conjunction' },
   'past-vs-perfect': { title: l('Past Simple or Present Perfect', 'Past Simple নাকি Present Perfect'), modules: ['tenses'] },
   'simple-vs-continuous': { title: l('Simple or continuous', 'Simple নাকি continuous'), modules: ['tenses'] },
   'tense-time': { title: l('Time words decide the tense', 'Time word-ই tense ঠিক করে'), modules: ['tenses'] },
@@ -41,6 +41,10 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'prep-word-partner': { title: l('Word partners (depend on, interested in)', 'Word partner (depend on, interested in)'), modules: ['prepositions'] },
   'prep-data-words': { title: l('Prepositions for data (by, to, at)', 'Data-র preposition (by, to, at)'), modules: ['prepositions'] },
   'prep-extra': { title: l('Extra or missing prepositions (discuss about, reach to)', 'অতিরিক্ত বা বাদ পড়া preposition (discuss about, reach to)'), modules: ['prepositions'] },
+  'conn-meaning': { title: l('A connector that doesn’t match the logic', 'যুক্তির সাথে না মেলা connector'), modules: ['connectors'] },
+  'conn-double': { title: l('Two linkers for one link (although … but)', 'একটা যোগসূত্রে দুটো linker (although … but)'), modules: ['connectors'] },
+  'conn-form': { title: l('Connector grammar and punctuation', 'Connector-এর grammar আর punctuation'), modules: ['connectors'] },
+  'conn-fragment': { title: l('Half sentences (Because … . on its own)', 'অর্ধেক sentence (একা Because … .)'), modules: ['connectors'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -295,6 +299,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Bangla "নিয়ে", "-এ", "-তে" feel like they need an English word, so we add about, to, into, on.', 'বাংলা "নিয়ে", "-এ", "-তে"-র জন্য English word লাগবে মনে হয়, তাই about, to, into, on বসিয়ে ফেলি।'),
     recognise: l('After discuss, reach, enter, emphasise and affect, the object comes straight after the verb.', 'discuss, reach, enter, emphasise আর affect-এর পরে object সরাসরি verb-এর পরে বসে।'),
     avoid: l('Proofread for these verbs and delete the extra word: discuss the issue, reach Dhaka, go home.', 'এই verb-গুলো খুঁজে অতিরিক্ত word মুছে দিন: discuss the issue, reach Dhaka, go home।'),
+  },
+  'conn-meaning': {
+    rule: l(
+      'Choose the connector by the logic between the ideas: adding (also, in addition), contrast (but, however, although, whereas), cause (because, due to), result (so, therefore, as a result), example (for example, such as). Task 1 compares (while, whereas, overall); it does not give causes.',
+      'Idea-গুলোর মধ্যে যুক্তি দেখে connector বাছুন: যোগ (also, in addition), বিপরীত (but, however, although, whereas), কারণ (because, due to), ফলাফল (so, therefore, as a result), উদাহরণ (for example, such as)। Task 1 তুলনা করে (while, whereas, overall); কারণ দেয় না।',
+    ),
+    why: l('Connectors get added to sound academic ("Moreover" everywhere) instead of being chosen for the logic.', 'যুক্তি দেখে বাছার বদলে academic শোনাতে connector বসানো হয় (সব জায়গায় "Moreover")।'),
+    recognise: l('Cover the connector and read the two ideas: same direction, opposite, cause, result or example?', 'Connector ঢেকে দুটো idea পড়ুন: একই দিকে, বিপরীত, কারণ, ফলাফল, নাকি উদাহরণ?'),
+    avoid: l('Decide the relationship first, then pick a word from that group — and use fewer connectors.', 'আগে সম্পর্কটা ঠিক করুন, তারপর সেই দল থেকে word বাছুন — আর connector কম দিন।'),
+  },
+  'conn-double': {
+    rule: l(
+      'One linker per link: Although X, Y (not "Although X, but Y") · Because X, Y or X, so Y (not "Because X, so Y") · such as (not "for example such as").',
+      'প্রতিটা যোগসূত্রে একটা linker: Although X, Y ("Although X, but Y" না) · Because X, Y বা X, so Y ("Because X, so Y" না) · such as ("for example such as" না)।',
+    ),
+    why: l('Bangla needs both halves of a pair — "যদিও … কিন্তু", "যেহেতু … তাই" — so English gets two linkers.', 'বাংলায় জোড়ার দুই অংশই লাগে — "যদিও … কিন্তু", "যেহেতু … তাই" — তাই English-এ দুটো linker বসে যায়।'),
+    recognise: l('If a sentence starts with Although / Because / Since, look for but / so / therefore later — delete it.', 'Sentence Although / Because / Since দিয়ে শুরু হলে পরে but / so / therefore খুঁজুন — মুছে দিন।'),
+    avoid: l('Write the pair as English does: either "Although X, Y." or "X, but Y."', 'English যেভাবে লেখে সেভাবে লিখুন: হয় "Although X, Y." নয়তো "X, but Y."'),
+  },
+  'conn-form': {
+    rule: l(
+      'Conjunctions join after a comma (, but / , so) · although / because + clause · despite / because of / due to / as well as + noun or -ing · However, / Therefore, / As a result, start a new sentence (or follow a semicolon) — never just a comma before them. also goes before the main verb.',
+      'Conjunction comma-র পরে জোড়ে (, but / , so) · although / because + clause · despite / because of / due to / as well as + noun বা -ing · However, / Therefore, / As a result, নতুন sentence শুরু করে (বা semicolon-এর পরে) — আগে শুধু comma কখনো না। also মূল verb-এর আগে।',
+    ),
+    why: l('Bangla "তবে", "তাই" join clauses with a comma, so ", however" and ", therefore" feel right; "সত্ত্বেও" takes a full clause, so "despite it was" feels right.', 'বাংলায় "তবে", "তাই" comma দিয়ে clause জোড়ে, তাই ", however" আর ", therefore" ঠিক মনে হয়; "সত্ত্বেও"-র সাথে পূর্ণ clause বসে, তাই "despite it was" ঠিক মনে হয়।'),
+    recognise: l('Find however / therefore / moreover: is there only a comma before it? Find despite / because of: is a verb clause after it?', 'however / therefore / moreover খুঁজুন: আগে কি শুধু comma? despite / because of খুঁজুন: পরে কি verb-সহ clause?'),
+    avoid: l('Put a full stop before sentence connectors, or switch to but / so. After despite, use a noun (despite the rain).', 'Sentence connector-এর আগে full stop দিন, বা but / so-তে বদলান। despite-এর পরে noun (despite the rain)।'),
+  },
+  'conn-fragment': {
+    rule: l(
+      'A because-, although- or such as-part cannot stand alone as a written sentence. Attach it to a main clause: "I chose this course because it is practical."',
+      'because-, although- বা such as-অংশ লিখিত sentence হিসেবে একা দাঁড়াতে পারে না। মূল clause-এর সাথে জুড়ুন: "I chose this course because it is practical."',
+    ),
+    why: l('In Bangla, "কেন?" is answered with "কারণ …" alone, and that habit becomes "Because it is cheap." in essays.', 'বাংলায় "কেন?"-র উত্তর একা "কারণ …" দিয়ে দেওয়া হয়, আর সেই অভ্যাস essay-তে "Because it is cheap." হয়ে যায়।'),
+    recognise: l('A sentence that starts with Because / Although / Such as and has no second clause is a fragment.', 'Because / Although / Such as দিয়ে শুরু হওয়া sentence-এ দ্বিতীয় clause না থাকলে সেটা ভাঙা sentence।'),
+    avoid: l('Replace the full stop before "because" with nothing: join it to the sentence before.', '"because"-এর আগের full stop সরিয়ে দিন: আগের sentence-এর সাথে জুড়ে দিন।'),
   },
 };
 

@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 35);
+  assert.equal(CONCEPTS.length, 41);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const connectors = MODULES.find((m) => m.id === 'connectors')!;
+  const complexSentences = MODULES.find((m) => m.id === 'complex-sentences')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(connectors, fp), undefined);
+  assert.equal(stepBeforeModule(complexSentences, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 5);
+  assert.equal(CHALLENGES.length, 6);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -758,6 +758,53 @@ test('Prepositions Final Mastery Challenge: 6 parts × 4 items at levels 1–3, 
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Prepositions Final Mastery Challenge: last 78%/);
 });
 
+// ---------------------------------------------------------------- connectors
+test('Connectors: 8 taught v2 lessons + a review test, full v2 shape, why-wrong feedback, respectful Bangla', () => {
+  const { mod } = checkV2Module('connectors', ['cn-1', 'cn-2', 'cn-3', 'cn-4', 'cn-5', 'cn-6', 'cn-7', 'cn-8', 'cn-9'], 'connector', 'conn-', ['cn-7']);
+  assert.equal(mod.number, 7);
+  // Punctuation matters: a comma splice is never accepted, the fixed versions are.
+  assert.equal(grade2(ex('cn-5-r3'), 'The test was easy. However, many students failed.'), true);
+  assert.equal(grade2(ex('cn-5-r3'), 'The test was easy; however, many students failed.'), true);
+  assert.equal(grade2(ex('cn-5-r3'), 'The test was easy, however, many students failed.'), false);
+  assert.equal(grade2(ex('cn-2-r2'), 'even though'), true, 'although / though / even though all fit');
+  assert.equal(grade2(ex('cn-3-r3'), 'The shop was closed, so we went home.'), true, 'either half of the pair may stay');
+});
+
+test('Connectors: concepts are mastery-capable and reviewable; the pattern fix and summary line work', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'connector' && c.id.startsWith('conn-')).map((c) => c.id);
+  assert.deepEqual(ids, ['conn-add', 'conn-contrast', 'conn-cause', 'conn-example', 'conn-grammar', 'conn-cohesion']);
+  const exs = MODULES.find((m) => m.id === 'connectors')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'cn-2-p1', 'Although he was tired, but he finished the report.', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'cn-3-p4', 'Since the tickets were cheap, so we bought four.', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'cn-4-p4', 'Some countries, for example such as Japan, have ageing populations.', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'connectors', NOW).find((x) => x.pair === 'conn-double')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Connectors pattern: Two linkers for one link \(although … but\) ×3.*fix\/conn-double/);
+  for (const k of ['conn-meaning', 'conn-double', 'conn-form', 'conn-fragment']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'connector' && exercisePattern(q) === k));
+  }
+  assert.ok(POS_NAMED_PATTERNS['conj-logic'].modules.includes('connectors'));
+});
+
+test('Connectors Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals.connectors', () => {
+  const ch = getChallenge('connectors')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 81, level: 3, parts: {} }, NOW, 'connectors');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Connectors Final Mastery Challenge: last 81%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -824,6 +871,17 @@ asyncTests.push(['Mino preposition feedback: the deciding reason, extra preposit
   assert.match(seen!.system!, /the change \(by\), the new level \(to\)/);
   assert.doesNotMatch(seen!.system!, /Tense feedback|Article feedback|agreement feedback/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['rose with']);
+}]);
+asyncTests.push(['Mino connector feedback: logic, grammar, punctuation, pairs and fragments', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'Although it is expensive, it is useful.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'but it is', fix: 'it is', why: 'one contrast word' }], practice: { sentence: '___ it rained, we played.', answers: ['although'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('cn-2-y1') as Extract<Exercise, { type: 'write' }>, 'Although it is expensive, but it is useful.', 'bn');
+  assert.match(seen!.system!, /Connector feedback \(target: Contrast/);
+  assert.match(seen!.system!, /comma splice/);
+  assert.match(seen!.system!, /PAIR \(although … but/);
+  assert.match(seen!.system!, /FRAGMENT/);
+  assert.doesNotMatch(seen!.system!, /Preposition feedback|Article feedback/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['but it is']);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

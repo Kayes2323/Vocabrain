@@ -61,7 +61,17 @@ Preposition feedback (target: ${concept.title.en}):
 - Keep preposition errors apart from any other error — give each its own fix.
 - The follow-up gap practises the same preposition decision in a NEW sentence; the answer is one preposition.
 `
-            : '';
+            : concept?.tag === 'connector'
+              ? `
+Connector feedback (target: ${concept.title.en}):
+- For each linking issue, quote the words, give the fix and name ONE reason: the LOGIC (adding, contrast, cause, result, example — does the connector match the relationship between the ideas?), the GRAMMAR after it (although / because + clause; despite / because of / due to / as well as + noun or -ing), the PUNCTUATION (a comma alone before however / therefore / moreover / as a result is a comma splice — use a full stop, a semicolon, or but / so), a PAIR (although … but, because … so — keep one), or a FRAGMENT (a stand-alone "Because …." or "Such as …." sentence).
+- Bangla pairs (যদিও … কিন্তু, যেহেতু … তাই) and "তাই" after a comma cause most of these; say so briefly when relevant.
+- Do not reward more connectors: praise natural linking with this / these + noun and ", which", and flag mechanical overuse (a connector at the start of every sentence).
+- Task 1 uses while / whereas / overall and gives no causes or opinions; Speaking uses and, but, so, because.
+- Keep linking errors apart from other errors — give each its own fix.
+- The follow-up gap practises the same linking decision in a NEW sentence; the answer is one linker (a word or short phrase).
+`
+              : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

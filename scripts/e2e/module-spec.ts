@@ -122,7 +122,7 @@ export async function runModuleSpec(s: ModuleSpec) {
     await fixLink.waitFor({ timeout: 30_000 });
     check('module page offers the fix for the repeated mistake', await fixLink.isVisible());
     await fixLink.click();
-    await p.getByText(`Fix: ${s.fix.title}`).waitFor({ timeout: 30_000 });
+    await p.getByText(`Fix: ${s.fix.title}`).first().waitFor({ timeout: 30_000 });
     check('fix shows the rule first', s.fix.rule.test(await p.locator('main').innerText()));
     await p.getByRole('button', { name: 'Start 5 questions' }).click();
     for (let i = 0; i < 5; i++) {

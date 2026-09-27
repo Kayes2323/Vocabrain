@@ -16,6 +16,8 @@ import { AGREEMENT_CONCEPTS, svaBasics, svaCompound, svaIndefinite, svaLongSubje
 import { svaInIelts, svaMistakes, svaMixed, svaReview } from './agreement-apply';
 import { PREPOSITION_CONCEPTS, prepData, prepDuration, prepMovement, prepPartners, prepPlace, prepTime } from './prepositions';
 import { prepInIelts, prepMistakes, prepReview } from './prepositions-apply';
+import { CONNECTOR_CONCEPTS, connAdd, connCause, connCohesion, connContrast, connExample, connGrammar } from './connectors';
+import { connInIelts, connMistakes, connReview } from './connectors-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -134,8 +136,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Coherence & Cohesion: use connectors accurately, not mechanically.', 'Coherence & Cohesion: connector সঠিকভাবে ব্যবহার করুন, যন্ত্রের মতো না।'),
     skill: 'grammar',
     tags: ['connector'],
-    lessons: [],
-    planned: [t('Adding and contrasting', 'যোগ আর বিপরীত'), t('Cause and result', 'কারণ আর ফলাফল'), t('Examples and conclusions', 'উদাহরণ আর উপসংহার'), t('Overuse and natural linking', 'অতিরিক্ত ব্যবহার আর স্বাভাবিক linking')],
+    lessons: [connAdd, connContrast, connCause, connExample, connGrammar, connCohesion, connMistakes, connInIelts, connReview],
   },
   {
     id: 'complex-sentences',
@@ -255,7 +256,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 
