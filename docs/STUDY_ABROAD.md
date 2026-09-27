@@ -146,6 +146,18 @@ Generic and data-driven — engines never name a country, code or rule.
 - Work: six conditional rules (degree × bachelor's year × TOPIK) from the MOJ table (Easylaw + Study in Korea). The grad "below TOPIK 4" row is `needs-review` (sources differ). New KR work question `yearOfStudy`; TOPIK comes from the profile; `getCountryData` accepts `korean`.
 - A doubtful source value (PhD stay limit) is stored as `needs-review` and shown with the warning.
 
+## South Korea critical verification, D-4 and shared data (Phase C1.3)
+
+- Files: `kr-shared.ts` (facts and documents that apply to BOTH D-2 and D-4, country level), `kr-d2.ts`, `kr-d4.ts` (route-only). Shared facts moved unchanged; no fact exists twice.
+- New official sources (read 2026-09-27): Embassy of Korea in Bangladesh student-visa page (`m_23302 seq=2`, posted 2021-02-07, edited after May 2025 → every item `needs-review`), Embassy TB notice (2023-10-26), Easylaw full PDF (as of 2026-08-15). HiKorea's latest integrated manuals (2026-09-01/18) are HWP behind a POST download and could not be read.
+- Proof of funds: no official amount for D-2 or D-4 (Korea or Bangladesh) → "Official amount not verified yet". Processing time: "Official fixed processing time not verified."; the Embassy's "apply at least 5 days before term" is `needs-review`.
+- TB (Bangladesh): requirement verified (Embassy notice + Immigration Act rule); designated center/fees from 2023 → `needs-review`.
+- D-2 work conflict re-checked from the HTML tables: 15 hours (weekdays and weekends/vacations) agreed → verified; only the certified-university value differs (Easylaw 15 vs Study in Korea 10) → a separate `needs-review` fact for master's/PhD. PhD stay limit stays `needs-review`.
+- D-4: 13 of 16 parts sourced; interview, processing time and insurance "Not verified yet". D-4-1 verified (two sources); other D-4 type names conflict → `needs-review`. D-4 work: own rules (after 6 months: KIS + Easylaw, verified; hours: Study in Korea only → partly verified); new KR work question `stayMonths`.
+- Shared documents (passport, photo, admission letter, proof of funds) live in `country.documents` with `visaCategoryIds: ['kr-d2','kr-d4']`; route-only: D-2 certificate; D-4 certificate + training plan.
+- Mino: each category fact carries `scope` ("shared" or the visa code) and `notes`; the rule tells Mino that needs-review is never definitive, to name both sides of a conflict, to flag Bangladesh uncertainty and never to assume pathway/degree/Korean level/year.
+- Cost planner: unchanged — no fee is verified for a specific route.
+
 ## Routes
 
 | Route | What |

@@ -1,5 +1,6 @@
 import type { Country, CountryData, SourceRef } from '@/lib/models';
 import { KR_KIS_NAVIGATOR, KR_SIK_VISA } from './kr-sources';
+import { KR_SHARED_DOCUMENTS } from './kr-shared';
 
 /**
  * Destination registry. Every figure is a SourcedValue copied from an official
@@ -85,6 +86,8 @@ export const COUNTRIES: Country[] = [
     // mapping is read from the Korea Immigration Service and Study in Korea
     // (see lib/content/visa.ts). Other facts are added in Phase C, sourced.
     // The TOPIK answer comes from the student's profile (same option values).
+    // Visa documents both routes ask for (shown once a route is chosen).
+    documents: KR_SHARED_DOCUMENTS,
     workQuestions: [
       {
         id: 'korean',
@@ -93,6 +96,15 @@ export const COUNTRIES: Country[] = [
           { value: 'none', label: { en: 'None yet', bn: 'এখনো নেই' } },
           { value: 'beginner', label: { en: 'Beginner (no TOPIK)', bn: 'Beginner (TOPIK নেই)' } },
           ...[1, 2, 3, 4, 5, 6].map((n) => ({ value: `topik-${n}`, label: { en: `TOPIK ${n}`, bn: `TOPIK ${n}` } })),
+        ],
+      },
+      {
+        // D-4 language trainees: permission only after 6 months in Korea (asked here only; never guessed).
+        id: 'stayMonths',
+        label: { en: 'How long have you been in Korea on D-4?', bn: 'D-4-এ কত দিন ধরে Korea-তে আছো?' },
+        options: [
+          { value: 'under-6', label: { en: 'Less than 6 months', bn: '৬ মাসের কম' } },
+          { value: '6-plus', label: { en: '6 months or more', bn: '৬ মাস বা বেশি' } },
         ],
       },
       {

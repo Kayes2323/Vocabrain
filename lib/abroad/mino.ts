@@ -7,7 +7,10 @@ import { checkWork } from './work';
 
 /** What Mino must say whenever something is not verified. */
 export const NOT_VERIFIED_RULE =
-  'Only VERIFIED facts (with source and date) may be stated as facts. For anything notVerified say exactly that it is not verified yet ("এই তথ্য এখনো verified নয়। Official source দেখে confirm করতে হবে।" in Bangla) and point to the official page if one is listed. Never fill a gap from memory. Label estimates as estimates and general guidance as general guidance.';
+  'Only VERIFIED facts (with source and date) may be stated as facts. For anything notVerified say exactly that it is not verified yet ("এই তথ্য এখনো verified নয়। Official source দেখে confirm করতে হবে।" in Bangla) and point to the official page if one is listed. Never fill a gap from memory. Label estimates as estimates and general guidance as general guidance. ' +
+  'A needs-review fact is never a definitive answer: say it needs to be re-checked and, if its notes describe a source conflict, name both sources and what each says without choosing one. ' +
+  'A fact with scope "shared" applies to every route of the country; a fact scoped to a visa code (e.g. D-2) applies only to that route — never apply one route\'s fact to another. ' +
+  'When a Bangladesh-specific requirement needs review or is not verified, say so explicitly. Never assume the student\'s pathway, degree, Korean level or year: if a work rule needs an answer, ask for it.';
 
 const status = (s: string) => (s === 'not-yet' ? 'notVerified' : s);
 
@@ -46,6 +49,7 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
       degreeLevels: p.degreeLevels ?? [],
       selected: p.id === opts.pathway,
       visaCategories: visaCategoriesFor(country, p.id).map((c) => {
+        const own = new Set(Object.values(c.parts).flatMap((sec) => [...(sec?.facts ?? []), ...(sec?.blocks ?? []).flatMap((b) => b.facts ?? [])]));
         // Same filter as the screen: the student's degree hides other degrees' facts.
         const parts = visaParts(country, now, c.id, opts.degreeLevel ? { degreeLevel: opts.degreeLevel as DegreeLevel } : undefined);
         return {
@@ -57,8 +61,11 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
           facts: parts.flatMap((part) =>
             [...part.facts, ...(part.blocks ?? []).flatMap((b) => b.facts)].map((f) => ({
               part: part.id,
+              // "shared" = the country's (every route); otherwise this visa category only.
+              scope: own.has(f) ? c.code : 'shared',
               label: f.label.en,
               value: f.fact.value,
+              ...(f.fact.notes ? { notes: f.fact.notes } : {}),
               status: factStatus(f.fact, 'visa', now),
               source: f.fact.source.name,
               url: f.fact.source.url,
@@ -72,7 +79,7 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
     })),
     work:
       work.state === 'answered'
-        ? { state: 'answered', rules: work.rules.map((r) => ({ rule: r.rule.outcome.value, status: r.status, source: r.rule.outcome.source.name, url: r.rule.outcome.source.url, verified: r.rule.outcome.lastVerified })) }
+        ? { state: 'answered', rules: work.rules.map((r) => ({ rule: r.rule.outcome.value, status: r.status, ...(r.rule.outcome.notes ? { notes: r.rule.outcome.notes } : {}), source: r.rule.outcome.source.name, url: r.rule.outcome.source.url, verified: r.rule.outcome.lastVerified })) }
         : work.state === 'needs-answers'
           ? { state: 'needsAnswers', ask: work.questions.map((q) => q.label.en), officialPages: work.links.map((l) => l.url) }
           : { state: 'notVerified', officialPages: work.links.map((l) => l.url) },

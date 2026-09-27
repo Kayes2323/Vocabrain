@@ -402,15 +402,24 @@ async function main() {
     await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await p.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
     check('language pathway → only D-4', (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-4' && (await p.getByTestId('visa-parts').getAttribute('data-category')) === 'D-4');
-    // C1.1: only the route (type) and the parts shared by D-2/D-4 carry facts; everything else stays "Not verified yet".
-    check('D-4: 13 of 16 parts Not verified yet; type / documents / work partly verified', (await p.locator('[data-section][data-status="not-yet"]').count()) === 13 && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'partial');
+    // C1.3: D-4 filled from official sources; interview, processing time and insurance stay "Not verified yet".
+    check('D-4: only interview / processing / insurance Not verified yet; type needs review (D-4 type names differ)', (await p.locator('[data-section][data-status="not-yet"]').count()) === 3 && ['interview', 'processing', 'insurance'].every(Boolean) && (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'needs-review');
     const d4Type = await p.locator('[data-section="type"]').innerText();
     check('D-4 type: official name, D-4-1, source + date; no D-2 data', /D-4 \(General Trainee\)/.test(d4Type) && /D-4-1 Korean Language Training/.test(d4Type) && /Korea Immigration Service/.test(d4Type) && /verified [^\n]*2026/.test(d4Type) && !/D-2-|D-2 \(Student\)/.test(d4Type), d4Type.slice(0, 200));
     check('picker card: which visa (official name) + source', /Visa: D-4 \(General Trainee\)/.test(await p.locator('[data-pathway="language"]').innerText()) && /Visa: D-2 \(Student\)/.test(await p.locator('[data-pathway="degree"]').innerText()) && (await p.getByTestId('pathway-source').first().getAttribute('href')) === 'https://www.immigration.go.kr/bbs/immigration_eng/230/454085/download.do');
     await p.locator('[data-section="documents"] button[aria-expanded]').first().click();
     const bd = await p.locator('[data-block="kr-bd-specific"]').innerText();
-    check('Bangladesh block: "Not verified yet" + Embassy link, never a fact', /Bangladesh-specific requirement: Not verified yet/.test(bd) && (await p.locator('[data-block="kr-bd-specific"] a[href^="https://overseas.mofa.go.kr/bd-en/"]').count()) >= 1, bd.slice(0, 200));
-    check('Can I work? → not enough verified information', (await p.getByTestId('work-check').getAttribute('data-state')) === 'not-verified' && /Not enough verified information yet/.test(await p.getByTestId('work-check').innerText()));
+    check('Bangladesh block: "Needs review" (dated Embassy list) + Embassy link', /Bangladesh-specific requirement: Needs review/.test(bd) && (await p.locator('[data-block="kr-bd-specific"]').getAttribute('data-status')) === 'needs-review' && (await p.locator('[data-block="kr-bd-specific"] a[href^="https://overseas.mofa.go.kr/bd-en/"]').count()) >= 1, bd.slice(0, 200));
+    check('D-4 TB block: requirement + dated center (needs review)', (await p.locator('[data-block="kr-bd-tb"]').count()) === 1 && /PRAAVA HEALTH/.test(await p.locator('[data-block="kr-bd-tb"]').innerText()));
+    const wc4 = p.getByTestId('work-check');
+    check('D-4 Can I work? asks (months in Korea), never guesses', (await wc4.getAttribute('data-state')) === 'needs-answers' && (await wc4.getByLabel('How long have you been in Korea on D-4?').count()) === 1);
+    await wc4.getByLabel('How long have you been in Korea on D-4?').selectOption('6-plus');
+    if (await wc4.getByLabel('Your Korean level (TOPIK)').count()) await wc4.getByLabel('Your Korean level (TOPIK)').selectOption('topik-2');
+    await p.waitForFunction(() => document.querySelector('[data-testid="work-check"]')?.getAttribute('data-state') === 'answered', null, { timeout: 10_000 }).catch(() => undefined);
+    const wc4Txt = await wc4.innerText();
+    check('D-4 rule: its own (Study in Korea) rule, marked partly verified; no D-2 hours', (await wc4.getAttribute('data-state')) === 'answered' && /20 hours a week/.test(wc4Txt) && /Partly verified/.test(wc4Txt) && !/25 hours a week|30 hours a week/.test(wc4Txt), wc4Txt.slice(0, 200));
+    check('D-4 visa desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-kr-c13-01-d4-desktop');
     await p.getByTestId('pathway-picker').locator('[data-pathway="degree"]').click();
     await p.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-2', null, { timeout: 10_000 });
     y = await pb((v) => v.pathwayByCountry?.KR === 'degree');
@@ -430,7 +439,7 @@ async function main() {
     check('D-2: sourced parts show; interview + processing stay "Not verified yet"', (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="processing"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="eligibility"]').getAttribute('data-status')) === 'partial');
     check('D-2 eligibility: official review criteria + source', /valid passport/.test(await openPart('eligibility')) && /Easylaw/.test(await p.locator('[data-section="eligibility"]').innerText()));
     const docsTxt = await openPart('documents');
-    check('D-2 documents: 8-item official list + Bangladesh block kept apart', (await p.locator('[data-block="kr-d2-documents-list"] [data-fact]').count()) === 8 && /Bangladesh-specific requirement: Not verified yet/.test(docsTxt));
+    check('D-2 documents: 8-item official list + Bangladesh block kept apart', (await p.locator('[data-block="kr-d2-documents-list"] [data-fact]').count()) === 8 && /Bangladesh-specific requirement: Needs review/.test(docsTxt));
     const finTxt = await openPart('finances');
     check('D-2 money: "Official amount not verified yet", no amount shown', /Official amount not verified yet/.test(finTxt) && !/(USD|KRW|BDT|\$)\s?\d/.test(finTxt), finTxt.slice(0, 160));
     const portalTxt = await openPart('portal');
@@ -438,7 +447,8 @@ async function main() {
     check('D-2 fees: official amounts as written, no conversion', /BDT 2,150 per application/.test(await openPart('fees')));
     check('D-2 stay: 2 years per grant (KIS)', /Up to 2 years per grant/.test(await openPart('stay')));
     const wc = p.getByTestId('work-check');
-    check('Can I work? on D-2 asks, never guesses', (await wc.getAttribute('data-state')) === 'needs-answers');
+    // Answers the student already gave on this page (e.g. TOPIK) carry over; anything missing is asked.
+    check('Can I work? on D-2 asks or uses the student\'s own answers, never guesses', ['needs-answers', 'answered'].includes((await wc.getAttribute('data-state')) ?? ''));
     if (await wc.getByLabel('Which degree will you study?').count()) await wc.getByLabel('Which degree will you study?').selectOption('masters');
     if (await wc.getByLabel('Your Korean level (TOPIK)').count()) await wc.getByLabel('Your Korean level (TOPIK)').selectOption('topik-4');
     if (await wc.getByLabel("Your bachelor's year").count()) await wc.getByLabel("Your bachelor's year").selectOption('3-4');
@@ -692,8 +702,16 @@ async function main() {
     check('bn D-2 where to apply: Bangladesh-এ label', /Bangladesh-এ/.test(await qOpen('portal')));
     check('bn D-2 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-c12-02-d2-mobile-bn', false);
+    // C1.3 · D-4 in Bangla on mobile
+    await q.locator('[data-pathway="language"]').click();
+    await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-4', null, { timeout: 10_000 });
+    check('bn D-4 processing: "Official নির্দিষ্ট processing time verified নয়"', /Official নির্দিষ্ট processing time verified নয়/.test(await qOpen('processing')));
+    check('bn D-4 money: "Official amount এখনো verified নয়"', /Official amount এখনো verified নয়/.test(await qOpen('finances')));
+    check('bn D-4 work question in Bangla', /D-4-এ কত দিন ধরে Korea-তে আছো\?/.test(await q.getByTestId('work-check').innerText()));
+    check('bn D-4 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-kr-c13-02-d4-mobile-bn', false);
     // Back to "no pathway" so the later checks start from the same state.
-    await q.locator('[data-pathway="degree"]').click();
+    await q.locator('[data-pathway="language"]').click();
     await q.waitForFunction(() => document.querySelectorAll('[data-testid="visa-categories"] [data-category]').length === 2, null, { timeout: 10_000 });
     check('bn KR visa mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-b2-02-visa-mobile-bn', false);

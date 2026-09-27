@@ -376,7 +376,8 @@ test('visa: all parts; only official facts count; the official visa page is offe
   assert.equal(gb.find((p) => p.id === 'portal')?.status, 'not-yet', 'a link is not a verified fact');
   // KR (C1.1): only the country-level parts shared by D-2 and D-4 carry facts before a route is picked.
   const kr = visaParts(getCountry('KR')!, NOW);
-  assert.deepEqual(kr.filter((p) => p.status !== 'not-yet').map((p) => p.id), ['documents', 'work']);
+  // C1.3: facts shared by D-2 and D-4 live at country level and show before a route is chosen.
+  assert.deepEqual(kr.filter((p) => p.status !== 'not-yet').map((p) => p.id), ['eligibility', 'documents', 'process', 'portal', 'fees', 'biometrics', 'mistakes', 'pre-departure', 'work', 'restrictions', 'stay']);
   assert.ok(kr.every((p) => p.status !== 'verified'), 'nothing complete yet');
 });
 
@@ -534,16 +535,18 @@ function withKrGuide(extra: (g: NonNullable<ReturnType<typeof visaGuide>>) => vo
   }
 }
 
-test('B2 South Korea structure: two pathways (degree → D-2, language → D-4); only "type" (route) facts so far', () => {
+test('B2 South Korea structure: two pathways (degree → D-2, language → D-4); unverified parts stay empty', () => {
   const kr = getCountry('KR')!;
   assert.deepEqual(countryPathways(kr).map((p) => [p.id, p.kind, p.visaCategoryIds.join()]), [['degree', 'degree', 'kr-d2'], ['language', 'language', 'kr-d4']]);
   assert.deepEqual(visaCategoriesFor(kr).map((c) => c.code), ['D-2', 'D-4']);
   assert.deepEqual(visaCategoriesFor(kr, 'degree').map((c) => c.code), ['D-2']);
   assert.deepEqual(visaCategoriesFor(kr, 'language').map((c) => c.code), ['D-4']);
   // D-4 (unchanged since C1.1): only the route (type) plus the country-level parts. D-2 grows in C1.2.
-  assert.deepEqual(visaParts(kr, NOW, 'kr-d4').filter((p) => p.status !== 'not-yet').map((p) => p.id), ['type', 'documents', 'work']);
+  // C1.3: D-4 filled from official sources; interview, processing time and insurance stay "Not verified yet".
+  assert.deepEqual(visaParts(kr, NOW, 'kr-d4').filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing', 'insurance']);
   for (const id of ['type', 'eligibility', 'documents', 'work']) assert.notEqual(visaParts(kr, NOW, 'kr-d2').find((p) => p.id === id)!.status, 'not-yet', id);
-  assert.ok(visaGuide('KR')!.workRules!.every((r) => r.conditions.pathway?.join() === 'degree'), 'C1.2: D-2 rules only');
+  // Every rule is tied to exactly one route: D-2 rules to "degree", D-4 rules to "language".
+  assert.ok(visaGuide('KR')!.workRules!.every((r) => (r.id.startsWith('kr-d2-') ? 'degree' : 'language') === r.conditions.pathway?.join()), 'rules never cross routes');
   // Other countries: no pathways, unchanged behaviour.
   assert.equal(countryPathways(getCountry('DE')!).length, 0);
   assert.deepEqual(visaCategoriesFor(getCountry('DE')!), []);
@@ -569,25 +572,25 @@ test('B2 pathway choice is per country, validated, and feeds the applicability c
 test('B2 visa categories: category parts add to country parts; not-verified facts never shown', () => {
   withKrGuide(
     (g) => {
-      g.categories![0].parts.eligibility = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('D-2 rule text') }], complete: true };
-      g.categories![1].parts.eligibility = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('GUESSED D-4 RULE', { status: 'not-verified' }) }] };
+      g.categories![0].parts.interview = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('D-2 rule text') }], complete: true };
+      g.categories![1].parts.interview = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('GUESSED D-4 RULE', { status: 'not-verified' }) }] };
     },
     () => {
       const kr = getCountry('KR')!;
-      const d2 = visaParts(kr, NOW, 'kr-d2').find((p) => p.id === 'eligibility')!;
-      const d4 = visaParts(kr, NOW, 'kr-d4').find((p) => p.id === 'eligibility')!;
+      const d2 = visaParts(kr, NOW, 'kr-d2').find((p) => p.id === 'interview')!;
+      const d4 = visaParts(kr, NOW, 'kr-d4').find((p) => p.id === 'interview')!;
       assert.equal(d2.status, 'verified');
       assert.equal(d4.status, 'not-yet');
       assert.equal(d4.links?.[0].url, SRC2.url, 'the official page is offered instead');
       assert.ok(!JSON.stringify(visaParts(kr, NOW, 'kr-d4')).includes('GUESSED'));
-      assert.equal(visaParts(kr, NOW).find((p) => p.id === 'eligibility')!.status, 'not-yet', 'no category → only country-level parts');
+      assert.equal(visaParts(kr, NOW).find((p) => p.id === 'interview')!.status, 'not-yet', 'no category → only country-level parts');
     },
   );
 });
 
 test('B2 "Can I work?": not verified → needs answers → the matching sourced rule; never a guess', () => {
   const kr = { ...getCountry('KR')!, workQuestions: [{ id: 'level', label: { en: 'Level', bn: 'Level' }, options: [{ value: 'a', label: { en: 'A', bn: 'A' } }, { value: 'b', label: { en: 'B', bn: 'B' } }] }] };
-  assert.equal(checkWork(kr, { pathway: 'language' }).state, 'not-verified', 'no verified rules for this route yet');
+  assert.equal(checkWork(kr, { pathway: 'no-such-route' }).state, 'not-verified', 'no verified rules for this route');
   const de = checkWork(getCountry('DE')!, {});
   assert.equal(de.state === 'answered' && de.rules[0].rule.outcome.source.url, 'https://www.make-it-in-germany.com/en/study-vocational-training/studies-in-germany/work', "a country's sourced work fact answers as an unconditional rule");
   withKrGuide(
@@ -613,7 +616,8 @@ test('B2 "Can I work?": not verified → needs answers → the matching sourced 
 });
 
 test('B2 documents: general + pathway + visa category, deduplicated, conditional', () => {
-  const kr = getCountry('KR')!;
+  // Engine behaviour only: the country-level (shared) documents are tested in C1.3.
+  const kr = { ...getCountry('KR')!, documents: [] };
   const general = documentsFor(kr).map((n) => n.kind);
   assert.deepEqual(general, documentsFor(getCountry('DE')).map((n) => n.kind), 'no pathway → the general set');
   withKrGuide(
@@ -635,9 +639,9 @@ test('B2 documents: general + pathway + visa category, deduplicated, conditional
       const d4 = documentsFor(kr, { pathway: 'language' });
       assert.ok(d4.some((n) => n.kind === 'visa-specific') && !d4.some((n) => n.kind === 'admission-letter'));
       let a = setPathway(withAbroad(base(), { dreamCountryCode: 'KR' }).abroad, 'KR', 'degree');
-      assert.ok(requiredDocs(a).includes('admission-letter'), 'documents page follows the chosen pathway');
+      assert.ok(!requiredDocs(a).includes('visa-specific'), 'documents page follows the chosen pathway');
       a = setPathway(a, 'KR', 'language');
-      assert.ok(!requiredDocs(a).includes('admission-letter'));
+      assert.ok(requiredDocs(a).includes('visa-specific'));
     },
   );
 });
@@ -672,7 +676,9 @@ test('B2 Mino: country view carries pathways, categories and work state — unve
   assert.deepEqual(out.pathways.map((p) => [p.id, p.selected, p.visaCategories.map((c) => c.code).join()]), [['degree', false, 'D-2'], ['language', true, 'D-4']]);
   // Parts with no official source yet stay "notVerified" (interview, processing time).
   assert.ok(out.pathways.every((p) => p.visaCategories.every((c) => ['interview', 'processing'].every((id) => c.parts[id] === 'notVerified'))));
-  assert.equal(out.work.state, 'notVerified');
+  // C1.3: D-4 has sourced rules, so Mino asks for the missing answers instead of guessing.
+  assert.equal(out.work.state, 'needsAnswers');
+  assert.ok(out.work.state === 'needsAnswers' && out.work.ask?.includes('How long have you been in Korea on D-4?'));
   assert.equal(out.tuition, 'notVerified');
   assert.match(out.rule, /এই তথ্য এখনো verified নয়/);
   // A not-verified value in the registry never reaches Mino.
@@ -1026,7 +1032,7 @@ test('C1.0 visa part 16 "stay": appended, 01–15 keep their numbers', () => {
   const parts = visaParts(getCountry('KR')!, NOW, 'kr-d4');
   assert.deepEqual([parts[0].id, parts[11].id, parts[12].id, parts[14].id, parts[15].id], ['type', 'pre-departure', 'insurance', 'restrictions', 'stay']);
   assert.equal(parts[15].number, '16');
-  assert.equal(parts[15].status, 'not-yet', 'no D-4 stay facts yet (C1.3)');
+  assert.equal(parts[15].status, 'partial', 'C1.3: D-4 stay is sourced');
   assert.equal(visaParts(getCountry('GB')!, NOW)[11].number, '12');
 });
 
@@ -1099,7 +1105,8 @@ test('C1.1 pathway choice saves, reloads, and with none chosen both routes stay 
 
 test('C1.1 no leaks: D-2 facts never on D-4 and the other way round; not-verified values never shown', () => {
   const kr = getCountry('KR')!;
-  const text = (id: string) => JSON.stringify(visaParts(kr, NOW, id).map((p) => [p.facts, p.blocks]));
+  // Shared (country-level) text that names both routes is allowed on both.
+  const text = (id: string) => JSON.stringify(visaParts(kr, NOW, id).map((p) => [p.facts, p.blocks])).replace(/D-2 (or|বা|and) D-4/g, '');
   assert.ok(!/D-4|non-degree/.test(text('kr-d2').replace(/D-2 or D-4/g, '')), 'no D-4 data in D-2');
   assert.ok(!/D-2 \(Student\)|D-2-/.test(text('kr-d4').replace(/D-2 or D-4/g, '')) && /D-4-1/.test(text('kr-d4')), 'no D-2 data in D-4');
   assert.deepEqual(visaParts(kr, NOW, 'kr-d2').find((p) => p.id === 'type')!.blocks!.map((b) => b.id), ['kr-d2-subtypes']);
@@ -1119,26 +1126,28 @@ test('C1.1 Mino: verified route facts with sources; official names; Bangladesh s
   assert.equal(d2.officialName, 'D-2 (Student)');
   assert.ok(d2.facts.length > 0 && d2.facts.every((f) => f.url && f.verified && f.status !== 'not-verified'));
   assert.ok(d2.facts.some((f) => f.value === "D-2-3 Master's" && f.status === 'verified'), 'C1.2: two official sources agree');
-  assert.ok(d2.guidance.some((g) => /Bangladesh-specific requirement: Not verified yet/.test(g)));
+  assert.ok(d2.guidance.some((g) => /Bangladesh-specific requirement: Needs review/.test(g)), 'C1.3: the dated Embassy list is shown as needs review');
   assert.ok(!JSON.stringify(out).includes('confidence'), 'confidence is internal');
 });
 
-test('C1.1 Bangladesh: no Bangladesh-specific fact; the Embassy page is linked instead', () => {
+test('C1.1 Bangladesh: Bangladesh list kept apart and flagged; the Embassy page is linked', () => {
   const parts = visaParts(getCountry('KR')!, NOW, 'kr-d4');
   const block = parts.find((p) => p.id === 'documents')!.blocks!.find((b) => b.id === 'kr-bd-specific')!;
-  assert.ok(block.facts.every((f) => !/Bangladesh/i.test(String(f.fact.value))), 'only the general official statement');
-  assert.match(block.guidance!.en, /Not verified yet/);
+  // C1.3: the Embassy's (dated) list is shown, every item flagged "needs review", never as verified.
+  assert.ok(block.facts.filter((f) => f.fact.source.url!.includes('m_23302')).every((f) => factStatus(f.fact, 'visa', NOW) === 'needs-review'));
+  assert.match(block.guidance!.en, /Needs review/);
   assert.ok(block.links!.some((l) => l.url!.startsWith('https://overseas.mofa.go.kr/bd-en/')));
 });
 
-test('C1.1 work foundation: Korean level question reuses the profile answer; D-4 has no work rule yet', () => {
+test('C1.1 work foundation: Korean level question reuses the profile answer; hours only come from rules', () => {
   const kr = getCountry('KR')!;
   const q = kr.workQuestions!.find((x) => x.id === 'korean')!;
   assert.deepEqual(q.options.map((o) => o.value), PROFILE_QUESTIONS.korean.options);
-  // C1.2 added D-2 rules only; D-4 still has none.
-  assert.equal(checkWork(kr, { pathway: 'language', korean: 'topik-4' }, NOW).state, 'not-verified');
+  // C1.3: D-4 has its own rules; they need "stayMonths" first (never assumed).
+  const r = checkWork(kr, { pathway: 'language', korean: 'topik-4' }, NOW);
+  assert.deepEqual(r.state === 'needs-answers' && r.missing, ['stayMonths']);
   const work = visaParts(kr, NOW, 'kr-d4').find((p) => p.id === 'work')!;
-  assert.ok(work.facts.every((f) => !/\d+\s*hours?/i.test(String(f.fact.value))), 'no hours on D-4');
+  assert.ok(work.facts.every((f) => !/\d+\s*hours? a week/i.test(String(f.fact.value))), 'hours live in the rules, not in the work facts');
 });
 
 test('C1.1 registry integrity: every KR fact has value, official source, dates, status and confidence', () => {
@@ -1178,15 +1187,17 @@ test('C1.2 documents: official list, one entry per kind, only on the D-2 route, 
   const docs = d2Part('documents');
   assert.equal(docs.blocks!.find((b) => b.id === 'kr-d2-documents-list')!.facts.length, 8);
   assert.ok(docs.blocks!.some((b) => b.id === 'kr-bd-specific'), 'the Bangladesh block stays separate');
-  assert.ok(allFacts(docs).every((f) => !/Bangladesh/.test(String(f.fact.value))), 'no Bangladesh fact is invented');
+  // Bangladesh facts live only in the Bangladesh blocks (C1.3), never in the general Korea list.
+  assert.ok([...docs.facts, ...docs.blocks!.filter((b) => !b.id.startsWith('kr-bd-')).flatMap((b) => b.facts)].every((f) => !/Bangladesh/.test(String(f.fact.value))), 'general list has no Bangladesh fact');
   const needs = documentsFor(kr, { pathway: 'degree' });
   assert.equal(new Set(needs.map((n) => n.kind)).size, needs.length, 'no duplicates');
-  for (const k of ['passport', 'photo', 'admission-letter', 'certificate', 'financial'] as const) {
+  // C1.3: passport, photo, admission letter and proof of funds are shared (country level); the certificate is D-2's own.
+  for (const k of ['passport', 'photo', 'admission-letter', 'financial', 'certificate'] as const) {
     const n = needs.find((x) => x.kind === k)!;
-    const visa = n.reasons.filter((r) => r.from === 'visa');
-    assert.equal(visa.length, 1, k);
-    assert.equal(visa[0].name, 'D-2');
-    assert.ok(visa[0].requirement?.source.url, `${k} has the official wording`);
+    const official = n.reasons.filter((r) => r.from === 'visa' || r.from === 'country');
+    assert.equal(official.length, 1, `${k}: one official reason`);
+    assert.equal(official[0].from, k === 'certificate' ? 'visa' : 'country', k);
+    assert.ok(official[0].requirement?.source.url, `${k} has the official wording`);
   }
   assert.ok(!documentsFor(kr, { pathway: 'language' }).some((n) => n.reasons.some((r) => r.id === 'kr-d2')), 'never on D-4');
   assert.ok(!documentsFor(kr, {}).some((n) => n.reasons.some((r) => r.from === 'visa')), 'no route yet → no visa documents');
@@ -1212,9 +1223,10 @@ test('C1.2 finances: no official amount → no amount anywhere (screen, costs, M
 test('C1.2 application + where to apply: official steps; Bangladesh VAC from the Embassy; roadmap uses the same progress', () => {
   const proc = d2Part('process');
   assert.equal(proc.facts.length, 4);
-  const bd = proc.blocks!.find((b) => b.id === 'kr-d2-bd-steps')!;
-  assert.equal(bd.facts.length, 7);
-  assert.ok(bd.facts.every((f) => f.fact.source.url === 'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760105' && f.fact.confidence === 'high'));
+  const bd = proc.blocks!.find((b) => b.id === 'kr-bd-steps')!;
+  assert.equal(bd.facts.length, 8);
+  assert.ok(bd.facts.slice(0, 7).every((f) => f.fact.source.url === 'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760105' && f.fact.confidence === 'high'));
+  assert.equal(bd.facts[7].fact.status, 'needs-review', 'the dated Embassy page (apply ≥5 days before term) is flagged');
   const portal = d2Part('portal');
   assert.ok(portal.facts.some((f) => /Korea Visa Application Center, Dhaka/.test(String(f.fact.value))));
   assert.ok(portal.links!.some((l) => l.url === 'https://www.visa.go.kr/main/openMain.do'));
@@ -1232,16 +1244,18 @@ test('C1.2 application + where to apply: official steps; Bangladesh VAC from the
 
 test('C1.2 fee / biometrics / interview / processing: sourced amounts as written; the rest "Not verified yet"', () => {
   const fees = d2Part('fees');
-  assert.equal(fees.facts.length, 3);
+  assert.equal(fees.facts.length, 4, 'C1.3 adds the (dated) Embassy student-page fee');
   assert.ok(fees.facts.some((f) => /^BDT 2,150 per application/.test(String(f.fact.value))));
   assert.ok(fees.facts.every((f) => !/BDT/.test(String(f.fact.value)) || /^BDT 2,150/.test(String(f.fact.value))), 'no USD → BDT conversion');
-  assert.equal(d2Part('biometrics').facts.length, 1);
+  assert.equal(d2Part('biometrics').facts.length, 2, 'entry + registration, both in Korea');
   for (const id of ['interview', 'processing']) {
     const part = d2Part(id);
     assert.equal(part.status, 'not-yet', id);
     assert.equal(part.facts.length, 0, id);
   }
-  assert.ok(d2Part('processing').links?.length, 'an official page to check instead');
+  const pt = d2Part('processing').blocks!.find((b) => b.id === 'kr-processing-time')!;
+  assert.match(pt.guidance!.en, /^Official fixed processing time not verified\./);
+  assert.ok(pt.links?.length, 'an official page to check instead');
   // Nothing is added to the cost planner: the fee that applies to D-2 is not verified.
   assert.equal(costsForMino(withAbroad(base(), { pathwayByCountry: { KR: 'degree' } }), 'KR', NOW)!.groups['visa-application'].official, 'not verified');
 });
@@ -1252,7 +1266,7 @@ test('C1.2 before travel / insurance / restrictions / stay; a doubtful source va
   assert.ok(d2Part('restrictions').facts.length >= 3);
   assert.ok(d2Part('mistakes').facts.every((f) => f.fact.source.url === 'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760100'));
   const stay = d2Part('stay');
-  assert.match(String(stay.facts[0].fact.value), /^Up to 2 years per grant/);
+  assert.ok(stay.facts.some((f) => /^Up to 2 years per grant/.test(String(f.fact.value))));
   assert.equal(stay.status, 'needs-review', 'the doubtful PhD limit flags the part');
   const phd = d2Part('stay', { degreeLevel: 'phd' }).blocks![0];
   assert.equal(phd.status, 'needs-review');
@@ -1263,7 +1277,7 @@ test('C1.2 before travel / insurance / restrictions / stay; a doubtful source va
   assert.equal(masters.status, 'partial');
 });
 
-test('C1.2 work rules: conditional on degree, year and TOPIK from the profile; never guessed; D-4 untouched', () => {
+test('C1.2 work rules: conditional on degree, year and TOPIK from the profile; never guessed; routes kept apart', () => {
   const kr = getCountry('KR')!;
   const ask = checkWork(kr, { pathway: 'degree' }, NOW);
   assert.equal(ask.state, 'needs-answers');
@@ -1272,12 +1286,14 @@ test('C1.2 work rules: conditional on degree, year and TOPIK from the profile; n
   assert.deepEqual(m.state === 'needs-answers' && m.missing, ['korean'], "a master's student is never asked the bachelor's year");
   const rule = (a: Record<string, string>) => { const r = checkWork(kr, { pathway: 'degree', ...a }, NOW); return r.state === 'answered' ? r.rules.map((x) => [x.rule.id, x.status]) : r.state; };
   assert.deepEqual(rule({ degreeLevel: 'masters', korean: 'topik-5' }), [['kr-d2-grad-met', 'verified']]);
-  assert.deepEqual(rule({ degreeLevel: 'phd', korean: 'none' }), [['kr-d2-grad-below', 'needs-review']], 'sources disagree → needs review');
+  // C1.3 re-read of both tables: 15 hours covers weekdays and weekends/vacations in both → verified.
+  assert.deepEqual(rule({ degreeLevel: 'phd', korean: 'none' }), [['kr-d2-grad-below', 'verified']]);
   assert.deepEqual(rule({ degreeLevel: 'bachelors', yearOfStudy: '1-2', korean: 'topik-3' }), [['kr-d2-ug12-met', 'verified']]);
   assert.deepEqual(rule({ degreeLevel: 'bachelors', yearOfStudy: '3-4', korean: 'topik-3' }), [['kr-d2-ug34-below', 'verified']], 'year 3–4 needs TOPIK 4');
   assert.equal(rule({ degreeLevel: 'other', korean: 'topik-6' }), 'not-verified', 'no rule for other degrees → not verified, not a guess');
-  // D-4 unaffected.
-  assert.equal(checkWork(kr, { pathway: 'language', korean: 'topik-6' }, NOW).state, 'not-verified');
+  // D-4 has its own rules, never the D-2 ones.
+  const d4 = checkWork(kr, { pathway: 'language', korean: 'topik-6', stayMonths: '6-plus' }, NOW);
+  assert.ok(d4.state === 'answered' && d4.rules.every((r) => r.rule.id.startsWith('kr-d4-')));
   // Every value either meets or misses the level: no TOPIK answer falls through.
   for (const k of ['none', 'beginner', 'topik-1', 'topik-2', 'topik-3', 'topik-4', 'topik-5', 'topik-6'])
     for (const [d, y] of [['bachelors', '1-2'], ['bachelors', '3-4'], ['masters', ''], ['phd', '']])
@@ -1297,14 +1313,14 @@ test('C1.2 Bangladesh: Embassy facts are labelled as Bangladesh; Bangladesh docu
     for (const b of p.blocks ?? []) if (b.facts.some((f) => bd(f.fact.source.url))) assert.match(b.title.en, /Bangladesh/, b.id);
   }
   const block = parts.find((p) => p.id === 'documents')!.blocks!.find((b) => b.id === 'kr-bd-specific')!;
-  assert.match(block.guidance!.en, /Bangladesh-specific requirement: Not verified yet/);
-  assert.ok(block.facts.every((f) => !bd(f.fact.source.url)), 'no Bangladesh document list is claimed');
+  assert.match(block.guidance!.en, /Bangladesh-specific requirement: Needs review/);
+  assert.ok(block.facts.filter((f) => bd(f.fact.source.url)).every((f) => f.fact.status === 'needs-review'), 'the dated Bangladesh list is never presented as verified');
   // The general Korea document list never cites the Embassy.
   assert.ok(parts.find((p) => p.id === 'documents')!.facts.every((f) => !bd(f.fact.source.url)));
   // Bangladesh facts reach Mino with their source; the documents gap reaches Mino as guidance.
   const d2 = countryFactsForMino(getCountry('KR')!, { pathway: 'degree', now: NOW }).pathways[0].visaCategories[0];
   assert.ok(d2.facts.some((f) => bd(f.url) && /Visa Application Center/.test(String(f.value))));
-  assert.ok(d2.guidance.some((g) => /Bangladesh-specific requirement: Not verified yet/.test(g)));
+  assert.ok(d2.guidance.some((g) => /Bangladesh-specific requirement: Needs review/.test(g)), 'C1.3: the dated Embassy list is shown as needs review');
 });
 
 test('C1.2 Mino: only D-2 facts a student may see, filtered by degree; never D-4 data; never unverified values', () => {
@@ -1326,6 +1342,144 @@ test('C1.2 Mino: only D-2 facts a student may see, filtered by degree; never D-4
     },
   );
   assert.match(out.rule, /এই তথ্য এখনো verified নয়। Official source দেখে confirm করতে হবে।/);
+});
+
+// ---------------------------------------------------------------- Korea C1.3: critical verification + D-4 + shared data
+const D4 = (ctx?: Parameters<typeof visaParts>[3]) => visaParts(getCountry('KR')!, NOW, 'kr-d4', ctx);
+const d4Part = (id: string) => D4().find((p) => p.id === id)!;
+const partFacts = (p: { facts: SectionFact[]; blocks?: { facts: SectionFact[] }[] }) => [...p.facts, ...(p.blocks ?? []).flatMap((b) => b.facts)];
+
+test('C1.3 D-2 proof of funds: no official amount anywhere (Korea or Bangladesh); who checks it is sourced', () => {
+  for (const part of [d2Part('finances'), d4Part('finances')]) {
+    assert.ok(part.blocks!.some((b) => /^Official amount not verified yet/.test(b.guidance?.en ?? '') && b.facts.length === 0));
+    assert.ok(part.facts.every((f) => !/(USD|KRW|BDT|\$|₩)\s?\d|\d[\d,]{2,}/.test(String(f.fact.value))), 'no money amount in the official facts');
+  }
+  const bdMoney = d2Part('documents').blocks!.find((b) => b.id === 'kr-bd-specific')!.facts.find((f) => /Money/.test(f.label.en))!;
+  assert.match(String(bdMoney.fact.value), /No amount is stated\.$/);
+  assert.equal(bdMoney.fact.status, 'needs-review');
+});
+
+test('C1.3 processing time: "Official fixed processing time not verified." on both routes; the 5-day note is needs-review', () => {
+  for (const part of [d2Part('processing'), d4Part('processing')]) {
+    assert.equal(part.status, 'not-yet');
+    assert.match(part.blocks![0].guidance!.en, /^Official fixed processing time not verified\./);
+  }
+  const five = d2Part('process').blocks!.find((b) => b.id === 'kr-bd-steps')!.facts.find((f) => /five \(5\) days/.test(String(f.fact.value)))!;
+  assert.equal(factStatus(five.fact, 'visa', NOW), 'needs-review');
+});
+
+test('C1.3 Bangladesh documents + TB: dated Embassy list flagged; TB requirement sourced; center/fee needs review', () => {
+  const blocks = d2Part('documents').blocks!;
+  const list = blocks.find((b) => b.id === 'kr-bd-specific')!;
+  const embassy = list.facts.filter((f) => f.fact.source.url === 'https://overseas.mofa.go.kr/bd-en/brd/m_23302/view.do?seq=2');
+  assert.ok(embassy.length >= 7 && embassy.every((f) => f.fact.status === 'needs-review' && /2021-02-07/.test(f.fact.notes!)), 'source date recorded, never silently current');
+  assert.equal(list.status, 'needs-review');
+  const tb = blocks.find((b) => b.id === 'kr-bd-tb')!;
+  const who = tb.facts.find((f) => f.label.en === 'Who must submit it')!;
+  assert.equal(who.fact.status, 'verified');
+  assert.equal(who.fact.source.url, 'https://overseas.mofa.go.kr/bd-en/brd/m_23302/view.do?seq=12');
+  assert.match(who.fact.notes!, /2023-10-26/);
+  assert.equal(tb.facts.find((f) => /center/.test(f.label.en))!.fact.status, 'needs-review');
+  // The same blocks appear on D-4 (shared), once.
+  assert.equal(d4Part('documents').blocks!.filter((b) => b.id === 'kr-bd-tb').length, 1);
+});
+
+test('C1.3 D-2 work conflict re-checked: base row agreed (verified); the certified-university value stays needs-review with both sources', () => {
+  const kr = getCountry('KR')!;
+  const r = checkWork(kr, { pathway: 'degree', degreeLevel: 'masters', korean: 'topik-2' }, NOW);
+  assert.ok(r.state === 'answered' && r.rules[0].status === 'verified' && /15 hours a week, on weekdays and on weekends and vacations alike/.test(r.rules[0].rule.outcome.value));
+  const conflict = d2Part('work', { degreeLevel: 'masters' }).facts.find((f) => /certified university/.test(f.label.en))!;
+  assert.equal(conflict.fact.status, 'needs-review');
+  assert.match(String(conflict.fact.value), /Easylaw .* 15 hours .* Study in Korea .* 10 hours/);
+  assert.ok(!d2Part('work', { degreeLevel: 'bachelors' }).facts.some((f) => /certified university/.test(f.label.en)), 'only for graduate students');
+});
+
+test('C1.3 D-2 PhD stay limit: still needs review; per-grant permission kept apart from the total limit', () => {
+  const stay = d2Part('stay', { degreeLevel: 'phd' });
+  assert.equal(stay.status, 'needs-review');
+  assert.ok(stay.facts.some((f) => /per grant/.test(String(f.fact.value)) && f.fact.status === 'verified'), 'per-grant permission is a separate, verified fact');
+  const phd = stay.blocks!.find((b) => b.id === 'kr-d2-stay-limits')!.facts;
+  assert.equal(phd.length, 1);
+  assert.equal(phd[0].fact.status, 'needs-review');
+});
+
+test('C1.3 D-4: all 16 parts audited; only interview, processing time and insurance stay "Not verified yet"', () => {
+  const parts = D4();
+  assert.equal(parts.length, 16);
+  assert.deepEqual(parts.filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing', 'insurance']);
+  for (const p of parts) for (const f of partFacts(p)) assert.ok(f.fact.source.url && f.fact.lastVerified === '2026-09-27' && f.fact.confidence, `${p.id}: ${f.label.en}`);
+  // Nothing marked verified that isn't: no part is "verified" (none is confirmed complete).
+  assert.ok(parts.every((p) => p.status !== 'verified'));
+});
+
+test('C1.3 D-4-1 applicability, D-4 types conflict, D-4 documents, D-4 stay', () => {
+  const sub = d4Part('type').blocks!.find((b) => b.id === 'kr-d4-subtypes')!;
+  assert.equal(sub.facts[0].fact.value, 'D-4-1 Korean Language Training');
+  assert.equal(sub.facts[0].fact.status, 'verified', 'two official sources');
+  assert.equal(sub.facts[1].fact.status, 'needs-review', 'D-4-2 naming differs between sources');
+  assert.match(d4Part('documents').facts[0].label.en, /D-4-1/);
+  assert.equal(d4Part('documents').blocks!.find((b) => b.id === 'kr-d4-documents-list')!.facts.length, 7);
+  const stay = d4Part('stay');
+  assert.ok(stay.facts.some((f) => /^Up to 2 years per grant/.test(String(f.fact.value))));
+  assert.ok(stay.facts.some((f) => /status of stay to D-2/.test(String(f.fact.value))));
+});
+
+test('C1.3 D-4 work rules: own source, asks months + TOPIK, never D-2 rules; partly verified (one source)', () => {
+  const kr = getCountry('KR')!;
+  const ask = checkWork(kr, { pathway: 'language' }, NOW);
+  assert.deepEqual(ask.state === 'needs-answers' && [...ask.missing].sort(), ['korean', 'stayMonths']);
+  const early = checkWork(kr, { pathway: 'language', stayMonths: 'under-6' }, NOW);
+  assert.ok(early.state === 'answered' && early.rules[0].rule.id === 'kr-d4-under-6-months' && early.rules[0].status === 'verified');
+  const met = checkWork(kr, { pathway: 'language', stayMonths: '6-plus', korean: 'topik-2' }, NOW);
+  assert.ok(met.state === 'answered' && met.rules[0].rule.id === 'kr-d4-met' && met.rules[0].status === 'partly-verified' && /20 hours/.test(met.rules[0].rule.outcome.value));
+  const below = checkWork(kr, { pathway: 'language', stayMonths: '6-plus', korean: 'beginner' }, NOW);
+  assert.ok(below.state === 'answered' && below.rules[0].rule.id === 'kr-d4-below');
+  assert.ok(!visaGuide('KR')!.workRules!.filter((r) => r.id.startsWith('kr-d4-')).some((r) => r.outcome.source.url === 'https://easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=2853&ccfNo=3&cciNo=6&cnpClsNo=1' && /hours a week/.test(r.outcome.value)), 'D-4 hours never copied from the D-2 (Easylaw) table');
+});
+
+test('C1.3 D-4 fee + shared data: shared facts appear once at country level, on both routes; route facts never cross', () => {
+  const g = visaGuide('KR')!;
+  const sharedFees = g.parts.fees!.facts!;
+  assert.equal(sharedFees.length, 4);
+  assert.ok(!g.categories!.some((c) => c.parts.fees || c.parts.portal || c.parts.process), 'fees / where / how live only at country level');
+  assert.deepEqual(d4Part('fees').facts.map((f) => f.fact.value), d2Part('fees').facts.map((f) => f.fact.value));
+  // No duplicate fact values anywhere between the country and a category.
+  const countryValues = new Set(Object.values(g.parts).flatMap((p) => partFacts({ facts: p!.facts ?? [], blocks: (p!.blocks ?? []).map((b) => ({ facts: b.facts ?? [] })) })).map((f) => f.fact.value));
+  for (const c of g.categories!) for (const p of Object.values(c.parts)) for (const f of partFacts({ facts: p!.facts ?? [], blocks: (p!.blocks ?? []).map((b) => ({ facts: b.facts ?? [] })) })) assert.ok(!countryValues.has(f.fact.value), `${c.code}: "${f.fact.value}" duplicated`);
+  // The fee that applies to a route is not verified → nothing goes to the cost planner.
+  for (const pw of ['degree', 'language']) assert.equal(costsForMino(withAbroad(base(), { pathwayByCountry: { KR: pw } }), 'KR', NOW)!.groups['visa-application'].official, 'not verified');
+});
+
+test('C1.3 shared documents: once per kind, route-specific ones isolated, nothing before a route', () => {
+  const kr = getCountry('KR')!;
+  for (const [pw, own] of [['degree', ['certificate']], ['language', ['certificate', 'visa-specific']]] as const) {
+    const needs = documentsFor(kr, { pathway: pw });
+    assert.equal(new Set(needs.map((n) => n.kind)).size, needs.length, `${pw}: no duplicates`);
+    for (const k of ['passport', 'photo', 'admission-letter', 'financial'] as const) assert.equal(needs.find((n) => n.kind === k)!.reasons.filter((r) => r.from === 'country').length, 1, `${pw} ${k}`);
+    const visa = needs.filter((n) => n.reasons.some((r) => r.from === 'visa')).map((n) => n.kind);
+    assert.deepEqual(visa.sort(), [...own].sort(), `${pw}: only its own visa documents`);
+    assert.ok(needs.every((n) => n.reasons.every((r) => !r.requirement || factStatus(r.requirement, undefined, NOW) !== 'not-verified')));
+  }
+  assert.ok(!documentsFor(kr, {}).some((n) => n.reasons.some((r) => r.from === 'country' || r.from === 'visa')), 'no route → no visa documents');
+});
+
+test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, asks instead of assuming', () => {
+  const kr = getCountry('KR')!;
+  const out = countryFactsForMino(kr, { now: NOW });
+  const [d2, d4] = [out.pathways[0].visaCategories[0], out.pathways[1].visaCategories[0]];
+  assert.ok(d2.facts.every((f) => f.scope === 'shared' || f.scope === 'D-2'));
+  assert.ok(d4.facts.every((f) => f.scope === 'shared' || f.scope === 'D-4'));
+  assert.ok(!d4.facts.some((f) => f.scope === 'D-4' && /D-2-\d/.test(String(f.value))), 'no D-2 fact under D-4');
+  assert.ok(!d2.facts.some((f) => f.scope === 'D-2' && /D-4-\d/.test(String(f.value))), 'no D-4 fact under D-2');
+  const tbCenter = d2.facts.find((f) => /PRAAVA/.test(String(f.value)))!;
+  assert.equal(tbCenter.status, 'needs-review');
+  assert.equal(tbCenter.scope, 'shared');
+  assert.match(tbCenter.notes!, /2023-10-26/);
+  assert.ok(d2.facts.every((f) => f.url && f.verified));
+  assert.match(out.rule, /needs-review fact is never a definitive answer/);
+  assert.match(out.rule, /Bangladesh-specific requirement/);
+  assert.match(out.rule, /Never assume the student's pathway, degree/);
+  assert.equal(out.work.state, 'needsAnswers', 'no pathway → Mino asks');
 });
 
 console.log(`\n${passed} passed`);
