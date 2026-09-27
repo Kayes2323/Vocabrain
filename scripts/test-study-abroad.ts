@@ -550,8 +550,8 @@ test('B2 South Korea structure: two pathways (degree → D-2, language → D-4);
   assert.deepEqual(visaCategoriesFor(kr, 'degree').map((c) => c.code), ['D-2']);
   assert.deepEqual(visaCategoriesFor(kr, 'language').map((c) => c.code), ['D-4']);
   // D-4 (unchanged since C1.1): only the route (type) plus the country-level parts. D-2 grows in C1.2.
-  // C1.3: D-4 filled from official sources; interview, processing time and insurance stay "Not verified yet".
-  assert.deepEqual(visaParts(kr, NOW, 'kr-d4').filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing', 'insurance']);
+  // C1.3: D-4 filled from official sources; C2.2 adds insurance. Interview and processing time stay "Not verified yet".
+  assert.deepEqual(visaParts(kr, NOW, 'kr-d4').filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing']);
   for (const id of ['type', 'eligibility', 'documents', 'work']) assert.notEqual(visaParts(kr, NOW, 'kr-d2').find((p) => p.id === id)!.status, 'not-yet', id);
   // Every rule is tied to exactly one route: D-2 rules to "degree", D-4 rules to "language".
   assert.ok(visaGuide('KR')!.workRules!.every((r) => (r.id.startsWith('kr-d2-') ? 'degree' : 'language') === r.conditions.pathway?.join()), 'rules never cross routes');
@@ -1270,7 +1270,7 @@ test('C1.2 fee / biometrics / interview / processing: sourced amounts as written
 
 test('C1.2 before travel / insurance / restrictions / stay; a doubtful source value shows "needs review"', () => {
   assert.ok(d2Part('pre-departure').facts.some((f) => /within 90 days/.test(String(f.fact.value))));
-  assert.equal(d2Part('insurance').facts.length, 1);
+  assert.deepEqual(d2Part('insurance').facts.map((f) => f.label.en), ['National Health Insurance', 'Premium']);
   assert.ok(d2Part('restrictions').facts.length >= 3);
   assert.ok(d2Part('mistakes').facts.every((f) => f.fact.source.url === 'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760100'));
   const stay = d2Part('stay');
@@ -1359,9 +1359,13 @@ const partFacts = (p: { facts: SectionFact[]; blocks?: { facts: SectionFact[] }[
 
 test('C1.3 D-2 proof of funds: no official amount anywhere (Korea or Bangladesh); who checks it is sourced', () => {
   for (const part of [d2Part('finances'), d4Part('finances')]) {
-    assert.ok(part.blocks!.some((b) => /^Official amount not verified yet/.test(b.guidance?.en ?? '') && b.facts.length === 0));
     assert.ok(part.facts.every((f) => !/(USD|KRW|BDT|\$|₩)\s?\d|\d[\d,]{2,}/.test(String(f.fact.value))), 'no money amount in the official facts');
   }
+  assert.ok(d2Part('finances').blocks!.some((b) => /^Official amount not verified yet/.test(b.guidance?.en ?? '') && b.facts.length === 0));
+  // C2.2: D-4's amount is known only from the older guidebook → shown, but the block needs review.
+  const d4Amount = d4Part('finances').blocks!.find((b) => b.id === 'kr-d4-funds-amount')!;
+  assert.equal(d4Amount.status, 'needs-review');
+  assert.ok(d4Amount.facts.every((f) => factStatus(f.fact, 'visa', NOW) === 'needs-review'));
   const bdMoney = d2Part('documents').blocks!.find((b) => b.id === 'kr-bd-specific')!.facts.find((f) => /Money/.test(f.label.en))!;
   assert.match(String(bdMoney.fact.value), /No amount is stated\.$/);
   assert.equal(bdMoney.fact.status, 'needs-review');
@@ -1411,10 +1415,10 @@ test('C1.3 D-2 PhD stay limit: still needs review; per-grant permission kept apa
   assert.equal(phd[0].fact.status, 'needs-review');
 });
 
-test('C1.3 D-4: all 16 parts audited; only interview, processing time and insurance stay "Not verified yet"', () => {
+test('C1.3 D-4: all 16 parts audited; only interview and processing time stay (insurance added in C2.2) "Not verified yet"', () => {
   const parts = D4();
   assert.equal(parts.length, 16);
-  assert.deepEqual(parts.filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing', 'insurance']);
+  assert.deepEqual(parts.filter((p) => p.status === 'not-yet').map((p) => p.id), ['interview', 'processing']);
   for (const p of parts) for (const f of partFacts(p)) assert.ok(f.fact.source.url && f.fact.lastVerified === '2026-09-27' && f.fact.confidence, `${p.id}: ${f.label.en}`);
   // Nothing marked verified that isn't: no part is "verified" (none is confirmed complete).
   assert.ok(parts.every((p) => p.status !== 'verified'));

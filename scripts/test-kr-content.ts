@@ -4,7 +4,7 @@ import { getCountry } from '../lib/content/countries';
 import { KR_SECTIONS } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
 import { programGuide } from '../lib/abroad/study-options';
-import { countrySections } from '../lib/abroad/sections';
+import { countrySections, factStatus } from '../lib/abroad/sections';
 import type { SectionFact } from '../lib/models';
 
 /** South Korea content completion (C2): what a student can read, and that it stays honest. */
@@ -72,6 +72,26 @@ test('C2.1: the guide lists the guidebook once in its sources, with the date it 
   const hits = g.sources.filter((s) => s.source.url === KR_NIIED_GUIDEBOOK.url);
   assert.equal(hits.length, 1);
   assert.equal(hits[0].lastVerified, '2026-09-27');
+});
+
+test('C2.2 D-4: the 10 million KRW figure is shown, but flagged for re-checking because only the older guidebook states it', () => {
+  const blocks = guide('language').sections.finances;
+  const amount = blocks.flatMap((b) => b.facts).find((f) => f.label.en === 'Amount')!;
+  assert.match(String(amount.fact.value), /10 million KRW/);
+  assert.equal(factStatus(amount.fact, 'visa', NOW), 'needs-review');
+  assert.match(amount.fact.notes!, /undated; rules cited to Nov 2023/);
+  assert.ok(blocks.flatMap((b) => b.facts).some((f) => /within 30 days/.test(String(f.fact.value))));
+  assert.ok(!values('degree-bachelors', 'finances').some((v) => /10 million KRW/.test(v)), 'the D-4 amount never reaches the degree guide');
+});
+
+test('C2.2 D-4: health insurance starts six months after entry (current Easylaw); D-2 keeps its own rule; both get the 50% premium', () => {
+  const lang = values('language', 'visa-application').join(' ');
+  assert.match(lang, /six months after the date of entry/);
+  assert.match(lang, /50% of the monthly premium/);
+  const deg = values('degree-bachelors', 'visa-application').join(' ');
+  assert.doesNotMatch(deg, /six months after the date of entry/);
+  assert.match(deg, /date of alien registration/);
+  assert.match(deg, /50% of the monthly premium/);
 });
 
 console.log(`\n${passed} passed`);

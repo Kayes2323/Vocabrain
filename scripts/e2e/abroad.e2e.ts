@@ -692,8 +692,8 @@ async function main() {
     await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await p.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
     check('language pathway → only D-4', (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-4' && (await p.getByTestId('visa-parts').getAttribute('data-category')) === 'D-4');
-    // C1.3: D-4 filled from official sources; interview, processing time and insurance stay "Not verified yet".
-    check('D-4: only interview / processing / insurance Not verified yet; type needs review (D-4 type names differ)', (await p.locator('[data-section][data-status="not-yet"]').count()) === 3 && ['interview', 'processing', 'insurance'].every(Boolean) && (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'needs-review');
+    // C1.3: D-4 filled from official sources; C2.2 adds insurance and the (older-source) funds amount.
+    check('D-4: only interview / processing Not verified yet; type and funds need review', (await p.locator('[data-section][data-status="not-yet"]').count()) === 2 && (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="insurance"]').getAttribute('data-status')) !== 'not-yet' && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'needs-review' && (await p.locator('[data-section="finances"]').getAttribute('data-status')) === 'needs-review');
     const d4Type = await p.locator('[data-section="type"]').innerText();
     check('D-4 type: official name, D-4-1, source + date; no D-2 data', /D-4 \(General Trainee\)/.test(d4Type) && /D-4-1 Korean Language Training/.test(d4Type) && /Korea Immigration Service/.test((await p.locator('[data-section="type"] [data-section-sources]').getAttribute('data-sources')) ?? '') && /checked [^\n]*2026/.test(d4Type) && !/D-2-|D-2 \(Student\)/.test(d4Type), d4Type.slice(0, 200));
     check('picker card: which visa (official name) + source', /Visa: D-4 \(General Trainee\)/.test(await p.locator('[data-pathway="language"]').innerText()) && /Visa: D-2 \(Student\)/.test(await p.locator('[data-pathway="degree"]').innerText()) && (await p.getByTestId('pathway-source').first().getAttribute('href')) === 'https://www.immigration.go.kr/bbs/immigration_eng/230/454085/download.do');
@@ -1020,7 +1020,8 @@ async function main() {
     await q.locator('[data-pathway="language"]').click();
     await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-4', null, { timeout: 10_000 });
     check('bn D-4 processing: "Official নির্দিষ্ট processing time verified নয়"', /Official নির্দিষ্ট processing time verified নয়/.test(await qOpen('processing')));
-    check('bn D-4 money: "Official amount এখনো verified নয়"', /Official amount এখনো verified নয়/.test(await qOpen('finances')));
+    const bnD4Money = await qOpen('finances');
+    check('bn D-4 money (C2.2): older guidebook amount shown with a "confirm with the Embassy / VAC" note', /10 million KRW/.test(bnD4Money) && /পুরনো official guidebook/.test(bnD4Money) && /Visa Application Center/.test(bnD4Money));
     check('bn D-4 work question in Bangla', /D-4-এ কত দিন ধরে Korea-তে আছেন\?/.test(await q.getByTestId('work-check').innerText()));
     check('bn D-4 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-c13-02-d4-mobile-bn', false);

@@ -173,6 +173,12 @@ export const KR_D2: VisaCategory = {
             { notes: 'National Health Insurance Act, Article 109. Some exceptions apply (see the source). Easylaw information as of 2026-08-15.' },
           ),
         },
+        {
+          label: { en: 'Premium', bn: 'Premium' },
+          fact: krFact('Students on D-2 or D-4 pay 50% of the monthly premium (from March 2023 onward).', KR_EASYLAW_INSURANCE, 'medium', {
+            notes: 'Standards for health insurance of long-term residents, Article 6. Easylaw information as of 2026-08-15.',
+          }),
+        },
       ],
     },
     // 16 · Length of stay & extension

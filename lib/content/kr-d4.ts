@@ -1,5 +1,12 @@
 import type { DocumentKind, DocumentRequirement, SourceRef, VisaCategory, WorkRule } from '@/lib/models';
-import { KR_EASYLAW_GUIDE_PDF, KR_EASYLAW_VISA, KR_EASYLAW_WORK, KR_KIS_NAVIGATOR, KR_SIK_VISA, KR_SIK_WORK, krFact } from './kr-sources';
+import { KR_EASYLAW_GUIDE_PDF, KR_EASYLAW_INSURANCE, KR_EASYLAW_VISA, KR_EASYLAW_WORK, KR_KIS_NAVIGATOR, KR_NIIED_GUIDEBOOK, KR_SIK_VISA, KR_SIK_WORK, krFact } from './kr-sources';
+
+// C2.2 · The undated NIIED guidebook (rules cited to Nov 2023) is older than the live Study in Korea page, which
+// names no amount → anything only it states must be re-checked with the Embassy / Visa Application Center.
+const GUIDEBOOK_ONLY = {
+  status: 'needs-review' as const,
+  notes: 'From the Study in Korea guidebook (undated; rules cited to Nov 2023), quoting the Korea Immigration Service. The current Study in Korea visa page (checked 2026-09-27) names no amount.',
+};
 
 /** A D-4 visa document: the official wording, submitted with the visa application. */
 function doc(kind: DocumentKind, requirement: string, source: SourceRef): DocumentRequirement {
@@ -123,17 +130,31 @@ export const KR_D4: VisaCategory = {
         },
       ],
       explanation: {
-        en: 'This is the official proof the visa asks for, not your full budget. The official amount is not verified yet: ask your language institute and the Korean embassy.',
-        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ, আপনার পুরো budget নয়। Official amount এখনো verified নয়: language institute আর Korean embassy থেকে জেনে নিন।',
+        en: 'This is the official proof the visa asks for, not your full budget. The amount below comes from an older official guidebook: confirm the current amount with the Korean Embassy or the Visa Application Center before you get your bank certificate.',
+        bn: 'এটা visa-র জন্য দরকারি official প্রমাণ, আপনার পুরো budget নয়। নিচের অঙ্কটি একটি পুরনো official guidebook থেকে নেওয়া: bank certificate নেওয়ার আগে Korean Embassy বা Visa Application Center থেকে বর্তমান অঙ্কটি নিশ্চিত করুন।',
       },
       blocks: [
         {
           id: 'kr-d4-funds-amount',
-          title: { en: 'Official amount', bn: 'Official amount' },
-          guidance: {
-            en: 'Official amount not verified yet. No official source we checked states one amount for D-4; we never estimate or convert it.',
-            bn: 'Official amount এখনো verified নয়। আমরা যে official source দেখেছি, তার কোনোটাতে D-4-এর জন্য একটা নির্দিষ্ট অঙ্ক নেই; আমরা নিজে থেকে অনুমান বা convert করি না।',
-          },
+          title: { en: 'Amount and bank certificate (Korean language training, D-4-1)', bn: 'অঙ্ক ও bank certificate (Korean language training, D-4-1)' },
+          facts: [
+            {
+              label: { en: 'Amount', bn: 'অঙ্ক' },
+              fact: krFact('Financial proof equivalent to 10 million KRW: in principle, tuition plus living expenses for one year (for 6 months of language training).', KR_NIIED_GUIDEBOOK, 'medium', GUIDEBOOK_ONLY),
+            },
+            {
+              label: { en: 'Which documents', bn: 'কোন document' },
+              fact: krFact('A balance certificate, bankbook, scholarship certificate or transaction records, in principle as originals (or a copy stamped as identical to the original).', KR_NIIED_GUIDEBOOK, 'medium', GUIDEBOOK_ONLY),
+            },
+            {
+              label: { en: 'Balance certificate date', bn: 'Balance certificate-এর তারিখ' },
+              fact: krFact('A balance certificate counts only if it was issued within 30 days.', KR_NIIED_GUIDEBOOK, 'medium', GUIDEBOOK_ONLY),
+            },
+            {
+              label: { en: "Parents' account", bn: 'বাবা-মায়ের account' },
+              fact: krFact("If the balance certificate is in a parent's name, also submit a family relationship certificate.", KR_NIIED_GUIDEBOOK, 'medium', GUIDEBOOK_ONLY),
+            },
+          ],
           links: [KR_SIK_VISA],
         },
       ],
@@ -155,6 +176,27 @@ export const KR_D4: VisaCategory = {
       explanation: {
         en: 'Your weekly hours depend on how long you have been in Korea and your Korean level. Answer the questions below; you still need the permission before you start.',
         bn: 'সপ্তাহে কত ঘণ্টা কাজ করা যাবে, তা Korea-তে কত দিন আছেন আর আপনার Korean level-এর উপর নির্ভর করে। নিচের প্রশ্নের উত্তর দিন; কাজ শুরুর আগে permission লাগবেই।',
+      },
+    },
+    // 13 · Health insurance
+    insurance: {
+      facts: [
+        {
+          label: { en: 'National Health Insurance', bn: 'National Health Insurance' },
+          fact: krFact('D-4 trainees (other than elementary, middle and high school students, D-4-3) join the National Health Insurance six months after the date of entry.', KR_EASYLAW_INSURANCE, 'medium', {
+            notes: 'Easylaw information as of 2026-08-15. The Study in Korea guidebook says the same.',
+          }),
+        },
+        {
+          label: { en: 'Premium', bn: 'Premium' },
+          fact: krFact('Students on D-2 or D-4 pay 50% of the monthly premium (from March 2023 onward).', KR_EASYLAW_INSURANCE, 'medium', {
+            notes: 'Standards for health insurance of long-term residents, Article 6. Easylaw information as of 2026-08-15.',
+          }),
+        },
+      ],
+      explanation: {
+        en: 'For your first six months in Korea you are not yet in the national scheme, so ask your language institute how you are covered during that time.',
+        bn: 'Korea-তে প্রথম ছয় মাস আপনি জাতীয় insurance-এ থাকবেন না — এই সময়ে কীভাবে cover পাবেন, তা আপনার language institute-কে জিজ্ঞেস করুন।',
       },
     },
     // 16 · Length of stay
