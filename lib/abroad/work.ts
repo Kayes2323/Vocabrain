@@ -4,7 +4,7 @@ import { getPathway, visaCategoriesFor } from './pathways';
 import { factStatus } from './sections';
 
 /** Built-in inputs every country can use in a rule, besides its own questions. */
-export const BUILT_IN_WORK_INPUTS = ['pathway', 'visaCategory'] as const;
+export const BUILT_IN_WORK_INPUTS = ['pathway', 'visaCategory', 'degreeLevel'] as const;
 
 export type WorkAnswers = Record<string, string | undefined>;
 
@@ -19,7 +19,9 @@ export type WorkCheck =
 /**
  * "Can I work?" — never a guessed yes/no. It returns the verified rule(s)
  * matching every answer, asks for the answers a rule depends on, or says the
- * rule is not verified yet and points to official pages.
+ * rule is not verified yet and points to official pages. Built-in inputs:
+ * pathway, visaCategory and degreeLevel (from the student's profile — a
+ * missing degree is asked for, never assumed).
  */
 export function checkWork(country: Pick<Country, 'code' | 'pathways' | 'workQuestions'> & Partial<Pick<Country, 'data'>>, answers: WorkAnswers, now = new Date()): WorkCheck {
   const guide = visaGuide(country.code);

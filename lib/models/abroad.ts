@@ -118,6 +118,8 @@ export interface VisaCategory {
   /** Official code as the country writes it (e.g. a letter-number code). */
   code: string;
   name: Bilingual;
+  /** The official name as the immigration authority writes it; shown next to the code only when verified. */
+  officialName?: SourcedValue<string>;
   pathwayIds: string[];
   description?: Bilingual;
   /** Sourced content per visa part; missing parts show "Not verified yet". */
@@ -403,8 +405,8 @@ export interface Deadline extends Partial<ContentMeta> {
 
 export const VISA_PART_IDS = [
   'type', 'eligibility', 'documents', 'finances', 'process', 'portal', 'fees', 'biometrics', 'interview', 'processing', 'mistakes', 'pre-departure',
-  // Appended so 01–12 keep their numbers.
-  'insurance', 'work', 'restrictions',
+  // Appended so earlier parts keep their numbers.
+  'insurance', 'work', 'restrictions', 'stay',
 ] as const;
 export type VisaPartId = (typeof VISA_PART_IDS)[number];
 

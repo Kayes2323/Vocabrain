@@ -141,7 +141,7 @@ export interface ResolvedBlock extends Omit<SectionBlock, 'facts'> {
   stale: number;
 }
 
-function resolveBlock(block: SectionBlock, reviewAs: CountrySectionId, now: Date): ResolvedBlock {
+export function resolveBlock(block: SectionBlock, reviewAs: CountrySectionId, now: Date): ResolvedBlock {
   const { shown, pending } = visibleFacts(block.facts ?? []);
   const links = [...(block.links ?? []), ...pending.filter((p) => !block.links?.some((l) => l.url === p.url))];
   return {

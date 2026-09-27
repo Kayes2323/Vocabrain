@@ -1,7 +1,7 @@
 import { visaGuide } from '@/lib/content/visa';
 import { getVisaCategory } from './pathways';
-import { VISA_PART_IDS, type Country, type SectionFact, type SourceRef, type VisaPartId } from '@/lib/models';
-import { factNeedsReview, groupStatus, visibleFacts, type SectionStatus } from './sections';
+import { VISA_PART_IDS, type Country, type SectionFact, type SourceRef, type SourcedValue, type VisaCategory, type VisaPartId } from '@/lib/models';
+import { factNeedsReview, factStatus, groupStatus, resolveBlock, visibleFacts, type ResolvedBlock, type SectionStatus } from './sections';
 
 export interface ResolvedVisaPart {
   id: VisaPartId;
@@ -11,6 +11,8 @@ export interface ResolvedVisaPart {
   stale: number;
   links?: SourceRef[];
   explanation?: { en: string; bn: string };
+  /** Deeper sourced blocks (e.g. subtypes, or a country-specific requirement not verified yet). */
+  blocks?: ResolvedBlock[];
 }
 
 /**
@@ -25,7 +27,11 @@ export function visaParts(country: Country, now = new Date(), categoryId?: strin
   const category = getVisaCategory(country, categoryId);
   const derived: Partial<Record<VisaPartId, SectionFact[]>> = {
     finances: (country.data.livingCost ?? []).map((f) => ({ label: { en: 'Money to show', bn: 'যে টাকা দেখাতে হবে' }, fact: f })),
-    type: !category && guide?.visaType ? [{ label: { en: 'Visa name', bn: 'Visa-র নাম' }, fact: guide.visaType }] : [],
+    type: category?.officialName
+      ? [{ label: { en: 'Official visa name', bn: 'Official visa-র নাম' }, fact: category.officialName }]
+      : !category && guide?.visaType
+        ? [{ label: { en: 'Visa name', bn: 'Visa-র নাম' }, fact: guide.visaType }]
+        : [],
   };
   return VISA_PART_IDS.map((id, i) => {
     const owns = [guide?.parts[id], category?.parts[id]].filter((x): x is NonNullable<typeof x> => Boolean(x));
@@ -33,9 +39,27 @@ export function visaParts(country: Country, now = new Date(), categoryId?: strin
     const complete = owns.length > 0 && owns.every((o) => o.complete);
     const { shown: facts, pending } = visibleFacts([...(derived[id] ?? []), ...owns.flatMap((o) => o.facts ?? [])]);
     const stale = facts.filter((f) => factNeedsReview(f.fact, 'visa', now)).length;
-    const status: SectionStatus = groupStatus(facts, complete, 'visa', now);
+    const blocks = owns.flatMap((o) => o.blocks ?? []).map((b) => resolveBlock(b, 'visa', now));
+    const withFacts = [...(facts.length ? [groupStatus(facts, complete, 'visa', now)] : []), ...blocks.filter((b) => b.facts.length).map((b) => b.status)];
+    const status: SectionStatus =
+      withFacts.length === 0 ? 'not-yet' : withFacts.includes('needs-review') ? 'needs-review' : withFacts.every((x) => x === 'verified') ? 'verified' : 'partial';
     const ownLinks = owns.flatMap((o) => o.links ?? []);
     const links = [...(id === 'portal' ? [...ownLinks, ...(category?.links ?? []), ...(country.sections?.visa?.links ?? [])] : ownLinks), ...pending];
-    return { id, number: String(i + 1).padStart(2, '0'), status, facts, stale, ...(links.length ? { links } : {}), ...(own.explanation ? { explanation: own.explanation } : {}) };
+    return {
+      id,
+      number: String(i + 1).padStart(2, '0'),
+      status,
+      facts,
+      stale: stale + blocks.reduce((n, b) => n + b.stale, 0),
+      ...(links.length ? { links } : {}),
+      ...(own.explanation ? { explanation: own.explanation } : {}),
+      ...(blocks.length ? { blocks } : {}),
+    };
   });
+}
+
+/** A category's official name, only when it may be shown (verified or partly verified, never not-verified). */
+export function verifiedVisaName(category: Pick<VisaCategory, 'officialName'> | undefined, now = new Date()): SourcedValue<string> | undefined {
+  const n = category?.officialName;
+  return n && factStatus(n, 'visa', now) !== 'not-verified' ? n : undefined;
 }

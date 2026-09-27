@@ -1,7 +1,7 @@
 import type { Country, SourcedValue } from '@/lib/models';
 import { countryPathways, visaCategoriesFor } from './pathways';
 import { countrySections, factStatus } from './sections';
-import { visaParts } from './visa';
+import { verifiedVisaName, visaParts } from './visa';
 import { checkWork } from './work';
 
 /** What Mino must say whenever something is not verified. */
@@ -23,11 +23,11 @@ function quotable(list: SourcedValue<unknown>[] | undefined) {
  * pathways with their visa categories, and the "Can I work?" state for the
  * student's pathway. Built from the same engines as the screens.
  */
-export function countryFactsForMino(country: Country, opts: { pathway?: string; now?: Date } = {}) {
+export function countryFactsForMino(country: Country, opts: { pathway?: string; degreeLevel?: string; now?: Date } = {}) {
   const now = opts.now ?? new Date();
   const d = country.data;
   const sections = countrySections(country, now, opts.pathway ? { pathway: opts.pathway } : undefined);
-  const work = checkWork(country, { pathway: opts.pathway }, now);
+  const work = checkWork(country, { pathway: opts.pathway, degreeLevel: opts.degreeLevel }, now);
   return {
     country: country.name,
     livingCostToShow: quotable(d.livingCost),
@@ -43,11 +43,29 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
       name: p.name.en,
       degreeLevels: p.degreeLevels ?? [],
       selected: p.id === opts.pathway,
-      visaCategories: visaCategoriesFor(country, p.id).map((c) => ({
-        id: c.id,
-        code: c.code,
-        parts: Object.fromEntries(visaParts(country, now, c.id).map((part) => [part.id, status(part.status)])),
-      })),
+      visaCategories: visaCategoriesFor(country, p.id).map((c) => {
+        const parts = visaParts(country, now, c.id);
+        return {
+          id: c.id,
+          code: c.code,
+          officialName: verifiedVisaName(c, now)?.value ?? 'notVerified',
+          parts: Object.fromEntries(parts.map((part) => [part.id, status(part.status)])),
+          // Only facts the screens show (never a not-verified value), each with its source.
+          facts: parts.flatMap((part) =>
+            [...part.facts, ...(part.blocks ?? []).flatMap((b) => b.facts)].map((f) => ({
+              part: part.id,
+              label: f.label.en,
+              value: f.fact.value,
+              status: factStatus(f.fact, 'visa', now),
+              source: f.fact.source.name,
+              url: f.fact.source.url,
+              verified: f.fact.lastVerified,
+            })),
+          ),
+          // Labelled general guidance (e.g. a country-specific requirement that is not verified yet).
+          guidance: parts.flatMap((part) => (part.blocks ?? []).filter((b) => b.guidance).map((b) => `${b.title.en}: ${b.guidance!.en}`)),
+        };
+      }),
     })),
     work:
       work.state === 'answered'

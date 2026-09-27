@@ -82,8 +82,17 @@ export function documentsFor(country: Pick<Country, 'code' | 'roadmap' | 'pathwa
 
   for (const step of roadmapDefs(country, { pathway: ctx.pathway })) for (const k of step.documents ?? []) add(k, { from: 'roadmap', purpose: 'general' });
   if (!country) return needs;
-  from('country', country.documents);
   const pathway = getPathway(country, ctx.pathway);
+  // Country-level documents shared by several visa categories (e.g. D-2 and D-4)
+  // appear only once the student's route is known and uses one of them.
+  const routeCategories = ctx.visaCategoryId ? [ctx.visaCategoryId] : pathway ? visaCategoriesFor(country, pathway.id).map((c) => c.id) : [];
+  from(
+    'country',
+    country.documents?.filter((d) => !d.appliesTo?.visaCategoryIds?.length || d.appliesTo.visaCategoryIds.some((id) => routeCategories.includes(id))),
+    undefined,
+    undefined,
+    routeCategories.length === 1 ? { visaCategoryId: routeCategories[0] } : {},
+  );
   if (pathway) from('pathway', pathway.documents, pathway.id, pathway.name.en);
   // Without a chosen pathway, visa documents stay out: they depend on the route.
   if (pathway || ctx.visaCategoryId) {

@@ -125,6 +125,17 @@ Generic and data-driven — engines never name a country, code or rule.
   whether the requirement is verified, alerts — and the rules never to
   invent, relabel, convert or give a verdict.
 
+## South Korea real data — C1.0 fixes + C1.1 pathways (Phase C)
+
+- **Visa part 16 `stay`** ("Length of stay & extension" / "মেয়াদ ও বাড়ানো") is appended to `VISA_PART_IDS`; 01–15 keep their numbers. No stay values yet (C1.2/C1.3).
+- **`checkWork` degree context**: `degreeLevel` is a built-in input next to `pathway` / `visaCategory`. It comes from the profile; when a rule depends on it and it is missing, the student is asked (WorkCheck select) — never assumed. Mino (`countryFactsForMino`, `getCountryData`) passes the same degree.
+- **Shared visa documents**: country-level `documents` with `appliesTo.visaCategoryIds` (e.g. D-2 + D-4) appear only once the route is known and uses one of those categories; one entry per document.
+- **Sources** live in `lib/content/kr-sources.ts` (`krFact` sets lastVerified, reviewedAt, reviewAt, status, confidence). Confidence (internal, never shown): high = Korea Immigration Service / HiKorea / MOJ / Embassy; medium = Study in Korea (NIIED).
+- **Pathways**: degree → `kr-d2`, language → `kr-d4`, each with official links. `VisaCategory.officialName` ("D-2 (Student)", "D-4 (General Trainee)", KIS Visa Navigator) is shown next to the code only when verified (`verifiedVisaName`); the PathwayPicker shows it with its source and date.
+- **Visa part `type`** per category: official name, who it is for (Study in Korea), official scope (KIS); subtype block (D-2-2/3/4 for degree; D-4-1 Korean Language Training) marked partly verified (Study in Korea only). `visaParts` now resolves section blocks.
+- **Bangladesh**: country-level `documents` block "Bangladesh-specific requirements" holds only the general official statement plus "Bangladesh-specific requirement: Not verified yet" guidance and the Embassy in Dhaka links.
+- **Work foundation**: KR `workQuestions.korean` uses the profile's Korean/TOPIK values (prefilled). Country-level `work` part records only that D-2/D-4 part-time work needs Korean proficiency and immigration-office permission (partly verified). No work rules or hours until C1.4.
+
 ## Routes
 
 | Route | What |

@@ -1,4 +1,5 @@
 import type { Country, CountryData, SourceRef } from '@/lib/models';
+import { KR_KIS_NAVIGATOR, KR_SIK_VISA } from './kr-sources';
 
 /**
  * Destination registry. Every figure is a SourcedValue copied from an official
@@ -80,8 +81,21 @@ export const COUNTRIES: Country[] = [
     capital: 'Seoul',
     localLanguage: 'ko',
     data: {},
-    // Structure only (approved: degree → D-2, language/training → D-4). Every
-    // visa, document, work and language fact is added in Phase C, sourced.
+    // Degree → D-2 (Student), language/training → D-4 (General Trainee): the
+    // mapping is read from the Korea Immigration Service and Study in Korea
+    // (see lib/content/visa.ts). Other facts are added in Phase C, sourced.
+    // The TOPIK answer comes from the student's profile (same option values).
+    workQuestions: [
+      {
+        id: 'korean',
+        label: { en: 'Your Korean level (TOPIK)', bn: 'তোমার Korean level (TOPIK)' },
+        options: [
+          { value: 'none', label: { en: 'None yet', bn: 'এখনো নেই' } },
+          { value: 'beginner', label: { en: 'Beginner (no TOPIK)', bn: 'Beginner (TOPIK নেই)' } },
+          ...[1, 2, 3, 4, 5, 6].map((n) => ({ value: `topik-${n}`, label: { en: `TOPIK ${n}`, bn: `TOPIK ${n}` } })),
+        ],
+      },
+    ],
     pathways: [
       {
         id: 'degree',
@@ -90,6 +104,7 @@ export const COUNTRIES: Country[] = [
         description: { en: 'Study for a full degree at a university.', bn: 'University-তে পুরো একটা degree পড়া।' },
         degreeLevels: ['bachelors', 'masters', 'phd'],
         visaCategoryIds: ['kr-d2'],
+        links: [KR_SIK_VISA, KR_KIS_NAVIGATOR],
       },
       {
         id: 'language',
@@ -100,6 +115,7 @@ export const COUNTRIES: Country[] = [
           bn: 'Korean ভাষা (বা training program) পড়া — degree-র আগে, বা আলাদাভাবে।',
         },
         visaCategoryIds: ['kr-d4'],
+        links: [KR_SIK_VISA, KR_KIS_NAVIGATOR],
       },
     ],
   },

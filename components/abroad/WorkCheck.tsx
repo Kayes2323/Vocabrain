@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Briefcase, ExternalLink } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { checkWork, type WorkAnswers } from '@/lib/abroad/work';
+import { DEGREE_LEVELS } from '@/lib/constants';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { PROFILE_QUESTION_IDS, profileAnswer, type ProfileQuestionId } from '@/lib/abroad/profile-questions';
 import type { Country } from '@/lib/models';
@@ -27,7 +28,9 @@ export function WorkCheck({ country, pathway, visaCategory }: { country: Country
         .filter(([, v]) => typeof v === 'string'),
     ) as WorkAnswers,
   );
-  const result = checkWork(country, { ...answers, pathway, visaCategory });
+  // Degree comes from the profile (the student can answer here if it is missing — never assumed).
+  const degreeLevel = answers.degreeLevel ?? profile?.abroad.degreeLevel;
+  const result = checkWork(country, { ...answers, pathway, visaCategory, degreeLevel });
   return (
     <section className="space-y-3 rounded-2xl border bg-card p-4" data-testid="work-check" data-state={result.state}>
       <h2 className="flex items-center gap-2 font-semibold">
@@ -37,6 +40,19 @@ export function WorkCheck({ country, pathway, visaCategory }: { country: Country
       {result.state === 'needs-answers' && (
         <div className="space-y-2">
           <p className="text-sm">{t('sa.work.needs')}</p>
+          {result.missing.includes('degreeLevel') && (
+            <label className="flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-muted-foreground">{t('sa.work.degreeQ')}</span>
+              <select className="h-10 rounded-lg border bg-background px-3" value={answers.degreeLevel ?? ''} onChange={(e) => setAnswers({ ...answers, degreeLevel: e.target.value || undefined })}>
+                <option value="">{t('sa.work.choose')}</option>
+                {DEGREE_LEVELS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {result.questions.map((q) => (
             <label key={q.id} className="flex flex-wrap items-center gap-2 text-sm">
               <span className="text-muted-foreground">{text(q.label)}</span>
