@@ -25,9 +25,10 @@
     "emulators": "npx -y firebase-tools@15 emulators:start --only auth,firestore --project demo-vocabbrain",
     "test:e2e:tenses": "bash scripts/e2e/run.sh tenses",
     "test:e2e:articles": "bash scripts/e2e/run.sh articles",
+    "test:e2e:agreement": "bash scripts/e2e/run.sh agreement",
     "test:e2e:abroad": "bash scripts/e2e/run.sh abroad",
     "test:e2e:home": "bash scripts/e2e/run.sh home",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles abroad home"
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement abroad home"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

@@ -20,7 +20,7 @@ export interface FixGuide {
  * is "home") and, for Parts of Speech, the unit that teaches the idea.
  */
 export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; unit?: string }> = {
-  'sv-agreement': { title: l('Subject–verb agreement', 'Subject–verb agreement'), modules: ['parts-of-speech', 'tenses'], unit: 'lab' },
+  'sv-agreement': { title: l('Subject–verb agreement', 'Subject–verb agreement'), modules: ['parts-of-speech', 'tenses', 'agreement'], unit: 'lab' },
   'verb-form': { title: l('Verb form after helping verbs', 'Helping verb-এর পরে verb form'), modules: ['parts-of-speech', 'tenses'], unit: 'verb' },
   'noun-count': { title: l('Countable and uncountable nouns', 'Countable আর uncountable noun'), modules: ['parts-of-speech', 'articles'], unit: 'noun' },
   'pronoun-form': { title: l('Pronoun forms (he/she, its/it’s, their/there)', 'Pronoun form (he/she, its/it’s, their/there)'), modules: ['parts-of-speech'], unit: 'pronoun' },
@@ -32,6 +32,10 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'missing-article': { title: l('A missing a / an / the', 'বাদ পড়া a / an / the'), modules: ['articles'] },
   'general-the': { title: l('"the" with things in general', 'সাধারণ অর্থে "the"'), modules: ['articles'] },
   'a-an-sound': { title: l('a or an by the sound', 'Sound দেখে a নাকি an'), modules: ['articles'] },
+  'sva-compound': { title: l('Two subjects: and, or, nor', 'দুটো subject: and, or, nor'), modules: ['agreement'] },
+  'sva-indefinite': { title: l('everyone, each, every and group nouns', 'everyone, each, every আর group noun'), modules: ['agreement'] },
+  'sva-long-subject': { title: l('Finding the real subject in long subjects', 'লম্বা subject-এ আসল subject খোঁজা'), modules: ['agreement'] },
+  'sva-quantity': { title: l('Amounts, numbers and percentages', 'পরিমাণ, সংখ্যা আর শতাংশ'), modules: ['agreement'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -186,7 +190,7 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     ),
     why: l('Bangla needs nothing before a noun ("আমি ছাত্র", "গ্রাফটি দেখায়"), and marks "the" after it (-টা, -টি), so the English word before the noun gets lost.', 'বাংলায় noun-এর আগে কিছু লাগে না ("আমি ছাত্র", "গ্রাফটি দেখায়"), আর "the"-এর কাজ হয় পরে (-টা, -টি), তাই English-এ noun-এর আগের word-টা হারিয়ে যায়।'),
     recognise: l('Find each singular noun (student, graph, number, rise). Is there a / an / the / my / this before it? If not, one is missing.', 'প্রতিটা একবচন noun খুঁজুন (student, graph, number, rise)। আগে কি a / an / the / my / this আছে? না থাকলে একটা বাদ পড়েছে।'),
-    avoid: l('Proofread nouns only: singular + countable → add a / an (new) or the (known). In Task 1, "The chart shows the number of…" every time.', 'শুধু noun-গুলো proofread করুন: একবচন + গোনা যায় → a / an (নতুন) বা the (চেনা) বসাও। Task 1-এ প্রতিবার "The chart shows the number of…"।'),
+    avoid: l('Proofread nouns only: singular + countable → add a / an (new) or the (known). In Task 1, "The chart shows the number of…" every time.', 'শুধু noun-গুলো proofread করুন: একবচন + গোনা যায় → a / an (নতুন) বা the (চেনা) বসান। Task 1-এ প্রতিবার "The chart shows the number of…"।'),
   },
   'general-the': {
     rule: l(
@@ -205,6 +209,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Bangla spelling follows the sound, so we trust the letter. In English, "u" can sound like "yoo" and "h" can be silent.', 'বাংলা বানান উচ্চারণ মেনে চলে, তাই আমরা অক্ষরের উপর ভরসা করি। English-এ "u" "ইউ" শোনাতে পারে আর "h" নীরব থাকতে পারে।'),
     recognise: l('Look for u-, eu-, one-, h- and numbers (8, 11, 18) after a / an.', 'a / an-এর পরে u-, eu-, one-, h- আর সংখ্যা (8, 11, 18) খেয়াল করুন।'),
     avoid: l('Before writing a or an, whisper the next word — including adjectives and numbers.', 'a বা an লেখার আগে পরের word-টা মনে মনে বলুন — adjective আর সংখ্যাও।'),
+  },
+  'sva-compound': {
+    rule: l(
+      'A and B → plural (My brother and I are). With or / nor, either … or, neither … nor → the verb agrees with the NEARER subject (Neither the teacher nor the students are; Either my sisters or my mother is).',
+      'A and B → plural (My brother and I are)। or / nor, either … or, neither … nor → verb কাছের subject-এর সাথে মেলে (Neither the teacher nor the students are; Either my sisters or my mother is)।',
+    ),
+    why: l('Bangla "আর" and "অথবা" don’t change the verb, so two subjects can feel like one — and with "or" we tend to follow the first subject instead of the nearer one.', 'বাংলায় "আর" বা "অথবা" verb বদলায় না, তাই দুটো subject একটা মনে হয় — আর "or"-এর সাথে আমরা কাছেরটা না মেনে প্রথম subject মেনে ফেলি।'),
+    recognise: l('Look for and / or / nor / either / neither in the subject. "and" → count them: two or more. "or / nor" → point to the subject right before the verb.', 'Subject-এ and / or / nor / either / neither খুঁজুন। "and" → গুনুন: দুই বা বেশি। "or / nor" → verb-এর ঠিক আগের subject দেখুন।'),
+    avoid: l('With "or / nor", put the plural subject last: "Neither my father nor my brothers smoke" sounds natural and is easy to check.', '"or / nor"-এ plural subject শেষে রাখুন: "Neither my father nor my brothers smoke" স্বাভাবিক শোনায় আর যাচাই করা সহজ।'),
+  },
+  'sva-indefinite': {
+    rule: l(
+      'everyone, everybody, someone, nobody, nothing, each, every + noun → singular (Everyone has, Each student gets). Group nouns (family, team, government) usually take a singular verb. people, police, children → plural.',
+      'everyone, everybody, someone, nobody, nothing, each, every + noun → singular (Everyone has, Each student gets)। Group noun (family, team, government) সাধারণত singular verb নেয়। people, police, children → plural।',
+    ),
+    why: l('"সবাই" and "প্রত্যেকে" mean many people, so a plural verb feels right. In English, every- and each- words are grammatically singular.', '"সবাই" আর "প্রত্যেকে" মানে অনেক মানুষ, তাই plural verb ঠিক মনে হয়। English-এ every- আর each- word grammar-এ singular।'),
+    recognise: l('Spot every-, some-, any-, no- + one / body / thing, and "each (of)". Replace them with "he" or "it" in your head.', 'every-, some-, any-, no- + one / body / thing আর "each (of)" খুঁজুন। মনে মনে "he" বা "it" দিয়ে বদলে দেখুন।'),
+    avoid: l('After everyone / each, write has / is / verb + s — then check the next pronoun (their is fine: Everyone has their own phone).', 'everyone / each-এর পরে has / is / verb + s লিখুন — তারপর পরের pronoun দেখুন (their চলে: Everyone has their own phone)।'),
+  },
+  'sva-long-subject': {
+    rule: l(
+      'In a long subject, the verb agrees with the HEAD word, not the noun just before the verb. Skip "of …", "with …", "in …" and "who / which …": The quality (of schools) has improved; One (of my friends) is; Students (who work) have less time.',
+      'লম্বা subject-এ verb মূল word-এর সাথে মেলে, verb-এর ঠিক আগের noun-এর সাথে না। "of …", "with …", "in …" আর "who / which …" বাদ দিন: The quality (of schools) has improved; One (of my friends) is; Students (who work) have less time।',
+    ),
+    why: l('In Bangla the verb comes at the end, so the last noun you hear feels like the subject. English long subjects put another noun right next to the verb.', 'বাংলায় verb শেষে আসে, তাই শেষে শোনা noun-কে subject মনে হয়। English-এর লম্বা subject-এ verb-এর ঠিক পাশে আরেকটা noun থাকে।'),
+    recognise: l('Put brackets around of / with / in phrases and who / which clauses. What is left before the verb is the real subject.', 'of / with / in phrase আর who / which clause-কে bracket-এ রাখুন। Verb-এর আগে যা থাকে, সেটাই আসল subject।'),
+    avoid: l('In Task 1 and Task 2, underline the first noun of each subject and match the verb to it. Inside a who-clause, match the verb to the noun before "who".', 'Task 1 আর Task 2-এ প্রতিটা subject-এর প্রথম noun-এর নিচে দাগ দিন আর verb সেটার সাথে মেলান। who-clause-এর ভেতরে verb "who"-এর আগের noun-এর সাথে মেলান।'),
+  },
+  'sva-quantity': {
+    rule: l(
+      'the number of → singular (has); a number of → plural (have). X% of / half of / most of + noun → follow that noun (40% of the land is; 40% of students are). An amount of money, time or distance → singular (Ten thousand taka is enough). There is / are → the noun after it.',
+      'the number of → singular (has); a number of → plural (have)। X% of / half of / most of + noun → সেই noun অনুযায়ী (40% of the land is; 40% of students are)। টাকা, সময় বা দূরত্বের পরিমাণ → singular (Ten thousand taka is enough)। There is / are → পরের noun অনুযায়ী।',
+    ),
+    why: l('Task 1 subjects are full of plurals (students, countries, years), so the verb follows the plural noun instead of "the number" or "the percentage".', 'Task 1-এর subject-এ অনেক plural থাকে (students, countries, years), তাই verb "the number" বা "the percentage"-এর বদলে plural noun মেনে ফেলে।'),
+    recognise: l('the number / the percentage / the proportion / the amount → one figure. a number of → several. With X% of, look at the noun after "of".', 'the number / the percentage / the proportion / the amount → একটা সংখ্যা। a number of → কয়েকটা। X% of-এ "of"-এর পরের noun দেখুন।'),
+    avoid: l('Learn the Task 1 frames: "The number of … has risen", "The figures for … were", "X% of the population was".', 'Task 1-এর frame শিখুন: "The number of … has risen", "The figures for … were", "X% of the population was"।'),
   },
 };
 

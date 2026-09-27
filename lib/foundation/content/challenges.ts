@@ -2,6 +2,7 @@ import type { L } from '../model';
 import { l } from './pos-kit';
 import { FINAL_PARTS, type FinalPart } from './pos-final';
 import { TENSE_FINAL_PARTS } from './tenses-final';
+import { AGREEMENT_FINAL_PARTS } from './agreement-final';
 import { ARTICLE_FINAL_PARTS } from './articles-final';
 
 /**
@@ -43,6 +44,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Articles Final Mastery Challenge', 'Articles Final Mastery Challenge'), name: l('Articles', 'Articles'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: ARTICLE_FINAL_PARTS,
     concepts: ['article-a-an', 'article-a', 'article-the', 'article-zero'],
+  },
+  {
+    id: 'agreement', moduleId: 'agreement', mark: 'S★', minutes: 15, areas: 'concept',
+    title: l('Subject–Verb Agreement Final Mastery Challenge', 'Subject–Verb Agreement Final Mastery Challenge'), name: l('Subject–Verb Agreement', 'Subject–Verb Agreement'), tagline: l('18 adaptive questions, a report rule by rule', '১৮টা adaptive প্রশ্ন, নিয়ম ধরে ধরে report'),
+    parts: AGREEMENT_FINAL_PARTS,
+    concepts: ['sva-basic', 'sva-compound', 'sva-indefinite', 'sva-long', 'sva-quantity'],
   },
 ];
 

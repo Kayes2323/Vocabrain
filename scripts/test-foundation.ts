@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import {
   STAGE_DAYS, conceptMastery, dueReviews, recordApplication,
@@ -31,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 24);
+  assert.equal(CONCEPTS.length, 29);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -249,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const agreement = MODULES.find((m) => m.id === 'agreement')!;
+  const prepositions = MODULES.find((m) => m.id === 'prepositions')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(agreement, fp), undefined);
+  assert.equal(stepBeforeModule(prepositions, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -470,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 3);
+  assert.equal(CHALLENGES.length, 4);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -561,6 +562,116 @@ test('Articles Final Mastery Challenge: 6 parts, per-concept items, stored in fi
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Articles Final Mastery Challenge: last 72%/);
 });
 
+// ---------------------------------------------------------------- subject–verb agreement
+const agreement = MODULES.find((m) => m.id === 'agreement')!;
+const svaTaught = agreement.lessons.filter((x) => x.kind !== 'test');
+const svaEx = agreement.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+
+test('Agreement: 8 taught v2 lessons + a review test; full v2 shape, 4 skills, Bangla-speaker notes, recall, correction and Mino', () => {
+  assert.equal(agreement.number, 5);
+  assert.equal(agreement.planned, undefined, 'no placeholder lessons');
+  assert.deepEqual(agreement.lessons.map((x) => x.id), ['sva-1', 'sva-2', 'sva-3', 'sva-4', 'sva-5', 'sva-6', 'sva-7', 'sva-8', 'sva-9']);
+  assert.equal(agreement.lessons.at(-1)!.kind, 'test');
+  for (const x of svaTaught) {
+    assert.equal(x.format, 'v2', `${x.id} is v2`);
+    const kinds = x.steps.map((st) => st.kind);
+    assert.equal(kinds[0], 'hook', `${x.id} starts with a real situation`);
+    for (const k of ['hook', 'discover', 'concept', 'examples', 'ielts', 'mistakes', 'recall']) assert.ok(kinds.includes(k as never), `${x.id} has ${k}`);
+    const ielts = x.steps.find((st) => st.kind === 'ielts');
+    assert.equal(new Set(ielts && ielts.kind === 'ielts' ? ielts.uses.map((u) => u.skill) : []).size, 4, `${x.id} covers the 4 skills`);
+    const concept = x.steps.find((st) => st.kind === 'concept');
+    assert.ok((concept && concept.kind === 'concept' && concept.points?.some((pt) => /Bangla speakers slip/.test(pt.en))) || x.id === 'sva-6', `${x.id} explains why Bangla speakers slip`);
+    const practice = x.steps.filter((st) => st.kind === 'practice');
+    assert.ok(practice.some((st) => st.mode === 'recall'), `${x.id} has free recall`);
+    assert.ok(practice.some((st) => st.exercises.some((e) => e.type === 'correct' || e.type === 'spot')), `${x.id} has error correction`);
+    assert.ok(practice.some((st) => st.mode === 'personal' && st.exercises.some((e) => e.type === 'write' && e.mino)), `${x.id} has a Mino-checked sentence`);
+    const mistakes = x.steps.find((st) => st.kind === 'mistakes');
+    assert.ok(mistakes && mistakes.kind === 'mistakes' && mistakes.items.length >= 3, `${x.id} has a mistake lab`);
+  }
+  assert.ok(svaEx.every((e) => e.tag === 'agreement' && e.concept?.startsWith('sva-')), 'every question is an agreement question with its concept');
+  for (const e of svaEx) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
+  // Choice questions explain the wrong answers too, not only the right one.
+  const choices = svaEx.filter((e) => e.type === 'choice' && svaTaught.some((l) => l.steps.some((st) => st.kind === 'practice' && st.mode === 'practice' && st.exercises.includes(e))));
+  assert.ok(choices.length >= 30 && choices.every((e) => e.type === 'choice' && e.why && Object.keys(e.why).length > 0), 'every option-practice question says why the wrong answer is wrong');
+  // Contractions typed with a straight or curly apostrophe, or spelled out, all count.
+  assert.equal(grade2(ex('sva-1-r2'), "don't eat"), true);
+  assert.equal(grade2(ex('sva-1-r2'), 'don’t eat'), true);
+  assert.equal(grade2(ex('sva-1-r2'), 'do not eat'), true);
+  assert.equal(grade2(ex('sva-1-r2'), "doesn't eat"), false);
+  assert.equal(grade2(ex('sva-9-e7'), 'does not like'), true);
+});
+
+test('Agreement: the topic list is covered (third person, and/or/nor, either/neither, everyone/each, groups, quantities, phrases, relative clauses, IELTS)', () => {
+  const text = agreement.lessons.flatMap((x) => [
+    ...x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises.map((e) => ('sentence' in e && e.sentence) || ('words' in e ? e.words.join(' ') : '') || ('answer' in e ? String(e.answer) : '')) : [])),
+    ...x.steps.flatMap((st) => (st.kind === 'concept' ? [st.body.en, ...(st.points ?? []).map((pt) => pt.en)] : [])),
+  ]).join(' \n ');
+  for (const re of [/\bhe \/ she \/ it\b/i, /\bI \/ you \/ we \/ they\b/, /\bdoesn’t\b/, / and /, /\bor \/ nor\b/, /\beither\b/i, /\bneither\b/i, /\beveryone\b/i, /\beach\b/i, /\bevery\b/i, /\bfamily\b/, /\bteam\b/, /the number of/i, /a number of/i, /%/, /\bthere (is|are)\b/i, /\bone of\b/i, /\bwho\b/, /\bwhich\b/, /Task 1/, /Task 2/]) {
+    assert.match(text, re, String(re));
+  }
+});
+
+test('Agreement: every concept is mastery-capable and reviewable; mastery only after due reviews', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'agreement').map((c) => c.id);
+  assert.deepEqual(ids, ['sva-basic', 'sva-compound', 'sva-indefinite', 'sva-long', 'sva-quantity']);
+  for (const c of ids) {
+    assert.ok(svaEx.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked sentence`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  let fp = empty();
+  for (const id of ['sva-2-p1', 'sva-2-p2', 'sva-2-p3', 'sva-2-r1', 'sva-2-r3']) fp = recordAnswer(fp, { source: 'sva-2', exercise: ex(id), answer: canonicalAnswer(ex(id)), correct: true, attempt: 1, now: NOW });
+  fp = recordApplication(fp, { source: 'sva-2', exercise: ex('sva-2-y1'), text: 'My brother and I play cricket.', verdict: 'correct', corrected: 'My brother and I play cricket.', attempt: 1, now: NOW });
+  assert.equal(conceptMastery(fp, 'sva-compound').level, 'practising');
+  fp = recordReview(fp, 'sva-compound', 100, NOW);
+  fp = recordReview(fp, 'sva-compound', 100, NOW);
+  assert.equal(conceptMastery(fp, 'sva-compound').consistency, false, 'an early repeat does not count');
+  fp = recordReview(fp, 'sva-compound', 100, new Date(NOW.getTime() + 2 * 86_400_000));
+  assert.equal(conceptMastery(fp, 'sva-compound').level, 'mastered');
+  assert.equal(findLesson('sva-6')!.lesson.concept, undefined, 'application lessons keep each question on its own concept');
+  // A wrong answer is stored as a mistake with the concept, and a lesson can be resumed.
+  const w = recordAnswer(empty(), { source: 'sva-4', exercise: ex('sva-4-p1'), answer: 'x', correct: false, attempt: 1, now: NOW });
+  assert.equal(w.mistakes.at(-1)!.concept, 'sva-long');
+  assert.equal(w.errors.agreement!.count, 1);
+});
+
+test('Agreement patterns: 3 slips in 14 days open a 5-question fix of the same rule; guides in both languages; summary line', () => {
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'sva-4-p1', 'x', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'sva-6-p3', 'are', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'sva-7-p3', 'have', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'agreement', NOW).find((x) => x.pair === 'sva-long-subject')!;
+  assert.equal(p.count, 3);
+  assert.equal(patternsFor(fp, 'articles', NOW).length, 0);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Subject–Verb Agreement pattern: Finding the real subject in long subjects ×3.*fix\/sva-long-subject/);
+  const qs = fixQuestions(fp, 'sva-long-subject', NOW);
+  assert.equal(qs.length, 5);
+  assert.ok(qs.every((q) => q.tag === 'agreement' && exercisePattern(q) === 'sva-long-subject'));
+  for (const k of ['sv-agreement', 'sva-compound', 'sva-indefinite', 'sva-long-subject', 'sva-quantity']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    assert.ok(POS_NAMED_PATTERNS[k].modules.includes('agreement'), `${k} shows on the agreement page`);
+  }
+});
+
+test('Agreement Final Mastery Challenge: 6 parts × 4 items at levels 1–3, per-concept, stored in finals.agreement', () => {
+  const ch = getChallenge('agreement')!;
+  assert.equal(ch.parts.length, 6);
+  assert.equal(ch.moduleId, 'agreement');
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 83, level: 3, parts: {} }, NOW, 'agreement');
+  assert.equal(finalRecord(fp, 'agreement')!.score, 83);
+  assert.equal(fp.finals!.articles, undefined);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Subject–Verb Agreement Final Mastery Challenge: last 83%/);
+});
+
+test('Agreement: respectful Bangla only (আপনি), never তুমি / তুই forms', () => {
+  const src = ['agreement.ts', 'agreement-apply.ts', 'agreement-final.ts'].map((f) => readFileSync(`lib/foundation/content/${f}`, 'utf8')).join('\n');
+  assert.doesNotMatch(src, /তুমি|তোমার|তোমাকে|তোমাদের|তুই|তোর|তোকে|করো\b|দেখো\b|লেখো\b|বলো\b|দেখবে\b|পারবে\b/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -606,6 +717,17 @@ asyncTests.push(['Mino article feedback: names the noun, the deciding question a
   assert.doesNotMatch(seen!.system!, /Tense feedback/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['am student']);
   assert.equal(fb.practice?.answers[0], 'an');
+}]);
+asyncTests.push(['Mino agreement feedback: names the verb, its real subject and one-or-more', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: false, corrected: 'The quality of schools has improved.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'have improved', fix: 'has improved', why: "subject is 'the quality' (one)" }], practice: { sentence: 'The price of vegetables ___ gone up.', answers: ['has'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('sva-4-y1') as Extract<Exercise, { type: 'write' }>, 'The quality of schools have improved.', 'bn');
+  assert.match(seen!.system!, /Subject–verb agreement feedback \(target: Long subjects: find the real subject\)/);
+  assert.match(seen!.system!, /REAL subject/);
+  assert.match(seen!.system!, /NEARER subject decides/);
+  assert.doesNotMatch(seen!.system!, /Tense feedback|Article feedback/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['have improved']);
+  assert.equal(fb.practice?.answers[0], 'has');
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

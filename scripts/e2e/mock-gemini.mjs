@@ -8,6 +8,8 @@
 //   challenge result lines from the student snapshot in the system prompt.
 // - Article tasks ("I am student at an university") get article feedback only
 //   when the prompt carried the article rules.
+// - Agreement tasks ("… of schools have improved", "My father work …") get
+//   subject–verb feedback only when the prompt carried the agreement rules.
 import http from 'node:http';
 import fs from 'node:fs';
 
@@ -61,6 +63,27 @@ http
             practice: { sentence: 'My uncle is ___ engineer.', answers: ['an'] },
           }) }]);
         }
+        const agreementRules = /Subject–verb agreement feedback \(target: /.test(system);
+        if (agreementRules && /\bhave improved\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bhave improved\b/i, 'has improved'),
+            feedback: bn ? 'ভালো চেষ্টা! একটা verb আসল subject-এর সাথে মিলছে না।' : 'Good try! One verb does not agree with its real subject.',
+            fixes: [{ quote: 'have improved', fix: 'has improved', why: bn ? "আসল subject হলো 'the quality' (একটা), 'schools' না — তাই 'has'।" : "The real subject is 'the quality' (one), not 'schools' — so 'has'." }],
+            practice: { sentence: 'The price of vegetables ___ gone up.', answers: ['has'] },
+          }) }]);
+        }
+        if (agreementRules && /\bfather work\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bfather work\b/i, 'father works'),
+            feedback: bn ? 'ভালো চেষ্টা! একজন মানুষ হলে verb-এ -s লাগবে।' : 'Good try! One person needs verb + s.',
+            fixes: [{ quote: 'father work', fix: 'father works', why: bn ? "'my father' একজন (he), তাই verb + s: 'works'।" : "'my father' is one person (he), so verb + s: 'works'." }],
+            practice: { sentence: 'My mother ___ (cook) every evening.', answers: ['cooks'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',
@@ -75,7 +98,7 @@ http
       const last = b.contents.at(-1);
       const fr = last.parts.find((p) => p.functionResponse);
       if (!fr) return reply([{ functionCall: { name: 'getFoundationProgress', args: {} } }]);
-      const lines = system.match(/[A-Za-z ]*Final Mastery Challenge: [^\n]*/g);
+      const lines = system.match(/[A-Za-z– ]*Final Mastery Challenge: [^\n]*/g);
       return reply([{ text: `Mock Mino: ${lines ? lines.map((x) => x.trim()).join(' | ') : 'no challenge result in the snapshot'}` }]);
     });
   })

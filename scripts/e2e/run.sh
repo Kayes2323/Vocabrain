@@ -4,6 +4,6 @@
 #   bash scripts/e2e/run.sh tenses            (one spec)
 #   bash scripts/e2e/run.sh tenses articles   (several, one server start)
 set -euo pipefail
-SPECS="${*:-tenses articles abroad home}"
+SPECS="${*:-tenses articles agreement abroad home}"
 cd "$(dirname "$0")/../.."
 exec npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain "bash scripts/e2e/serve-and-test.sh $SPECS"

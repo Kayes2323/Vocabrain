@@ -12,6 +12,8 @@ import { presentPerfectContinuous, tenseComparisons, tensesMixedPractice } from 
 import { POS_CONCEPTS, POS_LESSONS, POS_PLANNED, POS_UNITS } from './pos-units';
 import { aAnMeaning, aOrAn, ARTICLE_CONCEPTS, theArticle, zeroArticle } from './articles';
 import { articleChoice, articleMistakes, articlesInIelts, articlesMixed, articlesReview } from './articles-apply';
+import { AGREEMENT_CONCEPTS, svaBasics, svaCompound, svaIndefinite, svaLongSubjects, svaQuantity } from './agreement';
+import { svaInIelts, svaMistakes, svaMixed, svaReview } from './agreement-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -108,8 +110,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('"The number of students has…" — agreement errors lower Grammatical Range & Accuracy.', '"The number of students has…" — agreement-এর ভুল Grammatical Range & Accuracy কমায়।'),
     skill: 'grammar',
     tags: ['agreement', 'plural'],
-    lessons: [],
-    planned: [t('Singular and plural', 'Singular আর plural'), t('Long and complex subjects', 'লম্বা আর complex subject'), t('Agreement in Writing and Speaking', 'Writing আর Speaking-এ agreement')],
+    lessons: [svaBasics, svaCompound, svaIndefinite, svaLongSubjects, svaQuantity, svaMistakes, svaInIelts, svaMixed, svaReview],
   },
   {
     id: 'prepositions',
@@ -253,7 +254,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

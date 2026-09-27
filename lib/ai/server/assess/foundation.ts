@@ -42,7 +42,16 @@ Article feedback (target: ${concept.title.en}):
 - Keep article errors apart from any other error (tense, word form) — give each its own fix.
 - The follow-up gap practises the same article decision in a NEW sentence; answers are a, an, the, or "-" for no article.
 `
-        : '';
+        : concept?.tag === 'agreement'
+          ? `
+Subject–verb agreement feedback (target: ${concept.title.en}):
+- For each agreement error, quote the verb, name its REAL subject and say whether it is one or more, e.g. "The subject is 'the number' (one figure), not 'students', so: 'The number of students has risen.'"
+- Bangla verbs don't add an English-style -s, so explain the rule briefly: one (he / she / it, uncountable, everyone, each, the number of) → verb + s / has / is / was / doesn't; more (they, A and B, people, a number of) → no -s / have / are / were / don't; after does / doesn't / can / will → base verb. With or / nor, the NEARER subject decides. In long subjects, skip "of…", "with…", "who / which…" to find the head word; a who-clause verb agrees with the noun before "who". With X% of / most of, the noun after "of" decides; an amount of money or time is singular.
+- Do not mark British collective plurals ("my family are") as errors; mention that a singular verb is the safer choice in IELTS.
+- Keep agreement errors apart from any other error (tense, article, word form) — give each its own fix.
+- The follow-up gap practises the same agreement decision in a NEW sentence (answers such as is / are, has / have or a verb + s).
+`
+          : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
