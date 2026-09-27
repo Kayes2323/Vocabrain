@@ -117,19 +117,20 @@ test('home CTA texts: Bangla and English, no "Continue learning" on the home car
   assert.doesNotMatch(card, /continuePlan|startPlan|allDone|continueTitle/);
 });
 
-test('home Quick access: 3 IELTS shortcuts, not a feature list or a second menu, no Study Abroad', () => {
-  assert.deepEqual(HOME_QUICK_ACCESS.map((q) => q.id), ['foundation', 'tests', 'speaking']);
-  assert.ok(HOME_QUICK_ACCESS.length >= 3 && HOME_QUICK_ACCESS.length <= 4);
+test('home Quick access: one hub with exactly 5 destinations, all existing pages; Mino stands out in the nav', () => {
+  assert.deepEqual(HOME_QUICK_ACCESS.map((q) => q.id), ['today', 'foundation', 'tests', 'speaking', 'abroad']);
   const ielts = new Set(IELTS_SECTIONS.map((x) => x.href));
-  for (const q of HOME_QUICK_ACCESS) {
-    assert.ok(ielts.has(q.href), `${q.id} opens an IELTS section`);
-    assert.ok(!PRIMARY_NAV.some((n) => n.href === q.href), `${q.id} is not a copy of a main-menu item`);
-    assert.ok(!q.href.startsWith('/abroad'));
-    assert.ok(tr(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title` && getTranslator('bn').t(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title`);
-  }
-  assert.equal(new Set(HOME_QUICK_ACCESS.map((q) => q.tint)).size, HOME_QUICK_ACCESS.length, 'each shortcut has its own accent');
-  const journey = readFileSync(join(process.cwd(), 'components/home/JourneyCard.tsx'), 'utf8');
-  assert.doesNotMatch(journey, /\/ielts\/foundation/, 'Foundation is offered once on Home (Quick access), not again in the journey card');
+  for (const q of HOME_QUICK_ACCESS.filter((x) => ['foundation', 'tests', 'speaking'].includes(x.id))) assert.ok(ielts.has(q.href), `${q.id} opens its IELTS page`);
+  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'today')!.href, '/today');
+  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'abroad')!.href, '/abroad');
+  for (const q of HOME_QUICK_ACCESS) assert.ok(tr(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title` && getTranslator('bn').t(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title`, q.id);
+  assert.equal(new Set(HOME_QUICK_ACCESS.map((q) => q.tint)).size, 5, 'each shortcut has its own accent');
+  assert.equal(new Set(PRIMARY_NAV.map((n) => n.tint)).size, 5, 'each nav tab has its own active color');
+  assert.deepEqual(PRIMARY_NAV.filter((n) => n.featured).map((n) => n.href), ['/mino']);
+  const nav = readFileSync(join(process.cwd(), 'components/shell/BottomNav.tsx'), 'utf8');
+  assert.match(nav, /<MinoMark size="md" alive \/>/, 'Mino in the nav is larger and always alive (blinks)');
+  const home = readFileSync(join(process.cwd(), 'app/(app)/page.tsx'), 'utf8');
+  assert.doesNotMatch(home, /TodayCard/, "today's learning lives inside Quick access, not as its own section on Home");
 });
 
 console.log(`\n${passed} passed`);

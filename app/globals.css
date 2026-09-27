@@ -182,7 +182,7 @@
 @layer utilities {
   /* Bottom padding that clears the mobile nav bar and the iOS home indicator. */
   .pb-nav {
-    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
   }
   /* Mobile top: clear of the status bar (standalone PWA, viewport-fit=cover) without extra empty space. */
   .pt-safe-top {

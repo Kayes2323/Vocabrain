@@ -770,12 +770,12 @@ export const bn: LocaleDictionary = {
   home: {
     quickAccess: 'দ্রুত শুরু',
     quick: {
+      today: { title: 'আজকের পড়া' },
       foundation: { title: 'IELTS Foundation', body: 'ধাপে ধাপে basics' },
       tests: { title: 'Practice Test', body: 'সময় ধরে, score সহ' },
       speaking: { title: 'Speaking Test', body: 'কথা বলে Part 1–3' },
+      abroad: { title: 'Study Abroad', body: 'বিদেশে পড়ার পরিকল্পনা' },
     },
-    abroadTitle: 'Study Abroad',
-    abroadBody: 'বিদেশে পড়ার পরিকল্পনা শুরু করুন',
     yourGoal: 'আপনার goal',
     goalValue: 'IELTS {band}',
     noGoalTitle: 'চলুন আগে আপনার goal ঠিক করি',
@@ -787,6 +787,7 @@ export const bn: LocaleDictionary = {
     startReview: "Today's Review শুরু করুন",
     taskDone: 'শেষ',
     todayProgress: '{done}/{total} সম্পন্ন',
+    todayTime: 'মোট প্রায় {n} মিনিট',
     todayDetails: 'আজকের কাজগুলো দেখুন',
     todayStart: 'আজকের পড়া শুরু করুন',
     todayContinue: 'আজকের পড়া চালিয়ে যান',

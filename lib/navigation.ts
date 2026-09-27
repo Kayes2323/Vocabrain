@@ -6,6 +6,7 @@ import {
   BookText,
   Building2,
   Calculator,
+  CalendarCheck,
   CalendarClock,
   ClipboardCheck,
   ClipboardList,
@@ -36,23 +37,25 @@ export interface PrimaryNavItem {
   icon: LucideIcon;
   /** Mino gets a distinctive treatment in the nav. */
   featured?: boolean;
+  /** Active-state colors (soft background + foreground) from the design tints. */
+  tint: string;
 }
 
 export const PRIMARY_NAV: PrimaryNavItem[] = [
-  { href: '/', labelKey: 'nav.home', icon: Home },
-  { href: '/ielts', labelKey: 'nav.ielts', icon: GraduationCap },
-  { href: '/mino', labelKey: 'nav.mino', icon: Sparkles, featured: true },
-  { href: '/abroad', labelKey: 'nav.abroad', icon: Plane },
-  { href: '/profile', labelKey: 'nav.profile', icon: User },
+  { href: '/', labelKey: 'nav.home', icon: Home, tint: 'bg-tint-blue text-tint-blue-fg' },
+  { href: '/ielts', labelKey: 'nav.ielts', icon: GraduationCap, tint: 'bg-tint-lavender text-tint-lavender-fg' },
+  { href: '/mino', labelKey: 'nav.mino', icon: Sparkles, featured: true, tint: 'bg-brand-soft text-brand' },
+  { href: '/abroad', labelKey: 'nav.abroad', icon: Plane, tint: 'bg-tint-yellow text-tint-yellow-fg' },
+  { href: '/profile', labelKey: 'nav.profile', icon: User, tint: 'bg-tint-green text-tint-green-fg' },
 ];
 
 /**
- * Home "Quick access": the few IELTS things a student starts most often.
- * Deliberately short (never every section) and not a copy of PRIMARY_NAV;
- * the IELTS page keeps the full list. Hrefs follow IELTS_SECTIONS.
+ * Home "Quick access": the one hub for the few places a student goes most —
+ * today's learning, three IELTS areas and Study Abroad. Deliberately short
+ * (never every section); every href is an existing page.
  */
 export interface QuickAccessItem {
-  id: 'foundation' | 'tests' | 'speaking';
+  id: 'today' | 'foundation' | 'tests' | 'speaking' | 'abroad';
   href: string;
   icon: LucideIcon;
   /** Accent from the design system's tints, one per item. */
@@ -60,13 +63,16 @@ export interface QuickAccessItem {
 }
 
 export const HOME_QUICK_ACCESS: QuickAccessItem[] = [
+  { id: 'today', href: '/today', icon: CalendarCheck, tint: 'bg-brand-soft text-brand' },
   { id: 'foundation', href: '/ielts/foundation', icon: Layers, tint: 'bg-tint-lavender text-tint-lavender-fg' },
   { id: 'tests', href: '/ielts/tests', icon: Timer, tint: 'bg-tint-blue text-tint-blue-fg' },
   { id: 'speaking', href: '/ielts/tests/vb-practice-1/speaking', icon: Mic, tint: 'bg-tint-green text-tint-green-fg' },
+  { id: 'abroad', href: '/abroad', icon: Plane, tint: 'bg-tint-yellow text-tint-yellow-fg' },
 ];
 
 export function isNavActive(pathname: string, href: string): boolean {
-  if (href === '/') return pathname === '/';
+  // Today's learning is opened from Home, so Home stays the active tab there.
+  if (href === '/') return pathname === '/' || pathname === '/today';
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

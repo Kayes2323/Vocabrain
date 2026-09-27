@@ -768,12 +768,12 @@ export const en = {
   home: {
     quickAccess: 'Quick access',
     quick: {
+      today: { title: "Today's Learning" },
       foundation: { title: 'IELTS Foundation', body: 'Basics, step by step' },
       tests: { title: 'Practice Test', body: 'Timed, with scores' },
       speaking: { title: 'Speaking Test', body: 'Parts 1–3, out loud' },
+      abroad: { title: 'Study Abroad', body: 'Plan your study abroad' },
     },
-    abroadTitle: 'Study Abroad',
-    abroadBody: 'Start planning to study abroad',
     yourGoal: 'Your goal',
     goalValue: 'IELTS {band}',
     noGoalTitle: "Let's set your goal",
@@ -785,6 +785,7 @@ export const en = {
     startReview: "Start Today's Review",
     taskDone: 'Done',
     todayProgress: '{done}/{total} done',
+    todayTime: 'About {n} min in total',
     todayDetails: "Show today's tasks",
     todayStart: 'Start today’s learning',
     todayContinue: 'Continue today’s learning',

@@ -19,7 +19,7 @@ export function SideNav() {
       </Link>
       <nav aria-label={t('nav.primary')}>
         <ul className="space-y-1">
-          {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured }) => {
+          {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured, tint }) => {
             const active = isNavActive(pathname, href);
             return (
               <li key={href}>
@@ -28,12 +28,10 @@ export function SideNav() {
                   aria-current={active ? 'page' : undefined}
                   className={cn(
                     'flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-medium transition-colors',
-                    active
-                      ? 'bg-brand-soft font-semibold text-brand'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                    active ? cn(tint, 'font-semibold') : 'text-foreground/70 hover:bg-muted hover:text-foreground',
                   )}
                 >
-                  {featured ? <MinoMark size="xs" /> : <Icon className="size-5" aria-hidden />}
+                  {featured ? <MinoMark size="sm" alive /> : <Icon className="size-5" aria-hidden />}
                   {t(labelKey)}
                   {featured && (
                     <span className="ml-auto rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">

@@ -36,7 +36,7 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="text-sm text-muted-foreground">{t('home.yourGoal')}</p>
-          <p className="text-xl font-semibold tracking-tight tabular-nums">{t('home.goalValue', { band: formatBand(target) })}</p>
+          <p className="text-2xl font-semibold tracking-tight tabular-nums">{t('home.goalValue', { band: formatBand(target) })}</p>
         </div>
         <div className="text-right">
           <p className="text-sm text-muted-foreground">{t('journey.preparation')}</p>

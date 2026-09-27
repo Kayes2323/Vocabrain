@@ -4,11 +4,9 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { Callout, ScreenSkeleton } from '@/components/ds';
-import { AbroadRow } from '@/components/home/AbroadRow';
 import { JourneyCard } from '@/components/home/JourneyCard';
 import { MinoCard } from '@/components/home/MinoCard';
 import { QuickAccess } from '@/components/home/QuickAccess';
-import { TodayCard } from '@/components/home/TodayCard';
 
 function greetingKey(date = new Date()): string {
   const h = date.getHours();
@@ -50,16 +48,14 @@ export default function HomePage() {
         </Callout>
       )}
 
-      {/* Greeting → Quick access → today's learning → progress → Mino (when useful) → Study Abroad. */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
-        <div className="space-y-5">
-          <QuickAccess />
-          <TodayCard profile={profile} />
+      {/* Greeting → goal & progress → Quick access → Mino (only when useful). */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
+        <div className="space-y-6">
           <JourneyCard profile={profile} />
+          <QuickAccess profile={profile} />
         </div>
-        <div className="space-y-5 lg:sticky lg:top-10">
+        <div className="lg:sticky lg:top-10">
           <MinoCard profile={profile} />
-          <AbroadRow />
         </div>
       </div>
     </div>

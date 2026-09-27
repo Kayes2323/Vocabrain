@@ -78,7 +78,7 @@ export function InstallPrompt() {
       aria-labelledby="install-mino-title"
       aria-describedby="install-mino-body"
       data-testid="install-prompt"
-      className="fixed inset-x-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border bg-card p-4 shadow-[0_8px_30px_rgb(15_23_42/0.12)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 md:inset-x-auto md:right-6 md:bottom-6 md:w-[360px]"
+      className="fixed inset-x-4 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border bg-card p-4 shadow-[0_8px_30px_rgb(15_23_42/0.12)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 md:inset-x-auto md:right-6 md:bottom-6 md:w-[360px]"
     >
       <div className="flex items-start gap-3">
         {/* Arrives with a small blink + sparkle, nothing bigger. */}
