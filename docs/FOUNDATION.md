@@ -62,11 +62,13 @@ collection, no rules change; works for guests on-device):
 
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
-Articles (9 lessons + the Articles Final Mastery Challenge), Vocabulary
-Foundation. Subject–Verb Agreement, Prepositions, Connectors, Complex
-Sentences, Punctuation and Common Errors show "Soon".
+Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
+Agreement (9 lessons + its Final Mastery Challenge), Vocabulary Foundation.
+Prepositions, Connectors, Complex Sentences, Punctuation and Common Errors
+show "Soon".
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
-shows "Soon". See `docs/TENSES_CURRICULUM.md` and `docs/ARTICLES_CURRICULUM.md`.
+shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md` and
+`docs/AGREEMENT_CURRICULUM.md`.
 
 ## Tests
 
@@ -245,3 +247,25 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
 - **E2E.** `scripts/e2e/articles.e2e.ts`; `pnpm test:e2e` runs Tenses and Articles on one
   server start (`pnpm test:e2e:articles` for one).
 
+
+## Phase C: Subject–Verb Agreement
+
+- **Module 5** (`agreement.ts` sva-1…sva-5, `agreement-apply.ts` sva-6…sva-9): 8 taught v2
+  lessons + the review test. Five concepts (`sva-basic`, `sva-compound`, `sva-indefinite`,
+  `sva-long`, `sva-quantity`, tag `agreement`). See `docs/AGREEMENT_CURRICULUM.md`.
+- **Patterns.** `sva-compound`, `sva-indefinite`, `sva-long-subject`, `sva-quantity` (+ fix
+  guides); `sv-agreement` now also shows on the Agreement page. Open Agreement patterns are
+  in the Mino snapshot.
+- **Challenge.** `agreement` in `CHALLENGES` (6 parts × 4 items, 18 served, `finals.agreement`).
+- **Mino.** Agreement tasks add agreement rules to the sentence check (quote the verb, name
+  its real subject, one or more; British collective plurals are not marked wrong).
+- **E2E.** `scripts/e2e/agreement.e2e.ts` (`pnpm test:e2e:agreement`); part of `pnpm test:e2e`.
+
+## Known issue: `pnpm lint`
+
+`pnpm lint` runs `eslint .`, but the repository has never had an ESLint config
+(`eslint.config.*` / `.eslintrc*`) and `eslint` is not a dependency, so `npx eslint`
+installs the latest ESLint (v10) and stops with "couldn't find an eslint.config file".
+This predates the Foundation work and is left as is (no config was invented). Until an
+ESLint setup is chosen, the checks that gate a release are `npx tsc --noEmit -p .`, the
+unit suites, the E2E specs and `next build`.
