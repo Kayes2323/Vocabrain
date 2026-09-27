@@ -313,7 +313,8 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       <div className="mx-auto flex w-full max-w-[720px] min-w-0 flex-col">
         {/* Header: who Mino is, and the few things you can open. */}
         <header className="sticky top-0 z-20 -mx-4 -mt-6 flex items-center gap-2.5 bg-background/85 px-4 pt-3 pb-3 backdrop-blur-lg md:-mt-10 md:pt-6">
-          <MinoMark size="sm" alive />
+          {/* Thinking while an answer is on its way; back to idle with a blink + sparkle when it arrives. */}
+          <MinoMark size="sm" mode={pending ? 'thinking' : 'idle'} />
           <div className="min-w-0 flex-1 leading-tight">
             <h1 className="font-semibold">{MINO.name}</h1>
             <p className="truncate text-xs text-muted-foreground">{t('mino.role')}</p>

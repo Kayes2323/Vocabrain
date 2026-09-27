@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { MINO_TIMING } from '@/lib/mino/motion';
+import { minoReact } from '@/components/mino/Mino';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -42,12 +44,44 @@ function JourneyGate({ children }: { children: React.ReactNode }) {
     if (needsOnboarding) router.replace('/onboarding');
   }, [needsOnboarding, router]);
 
+  // Opening a feature: any visible Mino gives one subtle blink.
+  useEffect(() => {
+    minoReact('blink');
+  }, [pathname]);
+
   if (needsOnboarding) return <SplashScreen />;
   return <>{children}</>;
 }
 
+/**
+ * The first start in a session keeps the splash up long enough for Mino's
+ * welcome (~1.3 s) to finish. Later navigations, and reduced motion, never wait.
+ */
+function useWelcomeDone(): boolean {
+  // Starts "not done" on server and client alike (no hydration mismatch); decided after mount.
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    let seen = true;
+    try {
+      seen = sessionStorage.getItem('mino-welcomed') === '1';
+      sessionStorage.setItem('mino-welcomed', '1');
+    } catch {
+      // Storage blocked: skip the wait.
+    }
+    if (seen || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setDone(true);
+      return;
+    }
+    const id = setTimeout(() => setDone(true), MINO_TIMING.welcome + 150);
+    return () => clearTimeout(id);
+  }, []);
+  return done;
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user, loading, isGuest } = useAuth();
+  const { user, loading: authLoading, isGuest } = useAuth();
+  const welcomeDone = useWelcomeDone();
+  const loading = authLoading || !welcomeDone;
   const pathname = usePathname();
   // Signed-in students sync to Firestore; guests keep data on this device.
   const repository = useMemo(

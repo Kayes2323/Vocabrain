@@ -10,8 +10,11 @@ export default function manifest(): MetadataRoute.Manifest {
     display: 'standalone',
     background_color: '#fafafc',
     theme_color: '#1e2a4a',
+    // Mino's face + star (no wordmark), rendered from the canonical mark: scripts/brand/mino-icons.mjs.
     icons: [
       { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml' },
+      { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
       { src: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   };

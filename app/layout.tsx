@@ -4,7 +4,8 @@ import { Analytics } from '@vercel/analytics/next'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
 import './globals.css'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+// latin-ext: the dotless ı of the Mino wordmark (loaded only where used, via unicode-range).
+const geist = Geist({ subsets: ['latin', 'latin-ext'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 // Bangla glyphs; Geist has no Bengali coverage, so the stack falls through to this.
 const notoBengali = Noto_Sans_Bengali({ subsets: ['bengali'], variable: '--font-bengali', weight: ['400', '500', '600'] })

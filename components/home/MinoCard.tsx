@@ -5,6 +5,7 @@ import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
+import { minoReact } from '@/components/mino/Mino';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { getMinoInsight, nextProfileGap } from '@/lib/engine';
@@ -18,9 +19,10 @@ export function MinoCard({ profile }: { profile: UserProfile }) {
   const name = profile.displayName;
 
   return (
-    <Panel variant="brand" className="space-y-4">
+    // Hover / tap → Mino blinks; an open profile gap gets one soft attention pulse.
+    <Panel variant="brand" className="space-y-4" onPointerEnter={() => minoReact('blink')} data-testid="mino-card">
       <div className="flex items-start gap-3">
-        <MinoMark />
+        <MinoMark mode={gap ? 'attention' : 'idle'} />
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold text-brand">{t('mino.insightLabel')}</p>
           <p className="text-[15px] text-foreground/90 text-pretty">“{name ? `${name}, ` : ''}{m(getMinoInsight(profile, brain))}”</p>

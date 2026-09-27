@@ -189,16 +189,27 @@
   }
 }
 
-/* Mino's mark: blink when alive, glance and breathe while thinking. */
+/* Mino, the companion. The drawing never changes; motion only adds life.
+   JS sets data-blink / data-react (see components/mino/Mino.tsx); CSS does the moving. */
 .mino-mark .mino-eye,
 .mino-mark .mino-body,
-.mino-mark .mino-glint {
+.mino-mark .mino-glint,
+.mino-wordmark-star {
   transform-box: fill-box;
   transform-origin: center;
 }
-.mino-alive .mino-eye {
-  animation: mino-blink 6s infinite;
+/* Off-screen, hidden tab or data-saver: whatever is running holds still. */
+.mino[data-motion='off'] * {
+  animation-play-state: paused;
 }
+/* Blink: a quick close and reopen (~150 ms), never a cartoon squash. */
+.mino .mino-eye {
+  transition: transform 70ms cubic-bezier(0.4, 0, 0.6, 1);
+}
+.mino[data-blink] .mino-eye {
+  transform: scaleY(0.1);
+}
+/* Thinking: Mino glances around and breathes; the star glimmers. No spinner. */
 .mino-thinking .mino-eyes {
   animation: mino-look 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
 }
@@ -206,11 +217,34 @@
   animation: mino-breathe 2.4s ease-in-out infinite;
 }
 .mino-thinking .mino-glint {
-  animation: mino-twinkle 1.2s ease-in-out infinite;
+  animation: mino-twinkle 1.6s ease-in-out infinite;
 }
-@keyframes mino-blink {
-  0%, 92%, 100% { transform: scaleY(1); }
-  95% { transform: scaleY(0.12); }
+/* Sparkle / success: the star turns a quarter (same shape at rest) and glows once. */
+.mino[data-react='sparkle'] .mino-glint {
+  animation: mino-sparkle 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.mino[data-react='success'] .mino-glint {
+  animation: mino-sparkle-strong 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+/* Attention: two soft pulses of the face, never an alarm. */
+.mino[data-react='attention'] .mino-body {
+  animation: mino-attention 1.4s ease-in-out;
+}
+/* Welcome (~1.3 s): appear with a small bounce, settle, blink, sparkle, then the wordmark. */
+.mino[data-react='welcome'] .mino-mark {
+  animation: mino-welcome-in 620ms cubic-bezier(0.2, 0.9, 0.3, 1.25) both;
+}
+.mino[data-react='welcome'] .mino-eye {
+  animation: mino-welcome-blink 1.3s ease both;
+}
+.mino[data-react='welcome'] .mino-glint {
+  animation: mino-sparkle 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 820ms both;
+}
+.mino[data-react='welcome'] .mino-wordmark {
+  animation: mino-wordmark-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 700ms both;
+}
+.mino[data-react='welcome'] .mino-wordmark-star {
+  animation: mino-sparkle 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 980ms both;
 }
 @keyframes mino-look {
   0%, 100% { transform: translateX(0); }
@@ -220,11 +254,38 @@
 }
 @keyframes mino-breathe {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.035); }
+  50% { transform: scale(1.03); }
 }
 @keyframes mino-twinkle {
-  0%, 100% { opacity: 1; transform: scale(1) rotate(0); }
-  50% { opacity: 0.35; transform: scale(0.6) rotate(45deg); }
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+@keyframes mino-sparkle {
+  0% { transform: scale(1) rotate(0); opacity: 0.9; }
+  45% { transform: scale(1.3) rotate(45deg); opacity: 1; }
+  100% { transform: scale(1) rotate(90deg); opacity: 0.9; }
+}
+@keyframes mino-sparkle-strong {
+  0% { transform: scale(1) rotate(0); opacity: 0.9; }
+  40% { transform: scale(1.45) rotate(45deg); opacity: 1; }
+  100% { transform: scale(1) rotate(90deg); opacity: 0.9; }
+}
+@keyframes mino-attention {
+  0%, 50%, 100% { transform: scale(1); }
+  25%, 75% { transform: scale(1.045); }
+}
+@keyframes mino-welcome-in {
+  0% { opacity: 0; transform: translateY(6px) scale(0.86); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.04); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes mino-welcome-blink {
+  0%, 56%, 66%, 100% { transform: scaleY(1); }
+  61% { transform: scaleY(0.1); }
+}
+@keyframes mino-wordmark-in {
+  0% { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: none; }
 }
 /* Status line under "Mino is thinking": each phrase fades in, then out. */
 .mino-status > span {
@@ -241,6 +302,6 @@
   38%, 100% { opacity: 0; transform: translateY(-6px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .mino-mark *, .mino-status > span { animation: none !important; }
+  .mino *, .mino-mark *, .mino-status > span { animation: none !important; transition: none !important; }
   .mino-status > span:first-child { opacity: 1; }
 }
