@@ -20,8 +20,10 @@ export function NotVerified({ links = [], text: override }: { links?: SourceRef[
   );
 }
 
-export function SourceLinks({ links }: { links: SourceRef[] }) {
+export function SourceLinks({ links: all }: { links: SourceRef[] }) {
   const { t } = useLocale();
+  // The same official page can back several facts; list it once.
+  const links = [...new Map(all.map((l) => [l.url ?? l.name, l])).values()];
   if (!links.length) return null;
   return (
     <div className="space-y-1">

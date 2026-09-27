@@ -675,7 +675,7 @@ async function main() {
     await p.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
     await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
     check('KR hub asks "What are you planning to study?" with 2 pathways', (await p.getByTestId('pathway-picker').locator('[data-pathway]').count()) === 2);
-    await p.locator('[data-option-group="language"]').click();
+    await p.locator('[data-pathway="language"]').click();
     let y = await pb((v) => v.pathwayByCountry?.KR === 'language');
     check('Firestore: pathway saved per country', y.pathwayByCountry?.KR === 'language');
     check('KR sections stay honest: all Not verified yet', (await p.locator('[data-section][data-status="not-yet"]').count()) === (await p.locator('[data-section]').count()));
@@ -687,7 +687,7 @@ async function main() {
     check('D-4: only interview / processing / insurance Not verified yet; type needs review (D-4 type names differ)', (await p.locator('[data-section][data-status="not-yet"]').count()) === 3 && ['interview', 'processing', 'insurance'].every(Boolean) && (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="type"]').getAttribute('data-status')) === 'needs-review');
     const d4Type = await p.locator('[data-section="type"]').innerText();
     check('D-4 type: official name, D-4-1, source + date; no D-2 data', /D-4 \(General Trainee\)/.test(d4Type) && /D-4-1 Korean Language Training/.test(d4Type) && /Korea Immigration Service/.test(d4Type) && /verified [^\n]*2026/.test(d4Type) && !/D-2-|D-2 \(Student\)/.test(d4Type), d4Type.slice(0, 200));
-    check('picker card: which visa (official name) + source', /Visa: D-4 \(General Trainee\)/.test(await p.locator('[data-option-group="language"]').innerText()) && /Visa: D-2 \(Student\)/.test(await p.locator('[data-option-group="degree"]').innerText()) && (await p.getByTestId('pathway-source').first().getAttribute('href')) === 'https://www.immigration.go.kr/bbs/immigration_eng/230/454085/download.do');
+    check('picker card: which visa (official name) + source', /Visa: D-4 \(General Trainee\)/.test(await p.locator('[data-pathway="language"]').innerText()) && /Visa: D-2 \(Student\)/.test(await p.locator('[data-pathway="degree"]').innerText()) && (await p.getByTestId('pathway-source').first().getAttribute('href')) === 'https://www.immigration.go.kr/bbs/immigration_eng/230/454085/download.do');
     await p.locator('[data-section="documents"] button[aria-expanded]').first().click();
     const bd = await p.locator('[data-block="kr-bd-specific"]').innerText();
     check('Bangladesh block: "Needs review" (dated Embassy list) + Embassy link', /Bangladesh-specific requirement: Needs review/.test(bd) && (await p.locator('[data-block="kr-bd-specific"]').getAttribute('data-status')) === 'needs-review' && (await p.locator('[data-block="kr-bd-specific"] a[href^="https://overseas.mofa.go.kr/bd-en/"]').count()) >= 1, bd.slice(0, 200));
@@ -701,7 +701,7 @@ async function main() {
     check('D-4 rule: its own (Study in Korea) rule, marked partly verified; no D-2 hours', (await wc4.getAttribute('data-state')) === 'answered' && /20 hours a week/.test(wc4Txt) && /Partly verified/.test(wc4Txt) && !/25 hours a week|30 hours a week/.test(wc4Txt), wc4Txt.slice(0, 200));
     check('D-4 visa desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-kr-c13-01-d4-desktop');
-    await p.getByTestId('pathway-picker').locator('[data-option-group="degree"]').click();
+    await p.getByTestId('pathway-picker').locator('[data-pathway="degree"]').click();
     await p.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-2', null, { timeout: 10_000 });
     y = await pb((v) => v.pathwayByCountry?.KR === 'degree');
     check('switch to degree → D-2, saved', y.pathwayByCountry?.KR === 'degree' && (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-2');
@@ -746,7 +746,7 @@ async function main() {
     check('roadmap visa step lists the D-2 documents (same store as Apply)', (await p.locator('[data-step="visa"] [data-step-doc="admission-letter"]').count()) === 1);
     await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
-    await p.getByTestId('pathway-picker').locator('[data-option-group="degree"]').click();
+    await p.getByTestId('pathway-picker').locator('[data-pathway="degree"]').click();
     y = await pb((v) => !v.pathwayByCountry?.KR);
     check('no pathway → both categories, with a hint to choose', (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-2,D-4' && /Choose your pathway/.test(await p.locator('main').innerText()));
     check('visa KR desktop: no sideways scroll', await noHorizontalScroll(p));
@@ -782,7 +782,7 @@ async function main() {
     const kb = async (ok: (x: SB) => boolean) => (await waitForAbroad(uid, (v) => ok(v as SB))) as SB;
     await p.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
     await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
-    await p.locator('[data-option-group="degree"]').click();
+    await p.locator('[data-pathway="degree"]').click();
     await kb((v) => v.pathwayByCountry?.KR === 'degree');
     await p.goto(`${BASE}/abroad/universities?country=kr`, { waitUntil: 'load' });
     await p.getByTestId('program-finder').waitFor({ timeout: 60_000 });
@@ -995,7 +995,7 @@ async function main() {
     check('bn KR visa: pathway question in Bangla', /তুমি কী পড়ার plan করছো\?/.test(await q.getByTestId('pathway-picker').innerText()));
     check('bn KR picker: visa name + source line in Bangla', /Visa: D-2 \(Student\)/.test(await q.getByTestId('pathway-picker').innerText()) && /Visa-র নামের source/.test(await q.getByTestId('pathway-picker').innerText()));
     // C1.2 · D-2 in Bangla on mobile
-    await q.locator('[data-option-group="degree"]').click();
+    await q.locator('[data-pathway="degree"]').click();
     await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-2', null, { timeout: 10_000 });
     const qOpen = async (id: string) => {
       const btn = q.locator(`[data-section="${id}"] button[aria-expanded]`).first();
@@ -1007,7 +1007,7 @@ async function main() {
     check('bn D-2 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-c12-02-d2-mobile-bn', false);
     // C1.3 · D-4 in Bangla on mobile
-    await q.locator('[data-option-group="language"]').click();
+    await q.locator('[data-pathway="language"]').click();
     await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-4', null, { timeout: 10_000 });
     check('bn D-4 processing: "Official নির্দিষ্ট processing time verified নয়"', /Official নির্দিষ্ট processing time verified নয়/.test(await qOpen('processing')));
     check('bn D-4 money: "Official amount এখনো verified নয়"', /Official amount এখনো verified নয়/.test(await qOpen('finances')));
@@ -1015,7 +1015,7 @@ async function main() {
     check('bn D-4 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-c13-02-d4-mobile-bn', false);
     // Back to "no pathway" so the later checks start from the same state.
-    await q.locator('[data-option-group="language"]').click();
+    await q.locator('[data-pathway="language"]').click();
     await q.waitForFunction(() => document.querySelectorAll('[data-testid="visa-categories"] [data-category]').length === 2, null, { timeout: 10_000 });
     check('bn KR visa mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-b2-02-visa-mobile-bn', false);
