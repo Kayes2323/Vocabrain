@@ -12,6 +12,8 @@ import {
   parseInstallState,
   shouldOfferInstall,
 } from '../lib/pwa/install';
+import { en } from '../lib/i18n/locales/en';
+import { bn } from '../lib/i18n/locales/bn';
 
 let passed = 0;
 function test(name: string, fn: () => void) {
@@ -88,6 +90,20 @@ test('the service worker does not intercept requests (no stale pages, no caching
   assert.match(manifest, /display: 'standalone'/);
   assert.match(manifest, /icon-192\.png/);
   assert.match(manifest, /icon-512\.png/);
+});
+
+test('the card text exists at the top level in both languages (keys used by InstallPrompt)', () => {
+  const ui = readFileSync('components/pwa/InstallPrompt.tsx', 'utf8');
+  const keys = [...ui.matchAll(/t\('pwa\.(\w+)'\)/g)].map((m) => m[1]);
+  assert.ok(keys.length >= 6);
+  for (const k of keys) {
+    assert.equal(typeof (en.pwa as Record<string, string>)[k], 'string', `en pwa.${k}`);
+    assert.equal(typeof (bn.pwa as Record<string, string>)[k], 'string', `bn pwa.${k}`);
+  }
+  assert.equal(bn.pwa.titlePhone, 'ফোনে Mino ইনস্টল করুন');
+  assert.equal(bn.pwa.body, 'Mino-কে আপনার ফোনের home screen-এ রাখুন এবং আরও দ্রুত ব্যবহার করুন।');
+  assert.equal(bn.pwa.notNow, 'পরে');
+  assert.equal(en.pwa.titleDesktop, 'Install Mino');
 });
 
 console.log(`\n${passed} passed`);

@@ -180,15 +180,7 @@ export const bn: LocaleDictionary = {
       quiz: 'Quiz: {module}',
       done: 'এখনকার সব lesson শেষ',
     },
-    pwa: {
-    titlePhone: 'ফোনে Mino ইনস্টল করুন',
-    titleDesktop: 'Mino ইনস্টল করুন',
-    body: 'Mino-কে আপনার ফোনের home screen-এ রাখুন এবং আরও দ্রুত ব্যবহার করুন।',
-    bodyDesktop: 'অন্য app-এর মতো এক click-এ Mino খুলুন।',
-    install: 'ইনস্টল করুন',
-    notNow: 'পরে',
-  },
-  mino: {
+    mino: {
       says: 'Mino বলছে',
       check: 'আগে তোমার starting point খুঁজে নিই। প্রায় ১০ মিনিট লাগবে, তারপর আমি ঠিক বুঝব তুমি কোথা থেকে শুরু করবে।',
       resume: 'তুমি {lesson}-এর মাঝখানে থেমেছিলে। চলো শেষ করি — আর অল্প কয়েক মিনিট বাকি।',
@@ -844,6 +836,14 @@ export const bn: LocaleDictionary = {
     todayFirst: 'আজকের plan-এর প্রথম কাজ।',
     todayNext: 'আজকের plan-এর পরের কাজ।',
     reviewFailed: 'এর মধ্যে {n}টা গতবার মিস হয়েছিল।',
+  },
+  pwa: {
+    titlePhone: 'ফোনে Mino ইনস্টল করুন',
+    titleDesktop: 'Mino ইনস্টল করুন',
+    body: 'Mino-কে আপনার ফোনের home screen-এ রাখুন এবং আরও দ্রুত ব্যবহার করুন।',
+    bodyDesktop: 'অন্য app-এর মতো এক click-এ Mino খুলুন।',
+    install: 'ইনস্টল করুন',
+    notNow: 'পরে',
   },
   mino: {
     role: 'তোমার Personal AI Mentor',
