@@ -2,6 +2,22 @@ import { getCountry } from '@/lib/content/countries';
 import { abroadJourney, abroadNextAction, allDeadlines, countryRoadmap, documentStatus, requiredDocuments } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
 import { countryPathways, selectedPathway, visaCategoriesFor } from './pathways';
+import { PROFILE_QUESTION_IDS, profileAnswer, type ProfileAnswer, type ProfileQuestionId } from './profile-questions';
+import { PROGRAMS, UNIVERSITIES } from '@/lib/content/universities';
+
+/** The student's own answers for Mino: each question's answer, or "not provided" (never guessed). */
+export function studentProfileForMino(a: UserProfile['abroad']): Record<'wantedDegree' | 'wantedSubject' | ProfileQuestionId, string> {
+  const fmt = (v: ProfileAnswer | undefined) => {
+    if (v === undefined) return 'not provided';
+    if (typeof v !== 'object') return String(v);
+    return 'amount' in v ? `${v.currency} ${v.amount}` : `${v.value} (${v.scale})`;
+  };
+  return {
+    wantedDegree: a.degreeLevel ?? 'not provided',
+    wantedSubject: a.subject ? `"${a.subject}" (student-entered)` : 'not provided',
+    ...(Object.fromEntries(PROFILE_QUESTION_IDS.map((id) => [id, fmt(profileAnswer(a, id))])) as Record<ProfileQuestionId, string>),
+  };
+}
 
 /**
  * A compact, English summary of the student's Study Abroad progress for Mino
@@ -18,6 +34,7 @@ export function abroadSummary(profile: UserProfile, now = new Date()) {
   const universities = a.universities ?? [];
   const next = abroadNextAction(profile, now);
   return {
+    profile: studentProfileForMino(a),
     nextAction:
       next.kind === 'date'
         ? `date ${next.date} (${next.bucket}): ${typeof next.title === 'string' ? `"${next.title}" (student-entered)` : next.title.en} → ${next.href}`
@@ -58,7 +75,11 @@ export function abroadSummary(profile: UserProfile, now = new Date()) {
     },
     universities: {
       count: universities.length,
-      list: universities.slice(0, 8).map((u) => `"${u.name}" (${getCountry(u.countryCode)?.name ?? u.countryCode}; ${u.fit}; ${u.status})`),
+      list: universities.slice(0, 8).map((u) => {
+        const reviewed = u.universityId && UNIVERSITIES.some((x) => x.id === u.universityId);
+        const program = u.programId ? PROGRAMS.find((p) => p.id === u.programId)?.title : u.program ? `"${u.program}"` : 'no program yet';
+        return `"${u.name}" (${getCountry(u.countryCode)?.name ?? u.countryCode}; program ${program}; ${u.fit}; ${u.status}; ${reviewed ? 'reviewed record — use getCountryData/facts' : 'student-entered, no verified facts'})`;
+      }),
     },
   };
 }
@@ -77,6 +98,7 @@ export function abroadSnapshotLine(profile: UserProfile, now = new Date()): stri
     s.missedDates && `${s.missedDates} missed date(s)`,
     s.documents.required && `documents ready ${s.documents.ready}/${s.documents.required}`,
     s.universities.count && `${s.universities.count} universities on their list`,
+    `profile: ${Object.entries(s.profile).filter(([, v]) => v !== 'not provided').map(([k, v]) => `${k} ${v}`).join(', ') || 'nothing provided yet'}`,
     `next action: ${s.nextAction}`,
   ].filter(Boolean);
   return `- Study abroad journey: ${parts.join('; ')}.`;

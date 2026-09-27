@@ -25,31 +25,50 @@ const newId = (prefix: string, now: Date) => `${prefix}-${now.getTime().toString
 
 // ------------------------------------------------------------------ universities
 
+const norm = (s: string | undefined) => (s ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+/** One entry per university + program: same registry ids, or the same name/country/program text. */
+export function isSameShortlistEntry(a: Pick<SavedUniversity, 'name' | 'countryCode' | 'universityId' | 'program' | 'programId'>, b: typeof a): boolean {
+  const sameUni = a.universityId && b.universityId ? a.universityId === b.universityId : norm(a.name) === norm(b.name) && a.countryCode.toUpperCase() === b.countryCode.toUpperCase();
+  const sameProgram = a.programId || b.programId ? a.programId === b.programId : norm(a.program) === norm(b.program);
+  return Boolean(sameUni && sameProgram);
+}
+
 export function addUniversity(
   abroad: StudyAbroadProfile,
-  input: Pick<SavedUniversity, 'name' | 'countryCode' | 'fit'> & Partial<Pick<SavedUniversity, 'program' | 'officialUrl' | 'universityId'>>,
+  input: Pick<SavedUniversity, 'name' | 'countryCode' | 'fit'> & Partial<Pick<SavedUniversity, 'program' | 'programId' | 'officialUrl' | 'universityId' | 'status'>>,
   now = new Date(),
 ): StudyAbroadProfile {
   const name = input.name.trim();
   if (!name) return abroad;
+  if ((abroad.universities ?? []).some((u) => isSameShortlistEntry(u, { ...input, name }))) return abroad; // never a duplicate
   const url = input.officialUrl?.trim();
   const item: SavedUniversity = {
     id: newId('uni', now),
     name,
     countryCode: input.countryCode.toUpperCase(),
     fit: input.fit,
-    status: 'researching',
+    status: input.status ?? 'researching',
     addedAt: now.toISOString(),
     ...(input.program?.trim() ? { program: input.program.trim() } : {}),
     // Only web links; anything else is dropped rather than rendered as a link.
     ...(url && /^https?:\/\/\S+\.\S+/.test(url) ? { officialUrl: url } : {}),
     ...(input.universityId ? { universityId: input.universityId } : {}),
+    ...(input.programId ? { programId: input.programId } : {}),
   };
   return { ...abroad, universities: [...(abroad.universities ?? []), item] };
 }
 
-export function updateUniversity(abroad: StudyAbroadProfile, id: string, patch: Partial<Pick<SavedUniversity, 'fit' | 'status' | 'program'>>, now = new Date()): StudyAbroadProfile {
-  return { ...abroad, universities: (abroad.universities ?? []).map((u) => (u.id === id ? { ...u, ...patch, updatedAt: now.toISOString() } : u)) };
+export function updateUniversity(abroad: StudyAbroadProfile, id: string, patch: Partial<Pick<SavedUniversity, 'fit' | 'status' | 'program' | 'programId'>>, now = new Date()): StudyAbroadProfile {
+  const list = abroad.universities ?? [];
+  const current = list.find((u) => u.id === id);
+  if (!current) return abroad;
+  const clean = { ...patch, ...(patch.program !== undefined ? { program: patch.program.trim() || undefined } : {}) };
+  const next = { ...current, ...clean, updatedAt: now.toISOString() };
+  if (!next.program) delete next.program;
+  // Changing the program must not turn this entry into a copy of another one.
+  if (list.some((u) => u.id !== id && isSameShortlistEntry(u, next))) return abroad;
+  return { ...abroad, universities: list.map((u) => (u.id === id ? next : u)) };
 }
 
 export function removeUniversity(abroad: StudyAbroadProfile, id: string): StudyAbroadProfile {

@@ -1,5 +1,5 @@
 import type { DegreeLevel } from '@/lib/constants';
-import type { ID, ISODate, Money, SourceRef, SourcedValue } from './common';
+import type { FactStatus, ID, ISODate, Money, SourceRef, SourcedValue } from './common';
 
 /**
  * Country records hold only sourced, dated facts. Screens read from the
@@ -27,6 +27,8 @@ export interface Country {
   roadmap?: RoadmapOverride;
   /** Ways to study here (e.g. degree vs language training), each tied to visa categories. */
   pathways?: StudyPathway[];
+  /** The country's own teaching language (ISO 639-1), for "English or local language" choices. */
+  localLanguage?: string;
   /** Questions the "Can I work?" check may ask (options are country-defined). */
   workQuestions?: WorkQuestion[];
 }
@@ -224,6 +226,14 @@ export interface CountrySection {
   blocks?: SectionBlock[];
 }
 
+/** Public or private, as the university or a government register states it. */
+export type UniversityOwnership = 'public' | 'private';
+
+/**
+ * A reviewed university record. Everything that could change or be disputed
+ * is a SourcedValue; a missing or not-verified value shows "Not verified yet".
+ * There is deliberately no ranking field.
+ */
 export interface University extends Partial<ContentMeta> {
   id: ID;
   name: string;
@@ -232,8 +242,18 @@ export interface University extends Partial<ContentMeta> {
   /** The university's own website: always an official source. */
   officialUrl: string;
   applicationPortalUrl?: string;
+  ownership?: SourcedValue<UniversityOwnership>;
+  /** Accreditation / recognition statement, from the accrediting body or government. */
+  accreditation?: SourcedValue<string>;
+  /** Plain description (general, not an official fact). */
+  description?: Bilingual;
+  /** Languages the university teaches in (ISO 639-1 codes, e.g. "en"). */
+  studyLanguages?: SourcedValue<string[]>;
   programIds?: ID[];
   scholarshipIds?: ID[];
+  officialSource?: SourceRef;
+  /** Reviewer status of the whole record (facts still carry their own). */
+  status?: FactStatus;
 }
 
 export interface EnglishRequirement {
@@ -242,22 +262,42 @@ export interface EnglishRequirement {
   minimumPerSkill?: number;
 }
 
+/** A requirement in a language other than English (e.g. a national test level). */
+export interface OtherLanguageRequirement {
+  /** ISO 639-1 code, e.g. "ko". */
+  language: string;
+  /** Test name as the source writes it. */
+  test?: string;
+  /** Minimum level as a number on that test's scale (e.g. 3). */
+  level?: number;
+  /** Anything the number can't say (e.g. "or pass the university's own test"). */
+  note?: string;
+}
+
 export interface Program extends Partial<ContentMeta> {
   id: ID;
   universityId: ID;
+  /** Program name as the university writes it. */
   title: string;
   degreeLevel: DegreeLevel;
+  /** Field / subject. */
   subject: string;
-  language?: string;
-  durationMonths?: number;
+  /** Teaching languages (ISO 639-1 codes); absent = not specified. */
+  studyLanguages?: SourcedValue<string[]>;
+  duration?: SourcedValue<number>; // months
   tuition?: SourcedValue<Money>;
   english?: SourcedValue<EnglishRequirement>;
+  otherLanguage?: SourcedValue<OtherLanguageRequirement>;
   admission?: SourcedValue<string>;
+  applicationWindow?: SourcedValue<{ opens?: ISODate; closes: ISODate }>;
   /** Months (1–12) the program starts. */
-  intakes?: number[];
-  documents?: DocumentKind[];
+  intakes?: SourcedValue<number[]>;
+  documents?: DocumentRequirement[];
+  scholarshipIds?: ID[];
   deadlineIds?: ID[];
   officialUrl?: string;
+  officialSource?: SourceRef;
+  status?: FactStatus;
 }
 
 export type ScholarshipProvider = 'government' | 'university' | 'other';

@@ -33,6 +33,7 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       ...(stored.abroad?.journey ? { journey: { ...stored.abroad.journey, marks: { ...stored.abroad.journey.marks }, steps: { ...stored.abroad.journey.steps } } } : {}),
       ...(stored.abroad?.documents ? { documents: { ...stored.abroad.documents } } : {}),
       ...(stored.abroad?.pathwayByCountry ? { pathwayByCountry: { ...stored.abroad.pathwayByCountry } } : {}),
+      ...(stored.abroad?.student ? { student: { ...stored.abroad.student } } : {}),
     },
     vocabulary: { ...base.vocabulary, ...stored.vocabulary, words: { ...stored.vocabulary?.words } },
     study: {

@@ -78,6 +78,7 @@ export const COUNTRIES: Country[] = [
     flag: '🇰🇷',
     priority: 1,
     capital: 'Seoul',
+    localLanguage: 'ko',
     data: {},
     // Structure only (approved: degree → D-2, language/training → D-4). Every
     // visa, document, work and language fact is added in Phase C, sourced.

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Briefcase, ExternalLink } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { checkWork, type WorkAnswers } from '@/lib/abroad/work';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { PROFILE_QUESTION_IDS, profileAnswer, type ProfileQuestionId } from '@/lib/abroad/profile-questions';
 import type { Country } from '@/lib/models';
 import { FactRow } from './FactRow';
 import { useBilingual } from './useBilingual';
@@ -15,7 +17,16 @@ import { useBilingual } from './useBilingual';
 export function WorkCheck({ country, pathway, visaCategory }: { country: Country; pathway?: string; visaCategory?: string }) {
   const { t } = useLocale();
   const text = useBilingual();
-  const [answers, setAnswers] = useState<WorkAnswers>({});
+  const { profile } = useProfile();
+  // A work question that is also a profile question starts from the student's answer (they can change it here).
+  const [answers, setAnswers] = useState<WorkAnswers>(() =>
+    Object.fromEntries(
+      (country.workQuestions ?? [])
+        .filter((q) => (PROFILE_QUESTION_IDS as readonly string[]).includes(q.id) && profile)
+        .map((q) => [q.id, profileAnswer(profile!.abroad, q.id as ProfileQuestionId)])
+        .filter(([, v]) => typeof v === 'string'),
+    ) as WorkAnswers,
+  );
   const result = checkWork(country, { ...answers, pathway, visaCategory });
   return (
     <section className="space-y-3 rounded-2xl border bg-card p-4" data-testid="work-check" data-state={result.state}>

@@ -71,16 +71,42 @@ export interface StudyAbroadProfile {
   deadlines?: PersonalDeadline[];
   /** How far each document is. */
   documents?: Partial<Record<string, DocumentProgress>>;
+  /**
+   * What the student told us about themselves, asked one question at a time
+   * where a feature needs it. Every field is optional; missing = "Not provided",
+   * never assumed. (Degree and subject wanted: `degreeLevel`, `subject` above.)
+   */
+  student?: StudentStudyProfile;
+}
+
+export type EducationLevel = 'ssc' | 'hsc' | 'diploma' | 'bachelors' | 'masters' | 'phd' | 'other';
+export type GradeScale = 'cgpa-4' | 'cgpa-5' | 'percentage' | 'other';
+export type EnglishLevel = 'basic' | 'intermediate' | 'advanced';
+export type KoreanLevel = 'none' | 'beginner' | 'topik-1' | 'topik-2' | 'topik-3' | 'topik-4' | 'topik-5' | 'topik-6';
+/** Study-language preference: English, the country's own language, or either. */
+export type StudyLanguagePreference = 'en' | 'local' | 'either';
+export type UniversityTypePreference = 'public' | 'private' | 'any';
+
+export interface StudentStudyProfile {
+  education?: { level?: EducationLevel; field?: string; status?: 'studying' | 'graduated'; graduationYear?: number };
+  result?: { value: number; scale: GradeScale };
+  english?: { level?: EnglishLevel; /** Official IELTS overall, if taken. */ ielts?: number };
+  korean?: KoreanLevel;
+  preferences?: { city?: string; universityType?: UniversityTypePreference; studyLanguage?: StudyLanguagePreference };
+  budget?: { tuition?: Money; living?: Money };
+  updatedAt?: ISODate;
 }
 
 export type UniversityFit = 'ambitious' | 'match' | 'safer';
-export type UniversityStatus = 'researching' | 'applying' | 'applied' | 'offer' | 'rejected';
+export type UniversityStatus = 'interested' | 'researching' | 'shortlisted' | 'applying' | 'applied' | 'offer' | 'rejected' | 'not-proceeding';
 
 export interface SavedUniversity {
   id: string;
   name: string;
   countryCode: string;
   program?: string;
+  /** Link to a reviewed program record, when there is one. */
+  programId?: string;
   /** The university's own website, as the student entered it. */
   officialUrl?: string;
   fit: UniversityFit;
