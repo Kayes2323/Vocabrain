@@ -1,7 +1,7 @@
 import type { Country, CountryData, SourceRef } from '@/lib/models';
 import { KR_KIS_NAVIGATOR, KR_SIK_VISA } from './kr-sources';
 import { KR_SHARED_DOCUMENTS } from './kr-shared';
-import { KR_LANGUAGE_LANGUAGE, KR_SECTIONS } from './kr-country';
+import { KR_ESTIMATES, KR_LANGUAGE_LANGUAGE, KR_SECTIONS } from './kr-country';
 
 /**
  * Destination registry. Every figure is a SourcedValue copied from an official
@@ -91,6 +91,8 @@ export const COUNTRIES: Country[] = [
     documents: KR_SHARED_DOCUMENTS,
     // C2.1: education system, admission, language and application (Ministry of Education / NIIED).
     sections: KR_SECTIONS,
+    // C2.4: planning estimates (labelled Estimate), never mixed with official amounts.
+    costs: { estimates: KR_ESTIMATES },
     workQuestions: [
       {
         id: 'korean',

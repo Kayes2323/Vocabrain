@@ -875,9 +875,15 @@ const TEST_COSTS = (): Country => ({
 
 test('B4 costs: official / estimate / my budget stay apart; not-verified amounts never shown; periods add up, currencies never convert', () => {
   let a = base().abroad;
-  const empty = costPlan(getCountry('KR')!, a, {}, NOW);
+  const empty = costPlan(getCountry('JP')!, a, {}, NOW);
   assert.ok(empty.groups.every((g) => g.official.length === 0 && !g.estimateYear), 'shipped: no invented costs');
   assert.equal(empty.incomplete, true);
+  // C2.4: South Korea ships sourced estimates only (no official amounts), each with its basis and source.
+  const kr = costPlan(getCountry('KR')!, a, { pathway: 'degree', degreeLevel: 'masters' }, NOW);
+  assert.ok(kr.groups.every((g) => g.official.length === 0));
+  const est = kr.groups.flatMap((g) => g.estimates);
+  assert.deepEqual(est.map((e) => e.id).sort(), ['kr-living-month', 'kr-tuition-masters']);
+  assert.ok(est.every((e) => e.currency === 'KRW' && e.basis.en && e.sources?.[0]?.url?.includes('studyinkorea.go.kr')));
   a = answerQuestion(answerQuestion(a, 'livingBudget', { amount: 1000, currency: 'USD' }, NOW), 'totalBudget', { amount: 20000, currency: 'USD' }, NOW);
   const plan = costPlan(TEST_COSTS(), a, { pathway: 'degree', visaCategoryId: 'kr-d2' }, NOW);
   const g = (id: string) => plan.groups.find((x) => x.group === id)!;
@@ -909,7 +915,8 @@ test('B4 registry integrity: every shipped cost is sourced, every estimate has a
     for (const o of c.costs?.official ?? []) assert.ok(o.amount.source.url && o.amount.lastVerified, `${c.code} ${o.id}`);
     for (const e of c.costs?.estimates ?? []) assert.ok(e.basis.en && e.estimatedAt && e.low <= e.typical && e.typical <= e.high, `${c.code} ${e.id}`);
   }
-  assert.ok(COUNTRIES.every((c) => !c.costs), 'B4 ships no cost data');
+  assert.deepEqual(COUNTRIES.filter((c) => c.costs).map((c) => c.code), ['KR'], 'only South Korea ships costs (C2.4, sourced estimates)');
+  assert.ok(!getCountry('KR')!.costs!.official?.length, 'no official KR amounts yet');
 });
 
 test('B4 documents: university / program / scholarship / country sources, merged, conditional, explained', () => {

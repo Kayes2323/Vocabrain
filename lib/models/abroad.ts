@@ -375,7 +375,8 @@ export interface Scholarship extends Partial<ContentMeta> {
   degreeLevels: DegreeLevel[];
   /** Absent = any subject. */
   subjects?: string[];
-  funding: ScholarshipFunding;
+  /** Only when the official source itself says full or partial; absent = show `coverage` in the source's words. */
+  funding?: ScholarshipFunding;
   coverage?: SourcedValue<string>;
   eligibility: SourcedValue<string>;
   requirements?: SourcedValue<string>;

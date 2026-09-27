@@ -568,6 +568,19 @@ async function main() {
     check('?country=gb selects the UK', (await p.getByLabel('Country').inputValue()) === 'GB');
     check('no invented scholarship facts', /No verified scholarship information for United Kingdom yet/.test(await p.getByTestId('schol-official').innerText()));
     check('no invented scholarships', /No verified scholarships here yet/.test(await p.getByTestId('schol-empty').innerText()));
+    // C2.4 · South Korea: the GKS records, in the source's words (never "Fully funded").
+    await p.goto(`${BASE}/abroad/scholarships?country=kr`, { waitUntil: 'load' });
+    await p.locator('[data-scholarship]').first().waitFor({ timeout: 60_000 });
+    const gksIds = await p.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')));
+    const gksTxt = (await p.locator('[data-scholarship]').allInnerTexts()).join(' ');
+    // The list follows the student's degree: GKS-U for a bachelor's goal, GKS-G for master's / PhD.
+    check('KR scholarships: a GKS record for the student’s degree, with coverage in the source’s words', gksIds.length === 1 && /^kr-gks-/.test(gksIds[0] ?? '') && /Airfare, Korean language training fees, tuition and monthly allowances/.test(gksTxt), gksIds.join(','));
+    if (gksIds[0] === 'kr-gks-u-2027') check('GKS-U status comes from the Embassy dates', (await p.locator('[data-scholarship="kr-gks-u-2027"]').getAttribute('data-status')) === (Date.now() <= Date.parse('2026-09-30T23:59:59Z') ? 'open' : 'deadline-passed'));
+    else check('GKS-G: no guessed deadline (status unknown until NIIED announces it)', (await p.locator('[data-scholarship="kr-gks-g"]').getAttribute('data-status')) === 'unknown' && !/Deadline/.test(gksTxt));
+    check('KR scholarships: no "Fully funded" claim on any GKS record', !/Fully funded|Partly funded/.test(await p.locator('[data-scholarship]').allInnerTexts().then((x) => x.join(' '))));
+    check('KR scholarships: official GKS facts shown at the top', /Global Korea Scholarship/.test(await p.getByTestId('schol-official').innerText()));
+    await p.goto(`${BASE}/abroad/scholarships?country=gb`, { waitUntil: 'load' });
+    await p.getByTestId('schol-empty').waitFor({ timeout: 60_000 });
     await p.getByRole('button', { name: 'Fully funded' }).click();
     check('funding filter toggles', (await p.getByRole('button', { name: 'Fully funded' }).getAttribute('aria-pressed')) === 'true');
     await p.getByLabel('Country').selectOption('DE');
@@ -867,7 +880,8 @@ async function main() {
     check('Money hub current; 5 cost groups', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Money' }).getAttribute('aria-current')) === 'page' && (await p.locator('[data-cost-group]').count()) === 5);
     check('one clear CTA: Plan my budget', (await p.getByTestId('cost-cta').innerText()).includes('Plan my budget'));
     const tuition = p.locator('[data-cost-group="tuition"]');
-    check('tuition: Official not verified, no estimate (nothing invented)', /Not verified yet/.test(await tuition.locator('[data-block="official"]').innerText()) && /No estimate yet/.test(await tuition.locator('[data-block="estimate"]').innerText()));
+    const tuitionEst = await tuition.locator('[data-block="estimate"]').innerText();
+    check('tuition (C2.4): Official not verified; guidebook estimate in KRW with its basis, never an official figure', /Not verified yet/.test(await tuition.locator('[data-block="official"]').innerText()) && /KRW/.test(tuitionEst) && /midpoint/.test(tuitionEst), tuitionEst.slice(0, 200));
     await tuition.locator('[data-question="tuitionBudget"]').getByLabel('Amount').fill('5000');
     await tuition.locator('[data-question="tuitionBudget"]').getByLabel('Currency').selectOption('USD');
     await tuition.locator('[data-question="tuitionBudget"]').getByRole('button', { name: 'Save' }).click();
@@ -879,7 +893,7 @@ async function main() {
     await planBox.locator('[data-question="totalBudget"]').getByRole('button', { name: 'Save' }).click();
     cz = await cb((v) => v.student?.budget?.total?.amount === 20000);
     await p.getByTestId('cost-available').getByText('USD 20,000').waitFor({ timeout: 10_000 });
-    check('planning view: estimate total —, my money shown, no difference, honest notes', (await p.getByTestId('cost-estimate-total').innerText()) === '—' && (await p.getByTestId('cost-difference').innerText()) === '—' && /Some cost information is not verified yet/.test(await p.getByTestId('cost-notes').innerText()) && /not financial advice/.test(await p.getByTestId('cost-notes').innerText()));
+    check('planning view (C2.4): estimate total in KRW, my money in USD, no difference (never converted), honest notes', /KRW/.test(await p.getByTestId('cost-estimate-total').innerText()) && (await p.getByTestId('cost-difference').innerText()) === '—' && /Some cost information is not verified yet/.test(await p.getByTestId('cost-notes').innerText()) && /not financial advice/.test(await p.getByTestId('cost-notes').innerText()));
     check('no affordability verdict anywhere', !/you can afford|affordab|score/i.test(await p.locator('main').innerText()));
     check('cost desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-kr-b4-01-cost');

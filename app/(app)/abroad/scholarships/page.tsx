@@ -95,8 +95,8 @@ function Scholarships() {
                     <StatusChip tone={STATUS_TONE[status]}>{t(`sa.schol.statuses.${status}`)}</StatusChip>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {t(`sa.schol.funding.${s.funding}`)}
-                    {s.deadline ? ` · ${t('sa.schol.deadline', { date: date(s.deadline.value) })}` : ''}
+                    {s.funding ? t(`sa.schol.funding.${s.funding}`) : s.coverage?.value}
+                    {s.deadline ? `${s.funding || s.coverage ? ' · ' : ''}${t('sa.schol.deadline', { date: date(s.deadline.value) })}` : ''}
                     {status === 'opening-soon' && s.opensAt ? ` · ${t('sa.schol.opens', { date: date(s.opensAt.value) })}` : ''}
                   </p>
                   <p className="text-sm">{s.eligibility.value}</p>

@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { getCountry } from '../lib/content/countries';
 import { KR_SECTIONS } from '../lib/content/kr-country';
-import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
+import { KR_EMBASSY_BD_GKS_U_2027, KR_NIIED_GUIDEBOOK, KR_SIK_SCHOLARSHIPS } from '../lib/content/kr-sources';
+import { KR_SCHOLARSHIPS } from '../lib/content/kr-scholarships';
+import { DEADLINES } from '../lib/content/deadlines';
+import { scholarshipStatus } from '../lib/abroad/status';
 import { programGuide } from '../lib/abroad/study-options';
 import { countrySections, factStatus } from '../lib/abroad/sections';
 import type { SectionFact } from '../lib/models';
@@ -26,7 +29,7 @@ test('C2.1: education, admission, language and application are filled from the o
   for (const id of ['education', 'admission', 'english', 'application'] as const) assert.notEqual(s.get(id)!.status, 'not-yet', id);
   assert.ok(allFacts.length >= 20);
   for (const f of allFacts) {
-    assert.equal(f.fact.source.url, KR_NIIED_GUIDEBOOK.url, f.label.en);
+    assert.ok([KR_NIIED_GUIDEBOOK.url, KR_SIK_SCHOLARSHIPS.url, KR_EMBASSY_BD_GKS_U_2027.url].includes(f.fact.source.url), f.label.en);
     assert.ok(f.fact.lastVerified && f.fact.reviewedAt && f.fact.reviewAt && f.fact.status === 'verified' && f.fact.confidence, f.label.en);
     assert.ok(f.label.en && f.label.bn, 'every label in both languages');
   }
@@ -92,6 +95,31 @@ test('C2.2 D-4: health insurance starts six months after entry (current Easylaw)
   assert.doesNotMatch(deg, /six months after the date of entry/);
   assert.match(deg, /date of alien registration/);
   assert.match(deg, /50% of the monthly premium/);
+});
+
+test('C2.4 GKS: coverage in the source’s words, never "fully funded"; 2027 GKS-U dates from the Embassy in Bangladesh', () => {
+  for (const s of KR_SCHOLARSHIPS) {
+    assert.equal(s.funding, undefined, `${s.id}: no source calls it fully / partly funded`);
+    assert.ok(s.coverage && s.eligibility.source.url && s.officialUrl.startsWith('https://'));
+  }
+  const u = KR_SCHOLARSHIPS.find((s) => s.id === 'kr-gks-u-2027')!;
+  assert.equal(u.opensAt!.value, '2026-09-15');
+  assert.equal(u.deadline!.value, '2026-09-30');
+  assert.equal(scholarshipStatus(u, NOW), 'open');
+  assert.equal(scholarshipStatus(u, new Date('2026-10-01T00:00:00Z')), 'deadline-passed');
+  assert.ok(DEADLINES.some((d) => d.owner?.id === 'kr-gks-u-2027' && d.date.value === '2026-09-30'));
+  assert.ok(KR_SCHOLARSHIPS.find((s) => s.id === 'kr-gks-g')!.deadline === undefined, 'no guessed graduate date');
+});
+
+test('C2.4 costs: tuition range follows the degree; language course fee only on the language guide; living items vs average flagged', () => {
+  assert.ok(values('degree-masters', 'costs').some((v) => /Master's: ₩6,000,000–8,000,000/.test(v)));
+  assert.ok(!values('degree-masters', 'costs').some((v) => /10 weeks/.test(v)));
+  assert.ok(values('language', 'costs').some((v) => /10 weeks/.test(v)));
+  assert.ok(!values('language', 'costs').some((v) => /Master's: ₩/.test(v)));
+  assert.ok(labels('degree-bachelors', 'costs').includes('GKS undergraduate (Bangladesh, 2027)'));
+  assert.ok(!labels('degree-masters', 'costs').includes('GKS undergraduate (Bangladesh, 2027)'));
+  const living = KR_SECTIONS.living!.facts!.find((f) => f.label.en === 'By item, per month')!;
+  assert.match(living.fact.notes!, /add up to more than the average/);
 });
 
 console.log(`\n${passed} passed`);

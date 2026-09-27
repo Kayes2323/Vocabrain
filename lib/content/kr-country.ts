@@ -1,5 +1,5 @@
-import type { CountrySection, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
-import { KR_ACADEMYINFO, KR_NIIED_GUIDEBOOK, KR_TOPIK, krFact } from './kr-sources';
+import type { CostEstimate, CountrySection, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
+import { KR_ACADEMYINFO, KR_EMBASSY_BD_GKS_U_2027, KR_NIIED_GUIDEBOOK, KR_SIK_SCHOLARSHIPS, KR_TOPIK, krFact } from './kr-sources';
 
 /**
  * South Korea, C2.1: the country itself — education system, who may apply,
@@ -221,6 +221,88 @@ export const KR_SECTIONS: Partial<Record<CountrySectionId, CountrySection>> = {
     },
   },
 
+  // 06 · Tuition (C2.4): the guidebook's ranges are planning figures, not any university's fee.
+  tuition: {
+    facts: [
+      {
+        label: { en: 'Per semester, by degree', bn: 'প্রতি semester, degree অনুযায়ী' },
+        appliesTo: degree,
+        fact: f(
+          "Associate: ₩3,000,000–4,000,000. Bachelor's: ₩5,000,000–7,000,000. Master's: ₩6,000,000–8,000,000. Doctoral: ₩7,000,000–9,000,000.",
+          'Typical ranges from the guidebook; the exact fee is on each university’s website or Academyinfo.',
+        ),
+      },
+      {
+        label: { en: 'National vs private', bn: 'National বনাম private' },
+        appliesTo: degree,
+        fact: f('National universities, which receive government funding, generally charge lower tuition than private universities.'),
+      },
+      {
+        label: { en: 'Korean language institute', bn: 'Korean language institute' },
+        appliesTo: language,
+        fact: f('About ₩1,200,000–1,800,000 for a regular program of about 10 weeks.', 'Typical range from the guidebook; each institute sets its own fee.'),
+      },
+    ],
+    blocks: [
+      {
+        id: 'kr-exact-tuition',
+        title: { en: 'Exact tuition', bn: 'সঠিক tuition' },
+        guidance: {
+          en: "Use your university's own fee page, or Academyinfo, for the real figure.",
+          bn: 'আসল অঙ্কের জন্য আপনার university-র নিজের fee page বা Academyinfo দেখুন।',
+        },
+        links: [KR_ACADEMYINFO],
+      },
+    ],
+  },
+
+  // 07 · Living costs (C2.4)
+  living: {
+    facts: [
+      { label: { en: 'Average per month', bn: 'মাসে গড়ে' }, fact: f('About ₩750,000–1,000,000 a month for international students.') },
+      {
+        label: { en: 'By item, per month', bn: 'খাত অনুযায়ী, মাসে' },
+        fact: f(
+          'Housing ₩500,000–700,000; meals ₩200,000–300,000 (one cafeteria meal ₩5,000–15,000); transport ₩50,000–100,000; other (phone, internet, insurance…) ₩100,000–200,000.',
+          'These item ranges add up to more than the average above; both are the guidebook’s own figures.',
+        ),
+      },
+    ],
+  },
+
+  // 09 · Scholarships (C2.4)
+  scholarships: {
+    facts: [
+      {
+        label: { en: 'Global Korea Scholarship (GKS)', bn: 'Global Korea Scholarship (GKS)' },
+        fact: krFact(
+          "The Korean government's scholarship: Korean language training (1 year) plus the degree. It covers airfare, Korean language training fees, tuition and monthly allowances.",
+          KR_SIK_SCHOLARSHIPS,
+          'medium',
+        ),
+      },
+      {
+        label: { en: 'GKS undergraduate (Bangladesh, 2027)', bn: 'GKS undergraduate (Bangladesh, 2027)' },
+        appliesTo: { pathways: ['degree'], degreeLevels: ['bachelors'] },
+        fact: krFact(
+          'Embassy Track quota for Bangladesh: 3 (General 2 + R-GKS 1). Online applications: 15–30 September 2026.',
+          KR_EMBASSY_BD_GKS_U_2027,
+          'high',
+          { reviewAt: '2026-12-31' },
+        ),
+      },
+      {
+        label: { en: "GKS graduate (Master's / PhD)", bn: "GKS graduate (Master's / PhD)" },
+        appliesTo: { pathways: ['degree'], degreeLevels: ['masters', 'phd'] },
+        fact: krFact('Applications are usually taken in February–March, through the Korean Embassy or directly by a GKS university; you must be under 40 with an average of at least 80%.', KR_SIK_SCHOLARSHIPS, 'medium'),
+      },
+      {
+        label: { en: 'University scholarships', bn: 'University scholarship' },
+        fact: krFact('Most universities give international students scholarships of 30–100% of tuition based on academic performance; the details are on each university’s website.', KR_SIK_SCHOLARSHIPS, 'medium'),
+      },
+    ],
+  },
+
   // 04 · Universities: where to check a university's real figures
   universities: {
     blocks: [
@@ -243,6 +325,23 @@ export const KR_LANGUAGE_LANGUAGE: SectionFact[] = [
     label: { en: 'Levels taught', bn: 'কোন level পড়ানো হয়' },
     fact: f('Regular programs run in steps from an Introduction to Hangeul, through Beginner and Intermediate, to Advanced and an In-depth level that prepares for university study.'),
   },
+];
+
+/**
+ * Planning estimates (C2.4), always labelled "Estimate". Low / high are the guidebook's own range;
+ * "typical" is simply the middle of that range, and the basis says so.
+ */
+const EST = { estimatedAt: '2026-09-27', reviewAt: '2027-03-27', currency: 'KRW', sources: [G] };
+const mid = (low: number, high: number) => ({ low, typical: (low + high) / 2, high });
+const basis = (en: string, bn: string) => ({
+  en: `${en} Range from the Ministry of Education / NIIED guidebook; the middle figure is simply the midpoint.`,
+  bn: `${bn} Range-টি Ministry of Education / NIIED guidebook থেকে; মাঝের অঙ্কটি শুধু range-এর মাঝামাঝি।`,
+});
+export const KR_ESTIMATES: CostEstimate[] = [
+  { id: 'kr-tuition-bachelors', category: 'tuition', period: 'semester', ...mid(5_000_000, 7_000_000), ...EST, appliesTo: { pathways: ['degree'], degreeLevels: ['bachelors'] }, basis: basis("Bachelor's tuition per semester.", "Bachelor's tuition, প্রতি semester।") },
+  { id: 'kr-tuition-masters', category: 'tuition', period: 'semester', ...mid(6_000_000, 8_000_000), ...EST, appliesTo: { pathways: ['degree'], degreeLevels: ['masters'] }, basis: basis("Master's tuition per semester.", "Master's tuition, প্রতি semester।") },
+  { id: 'kr-tuition-phd', category: 'tuition', period: 'semester', ...mid(7_000_000, 9_000_000), ...EST, appliesTo: { pathways: ['degree'], degreeLevels: ['phd'] }, basis: basis('Doctoral tuition per semester.', 'PhD tuition, প্রতি semester।') },
+  { id: 'kr-living-month', category: 'living', period: 'month', ...mid(750_000, 1_000_000), ...EST, basis: basis('Average monthly living cost for international students.', 'International student-দের মাসিক গড় থাকা-খাওয়ার খরচ।') },
 ];
 
 export const KR_C21_SOURCES: SourceRef[] = [G, KR_TOPIK, KR_ACADEMYINFO];

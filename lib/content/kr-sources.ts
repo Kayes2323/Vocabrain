@@ -68,3 +68,10 @@ export const KR_NIIED_GUIDEBOOK = gov(
 );
 export const KR_TOPIK = gov('TOPIK – Test of Proficiency in Korean (NIIED)', 'https://www.topik.go.kr');
 export const KR_ACADEMYINFO = gov('Higher Education in Korea (Academyinfo)', 'https://www.academyinfo.go.kr');
+
+// C2.4 · Scholarships
+export const KR_EMBASSY_BD_GKS_U_2027 = gov(
+  'Embassy of Korea in Bangladesh – 2027 Global Korea Scholarship for Undergraduate Degrees (2026-09-10)',
+  'https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760106',
+);
+export const KR_SIK_SCHOLARSHIPS = gov('Study in Korea (NIIED) – Scholarships (GKS)', 'https://www.studyinkorea.go.kr/en/plan/scholarship.do');
