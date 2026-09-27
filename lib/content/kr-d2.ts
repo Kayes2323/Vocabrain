@@ -1,5 +1,8 @@
 import type { DocumentKind, DocumentRequirement, SourceRef, VisaCategory, WorkRule } from '@/lib/models';
-import { KR_EASYLAW_INSURANCE, KR_EASYLAW_VISA, KR_EASYLAW_WORK, KR_EMBASSY_BD_VISA, KR_KIS_NAVIGATOR, KR_SIK_VISA, KR_SIK_WORK, krFact } from './kr-sources';
+import { KR_EASYLAW_INSURANCE, KR_EASYLAW_VISA, KR_EASYLAW_WORK, KR_EMBASSY_BD_VISA, KR_KIS_NAVIGATOR, KR_NIIED_GUIDEBOOK, KR_SIK_VISA, KR_SIK_WORK, krFact } from './kr-sources';
+
+// C2.7 · Only the older NIIED guidebook (quoting the Korea Immigration Service) states these → re-check.
+const GUIDEBOOK_ONLY = { status: 'needs-review' as const, notes: 'From the older Study in Korea guidebook (undated; rules cited to Nov 2023), quoting the Korea Immigration Service. Confirm with the Embassy / Visa Application Center.' };
 
 /** A D-2 visa document: the official wording, submitted with the visa application. */
 function doc(kind: DocumentKind, requirement: string, source: SourceRef): DocumentRequirement {
@@ -94,6 +97,15 @@ export const KR_D2: VisaCategory = {
     documents: {
       facts: [
         {
+          label: { en: 'Education certificates', bn: 'শিক্ষাগত সনদ' },
+          fact: krFact(
+            "Proof of your highest education, in principle as the original, confirmed by apostille or by a Korean consul: a high school certificate for a bachelor's, a bachelor's certificate for a master's, a master's certificate for a PhD. Foreign-language documents must be translated and authenticated (or apostilled).",
+            KR_NIIED_GUIDEBOOK,
+            'medium',
+            GUIDEBOOK_ONLY,
+          ),
+        },
+        {
           label: { en: 'Required by law', bn: 'আইনে যা লাগে' },
           fact: krFact(
             'Passport and a copy of it; a standard admission letter issued by the university president or dean that includes the review of your academic ability and financial ability; and a tuberculosis certificate from a hospital designated by the Korean mission, only where the Minister of Justice requires it (e.g. nationals of high-risk tuberculosis countries staying more than 90 days).',
@@ -143,6 +155,10 @@ export const KR_D2: VisaCategory = {
         {
           label: { en: "Parents' bank statements", bn: 'বাবা-মায়ের bank statement' },
           fact: krFact("If your parents' bank statements are submitted, documents proving the family relationship are also needed.", KR_SIK_VISA, 'medium'),
+        },
+        {
+          label: { en: 'How much it must cover', bn: 'কতটা cover করতে হবে' },
+          fact: krFact('An amount equal to tuition and living expenses for one year.', KR_NIIED_GUIDEBOOK, 'medium', GUIDEBOOK_ONLY),
         },
       ],
       explanation: {

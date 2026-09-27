@@ -1,5 +1,5 @@
 import type { CostEstimate, CountrySection, CountrySectionId, SectionFact, SourceRef } from '@/lib/models';
-import { KR_ACADEMYINFO, KR_EMBASSY_BD_GKS_U_2027, KR_NIIED_GUIDEBOOK, KR_SIK_SCHOLARSHIPS, KR_TOPIK, krFact } from './kr-sources';
+import { KR_ACADEMYINFO, KR_EASYLAW_REGISTRATION, KR_EMBASSY_BD_GKS_U_2027, KR_HIKOREA, KR_NIIED_GUIDEBOOK, KR_SIK_SCHOLARSHIPS, KR_TOPIK, krFact } from './kr-sources';
 
 /**
  * South Korea, C2.1: the country itself — education system, who may apply,
@@ -299,6 +299,93 @@ export const KR_SECTIONS: Partial<Record<CountrySectionId, CountrySection>> = {
       {
         label: { en: 'University scholarships', bn: 'University scholarship' },
         fact: krFact('Most universities give international students scholarships of 30–100% of tuition based on academic performance; the details are on each university’s website.', KR_SIK_SCHOLARSHIPS, 'medium'),
+      },
+    ],
+  },
+
+  // 17 · Accommodation (C2.8)
+  accommodation: {
+    facts: [
+      { label: { en: 'Dormitories', bn: 'Dormitory' }, fact: f('Most universities run dormitories on or near campus, with single and shared rooms (2-person, 4-person…). Admission conditions and costs vary by school; ask your school’s dormitory office.') },
+      { label: { en: 'Boarding', bn: 'Boarding' }, fact: f('A household provides a room and meals for a monthly payment; visiting and checking the place and cost before deciding is recommended.') },
+      {
+        label: { en: 'Renting: jeonse and wolse', bn: 'ভাড়া: jeonse ও wolse' },
+        fact: f('Wolse: a deposit plus monthly rent, with the deposit returned at the end of the contract. Jeonse: a larger lump-sum deposit and no monthly rent for the agreed period. The deposit comes back if the house is undamaged and all rent is paid.'),
+      },
+    ],
+  },
+
+  // 25 · After you arrive (C2.8): what the law requires, kept apart from practical first steps.
+  arrival: {
+    blocks: [
+      {
+        id: 'kr-arrival-required',
+        title: { en: 'Required by law', bn: 'আইনে যা বাধ্যতামূলক' },
+        facts: [
+          {
+            label: { en: 'Alien registration (residence card)', bn: 'Alien registration (residence card)' },
+            fact: krFact('If you will stay more than 90 days, register at the immigration office for your area within 90 days of entry. Your fingerprints and face (biometrics) are taken.', KR_EASYLAW_REGISTRATION, 'medium', { notes: 'Immigration Act, Articles 31 and 38. Easylaw information as of 2026-08-15.' }),
+          },
+          {
+            label: { en: 'What to bring', bn: 'কী নিয়ে যাবেন' },
+            fact: krFact('Passport, one passport photo (3.5 cm × 4.5 cm) and proof of where you live; D-2 students also bring a certificate of enrolment and a health examination certificate.', KR_EASYLAW_REGISTRATION, 'medium', { notes: 'Easylaw information as of 2026-08-15.' }),
+          },
+          {
+            label: { en: 'Registration fee', bn: 'Registration fee' },
+            fact: krFact('30,000 KRW, cash only.', KR_NIIED_GUIDEBOOK, 'medium', { status: 'needs-review', notes: 'Only the older guidebook states the fee; check it on HiKorea before you go.' }),
+          },
+          {
+            label: { en: 'Report changes within 15 days', bn: '১৫ দিনের মধ্যে পরিবর্তন জানান' },
+            fact: krFact('Changes to your name, nationality, passport details or school (including your enrolment status) must be reported within 15 days, with your residence card and passport.', KR_EASYLAW_REGISTRATION, 'medium', { notes: 'Immigration Act, Article 35. Easylaw information as of 2026-08-15.' }),
+          },
+          {
+            label: { en: 'New address', bn: 'নতুন ঠিকানা' },
+            fact: krFact('When you move, report your new address within 15 days (to the local community centre or the immigration office). Not reporting it can mean a fine of up to 1 million KRW.', KR_EASYLAW_REGISTRATION, 'medium', { notes: 'Immigration Act, Articles 36 and 98. The 15 days are from the Study in Korea guidebook; the fine from Easylaw (as of 2026-08-15).' }),
+          },
+        ],
+        links: [KR_HIKOREA],
+      },
+      {
+        id: 'kr-arrival-practical',
+        title: { en: 'Practical first steps (not legal requirements)', bn: 'প্রথম কাজগুলো (আইনি বাধ্যবাধকতা নয়)' },
+        facts: [
+          { label: { en: 'Bank account', bn: 'Bank account' }, fact: f('Visit a bank with your ID (passport or residence card), a seal or signature, and a document showing why you need the account. Banks are generally open 9 AM to 4 PM.') },
+          { label: { en: 'Mobile phone', bn: 'Mobile phone' }, fact: f('At a phone shop: a residence card is needed for a post-paid plan; a passport is enough for a prepaid plan. Bring your student ID and a card or cash. Requirements vary by company.') },
+          { label: { en: 'Sending money home', bn: 'দেশে টাকা পাঠানো' }, fact: f('Transfers abroad are possible at a bank without documents up to USD 100,000 a year; above that, the bank asks for documents.') },
+        ],
+      },
+    ],
+  },
+
+  // 21 · After graduation (C2.8)
+  'post-study': {
+    facts: [
+      {
+        label: { en: 'Job seeking (D-10-1)', bn: 'চাকরি খোঁজা (D-10-1)' },
+        fact: f('After graduating you can change to the Job Seeker (D-10-1) visa to look for professional work (the fields of E-1 to E-7). It is extended 6 months at a time, up to 2 years; internships are allowed (up to 6 months per company), simple or physical labour is not.'),
+      },
+      {
+        label: { en: 'Money for D-10', bn: 'D-10-এর জন্য টাকা' },
+        fact: krFact('Proof of at least 900,000 KRW a month for 6 months (about 5.4 million KRW); students changing from D-2 to D-10 for the first time are exempt.', KR_NIIED_GUIDEBOOK, 'medium', { status: 'needs-review', notes: 'Older guidebook figure; check the current amount on HiKorea.' }),
+      },
+      {
+        label: { en: 'Work visa (E-7)', bn: 'কাজের visa (E-7)' },
+        fact: f("Graduates usually apply for the E-7 (Designated Activities) visa: a master's degree in a related field, or a related bachelor's plus at least 1 year of experience, or 5+ years of experience. Each of the 87 occupations has its own conditions."),
+      },
+      {
+        label: { en: 'GKS graduates (D-2-7)', bn: 'GKS graduate (D-2-7)' },
+        fact: f('Government-invited scholars (D-2-7) are exempt from the national employment ratio and company-size limits when changing to E-7, and may apply to similar occupations.'),
+      },
+    ],
+    blocks: [
+      {
+        id: 'kr-post-study-check',
+        title: { en: 'Before you plan', bn: 'Plan করার আগে' },
+        guidance: {
+          en: 'Visa rules after graduation change often. Check the current rules on HiKorea before you decide.',
+          bn: 'Graduation-এর পরের visa নিয়ম প্রায়ই বদলায়। সিদ্ধান্ত নেওয়ার আগে HiKorea-তে বর্তমান নিয়ম দেখে নিন।',
+        },
+        links: [KR_HIKOREA],
       },
     ],
   },

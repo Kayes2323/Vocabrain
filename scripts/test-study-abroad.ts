@@ -1225,7 +1225,7 @@ test('C1.2 documents: official list, one entry per kind, only on the D-2 route, 
 
 test('C1.2 finances: no official amount → no amount anywhere (screen, costs, Mino); budget stays apart', () => {
   const fin = d2Part('finances');
-  assert.equal(fin.status, 'partial');
+  assert.equal(fin.status, 'needs-review', 'C2.7: the older guidebook rule (one year of tuition + living) is shown but flagged');
   const shown = allFacts(fin).map((f) => f.fact.value);
   assert.ok(shown.every((v) => typeof v === 'string' && !/\d/.test(v)), 'no number, no currency');
   const amount = fin.blocks!.find((b) => b.id === 'kr-d2-funds-amount')!;

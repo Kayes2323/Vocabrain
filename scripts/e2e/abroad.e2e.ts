@@ -992,6 +992,9 @@ async function main() {
     await q.getByTestId('study-guide').waitFor({ timeout: 60_000 });
     check('bn guide: respectful Bangla (no তুমি/তোমার) and "তথ্যের উৎস" at the end', !/তুমি|তোমার|তোমাকে/.test(await q.locator('main').innerText()) && /তথ্যের উৎস/.test(await q.getByTestId('study-guide').innerText()));
     check('bn guide: headings and "এই তথ্য এখনো verified নয়"', /এই প্রোগ্রামটি কী\?/.test(await q.getByTestId('study-guide').innerText()) && /এই তথ্য এখনো verified নয়/.test(await q.getByTestId('study-guide').innerText()));
+    const bnDepart = await q.locator('[data-guide-section="before-departure"]').innerText();
+    check('bn guide (C2.8): arrival — law requirements apart from practical steps, in Bangla', /আইনে যা বাধ্যতামূলক/.test(bnDepart) && /আইনি বাধ্যবাধকতা নয়/.test(bnDepart) && bnDepart.indexOf('আইনে যা বাধ্যতামূলক') < bnDepart.indexOf('আইনি বাধ্যবাধকতা নয়'));
+    check('bn guide (C2.4): costs show tuition range and GKS in the student’s language', /Bachelor's: ₩5,000,000–7,000,000/.test(await q.locator('[data-guide-section="costs"]').innerText()) && /Global Korea Scholarship/.test(await q.locator('[data-guide-section="costs"]').innerText()));
     check('bn guide mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'ex-02-kr-bachelors-guide-mobile-bn', false);
     await q.locator('[data-guide-section="documents"]').scrollIntoViewIfNeeded();

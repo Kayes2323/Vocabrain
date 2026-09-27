@@ -31,8 +31,10 @@ test('C2.1: education, admission, language and application are filled from the o
   for (const id of ['education', 'admission', 'english', 'application'] as const) assert.notEqual(s.get(id)!.status, 'not-yet', id);
   assert.ok(allFacts.length >= 20);
   for (const f of allFacts) {
-    assert.ok([KR_NIIED_GUIDEBOOK.url, KR_SIK_SCHOLARSHIPS.url, KR_EMBASSY_BD_GKS_U_2027.url].includes(f.fact.source.url), f.label.en);
-    assert.ok(f.fact.lastVerified && f.fact.reviewedAt && f.fact.reviewAt && f.fact.status === 'verified' && f.fact.confidence, f.label.en);
+    assert.equal(f.fact.source.sourceType, 'official-government', f.label.en);
+    assert.ok(f.fact.lastVerified && f.fact.reviewedAt && f.fact.reviewAt && f.fact.confidence, f.label.en);
+    // Only "verified", or "needs review" with a note saying why (an older document is the only source).
+    assert.ok(f.fact.status === 'verified' || (f.fact.status === 'needs-review' && /older|Older/.test(f.fact.notes ?? '')), f.label.en);
     assert.ok(f.label.en && f.label.bn, 'every label in both languages');
   }
   assert.match(KR_NIIED_GUIDEBOOK.name, /undated; cites rules to Nov 2023/, 'an undated document says how recent it is');
@@ -149,6 +151,18 @@ test('C2.6 programs: only fields read on the official page; semester tuition is 
   assert.deepEqual(bba.program.english!.value, { test: 'IELTS', overall: 5.5 });
   assert.equal(bba.program.tuition, undefined, 'tuition not read → not stored');
   for (const r of rows) assert.ok(r.program.officialSource?.url && r.program.studyLanguages?.source.url);
+});
+
+test('C2.8 arrival: what the law requires is kept apart from practical steps; current rules from Easylaw, older figures flagged', () => {
+  const blocks = KR_SECTIONS.arrival!.blocks!;
+  assert.deepEqual(blocks.map((b) => b.id), ['kr-arrival-required', 'kr-arrival-practical']);
+  const req = blocks[0].facts!;
+  assert.ok(req.filter((f) => f.label.en !== 'Registration fee').every((f) => /easylaw/.test(f.fact.source.url!) && /2026-08-15/.test(f.fact.notes ?? '')));
+  assert.equal(req.find((f) => f.label.en === 'Registration fee')!.fact.status, 'needs-review');
+  assert.match(blocks[1].title.en, /not legal requirements/);
+  const g = guide('degree-bachelors');
+  assert.ok(g.sections['before-departure'].some((b) => b.key === 'arrival:kr-arrival-required'));
+  assert.ok(g.sections.notes.some((b) => b.facts.some((f) => /D-10-1/.test(f.label.en))));
 });
 
 console.log(`\n${passed} passed`);
