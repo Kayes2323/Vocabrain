@@ -271,9 +271,14 @@ export const APP_GUIDES: AppGuide[] = [
     id: 'abroad-universities',
     status: 'AVAILABLE',
     title: 'University shortlist',
-    where: 'Study Abroad → Universities (/abroad/universities)',
-    steps: ['Add universities you are considering (name, program, official website), mark each ambitious / good match / safer, and track its status.'],
-    notes: ['No verified university profiles yet: requirements and fees must be checked on each university’s official website.'],
+    where: 'Study Abroad → Universities (/abroad/universities), Study profile (/abroad/profile)',
+    steps: [
+      'Add universities you are considering (name, program, official website), mark each ambitious / good match / safer, and track its status (interested → shortlisted → applied → offer…).',
+      'Filter reviewed programs by study language, public/private, city and scholarship; filters start from your study profile and you can change them.',
+      'Compare up to three entries side by side (/abroad/universities/compare) — facts only, no winner.',
+      'Your study profile (/abroad/profile): language, TOPIK, result, preferences, budget — all optional, edit or remove any time.',
+    ],
+    notes: ['No verified university or program profiles yet: requirements and fees must be checked on each university’s official website. No rankings.'],
   },
   {
     id: 'abroad-deadlines',

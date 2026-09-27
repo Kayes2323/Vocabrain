@@ -63,6 +63,37 @@ Generic and data-driven — engines never name a country, code or rule.
 - South Korea: `degree → kr-d2 (D-2)`, `language → kr-d4 (D-4)`, every part empty
   ("Not verified yet"), no work rules — facts arrive in Phase C with sources.
 
+## Student profile, universities & programs (Korea Phase B3)
+
+- **Study profile** `abroad.student` (all optional): education (level, field,
+  status, year), result (value + scale), English (level, official IELTS),
+  Korean (none → TOPIK 6), preferences (city, public/private, study language
+  `en | local | either`), budgets (tuition, living). Wanted degree/subject stay
+  `degreeLevel` / `subject`.
+- **Progressive profiling** (`lib/abroad/profile-questions.ts`): 13 questions,
+  each read/written/validated on its own; `<ProfileQuestion id>` asks one in
+  place (universities page asks study language), saves, and the feature
+  carries on. `/abroad/profile` lists every answer or “Not provided”, with edit
+  and remove. Impossible answers (IELTS 12, CGPA 4.5/4) are ignored.
+- **University / Program**: ownership, accreditation, study languages, duration,
+  English and other-language (e.g. TOPIK) requirements, application window,
+  intakes, documents, scholarships — all `SourcedValue`s. No ranking field.
+  `Country.localLanguage` (KR: `ko`) powers “English / Korean / Either”.
+- **Filters** (`lib/abroad/programs.ts`): language, public/private, city,
+  same-currency tuition range (no exchange rates → never converted), verified
+  scholarship. Results split into *fits* and *can’t check yet*; only verified
+  or partly-verified values count. Filters start from the profile; the
+  student’s change on the page wins and never rewrites the profile.
+- **Match explanations** `explainMatch`: per dimension ✓ fits / △ check /
+  ? not verified / ? not provided — no totals, no ranking.
+- **Shortlist**: entries are university + program, deduplicated; statuses
+  interested → researching → shortlisted → applying → applied → offer /
+  rejected / not proceeding. **Compare** `/abroad/universities/compare?ids=`:
+  up to 3, sourced values or “—”.
+- **Mino**: profile answers or “not provided”, shortlist entries marked
+  reviewed vs student-entered, and the rule never to state facts about
+  student-entered universities or to rank.
+
 ## Routes
 
 | Route | What |
@@ -73,7 +104,9 @@ Generic and data-driven — engines never name a country, code or rule.
 | `/abroad/countries/[code]/roadmap` | 16-step roadmap: tick, target date, documents, action, Ask Mino |
 | `/abroad/country-match` | Priorities → matches from verified metrics; explore / shortlist / dream / compare |
 | `/abroad/compare?c=de,gb,ca` | Up to 3 countries, row by row from hub sections |
-| `/abroad/universities` | The student’s own list (fit, status, official link) + verified profiles (none yet) |
+| `/abroad/universities` | The student’s own list (fit, program, status, compare) + program finder (filters, match reasons) |
+| `/abroad/universities/compare?ids=` | Up to 3 shortlist entries side by side |
+| `/abroad/profile` | Study profile: every answer or “Not provided”, edit / remove |
 | `/abroad/scholarships` | Country scholarship facts + verified scholarships (none yet), funding filter |
 | `/abroad/deadlines` | Own dates + roadmap targets + IELTS test + official dates, by bucket |
 | `/abroad/documents` | Required documents from the roadmap, readiness, general guides |
