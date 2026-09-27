@@ -53,7 +53,8 @@ export function SectionCard({
   section: SectionCardData;
   open: boolean;
   onToggle: () => void;
-  askHref: string;
+  /** Optional: a question to Mino about this section (off on the country hub). */
+  askHref?: string;
   action?: SectionAction;
   /** Defaults to the country-section title for section.id. */
   title?: string;
@@ -132,9 +133,11 @@ export function SectionCard({
             <p className="text-sm text-foreground/80">
               {section.explanation ? text(section.explanation) : section.facts.length ? t('sa.hub.minoGeneral') : t('sa.hub.minoWaiting')}
             </p>
-            <Link href={askHref} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand">
-              <Sparkles className="size-4" aria-hidden /> {t('sa.hub.askSection', { section: title })}
-            </Link>
+            {askHref && (
+              <Link href={askHref} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand">
+                <Sparkles className="size-4" aria-hidden /> {t('sa.hub.askSection', { section: title })}
+              </Link>
+            )}
           </div>
           {action &&
             (action.href ? (

@@ -1,5 +1,6 @@
 'use client';
 
+import { getStudyOption, studyOptionName } from '@/lib/abroad/study-options';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ArrowUp, Check, Copy, Info, Mic, SquarePen, UserRound } from 'lucide-react';
@@ -225,7 +226,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa' && ask !== 'abroad-compare') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa' && ask !== 'abroad-compare' && ask !== 'abroad-option') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
     if (ask === 'result') {
@@ -256,6 +257,10 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
         ask === 'abroad-fit' ? t('sa.hub.fitPrompt', { country }) : t('sa.hub.sectionPrompt', { country, section: t(`sa.sections.${section}`) }),
         'study-abroad-advisor',
       );
+    } else if (ask === 'abroad-option') {
+      const country = getCountry(params.get('country') ?? '');
+      const option = country && getStudyOption(country, params.get('option') ?? '');
+      if (country && option) send(t('sa.guide.askPrompt', { country: country.name, option: studyOptionName(option, t, locale) }), 'study-abroad-advisor');
     } else if (ask === 'abroad-step') {
       const country = getCountry(params.get('country') ?? '');
       const step = findStepDef(country, params.get('step'));

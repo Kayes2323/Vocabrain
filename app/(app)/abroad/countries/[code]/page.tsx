@@ -12,6 +12,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { CountryImage } from '@/components/abroad/CountryCard';
 import { SectionCard, type SectionAction } from '@/components/abroad/SectionCard';
 import { PathwayPicker } from '@/components/abroad/PathwayPicker';
+import { StudyOptions } from '@/components/abroad/StudyOptions';
 import { pathwayContext } from '@/lib/abroad/pathways';
 import { useBilingual } from '@/components/abroad/useBilingual';
 import { countryHref } from '@/lib/abroad/countries';
@@ -67,7 +68,6 @@ function CountryHub() {
     updateProfile((p) => ({ ...p, abroad: setDreamCountry(p.abroad, country.code) }));
     router.push(`${countryHref(country.code)}/roadmap`);
   };
-  const askHref = (s: ResolvedSection) => `/mino?${new URLSearchParams({ ask: 'abroad-section', country: lower, section: s.id })}`;
   const actionFor = (s: ResolvedSection): SectionAction | undefined => {
     const def = SECTION_DEFS[s.id].action;
     if (!def) return undefined;
@@ -105,6 +105,7 @@ function CountryHub() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
         <div className="min-w-0 space-y-5">
+          <StudyOptions country={country} />
           <Link
             href={`/mino?${new URLSearchParams({ ask: 'abroad-fit', country: lower })}`}
             className="block rounded-2xl border bg-card p-4 transition-colors hover:border-foreground/20"
@@ -174,7 +175,6 @@ function CountryHub() {
                 section={s}
                 open={openId === s.id}
                 onToggle={() => setOpen(openId === s.id ? '' : s.id)}
-                askHref={askHref(s)}
                 action={actionFor(s)}
               />
             ))}
