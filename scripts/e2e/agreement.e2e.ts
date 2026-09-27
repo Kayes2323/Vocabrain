@@ -96,7 +96,7 @@ async function main() {
     await fixLink.waitFor({ timeout: 30_000 });
     check('module page offers the fix for the repeated mistake', await fixLink.isVisible());
     await fixLink.click();
-    await p.getByText('Fix: Finding the real subject in long subjects').waitFor({ timeout: 30_000 });
+    await p.getByText('Fix: Finding the real subject in long subjects').first().waitFor({ timeout: 30_000 });
     check('fix shows the rule first', /HEAD word/.test(await p.locator('main').innerText()));
     await p.getByRole('button', { name: 'Start 5 questions' }).click();
     for (let i = 0; i < 5; i++) {
