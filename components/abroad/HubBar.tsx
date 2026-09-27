@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 /** The five Study Abroad hubs and the routes that belong to each. */
 export const ABROAD_HUBS = [
-  { id: 'journey', href: '/abroad', match: (p: string) => p === '/abroad' || p.startsWith('/abroad/roadmap') },
+  { id: 'journey', href: '/abroad', match: (p: string) => p === '/abroad' || p.startsWith('/abroad/journey') || p.startsWith('/abroad/roadmap') },
   { id: 'explore', href: '/abroad/countries', match: (p: string) => /^\/abroad\/(countries|compare|country-match|match|universities)/.test(p) },
   { id: 'money', href: '/abroad/scholarships', match: (p: string) => /^\/abroad\/(scholarships|cost)/.test(p) },
   { id: 'apply', href: '/abroad/documents', match: (p: string) => /^\/abroad\/(documents|deadlines|applications)/.test(p) },

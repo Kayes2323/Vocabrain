@@ -4,6 +4,7 @@ import { costPlan } from './costs';
 import { documentExplanation } from './documents';
 import type { UserProfile } from '@/lib/models';
 import { countryPathways, selectedPathway, visaCategoriesFor } from './pathways';
+import { journeyPhases } from './phases';
 import { PROFILE_QUESTION_IDS, profileAnswer, type ProfileAnswer, type ProfileQuestionId } from './profile-questions';
 import { PROGRAMS, UNIVERSITIES } from '@/lib/content/universities';
 
@@ -36,6 +37,7 @@ export function abroadSummary(profile: UserProfile, now = new Date()) {
   const required = needs.map((n) => n.kind);
   const universities = a.universities ?? [];
   const next = abroadNextAction(profile, now);
+  const phases = journeyPhases(profile, now);
   return {
     profile: studentProfileForMino(a),
     nextAction:
@@ -55,6 +57,15 @@ export function abroadSummary(profile: UserProfile, now = new Date()) {
         })()
       : null,
     shortlist: (a.preferredCountryCodes ?? []).map((c) => getCountry(c)?.name ?? c),
+    // The six phases the student sees on Journey (same engine as the screen).
+    phase: {
+      setupMissing: phases.setup,
+      current: phases.current.id,
+      currentStatus: phases.current.status,
+      next: phases.next?.id ?? null,
+      statuses: Object.fromEntries(phases.phases.map((p) => [p.id, p.status])) as Record<string, string>,
+      where: phases.current.href,
+    },
     journey: {
       stage: `${journey.currentIndex + 1} of ${journey.stages.length}`,
       current: journey.current.id,
@@ -126,6 +137,7 @@ export function abroadSnapshotLine(profile: UserProfile, now = new Date()): stri
     s.dreamCountry ? `dream country ${s.dreamCountry}` : 'no dream country yet',
     s.shortlist.length && `shortlist ${s.shortlist.join(', ')}`,
     s.pathway && (s.pathway.chosen ? `pathway ${s.pathway.chosen} (visa ${s.pathway.visaCategories?.join('/') || 'not set'})` : `pathway not chosen yet (${s.pathway.options?.join(', ')})`),
+    `journey phase "${s.phase.current}" (${s.phase.currentStatus})${s.phase.next ? `, next "${s.phase.next}"` : ''}${s.phase.setupMissing ? ` (setup missing: ${s.phase.setupMissing})` : ''}`,
     `journey stage ${s.journey.stage} "${s.journey.current}" (${s.journey.currentStatus})`,
     s.roadmap && `roadmap ${s.roadmap.done}/${s.roadmap.total}, now "${s.roadmap.currentStep}"`,
     s.journey.needsAttention.length && `needs attention: ${s.journey.needsAttention.map((x) => `${x.stage} (${x.why} ${x.days ?? ''})`).join(', ')}`,

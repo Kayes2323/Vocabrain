@@ -3,19 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { AlertTriangle, ArrowRight, Check, ExternalLink, FileText, Sparkles, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PageHeader, Panel, ProgressBar, ScreenSkeleton, StatusChip } from '@/components/ds';
+import { PageHeader, Panel, ProgressBar, ScreenSkeleton } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { STAGE_TONE } from '@/components/abroad/JourneyTimeline';
-import { useBilingual } from '@/components/abroad/useBilingual';
+import { RoadmapStepItem } from '@/components/abroad/RoadmapStepItem';
 import { countryHref } from '@/lib/abroad/countries';
-import { roadmapHref } from '@/lib/abroad/roadmap';
 import { getCountry } from '@/lib/content/countries';
-import { countryRoadmap, documentViewStatus, markStep, setDreamCountry, setStepDue, studentRouteContext, type RoadmapStep } from '@/lib/engine';
+import { countryRoadmap, markStep, setDreamCountry, setStepDue, studentRouteContext, type RoadmapStep } from '@/lib/engine';
 import { documentsFor, stepDocuments } from '@/lib/abroad/documents';
-import { cn } from '@/lib/utils';
 
 /**
  * A country roadmap: the 16 steps from goal to travel, with the student's own
@@ -25,7 +22,6 @@ export default function CountryRoadmapPage() {
   const { code } = useParams<{ code: string }>();
   const country = getCountry(code ?? '');
   const { t } = useLocale();
-  const text = useBilingual();
   const { profile, updateProfile } = useProfile();
   const [open, setOpen] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false);
@@ -94,117 +90,21 @@ export default function CountryRoadmapPage() {
       )}
 
       <ol className="space-y-2" data-testid="roadmap-steps">
-        {visible.map((s) => {
-          const index = roadmap.steps.indexOf(s) + 1;
-          const isOpen = openId === s.id;
-          const title = text(s.title);
-          const canTick = roadmap.active && !s.auto;
-          return (
-            <li
-              key={s.id}
-              data-step={s.id}
-              data-status={s.status}
-              className={cn('rounded-2xl border bg-card', s.current && 'border-brand/50 ring-1 ring-brand/20')}
-            >
-              <button
-                type="button"
-                className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left"
-                aria-expanded={isOpen}
-                onClick={() => setOpen(isOpen ? '' : s.id)}
-              >
-                <span
-                  className={cn(
-                    'grid size-7 shrink-0 place-items-center rounded-full text-xs font-semibold',
-                    s.status === 'done' ? 'bg-success text-white' : s.status === 'attention' ? 'bg-warning-soft text-warning' : s.current ? 'bg-brand text-white' : 'bg-muted text-muted-foreground',
-                  )}
-                  aria-hidden
-                >
-                  {s.status === 'done' ? <Check className="size-4" /> : s.status === 'attention' ? <AlertTriangle className="size-3.5" /> : index}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[15px] font-semibold">{title}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    {s.current ? t('sa.roadmap.youAreHere') : t(`sa.stages.${s.stage}.title`)}
-                    {s.attention ? ` · ${t(s.attention.key, s.attention.params)}` : ''}
-                  </span>
-                </span>
-                <StatusChip tone={STAGE_TONE[s.status]}>{t(`sa.status.${s.status}`)}</StatusChip>
-              </button>
-              {isOpen && (
-                <div className="space-y-4 border-t px-4 pt-3 pb-4 sm:pl-14">
-                  <p className="text-sm text-foreground/85">{text(s.description)}</p>
-                  {s.source && (
-                    <p className="text-xs text-muted-foreground">
-                      {t('sa.roadmap.countryStep', { country: country.name })} ·{' '}
-                      <a href={s.source.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand">
-                        {s.source.name} <ExternalLink className="inline size-3" aria-hidden />
-                      </a>
-                    </p>
-                  )}
-                  {docsByStep[s.id]?.length ? (
-                    <div className="space-y-1.5">
-                      <p className="text-xs font-medium text-muted-foreground">{t('sa.roadmap.documents')}</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {docsByStep[s.id].map((d) => {
-                          const st = documentViewStatus(profile.abroad, d);
-                          return (
-                            <Link
-                              key={d}
-                              href={`/abroad/documents?open=${d}`}
-                              className={cn('inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs', st === 'ready' && 'border-success/40 text-success', st === 'needs-update' && 'border-warning/50 text-warning')}
-                              data-step-doc={d}
-                              data-status={st}
-                            >
-                              <span aria-hidden>{st === 'ready' ? '✓' : st === 'needs-update' ? '⚠' : '○'}</span>
-                              <FileText className="size-3.5" aria-hidden /> {t(`sa.docKinds.${d}`)}
-                            </Link>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : null}
-                  {s.auto && <p className="text-xs text-muted-foreground">{t('sa.roadmap.auto')}</p>}
-                  {canTick && (
-                    <label className="flex flex-wrap items-center gap-2 text-sm">
-                      <span className="text-muted-foreground">{t('sa.roadmap.targetDate')}</span>
-                      <input
-                        type="date"
-                        className="h-10 rounded-lg border bg-background px-3"
-                        value={s.mark?.dueAt?.slice(0, 10) ?? ''}
-                        onChange={(e) => setDue(s, e.target.value)}
-                        data-testid="step-date"
-                      />
-                    </label>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {s.action && (
-                      <Button asChild size="sm" variant={canTick ? 'outline' : 'default'} className="h-10">
-                        <Link href={roadmapHref(s.action.href, country.code)}>
-                          {text(s.action.label)} <ArrowRight />
-                        </Link>
-                      </Button>
-                    )}
-                    {canTick && (
-                      <Button size="sm" className="h-10" variant={s.status === 'done' ? 'secondary' : 'default'} aria-pressed={s.status === 'done'} onClick={() => toggle(s)}>
-                        {s.status === 'done' ? t('sa.roadmap.undo') : (
-                          <>
-                            <Check /> {t('sa.roadmap.markDone')}
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </div>
-                  <Link
-                    href={`/mino?${new URLSearchParams({ ask: 'abroad-step', country: country.code.toLowerCase(), step: s.id })}`}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-brand"
-                  >
-                    <Sparkles className="size-4" aria-hidden /> {t('sa.roadmap.ask')}
-                  </Link>
-                </div>
-              )}
-            </li>
-          );
-        })}
+        {visible.map((s) => (
+          <RoadmapStepItem
+            key={s.id}
+            step={s}
+            index={roadmap.steps.indexOf(s) + 1}
+            country={country}
+            abroad={profile.abroad}
+            docs={docsByStep[s.id]}
+            active={roadmap.active}
+            open={openId === s.id}
+            onOpen={() => setOpen(openId === s.id ? '' : s.id)}
+            onToggle={() => toggle(s)}
+            onDue={(date) => setDue(s, date)}
+          />
+        ))}
       </ol>
       <p className="text-xs text-muted-foreground">{t('sa.roadmap.general', { country: country.name })}</p>
     </div>
