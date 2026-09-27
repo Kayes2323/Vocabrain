@@ -419,6 +419,42 @@ async function main() {
     const d2Type = await p.locator('[data-section="type"]').innerText();
     check('D-2 type: official name + degree subtypes; no D-4 data', /D-2 \(Student\)/.test(d2Type) && /D-2-3 Master's/.test(d2Type) && !/D-4/.test(d2Type), d2Type.slice(0, 200));
     check('Ask Mino carries the visa category', /category=D-2/.test((await p.locator('[data-section]').first().getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) ?? ''));
+
+    // ============================================================ Korea C1.2 · D-2 official visa data (English desktop)
+    console.log('\n[KR-C1.2] D-2: overview → subtype → documents → money → Bangladesh → work → roadmap → Mino');
+    const openPart = async (id: string) => {
+      const btn = p.locator(`[data-section="${id}"] button[aria-expanded]`).first();
+      if ((await btn.getAttribute('aria-expanded')) !== 'true') await btn.click();
+      return p.locator(`[data-section="${id}"]`).innerText();
+    };
+    check('D-2: sourced parts show; interview + processing stay "Not verified yet"', (await p.locator('[data-section="interview"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="processing"]').getAttribute('data-status')) === 'not-yet' && (await p.locator('[data-section="eligibility"]').getAttribute('data-status')) === 'partial');
+    check('D-2 eligibility: official review criteria + source', /valid passport/.test(await openPart('eligibility')) && /Easylaw/.test(await p.locator('[data-section="eligibility"]').innerText()));
+    const docsTxt = await openPart('documents');
+    check('D-2 documents: 8-item official list + Bangladesh block kept apart', (await p.locator('[data-block="kr-d2-documents-list"] [data-fact]').count()) === 8 && /Bangladesh-specific requirement: Not verified yet/.test(docsTxt));
+    const finTxt = await openPart('finances');
+    check('D-2 money: "Official amount not verified yet", no amount shown', /Official amount not verified yet/.test(finTxt) && !/(USD|KRW|BDT|\$)\s?\d/.test(finTxt), finTxt.slice(0, 160));
+    const portalTxt = await openPart('portal');
+    check('D-2 where to apply: Dhaka Visa Application Center (Embassy source)', /Korea Visa Application Center, Dhaka/.test(portalTxt) && (await p.locator('[data-section="portal"] a[href="https://overseas.mofa.go.kr/bd-en/brd/m_2124/view.do?seq=760105"]').count()) >= 1);
+    check('D-2 fees: official amounts as written, no conversion', /BDT 2,150 per application/.test(await openPart('fees')));
+    check('D-2 stay: 2 years per grant (KIS)', /Up to 2 years per grant/.test(await openPart('stay')));
+    const wc = p.getByTestId('work-check');
+    check('Can I work? on D-2 asks, never guesses', (await wc.getAttribute('data-state')) === 'needs-answers');
+    if (await wc.getByLabel('Which degree will you study?').count()) await wc.getByLabel('Which degree will you study?').selectOption('masters');
+    if (await wc.getByLabel('Your Korean level (TOPIK)').count()) await wc.getByLabel('Your Korean level (TOPIK)').selectOption('topik-4');
+    if (await wc.getByLabel("Your bachelor's year").count()) await wc.getByLabel("Your bachelor's year").selectOption('3-4');
+    await p.waitForFunction(() => document.querySelector('[data-testid="work-check"]')?.getAttribute('data-state') === 'answered', null, { timeout: 10_000 }).catch(() => undefined);
+    const wcTxt = await wc.innerText();
+    check('Can I work? → the sourced D-2 rule for these answers', (await wc.getAttribute('data-state')) === 'answered' && /hours a week/.test(wcTxt) && /Easylaw/.test(wcTxt), wcTxt.slice(0, 200));
+    check('D-2 visa desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-kr-c12-01-d2-desktop');
+    await openPart('finances');
+    check('Ask Mino from a D-2 part carries part + category', /part=finances/.test((await p.locator('[data-section="finances"]').getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) ?? '') && /category=D-2/.test((await p.locator('[data-section="finances"]').getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) ?? ''));
+    await p.goto(`${BASE}/abroad/countries/kr/roadmap`, { waitUntil: 'load' });
+    await p.getByTestId('roadmap-steps').waitFor({ timeout: 60_000 });
+    await p.locator('[data-step="visa"] button[aria-expanded]').first().click();
+    check('roadmap visa step lists the D-2 documents (same store as Apply)', (await p.locator('[data-step="visa"] [data-step-doc="admission-letter"]').count()) === 1);
+    await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
+    await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
     await p.getByTestId('pathway-picker').locator('[data-pathway="degree"]').click();
     y = await pb((v) => !v.pathwayByCountry?.KR);
     check('no pathway → both categories, with a hint to choose', (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-2,D-4' && /Choose your pathway/.test(await p.locator('main').innerText()));
@@ -644,6 +680,21 @@ async function main() {
     await q.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
     check('bn KR visa: pathway question in Bangla', /তুমি কী পড়ার plan করছো\?/.test(await q.getByTestId('pathway-picker').innerText()));
     check('bn KR picker: visa name + source line in Bangla', /Visa: D-2 \(Student\)/.test(await q.getByTestId('pathway-picker').innerText()) && /Visa-র নামের source/.test(await q.getByTestId('pathway-picker').innerText()));
+    // C1.2 · D-2 in Bangla on mobile
+    await q.locator('[data-pathway="degree"]').click();
+    await q.waitForFunction(() => document.querySelector('[data-testid="visa-parts"]')?.getAttribute('data-category') === 'D-2', null, { timeout: 10_000 });
+    const qOpen = async (id: string) => {
+      const btn = q.locator(`[data-section="${id}"] button[aria-expanded]`).first();
+      if ((await btn.getAttribute('aria-expanded')) !== 'true') await btn.click();
+      return q.locator(`[data-section="${id}"]`).innerText();
+    };
+    check('bn D-2 money: "Official amount এখনো verified নয়"', /Official amount এখনো verified নয়/.test(await qOpen('finances')));
+    check('bn D-2 where to apply: Bangladesh-এ label', /Bangladesh-এ/.test(await qOpen('portal')));
+    check('bn D-2 mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-kr-c12-02-d2-mobile-bn', false);
+    // Back to "no pathway" so the later checks start from the same state.
+    await q.locator('[data-pathway="degree"]').click();
+    await q.waitForFunction(() => document.querySelectorAll('[data-testid="visa-categories"] [data-category]').length === 2, null, { timeout: 10_000 });
     check('bn KR visa mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-kr-b2-02-visa-mobile-bn', false);
     await q.goto(`${BASE}/abroad/universities?country=kr`, { waitUntil: 'load' });

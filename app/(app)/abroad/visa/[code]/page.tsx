@@ -12,7 +12,7 @@ import { HubBar } from '@/components/abroad/HubBar';
 import { SectionCard } from '@/components/abroad/SectionCard';
 import { PathwayPicker } from '@/components/abroad/PathwayPicker';
 import { WorkCheck } from '@/components/abroad/WorkCheck';
-import { countryPathways, selectedPathway, visaCategoriesFor } from '@/lib/abroad/pathways';
+import { countryPathways, pathwayContext, selectedPathway, visaCategoriesFor } from '@/lib/abroad/pathways';
 import { cn } from '@/lib/utils';
 import { countryHref } from '@/lib/abroad/countries';
 import { visaParts } from '@/lib/abroad/visa';
@@ -42,7 +42,8 @@ export default function CountryVisaPage() {
   const pathway = selectedPathway(profile.abroad, country);
   const categories = visaCategoriesFor(country, pathway?.id);
   const category = categories.find((c) => c.id === pickedCategory) ?? (pathway || categories.length === 1 ? categories[0] : undefined);
-  const parts = visaParts(country, undefined, category?.id);
+  // The student's degree hides facts for other degrees (e.g. D-2 subtypes, stay limits).
+  const parts = visaParts(country, undefined, category?.id, pathwayContext(profile.abroad, country));
   const withFacts = parts.filter((p) => p.status !== 'not-yet').length;
   const openId = open ?? parts.find((p) => p.status !== 'not-yet')?.id ?? parts[0].id;
   const isDream = profile.abroad.dreamCountryCode === country.code;

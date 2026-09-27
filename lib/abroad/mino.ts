@@ -1,3 +1,4 @@
+import type { DegreeLevel } from '@/lib/constants';
 import type { Country, SourcedValue } from '@/lib/models';
 import { countryPathways, visaCategoriesFor } from './pathways';
 import { countrySections, factStatus } from './sections';
@@ -23,11 +24,12 @@ function quotable(list: SourcedValue<unknown>[] | undefined) {
  * pathways with their visa categories, and the "Can I work?" state for the
  * student's pathway. Built from the same engines as the screens.
  */
-export function countryFactsForMino(country: Country, opts: { pathway?: string; degreeLevel?: string; now?: Date } = {}) {
+export function countryFactsForMino(country: Country, opts: { pathway?: string; degreeLevel?: string; korean?: string; now?: Date } = {}) {
   const now = opts.now ?? new Date();
   const d = country.data;
   const sections = countrySections(country, now, opts.pathway ? { pathway: opts.pathway } : undefined);
-  const work = checkWork(country, { pathway: opts.pathway, degreeLevel: opts.degreeLevel }, now);
+  // Only the student's own answers (pathway, degree, Korean level); anything else is asked, never assumed.
+  const work = checkWork(country, { pathway: opts.pathway, degreeLevel: opts.degreeLevel, korean: opts.korean }, now);
   return {
     country: country.name,
     livingCostToShow: quotable(d.livingCost),
@@ -44,7 +46,8 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
       degreeLevels: p.degreeLevels ?? [],
       selected: p.id === opts.pathway,
       visaCategories: visaCategoriesFor(country, p.id).map((c) => {
-        const parts = visaParts(country, now, c.id);
+        // Same filter as the screen: the student's degree hides other degrees' facts.
+        const parts = visaParts(country, now, c.id, opts.degreeLevel ? { degreeLevel: opts.degreeLevel as DegreeLevel } : undefined);
         return {
           id: c.id,
           code: c.code,

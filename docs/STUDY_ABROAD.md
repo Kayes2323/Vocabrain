@@ -136,6 +136,16 @@ Generic and data-driven — engines never name a country, code or rule.
 - **Bangladesh**: country-level `documents` block "Bangladesh-specific requirements" holds only the general official statement plus "Bangladesh-specific requirement: Not verified yet" guidance and the Embassy in Dhaka links.
 - **Work foundation**: KR `workQuestions.korean` uses the profile's Korean/TOPIK values (prefilled). Country-level `work` part records only that D-2/D-4 part-time work needs Korean proficiency and immigration-office permission (partly verified). No work rules or hours until C1.4.
 
+## South Korea D-2 official visa data (Phase C1.2)
+
+- D-2 lives in `lib/content/kr-d2.ts` (`KR_D2` category + `KR_D2_WORK_RULES`); D-4 is untouched.
+- Sources (all read 2026-09-27): Korea Immigration Service Visa Navigator (high), Embassy of Korea in Bangladesh notices (high), Easylaw / Ministry of Government Legislation (medium), Study in Korea / NIIED (medium). `krFact` accepts `validFrom` / `reviewAt` (Embassy VAC facts: from 2026-09-02, review 2026-12-27).
+- Parts with facts: type, eligibility, documents, finances, process, portal, fees, biometrics (in-Korea registration only), mistakes, pre-departure, insurance, work, restrictions, stay. **Not verified yet:** interview, processing time, official proof-of-funds amount, Bangladesh D-2 document list, which fee applies to D-2, visa-stage biometrics.
+- `visaParts(country, now, categoryId, ctx)` filters facts/blocks by `appliesTo` (degree): subtypes and stay limits show only for the student's degree; Mino uses the same filter.
+- Documents: five D-2 `DocumentRequirement`s (passport, photo, admission letter, certificate, financial) with official wording; one entry per kind; never on D-4 or before a route is chosen.
+- Work: six conditional rules (degree × bachelor's year × TOPIK) from the MOJ table (Easylaw + Study in Korea). The grad "below TOPIK 4" row is `needs-review` (sources differ). New KR work question `yearOfStudy`; TOPIK comes from the profile; `getCountryData` accepts `korean`.
+- A doubtful source value (PhD stay limit) is stored as `needs-review` and shown with the warning.
+
 ## Routes
 
 | Route | What |

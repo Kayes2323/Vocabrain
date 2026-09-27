@@ -51,6 +51,7 @@ export const getCountryData: MinoTool = {
         country: { type: 'string', description: 'Country name or ISO code, e.g. "Canada" or "GB".' },
         pathway: { type: 'string', description: "Optional pathway id from the student's profile (e.g. for countries with degree vs language routes)." },
         degreeLevel: { type: 'string', description: "Optional degree level from the student's profile (bachelors, masters, phd…), used by work rules that differ by degree." },
+        korean: { type: 'string', description: "Optional Korean level from the student's profile (none, beginner, topik-1 … topik-6), used by work rules that depend on it. Never guess it." },
       },
       required: ['country'],
     },
@@ -62,7 +63,8 @@ export const getCountryData: MinoTool = {
     if (!country) return { found: false, note: 'Not in the Vocab Brain destination list.' };
     const pathway = String(args.pathway ?? '').trim() || undefined;
     const degreeLevel = String(args.degreeLevel ?? '').trim() || undefined;
-    return countryFactsForMino(country, { pathway, degreeLevel });
+    const korean = String(args.korean ?? '').trim() || undefined;
+    return countryFactsForMino(country, { pathway, degreeLevel, korean });
   },
 };
 

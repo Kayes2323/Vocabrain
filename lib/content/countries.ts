@@ -95,6 +95,15 @@ export const COUNTRIES: Country[] = [
           ...[1, 2, 3, 4, 5, 6].map((n) => ({ value: `topik-${n}`, label: { en: `TOPIK ${n}`, bn: `TOPIK ${n}` } })),
         ],
       },
+      {
+        // Bachelor's hours differ by year (asked here only; never guessed).
+        id: 'yearOfStudy',
+        label: { en: "Your bachelor's year", bn: "Bachelor's-এর কোন বর্ষ" },
+        options: [
+          { value: '1-2', label: { en: 'Year 1–2', bn: '১ম–২য় বর্ষ' } },
+          { value: '3-4', label: { en: 'Year 3–4', bn: '৩য়–৪র্থ বর্ষ' } },
+        ],
+      },
     ],
     pathways: [
       {

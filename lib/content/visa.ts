@@ -1,4 +1,5 @@
 import type { VisaGuide } from '@/lib/models';
+import { KR_D2, KR_D2_WORK_RULES } from './kr-d2';
 import { KR_EMBASSY_BD, KR_EMBASSY_BD_VISA, KR_KIS_NAVIGATOR, KR_SIK_VISA, KR_SIK_WORK, krFact } from './kr-sources';
 
 /**
@@ -53,45 +54,7 @@ export const VISA_GUIDES: VisaGuide[] = [
       },
     },
     categories: [
-      {
-        id: 'kr-d2',
-        code: 'D-2',
-        name: { en: 'D-2 visa', bn: 'D-2 visa' },
-        // Official name as the Korea Immigration Service writes it.
-        officialName: krFact('D-2 (Student)', KR_KIS_NAVIGATOR, 'high', { notes: 'Visa Navigator Ver 2023.05. Study in Korea words it slightly differently.' }),
-        pathwayIds: ['degree'],
-        links: [KR_SIK_VISA, KR_KIS_NAVIGATOR],
-        parts: {
-          type: {
-            facts: [
-              {
-                label: { en: 'Who it is for', bn: 'কার জন্য' },
-                fact: krFact('International students enrolling in degree programs.', KR_SIK_VISA, 'medium'),
-              },
-              {
-                label: { en: 'Official scope', bn: 'Official scope' },
-                fact: krFact(
-                  "International students pursuing associate, bachelor's, master's or doctoral degrees, or enrolled in a research course; also exchange, work-learning and visiting students.",
-                  KR_KIS_NAVIGATOR,
-                  'high',
-                  { notes: 'Visa Navigator Ver 2023.05.' },
-                ),
-              },
-            ],
-            blocks: [
-              {
-                id: 'kr-d2-subtypes',
-                title: { en: 'D-2 types for degree study', bn: 'Degree-র জন্য D-2-র ধরন' },
-                facts: [
-                  { label: { en: "Bachelor's", bn: "Bachelor's" }, fact: krFact("D-2-2 Bachelor's", KR_SIK_VISA, 'medium', { status: 'partly-verified', applicableDegree: 'bachelors' }) },
-                  { label: { en: "Master's", bn: "Master's" }, fact: krFact("D-2-3 Master's", KR_SIK_VISA, 'medium', { status: 'partly-verified', applicableDegree: 'masters' }) },
-                  { label: { en: 'PhD', bn: 'PhD' }, fact: krFact('D-2-4 Doctoral', KR_SIK_VISA, 'medium', { status: 'partly-verified', applicableDegree: 'phd' }) },
-                ],
-              },
-            ],
-          },
-        },
-      },
+      KR_D2,
       {
         id: 'kr-d4',
         code: 'D-4',
@@ -133,8 +96,8 @@ export const VISA_GUIDES: VisaGuide[] = [
         },
       },
     ],
-    // Work rules (hours, TOPIK levels) are added in C1.4, sourced.
-    workRules: [],
+    // D-2 part-time hours (C1.2); D-4 rules are added in their own phase.
+    workRules: KR_D2_WORK_RULES,
   },
 ];
 
