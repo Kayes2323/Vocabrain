@@ -26,7 +26,7 @@ export function BottomNav() {
                 aria-current={active ? 'page' : undefined}
                 className={cn(
                   'flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors active:scale-95',
-                  active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
+                  active ? 'text-brand' : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {featured ? (
@@ -42,7 +42,7 @@ export function BottomNav() {
                   <span
                     className={cn(
                       'flex h-7 w-11 items-center justify-center rounded-full transition-colors',
-                      active && 'bg-accent text-accent-foreground',
+                      active && 'bg-brand-soft text-brand',
                     )}
                   >
                     <Icon className="size-5" aria-hidden />

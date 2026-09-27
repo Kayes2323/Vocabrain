@@ -768,6 +768,14 @@ export const bn: LocaleDictionary = {
     bannerBody: 'Progress শুধু এই device-এ save থাকছে। সব জায়গায় রাখতে চাইলে Profile থেকে account খুলে নিন।',
   },
   home: {
+    quickAccess: 'দ্রুত শুরু',
+    quick: {
+      foundation: { title: 'IELTS Foundation', body: 'ধাপে ধাপে basics' },
+      tests: { title: 'Practice Test', body: 'সময় ধরে, score সহ' },
+      speaking: { title: 'Speaking Test', body: 'কথা বলে Part 1–3' },
+    },
+    abroadTitle: 'Study Abroad',
+    abroadBody: 'বিদেশে পড়ার পরের ধাপ plan করুন',
     yourGoal: 'আপনার goal',
     goalValue: 'IELTS {band}',
     noGoalTitle: 'চলুন আগে আপনার goal ঠিক করি',

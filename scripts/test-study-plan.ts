@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildStudyPlan } from '../lib/engine/study-plan';
 import { buildDailyPlan, dailyPlanState, markActivityDone } from '../lib/engine/daily-plan';
+import { HOME_QUICK_ACCESS, IELTS_SECTIONS, PRIMARY_NAV } from '../lib/navigation';
 import { getTranslator } from '../lib/i18n';
 import { emptyProfile, type UserProfile } from '../lib/models';
 
@@ -114,6 +115,21 @@ test('home CTA texts: Bangla and English, no "Continue learning" on the home car
   assert.deepEqual(['todayStart', 'todayContinue', 'todayFinish', 'todayCompleted'].map((k) => tr(`home.${k}`)), ['Start today’s learning', 'Continue today’s learning', 'Finish today’s learning', 'Today’s learning completed']);
   const card = readFileSync(join(process.cwd(), 'components/home/TodayCard.tsx'), 'utf8');
   assert.doesNotMatch(card, /continuePlan|startPlan|allDone|continueTitle/);
+});
+
+test('home Quick access: 3 IELTS shortcuts, not a feature list or a second menu, no Study Abroad', () => {
+  assert.deepEqual(HOME_QUICK_ACCESS.map((q) => q.id), ['foundation', 'tests', 'speaking']);
+  assert.ok(HOME_QUICK_ACCESS.length >= 3 && HOME_QUICK_ACCESS.length <= 4);
+  const ielts = new Set(IELTS_SECTIONS.map((x) => x.href));
+  for (const q of HOME_QUICK_ACCESS) {
+    assert.ok(ielts.has(q.href), `${q.id} opens an IELTS section`);
+    assert.ok(!PRIMARY_NAV.some((n) => n.href === q.href), `${q.id} is not a copy of a main-menu item`);
+    assert.ok(!q.href.startsWith('/abroad'));
+    assert.ok(tr(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title` && getTranslator('bn').t(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title`);
+  }
+  assert.equal(new Set(HOME_QUICK_ACCESS.map((q) => q.tint)).size, HOME_QUICK_ACCESS.length, 'each shortcut has its own accent');
+  const journey = readFileSync(join(process.cwd(), 'components/home/JourneyCard.tsx'), 'utf8');
+  assert.doesNotMatch(journey, /\/ielts\/foundation/, 'Foundation is offered once on Home (Quick access), not again in the journey card');
 });
 
 console.log(`\n${passed} passed`);

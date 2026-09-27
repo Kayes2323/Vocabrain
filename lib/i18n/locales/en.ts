@@ -766,6 +766,14 @@ export const en = {
     bannerBody: 'Progress is saved on this device only. Create an account from Profile to keep it everywhere.',
   },
   home: {
+    quickAccess: 'Quick access',
+    quick: {
+      foundation: { title: 'IELTS Foundation', body: 'Basics, step by step' },
+      tests: { title: 'Practice Test', body: 'Timed, with scores' },
+      speaking: { title: 'Speaking Test', body: 'Parts 1–3, out loud' },
+    },
+    abroadTitle: 'Study Abroad',
+    abroadBody: 'plan your next step abroad',
     yourGoal: 'Your goal',
     goalValue: 'IELTS {band}',
     noGoalTitle: "Let's set your goal",

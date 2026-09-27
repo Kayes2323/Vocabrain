@@ -49,6 +49,25 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   check(`${tag}: everything done → "${T.done}" + next learning action`, c.status === T.done && c.state === 'completed' && (c.href === '/review' || c.href === '/ielts'), JSON.stringify(c));
   check(`${tag}: no sideways scroll`, await noHorizontalScroll(p));
   await shot(p, `home-today-${tag}`, false);
+
+  // Quick access: a small shortcut layer under today's learning, three IELTS items, no Study Abroad.
+  const qa = p.getByTestId('quick-access');
+  const ids = await qa.locator('[data-quick]').evaluateAll((els) => els.map((e) => e.getAttribute('data-quick')));
+  check(`${tag}: Quick access has 3 IELTS shortcuts (Foundation, Practice Test, Speaking Test)`, ids.join(',') === 'foundation,tests,speaking', ids.join(','));
+  check(`${tag}: Quick access has no Study Abroad and no main-menu copies`, (await qa.locator('a[href^="/abroad"], a[href="/ielts"], a[href="/mino"], a[href="/"]').count()) === 0);
+  const y = async (id: string) => (await p.getByTestId(id).boundingBox())!.y;
+  check(`${tag}: order — today's learning, then Quick access, then Study Abroad at the bottom`, (await y('today-cta')) < (await y('quick-access')) && (await y('quick-access')) < (await y('home-abroad')));
+  check(`${tag}: Foundation offered once on Home`, (await p.locator('main a[href="/ielts/foundation"]').count()) === 1);
+  const h = (await qa.boundingBox())!.height;
+  check(`${tag}: Quick access stays compact (one row)`, h < 170, h);
+  await p.goto(BASE + '/', { waitUntil: 'load' });
+  await p.locator('[data-quick="foundation"]').click();
+  await p.waitForURL('**/ielts/foundation', { timeout: 30_000 });
+  check(`${tag}: Foundation shortcut opens IELTS Foundation`, p.url().endsWith('/ielts/foundation'));
+  await p.goto(BASE + '/', { waitUntil: 'load' });
+  await p.getByTestId('quick-access').waitFor();
+  check(`${tag}: home still has no sideways scroll`, await noHorizontalScroll(p));
+  await shot(p, `home-quick-${tag}`, true);
 }
 
 async function main() {

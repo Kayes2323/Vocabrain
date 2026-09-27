@@ -29,7 +29,7 @@ export function SideNav() {
                   className={cn(
                     'flex h-11 items-center gap-3 rounded-xl px-3 text-[15px] font-medium transition-colors',
                     active
-                      ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                      ? 'bg-brand-soft font-semibold text-brand'
                       : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                   )}
                 >

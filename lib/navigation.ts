@@ -46,6 +46,25 @@ export const PRIMARY_NAV: PrimaryNavItem[] = [
   { href: '/profile', labelKey: 'nav.profile', icon: User },
 ];
 
+/**
+ * Home "Quick access": the few IELTS things a student starts most often.
+ * Deliberately short (never every section) and not a copy of PRIMARY_NAV;
+ * the IELTS page keeps the full list. Hrefs follow IELTS_SECTIONS.
+ */
+export interface QuickAccessItem {
+  id: 'foundation' | 'tests' | 'speaking';
+  href: string;
+  icon: LucideIcon;
+  /** Accent from the design system's tints, one per item. */
+  tint: string;
+}
+
+export const HOME_QUICK_ACCESS: QuickAccessItem[] = [
+  { id: 'foundation', href: '/ielts/foundation', icon: Layers, tint: 'bg-tint-lavender text-tint-lavender-fg' },
+  { id: 'tests', href: '/ielts/tests', icon: Timer, tint: 'bg-tint-blue text-tint-blue-fg' },
+  { id: 'speaking', href: '/ielts/tests/vb-practice-1/speaking', icon: Mic, tint: 'bg-tint-green text-tint-green-fg' },
+];
+
 export function isNavActive(pathname: string, href: string): boolean {
   if (href === '/') return pathname === '/';
   return pathname === href || pathname.startsWith(`${href}/`);

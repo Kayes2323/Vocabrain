@@ -4,8 +4,10 @@ import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { Callout, ScreenSkeleton } from '@/components/ds';
+import { AbroadRow } from '@/components/home/AbroadRow';
 import { JourneyCard } from '@/components/home/JourneyCard';
 import { MinoCard } from '@/components/home/MinoCard';
+import { QuickAccess } from '@/components/home/QuickAccess';
 import { TodayCard } from '@/components/home/TodayCard';
 
 function greetingKey(date = new Date()): string {
@@ -33,6 +35,7 @@ export default function HomePage() {
 
   if (!profile) return <ScreenSkeleton />;
 
+  const noGoal = profile.ielts.targetBand === undefined;
   const name = profile.displayName || (isGuest ? undefined : firstName(user?.displayName, user?.email));
 
   return (
@@ -50,13 +53,18 @@ export default function HomePage() {
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
         <div className="space-y-5">
-          <JourneyCard profile={profile} />
+          {/* Without a goal, setting one comes first; otherwise today's learning leads. */}
+          {noGoal && <JourneyCard profile={profile} />}
           <TodayCard profile={profile} />
+          <QuickAccess />
+          {!noGoal && <JourneyCard profile={profile} />}
         </div>
         <div className="lg:sticky lg:top-10">
           <MinoCard profile={profile} />
         </div>
       </div>
+
+      <AbroadRow />
     </div>
   );
 }
