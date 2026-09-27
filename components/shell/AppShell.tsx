@@ -17,6 +17,7 @@ import { createFirestoreBrainRepository, localBrainRepository } from '@/lib/serv
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
 import { SplashScreen } from './SplashScreen';
+import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 
 /** Routes that take over the full screen (focused flows, no navigation). */
 const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '/practice'];
@@ -114,6 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
               </main>
               <BottomNav />
+              <InstallPrompt />
             </div>
           )}
         </JourneyGate>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Noto_Sans_Bengali } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { APP_NAME, APP_TAGLINE } from '@/lib/constants'
 import './globals.css'
+import { PwaBoot } from '@/components/pwa/PwaBoot'
 
 // latin-ext: the dotless ı of the Mino wordmark (loaded only where used, via unicode-range).
 const geist = Geist({ subsets: ['latin', 'latin-ext'], variable: '--font-geist' })
@@ -72,6 +73,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable} ${notoBengali.variable}`}>
       <body className="font-sans antialiased">
+        <PwaBoot />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -8,6 +8,7 @@ import {
   motionAllowed,
   nextBlinkDelay,
   nextSparkleDelay,
+  reactionDuration,
   reactionForTransition,
 } from '../lib/mino/motion';
 
@@ -48,7 +49,8 @@ test('motion stops for reduced motion, data-saver, off-screen, or animated=false
 });
 
 test('modes: static never moves; thinking has its own eyes (no idle blink); idle blinks + sparkles', () => {
-  assert.deepEqual(MINO_MODES, ['static', 'idle', 'thinking', 'welcome', 'success', 'attention', 'sparkle']);
+  assert.deepEqual(MINO_MODES, ['static', 'idle', 'thinking', 'welcome', 'success', 'attention', 'celebrate', 'sparkle']);
+  assert.deepEqual(idleLife('celebrate'), { blink: true, sparkle: false }, 'celebrate: one sparkle only, no idle sparkles on top');
   assert.deepEqual(idleLife('static'), { blink: false, sparkle: false });
   assert.deepEqual(idleLife('thinking'), { blink: false, sparkle: false });
   assert.deepEqual(idleLife('idle'), { blink: true, sparkle: true });
@@ -61,6 +63,9 @@ test('answer ready (thinking → idle) plays blink + sparkle once; entering one-
   assert.equal(reactionForTransition('idle', 'success'), 'success');
   assert.equal(reactionForTransition('idle', 'attention'), 'attention');
   assert.equal(reactionForTransition('idle', 'sparkle'), 'sparkle');
+  assert.equal(reactionForTransition('idle', 'celebrate'), 'celebrate');
+  assert.equal(reactionForTransition('celebrate', 'celebrate'), null, 'no replay without a change');
+  assert.equal(reactionForTransition('thinking', 'celebrate'), 'success', 'answer ready wins');
   assert.equal(reactionForTransition('idle', 'thinking'), null);
   assert.equal(reactionForTransition('idle', 'idle'), null);
 });
@@ -68,6 +73,26 @@ test('answer ready (thinking → idle) plays blink + sparkle once; entering one-
 test('welcome fits the brief: ~1–1.5 s; one-shots stay short', () => {
   assert.ok(MINO_TIMING.welcome >= 1000 && MINO_TIMING.welcome <= 1500);
   assert.ok(MINO_TIMING.success < 1200 && MINO_TIMING.attention <= 1500 && MINO_TIMING.sparkle < 1000);
+  assert.ok(MINO_TIMING.celebrate <= 1000, 'celebrate is a short hop');
+  assert.equal(reactionDuration('celebrate'), MINO_TIMING.celebrate);
+  assert.equal(reactionDuration('success'), MINO_TIMING.success);
+  assert.equal(reactionDuration('blink'), MINO_TIMING.blinkClosed);
+});
+
+test('welcome is a roll/bounce on the bottom edge (not a spin); only translate/rotate/uniform scale', () => {
+  const css = readFileSync('app/globals.css', 'utf8');
+  const rule = css.match(/\.mino\[data-react='welcome'\] \.mino-mark \{([^}]*)\}/);
+  assert.ok(rule, 'welcome rule exists');
+  assert.match(rule![1], /transform-origin: 50% 100%/);
+  assert.match(rule![1], /animation: mino-welcome-roll \d+ms/);
+  const kf = css.match(/@keyframes mino-welcome-roll \{([\s\S]*?)\n\}/);
+  assert.ok(kf, 'roll keyframes exist');
+  const angles = [...kf![1].matchAll(/rotate\((-?\d+(?:\.\d+)?)deg\)/g)].map((m) => Math.abs(Number(m[1])));
+  assert.ok(angles.length >= 3, 'rocks back and forth');
+  assert.ok(Math.max(...angles) <= 15, 'a tilt, never a spin');
+  assert.ok(!/scale[XY]\(|skew/.test(kf![1]), 'the mark is never distorted');
+  assert.match(css, /@keyframes mino-celebrate/);
+  assert.match(css, /\.mino\[data-react='celebrate'\] \.mino-mark/);
 });
 
 test('brand: the app icon is drawn from the exact same geometry as the component (face + star, no wordmark)', () => {

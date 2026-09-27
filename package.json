@@ -13,6 +13,7 @@
     "test:vocab-foundation": "npx -y tsx scripts/test-vocab-foundation.ts",
     "test:mino-knowledge": "npx -y tsx scripts/test-mino-knowledge.ts",
     "test:mino-motion": "npx -y tsx scripts/test-mino-motion.ts",
+    "test:pwa-install": "npx -y tsx scripts/test-pwa-install.ts",
     "test:plan": "npx -y tsx scripts/test-study-plan.ts",
     "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:abroad": "npx -y tsx scripts/test-country-match.ts",

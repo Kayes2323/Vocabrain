@@ -7,11 +7,13 @@ Motion only adds life. One component renders Mino everywhere.
 ```tsx
 <Mino mode="idle" size="md" animated wordmark={false} />   // components/mino/Mino.tsx
 <MinoMark alive | thinking | mode=… />                      // same drawing, old API kept
-minoReact('blink' | 'sparkle' | 'success' | 'attention')    // one-shot, visible Minos only
+minoReact('blink' | 'sparkle' | 'success' | 'attention' | 'celebrate')    // one-shot, visible Minos only
 ```
 Modes: `static` · `idle` (organic blink 2.8–7.2 s, rare double blink; star sparkle every 11–22 s) ·
-`thinking` (glance + breathe, no spinner) · `welcome` (appear → small bounce → settle → blink →
-sparkle → wordmark, ~1.3 s) · `success` (blink + star sparkle) · `attention` (two soft pulses) · `sparkle`.
+`thinking` (glance + breathe, no spinner) · `welcome` (drop in → small dip → tilt → roll/hop →
+settle → blink → sparkle → wordmark, ~1.45 s; Mino rocks on its bottom edge, max ±11°, never spins;
+translate/rotate/uniform scale only) · `success` (blink + star sparkle) · `attention` (two soft pulses) ·
+`celebrate` (small hop + rock, blink, sparkle) · `sparkle`. Reduced motion: no roll, no bounce.
 Leaving `thinking` plays blink + sparkle (the answer is ready).
 
 ## Rules
@@ -26,3 +28,13 @@ Leaving `thinking` plays blink + sparkle (the answer is ready).
 ## App icon
 `public/icon.svg`, favicons, `icon-192/512.png`, `apple-icon.png` are rendered from the same geometry
 (face + star, no wordmark): `node scripts/brand/mino-icons.mjs`.
+
+## Install Mino (PWA)
+- `components/pwa/InstallPrompt.tsx` (mounted in AppShell), rules in `lib/pwa/install.ts`
+  (pure, `pnpm test:pwa-install`), browser glue in `lib/pwa/native.ts`.
+- Only the browser's own `beforeinstallprompt` can install; our card just calls `prompt()`.
+  No event (iOS Safari, Firefox…) → no card. iOS is also excluded explicitly.
+- Shown after 45 s of use (`localStorage['mino.installDelayMs']` overrides, 0–600000 ms).
+- Never when installed (`mino.install.installedAt`, set on "accepted" or `appinstalled`) or when
+  running standalone. "Not now" stores `dismissedAt`/`dismissCount`; cooldown 14 days × count.
+- `public/sw.js` has no fetch handler (no caching); registered in production only (`PwaBoot`).

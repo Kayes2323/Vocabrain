@@ -3,7 +3,7 @@
 // checks what was saved to Firestore.
 import type { Page } from 'playwright-core';
 import {
-  BASE, check, getDoc, launch, noHorizontalScroll, patchField, report, shot, signUp, uidOf, waitForFoundation, watchErrors,
+  BASE, check, getDoc, SHOTS, launch, noHorizontalScroll, patchField, report, shot, signUp, uidOf, waitForFoundation, watchErrors,
 } from './helpers';
 
 const errors: string[] = [];
@@ -81,11 +81,42 @@ async function main() {
     const splash = sp.locator('.mino[data-mino-mode="welcome"]');
     await splash.waitFor({ timeout: 30_000 });
     check('splash: Mino welcome with the "Mino" wordmark (star as the i-dot), no spinner', (await splash.locator('.mino-wordmark').innerText()).replace(/\s/g, '') === 'M\u0131no' && (await splash.locator('.mino-wordmark-star').count()) === 1 && (await sp.locator('[data-slot="spinner"], .animate-spin').count()) === 0);
-    await sp.waitForTimeout(1150);
+    check('splash: welcome is the roll/bounce (rocks on its bottom edge, not a spin)', await splash.evaluate((el) => {
+      const cs = getComputedStyle(el.querySelector('.mino-mark')!);
+      return el.getAttribute('data-react') === 'welcome' && cs.animationName === 'mino-welcome-roll' && cs.transformOrigin.split(' ')[1] === cs.height;
+    }));
+    // Frames of the welcome for the visual review: drop → dip/tilt → hop → settle → blink/sparkle + wordmark.
+    const tw = Date.now();
+    for (const [ms, name] of [[120, 'a-drop'], [380, 'b-tilt'], [560, 'c-hop'], [900, 'd-settle'], [1250, 'e-wordmark']] as const) {
+      await sp.waitForTimeout(Math.max(0, ms - (Date.now() - tw)));
+      const box = await splash.boundingBox();
+      if (box) await sp.screenshot({ path: `${SHOTS}/mino-00-splash-${name}.png`, clip: { x: box.x - 60, y: box.y - 60, width: box.width + 120, height: box.height + 120 } }).catch(() => undefined);
+    }
     await shot(sp, 'mino-00-splash', false);
     await sp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
     check('splash → home after the ~1.3 s welcome', Date.now() - t0 >= 1300, `${Date.now() - t0} ms`);
     await sp.close();
+
+    // Reduced motion: no roll/bounce at all (a fresh session, watched frame by frame).
+    const rp = await ctx.newPage();
+    await rp.emulateMedia({ reducedMotion: 'reduce' });
+    await rp.addInitScript(() => {
+      const w = window as unknown as { __anims: string[] };
+      w.__anims = [];
+      const look = () => {
+        document.querySelectorAll('.mino-mark').forEach((m) => {
+          const n = getComputedStyle(m).animationName;
+          if (n !== 'none') w.__anims.push(n);
+        });
+        requestAnimationFrame(look);
+      };
+      requestAnimationFrame(look);
+    });
+    await rp.goto(BASE, { waitUntil: 'commit' });
+    await rp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
+    const rAnims = await rp.evaluate(() => (window as unknown as { __anims: string[] }).__anims);
+    check('reduced motion: the welcome does not roll or bounce', rAnims.length === 0, [...new Set(rAnims)].join(','));
+    await rp.close();
 
     // Home: mostly still, an organic blink, no layout shift.
     await p.goto(BASE, { waitUntil: 'load' });
@@ -128,6 +159,106 @@ async function main() {
     const log = await p.evaluate(() => (window as unknown as { __mino: { attr: string; value: string | null }[] }).__mino);
     const ti = log.findIndex((e) => e.attr === 'data-mino-mode' && e.value === 'thinking');
     check('chat: Mino thinks (no spinner over Mino), then answer → blink + sparkle, back to idle', ti >= 0 && log.slice(ti).some((e) => e.attr === 'data-mino-mode' && e.value === 'idle') && log.slice(ti).some((e) => e.attr === 'data-react' && e.value === 'success'), JSON.stringify(log.slice(0, 12)));
+
+    // ============================================================ Install Mino (PWA) · Android phone
+    console.log('\n[PWA] Install Mino prompt — Android mobile');
+    {
+      const actx = await browser.newContext({
+        viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2,
+        userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36',
+      });
+      const a = await actx.newPage();
+      watchErrors(a, 'PWA', errors);
+      await signUp(a, 'Rafi', `pwa-${stamp}@test.dev`, 'en');
+      await a.evaluate(() => localStorage.setItem('mino.installDelayMs', '1200'));
+      // A stand-in for Chrome's beforeinstallprompt: records prompt() and answers with `outcome`.
+      const fireNative = (outcome: 'accepted' | 'dismissed') =>
+        a.evaluate((o) => {
+          const w = window as unknown as { __prompted: number };
+          w.__prompted = 0;
+          const e = new Event('beforeinstallprompt', { cancelable: true }) as Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string; platform: string }> };
+          e.prompt = async () => { w.__prompted++; };
+          e.userChoice = Promise.resolve({ outcome: o, platform: 'web' });
+          window.dispatchEvent(e);
+        }, outcome);
+      const stored = () => a.evaluate(() => JSON.parse(localStorage.getItem('mino.install') ?? '{}'));
+      const prompt = a.getByTestId('install-prompt');
+      const home = async () => {
+        await a.goto(BASE, { waitUntil: 'load' });
+        await a.getByTestId('mino-card').waitFor({ timeout: 60_000 });
+      };
+
+      // Browser without the install API (e.g. iOS Safari, Firefox): nothing is offered, nothing breaks.
+      await home();
+      await a.waitForTimeout(2500);
+      check('no beforeinstallprompt → no Install card, no crash', (await prompt.count()) === 0 && !errors.some((e) => e.startsWith('PWA')), errors.filter((e) => e.startsWith('PWA')).join(' | '));
+
+      // Not shown at once: only after some use (here 6 s instead of 45 s).
+      await a.evaluate(() => localStorage.setItem('mino.installDelayMs', '6000'));
+      await a.goto(BASE, { waitUntil: 'load' });
+      await fireNative('dismissed');
+      await a.getByTestId('mino-card').waitFor({ timeout: 60_000 });
+      await a.waitForTimeout(500);
+      check('not shown immediately (waits for some use)', (await prompt.count()) === 0);
+      await a.waitForTimeout(1500);
+      const main0 = await a.locator('main').first().boundingBox();
+      await prompt.waitFor({ timeout: 15_000 });
+      await a.evaluate(() => localStorage.setItem('mino.installDelayMs', '1200'));
+      check('Android phone: "Install Mino on your phone" with the body, Install + Not now', /Install Mino on your phone/.test(await prompt.innerText()) && /home screen/.test(await prompt.innerText()) && (await prompt.getByRole('button', { name: 'Install' }).isVisible()) && (await prompt.getByRole('button', { name: 'Not now' }).isVisible()));
+      check('install card has the small Mino beside it', (await prompt.locator('.mino').count()) === 1);
+      await a.waitForTimeout(500);
+      const pbox = (await prompt.boundingBox())!;
+      const nav = await a.locator('nav').filter({ has: a.getByRole('link') }).last().boundingBox();
+      check('install card fits the phone and sits above the bottom bar', pbox.x >= 0 && pbox.x + pbox.width <= 390 && (!nav || pbox.y + pbox.height <= nav.y + 1), JSON.stringify({ pbox, nav }));
+      check('install card: no sideways scroll', await noHorizontalScroll(a), await overflowers(a));
+      check('install card: no layout shift (floats over the page)', JSON.stringify(main0) === JSON.stringify(await a.locator('main').first().boundingBox()));
+      await shot(a, 'pwa-01-install-mobile', false);
+
+      // "Not now": remembered, not back on the next load.
+      await prompt.getByRole('button', { name: 'Not now' }).click();
+      check('"Not now" hides it', (await prompt.count()) === 0);
+      const afterNo = await stored();
+      check('"Not now" is stored (dismissedAt + count)', typeof afterNo.dismissedAt === 'number' && afterNo.dismissCount === 1, JSON.stringify(afterNo));
+      await home();
+      await fireNative('dismissed');
+      await a.waitForTimeout(2500);
+      check('after "Not now": not shown again on the next page load', (await prompt.count()) === 0);
+
+      // Install → the browser's own dialog; accepted → never again.
+      await a.evaluate(() => localStorage.removeItem('mino.install'));
+      await home();
+      await fireNative('accepted');
+      await prompt.waitFor({ timeout: 10_000 });
+      await prompt.getByRole('button', { name: 'Install' }).click();
+      await a.waitForFunction(() => typeof JSON.parse(localStorage.getItem('mino.install') ?? '{}').installedAt === 'number', null, { timeout: 5_000 }).catch(() => undefined);
+      check('Install opens the native prompt (beforeinstallprompt.prompt())', (await a.evaluate(() => (window as unknown as { __prompted: number }).__prompted)) === 1);
+      check('accepted → installedAt stored, card gone', typeof (await stored()).installedAt === 'number' && (await prompt.count()) === 0);
+      await home();
+      await fireNative('accepted');
+      await a.waitForTimeout(2500);
+      check('after installing: never shown again', (await prompt.count()) === 0);
+
+      // Installed from the browser menu instead (appinstalled) → the card goes away for good.
+      await a.evaluate(() => localStorage.removeItem('mino.install'));
+      await home();
+      await fireNative('dismissed');
+      await prompt.waitFor({ timeout: 10_000 });
+      await a.evaluate(() => window.dispatchEvent(new Event('appinstalled')));
+      await a.waitForTimeout(300);
+      check('appinstalled → card hidden and installedAt stored', (await prompt.count()) === 0 && typeof (await stored()).installedAt === 'number');
+
+      // Opened as the installed app (standalone): no card, even if the event came.
+      await a.evaluate(() => localStorage.removeItem('mino.install'));
+      await a.addInitScript(() => {
+        const mm = window.matchMedia.bind(window);
+        window.matchMedia = (q: string) => (/display-mode: standalone/.test(q) ? ({ matches: true, media: q, addEventListener() {}, removeEventListener() {} } as unknown as MediaQueryList) : mm(q));
+      });
+      await home();
+      await fireNative('dismissed');
+      await a.waitForTimeout(2500);
+      check('standalone (installed app) → no card', (await prompt.count()) === 0);
+      await actx.close();
+    }
 
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
     await p.getByTestId('abroad-start').waitFor({ timeout: 60_000 });

@@ -10,6 +10,7 @@ import {
   motionAllowed,
   nextBlinkDelay,
   nextSparkleDelay,
+  reactionDuration,
   reactionForTransition,
   type MinoMode,
   type MinoReaction,
@@ -39,8 +40,9 @@ export function minoReact(reaction: MinoReaction) {
  * - static: never moves.
  * - idle: an occasional, organic blink; the star sparkles rarely.
  * - thinking: Mino glances around (no spinner); leaving it plays blink + sparkle.
- * - welcome: appear, small bounce, settle, blink, sparkle, wordmark reveal (~1.3 s).
- * - success / attention / sparkle: a one-shot on entering the mode, then idle life.
+ * - welcome: drop in, dip, tilt, a little roll/hop, settle, blink, sparkle, wordmark (~1.45 s).
+ * - success / attention / celebrate / sparkle: a one-shot on entering the mode, then idle life.
+ *   celebrate = a small hop and rock, then a sparkle.
  *
  * Motion stops for prefers-reduced-motion, data-saver, when off-screen and when the tab is hidden.
  */
@@ -147,7 +149,7 @@ export function Mino({
     if (listening) window.addEventListener(REACT_EVENT, onReact);
 
     // A one-shot mode shown from the start (e.g. "attention" on a card) plays once when Mino can move.
-    if (s.allowed && (mode === 'attention' || mode === 'success' || mode === 'sparkle')) {
+    if (s.allowed && (mode === 'attention' || mode === 'success' || mode === 'celebrate' || mode === 'sparkle')) {
       later(() => play(el, mode, later, blink), 400);
     }
     // Welcome starts with the first paint (data-react is rendered); end it on time, or at once if Mino may not move.
@@ -253,8 +255,10 @@ function play(el: HTMLElement, r: MinoReaction, later: (fn: () => void, ms: numb
   // Force a reflow so the same reaction can replay back to back.
   void el.getBoundingClientRect();
   el.setAttribute('data-react', r);
-  const ms = r === 'success' ? MINO_TIMING.success : r === 'attention' ? MINO_TIMING.attention : MINO_TIMING.sparkle;
+  const ms = reactionDuration(r);
+  // Success blinks at once; celebrate blinks after the hop lands.
   if (r === 'success' && blink) blink();
+  if (r === 'celebrate' && blink) later(blink, 560);
   later(() => {
     if (el.getAttribute('data-react') === r) el.removeAttribute('data-react');
   }, ms);

@@ -178,7 +178,15 @@ export const en = {
       quiz: 'Quiz: {module}',
       done: 'All available lessons done',
     },
-    mino: {
+    pwa: {
+    titlePhone: 'Install Mino on your phone',
+    titleDesktop: 'Install Mino',
+    body: "Keep Mino on your phone's home screen and open it faster.",
+    bodyDesktop: 'Keep Mino one click away, like any other app.',
+    install: 'Install',
+    notNow: 'Not now',
+  },
+  mino: {
       says: 'Mino says',
       check: 'Let’s first find your starting point. It takes about 10 minutes, and then I’ll know exactly where you should begin.',
       resume: 'You stopped in the middle of {lesson}. Let’s finish it — only a few minutes left.',
