@@ -3,18 +3,21 @@
 import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Map, Sparkles, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bookmark, BookmarkCheck, Check, Map, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Panel, ScreenSkeleton } from '@/components/ds';
+import { Panel, ScreenSkeleton, StatusChip } from '@/components/ds';
+import { STAGE_TONE } from '@/components/abroad/JourneyTimeline';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { CountryImage } from '@/components/abroad/CountryCard';
 import { SectionCard, type SectionAction } from '@/components/abroad/SectionCard';
+import { PathwayPicker } from '@/components/abroad/PathwayPicker';
+import { pathwayContext } from '@/lib/abroad/pathways';
 import { useBilingual } from '@/components/abroad/useBilingual';
 import { countryHref } from '@/lib/abroad/countries';
 import { actionHref, countrySections, HUB_TABS, SECTION_DEFS, tabProgress, type HubTab, type ResolvedSection } from '@/lib/abroad/sections';
 import { getCountry } from '@/lib/content/countries';
-import { abroadJourney, countryRoadmap, markStage, setDreamCountry, toggleShortlist } from '@/lib/engine';
+import { abroadJourney, APPLY_STAGES, countryRoadmap, markStage, markStep, setDreamCountry, stepsForStages, toggleShortlist } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
 function CountryHub() {
@@ -28,7 +31,8 @@ function CountryHub() {
   const { profile, updateProfile } = useProfile();
   const tabParam = params.get('tab') as HubTab | null;
   const tab: HubTab = tabParam && (HUB_TABS as readonly string[]).includes(tabParam) ? tabParam : 'overview';
-  const sections = useMemo(() => (country ? countrySections(country) : []), [country]);
+  const ctxKey = profile && country ? JSON.stringify(pathwayContext(profile.abroad, country)) : '';
+  const sections = useMemo(() => (country ? countrySections(country, new Date(), ctxKey ? JSON.parse(ctxKey) : undefined) : []), [country, ctxKey]);
   const [open, setOpen] = useState<string | null>(null);
 
   if (!country)
@@ -111,6 +115,7 @@ function CountryHub() {
             </p>
             <p className="mt-1 text-sm text-muted-foreground">{t('sa.hub.fitBody')}</p>
           </Link>
+          <PathwayPicker country={country} />
           <div className="flex gap-2">
             {isDream ? (
               <Button asChild size="lg" className="h-12 flex-1">
@@ -174,6 +179,40 @@ function CountryHub() {
               />
             ))}
           </Panel>
+
+          {tab === 'apply' && isDream && (
+            <Panel className="space-y-3" data-testid="apply-steps">
+              <div className="space-y-0.5">
+                <h2 className="font-semibold">{t('sa.applySteps.title')}</h2>
+                <p className="text-xs text-muted-foreground">{t('sa.applySteps.body')}</p>
+              </div>
+              <ul className="divide-y">
+                {stepsForStages(roadmap, APPLY_STAGES).map((st) => (
+                  <li key={st.id} className="flex min-h-12 items-center gap-3 py-2" data-apply-step={st.id} data-status={st.status}>
+                    <button
+                      type="button"
+                      disabled={st.auto}
+                      aria-pressed={st.status === 'done'}
+                      aria-label={text(st.title)}
+                      onClick={() => updateProfile((p) => ({ ...p, abroad: markStep(p.abroad, country.code, st.id, st.status !== 'done') }))}
+                      className={cn(
+                        'grid size-6 shrink-0 place-items-center rounded-md border',
+                        st.status === 'done' && 'border-success bg-success text-white',
+                        st.auto && 'opacity-60',
+                      )}
+                    >
+                      {st.status === 'done' && <Check className="size-4" aria-hidden />}
+                    </button>
+                    <span className={cn('min-w-0 flex-1 text-sm', st.status === 'done' && 'text-muted-foreground line-through')}>{text(st.title)}</span>
+                    {st.status !== 'done' && st.status !== 'upcoming' && <StatusChip tone={STAGE_TONE[st.status]}>{t(`sa.status.${st.status}`)}</StatusChip>}
+                  </li>
+                ))}
+              </ul>
+              <Link href={`${countryHref(country.code)}/roadmap`} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand">
+                {t('sa.applySteps.open')} <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </Panel>
+          )}
 
           {tab === 'roadmap' && (
             <Panel className="space-y-3" data-testid="hub-roadmap">

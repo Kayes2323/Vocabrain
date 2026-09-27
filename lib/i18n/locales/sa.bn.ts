@@ -291,6 +291,8 @@ export const saBn: LocaleDictionary['sa'] = {
     yourDream: 'তোমার স্বপ্নের দেশ',
     others: 'অন্য দেশ',
     countryTitle: 'Student visa · {country}',
+    category: 'Visa category',
+    pickPathway: 'তোমার জন্য কোন visa, দেখতে আগে pathway বেছে নাও।',
     parts: {
       type: 'Visa-র ধরন',
       eligibility: 'যোগ্যতা',
@@ -336,6 +338,24 @@ export const saBn: LocaleDictionary['sa'] = {
     label: 'তোমার পরের কাজ',
     date: '{title} · {when}',
     step: 'Roadmap ধাপ: {title}',
+  },
+  pathway: {
+    question: 'তুমি কী পড়ার plan করছো?',
+    hint: 'তোমার বাছাই অনুযায়ী ঠিক হবে কোন visa, কোন কাগজপত্র আর কোন ধাপ তোমার জন্য। পরে বদলাতে পারবে।',
+    chosen: 'তোমার pathway',
+  },
+  work: {
+    title: 'পড়ার সময় কি কাজ করতে পারবো?',
+    notVerified: 'এখনো যথেষ্ট verified তথ্য নেই। কাজের plan করার আগে official page দেখে নাও।',
+    needs: 'নিয়মটা তোমার অবস্থার ওপর নির্ভর করে। দেখতে উত্তর দাও:',
+    answered: 'তোমার অবস্থার জন্য verified নিয়ম',
+    only: 'Official নিয়ম তোমার অবস্থায় অনুমতি দিলে তবেই কাজ করো।',
+    choose: 'বেছে নাও…',
+  },
+  applySteps: {
+    title: 'তোমার application-এর ধাপ',
+    body: 'Roadmap-এর সাথে একই progress — এখানে বা সেখানে, যেকোনো জায়গায় tick দাও।',
+    open: 'পুরো roadmap খোলো',
   },
   tools: {
     countries: 'দেশ',

@@ -40,6 +40,29 @@ Phase 3 (3A–3Q) turns Study Abroad from a country list into a guided journey:
 - Section **25 · Arrival** was appended (Visa & life tab), so 01–24 keep their numbers.
   Section 11 is now “Language requirements” (English + e.g. Korean/TOPIK blocks).
 
+## Pathways & visa categories (Korea Phase B2)
+
+Generic and data-driven — engines never name a country, code or rule.
+
+- `Country.pathways[]` — `StudyPathway { id, kind, name, description, degreeLevels,
+  visaCategoryIds, languageRequirements, documents, roadmap, links }`.
+- `VisaGuide.categories[]` — `VisaCategory { id, code, name, pathwayIds, parts,
+  documents, roadmap, appliesTo, links }`; country-level `parts` still apply to all.
+  Visa parts 13–15 (insurance, work, restrictions) were appended.
+- `VisaGuide.workRules[]` — `WorkRule { conditions: input → accepted values, outcome: SourcedValue }`;
+  `Country.workQuestions[]` define the country's own inputs (`pathway`, `visaCategory` are built in).
+- Student: `abroad.pathwayByCountry[code]` (per country; an id the country doesn't offer is ignored).
+- Engines (`lib/abroad/`): `pathways.ts` (choice, context, categories), `visa.ts`
+  (category-aware parts), `work.ts` (`checkWork` → answered / needs-answers /
+  not-verified; never a guess; a country's sourced work fact counts as an
+  unconditional rule), `documents.ts` (`documentsFor`: roadmap + pathway +
+  category, deduplicated with reasons, conditional), `roadmap.ts` (template →
+  country → pathway → category overrides), `mino.ts` (`countryFactsForMino`).
+- **One progress store:** the hub's Apply checklist is `stepsForStages(roadmap, APPLY_STAGES)` —
+  the same steps and `journey.steps` marks as the roadmap.
+- South Korea: `degree → kr-d2 (D-2)`, `language → kr-d4 (D-4)`, every part empty
+  ("Not verified yet"), no work rules — facts arrive in Phase C with sources.
+
 ## Routes
 
 | Route | What |

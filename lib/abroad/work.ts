@@ -21,7 +21,7 @@ export type WorkCheck =
  * matching every answer, asks for the answers a rule depends on, or says the
  * rule is not verified yet and points to official pages.
  */
-export function checkWork(country: Pick<Country, 'code' | 'pathways' | 'workQuestions'>, answers: WorkAnswers, now = new Date()): WorkCheck {
+export function checkWork(country: Pick<Country, 'code' | 'pathways' | 'workQuestions'> & Partial<Pick<Country, 'data'>>, answers: WorkAnswers, now = new Date()): WorkCheck {
   const guide = visaGuide(country.code);
   const pathway = getPathway(country, answers.pathway);
   const categories = visaCategoriesFor(country, pathway?.id);
@@ -32,7 +32,11 @@ export function checkWork(country: Pick<Country, 'code' | 'pathways' | 'workQues
   ].filter((l, i, all) => all.findIndex((x) => x.url === l.url) === i);
 
   // Only rules a student may see: a not-verified outcome never answers anything.
-  const rules = (guide?.workRules ?? []).filter((r) => factStatus(r.outcome, 'work', now) !== 'not-verified');
+  // A country without conditional rules may still hold a sourced, unconditional work fact.
+  const source: WorkRule[] = guide?.workRules?.length
+    ? guide.workRules
+    : (country.data?.workRules ?? []).map((outcome, i) => ({ id: `country-${i}`, conditions: {}, outcome }));
+  const rules = source.filter((r) => factStatus(r.outcome, 'work', now) !== 'not-verified');
   const given = (key: string) => answers[key] !== undefined && answers[key] !== '';
   // A rule stays possible while every answered condition matches.
   const possible = rules.filter((r) => Object.entries(r.conditions).every(([k, vals]) => !given(k) || vals.includes(answers[k]!)));

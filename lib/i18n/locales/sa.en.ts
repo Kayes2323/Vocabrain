@@ -292,6 +292,8 @@ export const saEn = {
     yourDream: 'Your dream country',
     others: 'Other countries',
     countryTitle: 'Student visa · {country}',
+    category: 'Visa category',
+    pickPathway: 'Choose your pathway to see the visa that fits it.',
     parts: {
       type: 'Visa type',
       eligibility: 'Eligibility',
@@ -337,6 +339,24 @@ export const saEn = {
     label: 'Your next action',
     date: '{title} · {when}',
     step: 'Roadmap step: {title}',
+  },
+  pathway: {
+    question: 'What are you planning to study?',
+    hint: 'Your choice decides which visa, documents and steps apply to you. You can change it any time.',
+    chosen: 'Your pathway',
+  },
+  work: {
+    title: 'Can I work while studying?',
+    notVerified: 'Not enough verified information yet. Check the official page before you plan on working.',
+    needs: 'The rule depends on your situation. Answer to see it:',
+    answered: 'The verified rule for your situation',
+    only: 'Only work when the official rule allows it for your situation.',
+    choose: 'Choose…',
+  },
+  applySteps: {
+    title: 'Your application steps',
+    body: 'Same progress as your roadmap — tick a step here or there.',
+    open: 'Open full roadmap',
   },
   tools: {
     countries: 'Countries',

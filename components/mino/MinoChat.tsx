@@ -272,7 +272,8 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     } else if (ask === 'abroad-visa') {
       const country = getCountry(params.get('country') ?? '');
       const part = (VISA_PART_IDS as readonly string[]).includes(params.get('part') ?? '') ? (params.get('part') as string) : 'type';
-      send(country ? t('sa.visa.partPrompt', { country: country.name, part: t(`sa.visa.parts.${part}`) }) : t('sa.home.askPrompt'), 'study-abroad-advisor');
+      const category = (params.get('category') ?? '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 8);
+      send(country ? t('sa.visa.partPrompt', { country: category ? `${country.name} ${category}` : country.name, part: t(`sa.visa.parts.${part}`) }) : t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad-next') {
       send(t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad') {

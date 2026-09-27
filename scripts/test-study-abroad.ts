@@ -572,6 +572,8 @@ test('B2 visa categories: category parts add to country parts; not-verified fact
 test('B2 "Can I work?": not verified → needs answers → the matching sourced rule; never a guess', () => {
   const kr = { ...getCountry('KR')!, workQuestions: [{ id: 'level', label: { en: 'Level', bn: 'Level' }, options: [{ value: 'a', label: { en: 'A', bn: 'A' } }, { value: 'b', label: { en: 'B', bn: 'B' } }] }] };
   assert.equal(checkWork(kr, { pathway: 'degree' }).state, 'not-verified', 'no verified rules yet');
+  const de = checkWork(getCountry('DE')!, {});
+  assert.equal(de.state === 'answered' && de.rules[0].rule.outcome.source.url, 'https://www.make-it-in-germany.com/en/study-vocational-training/studies-in-germany/work', "a country's sourced work fact answers as an unconditional rule");
   withKrGuide(
     (g) => {
       g.workRules = [
