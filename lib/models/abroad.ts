@@ -25,6 +25,87 @@ export interface Country {
   sections?: Partial<Record<CountrySectionId, CountrySection>>;
   /** How this country's roadmap differs from the 16-step template. */
   roadmap?: RoadmapOverride;
+  /** Ways to study here (e.g. degree vs language training), each tied to visa categories. */
+  pathways?: StudyPathway[];
+  /** Questions the "Can I work?" check may ask (options are country-defined). */
+  workQuestions?: WorkQuestion[];
+}
+
+// ============================================================== pathways & visas
+// Generic: a country lists its pathways and visa categories as data. The
+// engines never assume a country-specific id, code or rule.
+
+/** Broad kind, for icons/copy only; behaviour comes from the pathway's data. */
+export type PathwayKind = 'degree' | 'language' | 'exchange' | 'vocational' | 'other';
+
+export interface StudyPathway {
+  id: string;
+  kind: PathwayKind;
+  name: Bilingual;
+  /** Plain description (general guidance, not an official fact). */
+  description?: Bilingual;
+  /** Degree levels this pathway covers (absent = not degree-bound). */
+  degreeLevels?: DegreeLevel[];
+  visaCategoryIds: string[];
+  /** Sourced language requirements (e.g. English / local language). */
+  languageRequirements?: SectionFact[];
+  documents?: DocumentRequirement[];
+  /** Roadmap changes for students on this pathway. */
+  roadmap?: RoadmapOverride;
+  /** Official pages about this pathway. */
+  links?: SourceRef[];
+}
+
+export interface VisaCategory {
+  id: string;
+  /** Official code as the country writes it (e.g. a letter-number code). */
+  code: string;
+  name: Bilingual;
+  pathwayIds: string[];
+  description?: Bilingual;
+  /** Sourced content per visa part; missing parts show "Not verified yet". */
+  parts: Partial<Record<VisaPartId, CountrySection>>;
+  documents?: DocumentRequirement[];
+  roadmap?: RoadmapOverride;
+  appliesTo?: Applicability;
+  links?: SourceRef[];
+}
+
+/** A document a pathway, visa category, program or scholarship asks for. */
+export interface DocumentRequirement {
+  kind: DocumentKind;
+  /** Why it is needed: admission, visa, scholarship… */
+  purpose: 'admission' | 'visa' | 'scholarship' | 'arrival' | 'general';
+  /** The official statement of the requirement; absent = not verified yet. */
+  requirement?: SourcedValue<string>;
+  appliesTo?: DocumentApplicability;
+}
+
+export interface DocumentApplicability extends Applicability {
+  visaCategoryIds?: string[];
+  programIds?: string[];
+  scholarshipIds?: string[];
+}
+
+/** One "Can I work?" question; options are values rules compare against. */
+export interface WorkQuestion {
+  id: string;
+  label: Bilingual;
+  options: { value: string; label: Bilingual }[];
+}
+
+/**
+ * A sourced, conditional work rule. It applies when every condition matches
+ * the student's answers; `pathway` and `visaCategory` are built-in inputs.
+ */
+export interface WorkRule {
+  id: string;
+  /** input id → accepted values (all must match). */
+  conditions: Record<string, string[]>;
+  /** What is allowed / required under these conditions. */
+  outcome: SourcedValue<string>;
+  /** Plain explanation (general guidance). */
+  explanation?: Bilingual;
 }
 
 /** Plain bilingual text for Study Abroad content. */
@@ -222,14 +303,21 @@ export interface Deadline extends Partial<ContentMeta> {
 
 export const VISA_PART_IDS = [
   'type', 'eligibility', 'documents', 'finances', 'process', 'portal', 'fees', 'biometrics', 'interview', 'processing', 'mistakes', 'pre-departure',
+  // Appended so 01–12 keep their numbers.
+  'insurance', 'work', 'restrictions',
 ] as const;
 export type VisaPartId = (typeof VISA_PART_IDS)[number];
 
 export interface VisaGuide extends Partial<ContentMeta> {
   countryCode: string;
-  /** Official name of the student visa. */
+  /** Official name of the student visa (single-category countries). */
   visaType?: SourcedValue<string>;
+  /** Country-level parts (apply to every category). */
   parts: Partial<Record<VisaPartId, CountrySection>>;
+  /** Visa categories, when the country has more than one route. */
+  categories?: VisaCategory[];
+  /** Sourced, conditional work rules for the "Can I work?" check. */
+  workRules?: WorkRule[];
 }
 
 export type DocumentKind =
@@ -242,6 +330,13 @@ export type DocumentKind =
   | 'financial'
   | 'english-test'
   | 'portfolio'
+  | 'photo'
+  | 'admission-letter'
+  /** A test in a language other than English (e.g. the country's own language). */
+  | 'language-test'
+  | 'university-specific'
+  | 'visa-specific'
+  | 'scholarship-specific'
   | 'other';
 
 /** How to prepare one kind of document (general guidance, not country rules). */

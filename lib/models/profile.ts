@@ -59,6 +59,8 @@ export interface StudyAbroadProfile {
   preferredCountryCodes?: string[];
   /** The one country the active journey is for. */
   dreamCountryCode?: string;
+  /** Chosen study pathway per country (country code → pathway id defined by that country). */
+  pathwayByCountry?: Record<string, string>;
   /** The student's own progress on journey stages/steps; computed rules never live here. */
   journey?: StudentJourneyState;
   /** Universities the student is considering (their own list, from official websites). */

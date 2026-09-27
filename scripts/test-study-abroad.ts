@@ -4,6 +4,13 @@ import { withProfileDefaults } from '../lib/services/profile-repository';
 import { ABROAD_STAGE_IDS, abroadJourney, countryRoadmap, markStage, markStep, setDreamCountry, setStepDue, toggleShortlist } from '../lib/engine';
 import { roadmapDefs } from '../lib/abroad/roadmap';
 import { visaParts } from '../lib/abroad/visa';
+import { countryPathways, pathwayContext, selectedPathway, setPathway, visaCategoriesFor } from '../lib/abroad/pathways';
+import { checkWork } from '../lib/abroad/work';
+import { documentsFor } from '../lib/abroad/documents';
+import { findStepDef } from '../lib/abroad/roadmap';
+import { APPLY_STAGES, markStep as markRoadmapStep, requiredDocuments as requiredDocs, stepsForStages, VISA_STAGES } from '../lib/engine';
+import { visaGuide } from '../lib/content/visa';
+import { countryFactsForMino } from '../lib/abroad/mino';
 import { compareTable, parseCompare } from '../lib/abroad/compare';
 import { abroadSnapshotLine, abroadSummary } from '../lib/abroad/summary';
 import { abroadNextAction } from '../lib/engine';
@@ -20,7 +27,7 @@ import { countryHref, countryIndicators } from '../lib/abroad/countries';
 import { actionHref, appliesTo, countrySections, factNeedsReview, factStatus, groupStatus, HUB_TABS, SECTION_DEFS, sectionNumber, sectionsOfTab } from '../lib/abroad/sections';
 import type { Country, SectionFact } from '../lib/models';
 import { deadlineBucket, scholarshipStatus } from '../lib/abroad/status';
-import { COUNTRY_SECTION_IDS } from '../lib/models';
+import { COUNTRY_SECTION_IDS, VISA_PART_IDS } from '../lib/models';
 
 /**
  * Study Abroad product tests (journey, countries, hub, roadmap, centres…).
@@ -350,9 +357,10 @@ test('documents: required set follows the roadmap; status is saved per document'
   assert.equal(loaded.abroad.documents?.sop?.status, 'drafting');
 });
 
-test('visa: 12 parts; only official facts count; the official visa page is offered under "Where to apply"', () => {
+test('visa: all parts; only official facts count; the official visa page is offered under "Where to apply"', () => {
   const gb = visaParts(getCountry('GB')!, NOW);
-  assert.equal(gb.length, 12);
+  assert.equal(gb.length, VISA_PART_IDS.length);
+  assert.equal(gb[11].id, 'pre-departure', 'appended parts never renumber 01–12');
   assert.equal(gb.find((p) => p.id === 'finances')?.status, 'partial');
   assert.equal(gb.find((p) => p.id === 'finances')?.facts.length, 2);
   assert.equal(gb.find((p) => p.id === 'portal')?.links?.[0].url, 'https://www.gov.uk/student-visa');
@@ -494,6 +502,166 @@ test('B1 South Korea today: no invented facts anywhere', () => {
   const kr = countrySections(getCountry('KR')!);
   assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0));
   assert.ok(visaParts(getCountry('KR')!).every((p) => p.facts.length === 0));
+});
+
+// ---------------------------------------------------------------- Korea B2: pathways & visa categories
+const SRC2 = { name: 'Official visa page', url: 'https://example.go.kr/visa', sourceType: 'official-government' as const };
+const sv = (value: string, over = {}) => ({ value, source: SRC2, lastVerified: '2026-09-27', ...over });
+/** Runs fn with extra (test-only) data on South Korea's visa guide, then restores it. */
+function withKrGuide(extra: (g: NonNullable<ReturnType<typeof visaGuide>>) => void, fn: () => void) {
+  const g = visaGuide('KR')!;
+  const saved = JSON.parse(JSON.stringify(g));
+  try {
+    extra(g);
+    fn();
+  } finally {
+    Object.assign(g, saved);
+    for (const k of Object.keys(g)) if (!(k in saved)) delete (g as unknown as Record<string, unknown>)[k];
+  }
+}
+
+test('B2 South Korea structure: two pathways (degree → D-2, language → D-4), empty and not verified', () => {
+  const kr = getCountry('KR')!;
+  assert.deepEqual(countryPathways(kr).map((p) => [p.id, p.kind, p.visaCategoryIds.join()]), [['degree', 'degree', 'kr-d2'], ['language', 'language', 'kr-d4']]);
+  assert.deepEqual(visaCategoriesFor(kr).map((c) => c.code), ['D-2', 'D-4']);
+  assert.deepEqual(visaCategoriesFor(kr, 'degree').map((c) => c.code), ['D-2']);
+  assert.deepEqual(visaCategoriesFor(kr, 'language').map((c) => c.code), ['D-4']);
+  for (const c of visaCategoriesFor(kr)) assert.ok(visaParts(kr, NOW, c.id).every((p) => p.status === 'not-yet' && p.facts.length === 0), c.code);
+  assert.equal(visaGuide('KR')!.workRules!.length, 0);
+  // Other countries: no pathways, unchanged behaviour.
+  assert.equal(countryPathways(getCountry('DE')!).length, 0);
+  assert.deepEqual(visaCategoriesFor(getCountry('DE')!), []);
+});
+
+test('B2 pathway choice is per country, validated, and feeds the applicability context', () => {
+  const kr = getCountry('KR')!;
+  let a = withAbroad(base(), { degreeLevel: 'masters' }).abroad;
+  assert.equal(selectedPathway(a, kr), undefined);
+  assert.deepEqual(pathwayContext(a, kr), { degreeLevel: 'masters' });
+  a = setPathway(a, 'kr', 'language');
+  a = setPathway(a, 'DE', 'whatever');
+  assert.equal(selectedPathway(a, kr)?.id, 'language');
+  assert.equal(selectedPathway(a, getCountry('DE')), undefined, 'an id the country does not offer is ignored');
+  assert.deepEqual(pathwayContext(a, kr), { pathway: 'language', degreeLevel: 'masters' });
+  a = setPathway(a, 'KR', undefined);
+  assert.equal(a.pathwayByCountry?.KR, undefined);
+  assert.equal(a.pathwayByCountry?.DE, 'whatever', 'other countries keep their choice');
+  const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify({ ...base(), abroad: setPathway(a, 'KR', 'degree') })) as UserProfile);
+  assert.equal(loaded.abroad.pathwayByCountry?.KR, 'degree');
+});
+
+test('B2 visa categories: category parts add to country parts; not-verified facts never shown', () => {
+  withKrGuide(
+    (g) => {
+      g.categories![0].parts.eligibility = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('D-2 rule text') }], complete: true };
+      g.categories![1].parts.eligibility = { facts: [{ label: { en: 'E', bn: 'E' }, fact: sv('GUESSED D-4 RULE', { status: 'not-verified' }) }] };
+    },
+    () => {
+      const kr = getCountry('KR')!;
+      const d2 = visaParts(kr, NOW, 'kr-d2').find((p) => p.id === 'eligibility')!;
+      const d4 = visaParts(kr, NOW, 'kr-d4').find((p) => p.id === 'eligibility')!;
+      assert.equal(d2.status, 'verified');
+      assert.equal(d4.status, 'not-yet');
+      assert.equal(d4.links?.[0].url, SRC2.url, 'the official page is offered instead');
+      assert.ok(!JSON.stringify(visaParts(kr, NOW, 'kr-d4')).includes('GUESSED'));
+      assert.equal(visaParts(kr, NOW).find((p) => p.id === 'eligibility')!.status, 'not-yet', 'no category → only country-level parts');
+    },
+  );
+});
+
+test('B2 "Can I work?": not verified → needs answers → the matching sourced rule; never a guess', () => {
+  const kr = { ...getCountry('KR')!, workQuestions: [{ id: 'level', label: { en: 'Level', bn: 'Level' }, options: [{ value: 'a', label: { en: 'A', bn: 'A' } }, { value: 'b', label: { en: 'B', bn: 'B' } }] }] };
+  assert.equal(checkWork(kr, { pathway: 'degree' }).state, 'not-verified', 'no verified rules yet');
+  withKrGuide(
+    (g) => {
+      g.workRules = [
+        { id: 'r-a', conditions: { pathway: ['degree'], level: ['a'] }, outcome: sv('Rule for A') },
+        { id: 'r-b', conditions: { pathway: ['degree'], level: ['b'] }, outcome: sv('Rule for B', { lastVerified: '2020-01-01' }) },
+        { id: 'r-x', conditions: { pathway: ['language'] }, outcome: sv('UNVERIFIED', { status: 'not-verified' }) },
+      ];
+    },
+    () => {
+      const needs = checkWork(kr, { pathway: 'degree' });
+      assert.equal(needs.state, 'needs-answers');
+      assert.deepEqual(needs.state === 'needs-answers' && needs.missing, ['level']);
+      assert.equal(needs.state === 'needs-answers' && needs.questions[0].id, 'level');
+      const a = checkWork(kr, { pathway: 'degree', level: 'a' });
+      assert.equal(a.state === 'answered' && a.rules.map((r) => [r.rule.outcome.value, r.status]).join(), 'Rule for A,verified');
+      const b = checkWork(kr, { pathway: 'degree', level: 'b' });
+      assert.equal(b.state === 'answered' && b.rules[0].status, 'needs-review', 'an old rule is flagged, not presented as current');
+      assert.equal(checkWork(kr, { pathway: 'language' }).state, 'not-verified', 'a not-verified rule never answers');
+    },
+  );
+});
+
+test('B2 documents: general + pathway + visa category, deduplicated, conditional', () => {
+  const kr = getCountry('KR')!;
+  const general = documentsFor(kr).map((n) => n.kind);
+  assert.deepEqual(general, documentsFor(getCountry('DE')).map((n) => n.kind), 'no pathway → the general set');
+  withKrGuide(
+    (g) => {
+      g.categories![0].documents = [
+        { kind: 'admission-letter', purpose: 'visa' },
+        { kind: 'passport', purpose: 'visa', requirement: sv('Passport rule') },
+      ];
+      g.categories![1].documents = [{ kind: 'visa-specific', purpose: 'visa' }];
+    },
+    () => {
+      const d2 = documentsFor(kr, { pathway: 'degree' });
+      const passport = d2.filter((n) => n.kind === 'passport');
+      assert.equal(passport.length, 1, 'one passport, never duplicated');
+      assert.deepEqual(passport[0].reasons.map((r) => r.from), ['roadmap', 'visa']);
+      assert.equal(passport[0].reasons[1].requirement?.value, 'Passport rule');
+      assert.ok(d2.some((n) => n.kind === 'admission-letter'));
+      assert.ok(!d2.some((n) => n.kind === 'visa-specific'), 'D-4 documents never shown on the degree route');
+      const d4 = documentsFor(kr, { pathway: 'language' });
+      assert.ok(d4.some((n) => n.kind === 'visa-specific') && !d4.some((n) => n.kind === 'admission-letter'));
+      let a = setPathway(withAbroad(base(), { dreamCountryCode: 'KR' }).abroad, 'KR', 'degree');
+      assert.ok(requiredDocs(a).includes('admission-letter'), 'documents page follows the chosen pathway');
+      a = setPathway(a, 'KR', 'language');
+      assert.ok(!requiredDocs(a).includes('admission-letter'));
+    },
+  );
+});
+
+test('B2 roadmap: pathway and visa category overrides; one progress store; Apply is a view of it', () => {
+  withKrGuide(
+    (g) => {
+      g.categories![1].roadmap = { add: [{ after: 'visa', step: { id: 'kr-test-step', stage: 'visa', title: { en: 'Category step', bn: 'Category step' }, description: { en: 'd', bn: 'd' } }, source: SRC2 }] };
+    },
+    () => {
+      let p = withAbroad(base(), { degreeLevel: 'bachelors', dreamCountryCode: 'KR', preferredCountryCodes: ['KR'] });
+      assert.ok(!countryRoadmap(p, 'KR', NOW).steps.some((s) => s.id === 'kr-test-step'), 'no pathway → template');
+      p = { ...p, abroad: setPathway(p.abroad, 'KR', 'language') };
+      const r = countryRoadmap(p, 'KR', NOW);
+      const added = r.steps.find((s) => s.id === 'kr-test-step')!;
+      assert.equal(added.source?.url, SRC2.url, 'added steps carry their source');
+      assert.equal(findStepDef(getCountry('KR'), 'kr-test-step')?.id, 'kr-test-step', 'Mino links find pathway steps');
+      // Apply ↔ Roadmap: the same step object and the same mark.
+      p = { ...p, abroad: markRoadmapStep(p.abroad, 'KR', 'eligibility', true, NOW) };
+      const apply = stepsForStages(countryRoadmap(p, 'KR', NOW), APPLY_STAGES);
+      assert.equal(apply.find((s) => s.id === 'eligibility')?.status, 'done');
+      assert.equal(countryRoadmap(p, 'KR', NOW).steps.find((s) => s.id === 'eligibility')?.status, 'done');
+      assert.ok(stepsForStages(countryRoadmap(p, 'KR', NOW), VISA_STAGES).some((s) => s.id === 'kr-test-step'));
+      assert.ok(!apply.some((s) => s.stage === 'visa'));
+      assert.deepEqual(Object.keys(p.abroad.journey!.steps!), ['KR'], 'one store: journey.steps');
+    },
+  );
+});
+
+test('B2 Mino: country view carries pathways, categories and work state — all not verified, never a value', () => {
+  const out = countryFactsForMino(getCountry('KR')!, { pathway: 'language', now: NOW });
+  assert.deepEqual(out.pathways.map((p) => [p.id, p.selected, p.visaCategories.map((c) => c.code).join()]), [['degree', false, 'D-2'], ['language', true, 'D-4']]);
+  assert.ok(out.pathways.every((p) => p.visaCategories.every((c) => Object.values(c.parts).every((v) => v === 'notVerified'))));
+  assert.equal(out.work.state, 'notVerified');
+  assert.equal(out.tuition, 'notVerified');
+  assert.match(out.rule, /এই তথ্য এখনো verified নয়/);
+  // A not-verified value in the registry never reaches Mino.
+  const fake = { ...getCountry('DE')!, data: { workRules: [sv('SECRET UNVERIFIED', { status: 'not-verified' as const })] } };
+  assert.equal(countryFactsForMino(fake, { now: NOW }).workWhileStudying, 'notVerified');
+  const de = countryFactsForMino(getCountry('DE')!, { now: NOW });
+  assert.equal(Array.isArray(de.workWhileStudying) && de.workWhileStudying[0].status, 'verified');
+  assert.deepEqual(de.pathways, [], 'countries without pathways are unchanged');
 });
 
 console.log(`\n${passed} passed`);

@@ -8,7 +8,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { HubBar } from '@/components/abroad/HubBar';
 import { visaParts } from '@/lib/abroad/visa';
 import { COUNTRIES, getCountry } from '@/lib/content/countries';
-import type { Country } from '@/lib/models';
+import { VISA_PART_IDS, type Country } from '@/lib/models';
 
 /** Visa centre: the dream country's visa first, every other country one tap away. */
 export default function VisaIndexPage() {
@@ -25,7 +25,7 @@ export default function VisaIndexPage() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-semibold">{c.name}</span>
-          <span className="block text-xs text-muted-foreground">{t('sa.visa.summary', { n })}</span>
+          <span className="block text-xs text-muted-foreground">{t('sa.visa.summary', { n, total: VISA_PART_IDS.length })}</span>
         </span>
         <ArrowRight className="size-4 text-muted-foreground" aria-hidden />
       </Link>

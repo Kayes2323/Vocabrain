@@ -1,0 +1,61 @@
+import type { Country, SourcedValue } from '@/lib/models';
+import { countryPathways, visaCategoriesFor } from './pathways';
+import { countrySections, factStatus } from './sections';
+import { visaParts } from './visa';
+import { checkWork } from './work';
+
+/** What Mino must say whenever something is not verified. */
+export const NOT_VERIFIED_RULE =
+  'Only VERIFIED facts (with source and date) may be stated as facts. For anything notVerified say exactly that it is not verified yet ("এই তথ্য এখনো verified নয়। Official source দেখে confirm করতে হবে।" in Bangla) and point to the official page if one is listed. Never fill a gap from memory. Label estimates as estimates and general guidance as general guidance.';
+
+const status = (s: string) => (s === 'not-yet' ? 'notVerified' : s);
+
+/** Sourced values Mino may quote: never a not-verified value; stale ones say so. */
+function quotable(list: SourcedValue<unknown>[] | undefined) {
+  const shown = (list ?? []).filter((f) => factStatus(f, undefined) !== 'not-verified');
+  return shown.length
+    ? shown.map((f) => ({ value: f.value, notes: f.notes, source: f.source.name, url: f.source.url, verified: f.lastVerified, status: factStatus(f, undefined) }))
+    : 'notVerified';
+}
+
+/**
+ * Mino's view of one country: verified facts, section and visa-part statuses,
+ * pathways with their visa categories, and the "Can I work?" state for the
+ * student's pathway. Built from the same engines as the screens.
+ */
+export function countryFactsForMino(country: Country, opts: { pathway?: string; now?: Date } = {}) {
+  const now = opts.now ?? new Date();
+  const d = country.data;
+  const sections = countrySections(country, now, opts.pathway ? { pathway: opts.pathway } : undefined);
+  const work = checkWork(country, { pathway: opts.pathway }, now);
+  return {
+    country: country.name,
+    livingCostToShow: quotable(d.livingCost),
+    workWhileStudying: quotable(d.workRules),
+    postStudyWork: quotable(d.postStudyOptions),
+    tuition: quotable(d.tuition),
+    scholarships: quotable(d.scholarshipInformation),
+    visa: quotable(d.visaInformation),
+    sectionStatus: Object.fromEntries(sections.map((sec) => [sec.id, status(sec.status)])),
+    visaPartStatus: Object.fromEntries(visaParts(country, now).map((p) => [p.id, status(p.status)])),
+    pathways: countryPathways(country).map((p) => ({
+      id: p.id,
+      name: p.name.en,
+      degreeLevels: p.degreeLevels ?? [],
+      selected: p.id === opts.pathway,
+      visaCategories: visaCategoriesFor(country, p.id).map((c) => ({
+        id: c.id,
+        code: c.code,
+        parts: Object.fromEntries(visaParts(country, now, c.id).map((part) => [part.id, status(part.status)])),
+      })),
+    })),
+    work:
+      work.state === 'answered'
+        ? { state: 'answered', rules: work.rules.map((r) => ({ rule: r.rule.outcome.value, status: r.status, source: r.rule.outcome.source.name, url: r.rule.outcome.source.url, verified: r.rule.outcome.lastVerified })) }
+        : work.state === 'needs-answers'
+          ? { state: 'needsAnswers', ask: work.questions.map((q) => q.label.en), officialPages: work.links.map((l) => l.url) }
+          : { state: 'notVerified', officialPages: work.links.map((l) => l.url) },
+    officialPages: [...new Set(sections.flatMap((sec) => [...sec.facts.map((f) => f.fact.source.url), ...(sec.links ?? []).map((l) => l.url)]).filter(Boolean))],
+    rule: NOT_VERIFIED_RULE,
+  };
+}

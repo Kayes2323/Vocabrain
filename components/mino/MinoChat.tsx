@@ -12,7 +12,7 @@ import { MinoMark } from '@/components/shell/MinoMark';
 import { askMino } from '@/lib/ai/client';
 import { getChallenge } from '@/lib/foundation';
 import { getCountry } from '@/lib/content/countries';
-import { roadmapDefs } from '@/lib/abroad/roadmap';
+import { findStepDef } from '@/lib/abroad/roadmap';
 import { documentGuide } from '@/lib/content/documents';
 import { VISA_PART_IDS } from '@/lib/models';
 import { MINO_ACTIONS, isMinoAction, type MinoActionId } from '@/lib/ai/actions';
@@ -258,7 +258,7 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
       );
     } else if (ask === 'abroad-step') {
       const country = getCountry(params.get('country') ?? '');
-      const step = roadmapDefs(country).find((d) => d.id === params.get('step'));
+      const step = findStepDef(country, params.get('step'));
       if (country && step) send(t('sa.roadmap.stepPrompt', { country: country.name, step: step.title[locale === 'bn' ? 'bn' : 'en'] }), 'study-abroad-advisor');
       else send(t('sa.home.askPrompt'), 'study-abroad-advisor');
     } else if (ask === 'abroad-compare') {

@@ -41,7 +41,7 @@ export default function CountryVisaPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader title={t('sa.visa.countryTitle', { country: country.name })} subtitle={t('sa.visa.summary', { n: withFacts })} backHref="/abroad/visa" backLabel={t('sa.visa.title')} className="mb-0" />
+      <PageHeader title={t('sa.visa.countryTitle', { country: country.name })} subtitle={t('sa.visa.summary', { n: withFacts, total: parts.length })} backHref="/abroad/visa" backLabel={t('sa.visa.title')} className="mb-0" />
       <HubBar />
       <Callout icon={ShieldAlert} tone="warning">{t('sa.visa.warning')}</Callout>
       <Panel className="px-4 py-0" data-testid="visa-parts">

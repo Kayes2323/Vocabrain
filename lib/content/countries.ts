@@ -71,7 +71,37 @@ const DE: CountryData = {
  * the explorer, hub and matching read this list and nothing else.
  */
 export const COUNTRIES: Country[] = [
-  { code: 'KR', name: 'South Korea', region: 'Asia', flag: '🇰🇷', priority: 1, capital: 'Seoul', data: {} },
+  {
+    code: 'KR',
+    name: 'South Korea',
+    region: 'Asia',
+    flag: '🇰🇷',
+    priority: 1,
+    capital: 'Seoul',
+    data: {},
+    // Structure only (approved: degree → D-2, language/training → D-4). Every
+    // visa, document, work and language fact is added in Phase C, sourced.
+    pathways: [
+      {
+        id: 'degree',
+        kind: 'degree',
+        name: { en: "Degree study (Bachelor's, Master's, PhD)", bn: "Degree (Bachelor's, Master's, PhD)" },
+        description: { en: 'Study for a full degree at a university.', bn: 'University-তে পুরো একটা degree পড়া।' },
+        degreeLevels: ['bachelors', 'masters', 'phd'],
+        visaCategoryIds: ['kr-d2'],
+      },
+      {
+        id: 'language',
+        kind: 'language',
+        name: { en: 'Korean language / training program', bn: 'Korean ভাষা / training program' },
+        description: {
+          en: 'Study the Korean language (or a training program), before a degree or on its own.',
+          bn: 'Korean ভাষা (বা training program) পড়া — degree-র আগে, বা আলাদাভাবে।',
+        },
+        visaCategoryIds: ['kr-d4'],
+      },
+    ],
+  },
   { code: 'DE', name: 'Germany', region: 'Europe', flag: '🇩🇪', priority: 2, capital: 'Berlin', data: DE, sections: { work: { complete: true } } },
   { code: 'AU', name: 'Australia', region: 'Oceania', flag: '🇦🇺', priority: 3, capital: 'Canberra', data: AU, sections: { work: { complete: true }, 'post-study': { complete: true }, visa: { links: [AU_STUDENT] } } },
   { code: 'GB', name: 'United Kingdom', region: 'Europe', flag: '🇬🇧', priority: 4, capital: 'London', data: UK, sections: { 'post-study': { complete: true }, visa: { links: [UK_STUDENT] } } },

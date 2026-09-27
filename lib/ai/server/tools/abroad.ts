@@ -1,7 +1,6 @@
 import { COUNTRIES, getCountry } from '@/lib/content/countries';
-import { countrySections } from '@/lib/abroad/sections';
 import { abroadSummary } from '@/lib/abroad/summary';
-import { visaParts } from '@/lib/abroad/visa';
+import { countryFactsForMino } from '@/lib/abroad/mino';
 import { matchCountries } from '@/lib/engine';
 import { getTranslator, type Message } from '@/lib/i18n';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
@@ -45,10 +44,13 @@ export const getCountryData: MinoTool = {
   declaration: {
     name: 'getCountryData',
     description:
-      'Official, dated facts about a study destination (living-cost money to show, work while studying, post-study work) with source name, link and verification date. Categories without verified data come back as notVerified: then say you do not have verified information and point to the official source; never fill gaps from memory.',
+      'Official, dated facts about a study destination with source name, link and verification date; section and visa-part statuses; its study pathways and visa categories (e.g. degree vs language routes) and the work-rule check for a pathway. Anything notVerified: say it is not verified yet and point to the official page; never fill gaps from memory.',
     parameters: {
       type: 'object',
-      properties: { country: { type: 'string', description: 'Country name or ISO code, e.g. "Canada" or "GB".' } },
+      properties: {
+        country: { type: 'string', description: 'Country name or ISO code, e.g. "Canada" or "GB".' },
+        pathway: { type: 'string', description: "Optional pathway id from the student's profile (e.g. for countries with degree vs language routes)." },
+      },
       required: ['country'],
     },
   },
@@ -57,23 +59,8 @@ export const getCountryData: MinoTool = {
     const alias: Record<string, string> = { uk: 'GB', britain: 'GB', england: 'GB', usa: 'US', america: 'US' };
     const country = COUNTRIES.find((c) => c.code.toLowerCase() === q || c.name.toLowerCase() === q || c.code === alias[q]);
     if (!country) return { found: false, note: 'Not in the Vocab Brain destination list.' };
-    const facts = (list: { value: unknown; source: { name: string; url?: string }; lastVerified: string; notes?: string }[] | undefined) =>
-      list?.length ? list.map((f) => ({ value: f.value, notes: f.notes, source: f.source.name, url: f.source.url, verified: f.lastVerified })) : 'notVerified';
-    const d = country.data;
-    return {
-      country: country.name,
-      livingCostToShow: facts(d.livingCost),
-      workWhileStudying: facts(d.workRules),
-      postStudyWork: facts(d.postStudyOptions),
-      tuition: facts(d.tuition),
-      scholarships: facts(d.scholarshipInformation),
-      visa: facts(d.visaInformation),
-      // Which parts of the country guide and visa guide have verified facts (anything else: say it is not verified yet).
-      sectionStatus: Object.fromEntries(countrySections(country).map((sec) => [sec.id, sec.status === 'not-yet' ? 'notVerified' : sec.status])),
-      visaPartStatus: Object.fromEntries(visaParts(country).map((p) => [p.id, p.status === 'not-yet' ? 'notVerified' : p.status])),
-      officialPages: [...new Set(countrySections(country).flatMap((sec) => [...sec.facts.map((f) => f.fact.source.url), ...(sec.links ?? []).map((l) => l.url)]).filter(Boolean))],
-      rule: 'Quote figures with their source and date; rules change, so tell the student to confirm on the official page. For notVerified parts give only general guidance, clearly labelled as general, and point to the official page.',
-    };
+    const pathway = String(args.pathway ?? '').trim() || undefined;
+    return countryFactsForMino(country, { pathway });
   },
 };
 

@@ -92,6 +92,9 @@ function dueAttention(dueAt: string | undefined, now: Date): AbroadStage['attent
   return undefined;
 }
 
+/** Which pathway variant of a country's roadmap the student is on. */
+export const roadmapContext = (abroad: StudyAbroadProfile, code: string) => ({ pathway: abroad.pathwayByCountry?.[code.toUpperCase()] });
+
 /** The student's roadmap marks for one country. */
 export const stepMarks = (abroad: StudyAbroadProfile, code: string): Record<string, JourneyMark> => abroad.journey?.steps?.[code] ?? {};
 
@@ -124,7 +127,7 @@ export function abroadJourney(profile: UserProfile, now = new Date()): AbroadJou
     travel: dream ? `${countryHref(dream)}/roadmap` : '/abroad/pre-departure',
   };
 
-  const stageSteps = dream ? roadmapDefs(getCountry(dream)) : [];
+  const stageSteps = dream ? roadmapDefs(getCountry(dream), roadmapContext(a, dream)) : [];
   const marks = dream ? stepMarks(a, dream) : {};
 
   const stages: AbroadStage[] = ABROAD_STAGE_IDS.map((id) => {
@@ -230,7 +233,7 @@ export function countryRoadmap(profile: UserProfile, code: string, now = new Dat
   const stageOf = (id: string) => journey.stages.find((s) => s.id === id);
   const marks = stepMarks(a, upper);
   let seenCurrent = false;
-  const steps = roadmapDefs(getCountry(upper)).map((def): RoadmapStep => {
+  const steps = roadmapDefs(getCountry(upper), roadmapContext(a, upper)).map((def): RoadmapStep => {
     const auto = AUTO_STEP_STAGES.has(def.stage);
     const mark = auto ? undefined : marks[def.id];
     let status: RoadmapStepStatus;
@@ -265,7 +268,7 @@ function withStepMarks(abroad: StudyAbroadProfile, code: string, next: Record<st
 export function markStep(abroad: StudyAbroadProfile, code: string, stepId: string, done: boolean, now = new Date()): StudyAbroadProfile {
   const upper = code.toUpperCase();
   const at = now.toISOString();
-  const defs = roadmapDefs(getCountry(upper));
+  const defs = roadmapDefs(getCountry(upper), roadmapContext(abroad, upper));
   const def = defs.find((d) => d.id === stepId);
   if (!def || AUTO_STEP_STAGES.has(def.stage)) return abroad;
   const marks = { ...stepMarks(abroad, upper) };
@@ -295,4 +298,19 @@ export function setStepDue(abroad: StudyAbroadProfile, code: string, stepId: str
     marks[stepId] = { ...rest, updatedAt: at };
   }
   return withStepMarks(abroad, upper, marks, at);
+}
+
+// ------------------------------------------------------------------ views on the one roadmap
+
+/** Journey stages the Apply tab shows; Visa & life shows the visa/travel ones. */
+export const APPLY_STAGES: readonly string[] = ['eligibility', 'program', 'english', 'documents', 'apply', 'offer'];
+export const VISA_STAGES: readonly string[] = ['visa', 'travel'];
+
+/**
+ * The Apply (or Visa) checklist is a *view* of the roadmap: the same step
+ * objects, the same marks, ticked with the same markStep. There is no second
+ * progress store to keep in sync.
+ */
+export function stepsForStages(roadmap: CountryRoadmap, stages: readonly string[]): RoadmapStep[] {
+  return roadmap.steps.filter((s) => stages.includes(s.stage));
 }

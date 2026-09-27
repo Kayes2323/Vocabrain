@@ -1,6 +1,7 @@
 import { getCountry } from '@/lib/content/countries';
 import { abroadJourney, abroadNextAction, allDeadlines, countryRoadmap, documentStatus, requiredDocuments } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
+import { countryPathways, selectedPathway, visaCategoriesFor } from './pathways';
 
 /**
  * A compact, English summary of the student's Study Abroad progress for Mino
@@ -24,6 +25,15 @@ export function abroadSummary(profile: UserProfile, now = new Date()) {
           ? `roadmap step "${next.title.en}" → ${next.href}`
           : `journey stage "${next.stageId}" → ${next.href}`,
     dreamCountry: dream?.name ?? null,
+    // Route for the dream country (countries with several pathways, e.g. degree vs language).
+    pathway: dream && countryPathways(dream).length
+      ? (() => {
+          const p = selectedPathway(a, dream);
+          return p
+            ? { chosen: p.id, name: p.name.en, visaCategories: visaCategoriesFor(dream, p.id).map((c) => c.code) }
+            : { chosen: null, options: countryPathways(dream).map((x) => `${x.id} (${x.name.en})`) };
+        })()
+      : null,
     shortlist: (a.preferredCountryCodes ?? []).map((c) => getCountry(c)?.name ?? c),
     journey: {
       stage: `${journey.currentIndex + 1} of ${journey.stages.length}`,
@@ -59,6 +69,7 @@ export function abroadSnapshotLine(profile: UserProfile, now = new Date()): stri
   const parts = [
     s.dreamCountry ? `dream country ${s.dreamCountry}` : 'no dream country yet',
     s.shortlist.length && `shortlist ${s.shortlist.join(', ')}`,
+    s.pathway && (s.pathway.chosen ? `pathway ${s.pathway.chosen} (visa ${s.pathway.visaCategories?.join('/') || 'not set'})` : `pathway not chosen yet (${s.pathway.options?.join(', ')})`),
     `journey stage ${s.journey.stage} "${s.journey.current}" (${s.journey.currentStatus})`,
     s.roadmap && `roadmap ${s.roadmap.done}/${s.roadmap.total}, now "${s.roadmap.currentStep}"`,
     s.journey.needsAttention.length && `needs attention: ${s.journey.needsAttention.map((x) => `${x.stage} (${x.why} ${x.days ?? ''})`).join(', ')}`,

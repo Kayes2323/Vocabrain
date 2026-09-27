@@ -1,3 +1,4 @@
+import { documentsFor, type DocumentNeed } from '@/lib/abroad/documents';
 import { roadmapDefs } from '@/lib/abroad/roadmap';
 import { deadlineBucket, type DeadlineBucket } from '@/lib/abroad/status';
 import { getCountry } from '@/lib/content/countries';
@@ -12,7 +13,7 @@ import type {
   StudyAbroadProfile,
   UserProfile,
 } from '@/lib/models';
-import { abroadJourney, countryRoadmap, stepMarks } from './abroad-journey';
+import { abroadJourney, countryRoadmap, roadmapContext, stepMarks } from './abroad-journey';
 
 /**
  * The student's own Study Abroad lists: universities they consider, dates
@@ -126,7 +127,7 @@ export function allDeadlines(profile: UserProfile, now = new Date()): DeadlineIt
   const dream = a.dreamCountryCode;
   if (dream) {
     const marks = stepMarks(a, dream);
-    for (const def of roadmapDefs(getCountry(dream))) {
+    for (const def of roadmapDefs(getCountry(dream), roadmapContext(a, dream))) {
       const m = marks[def.id];
       if (!m?.dueAt) continue;
       const done = m.status === 'done';
@@ -164,12 +165,19 @@ export function setDocumentStatus(abroad: StudyAbroadProfile, kind: DocumentKind
 
 export const documentStatus = (abroad: StudyAbroadProfile, kind: DocumentKind): DocumentStatus => abroad.documents?.[kind]?.status ?? 'not-started';
 
-/** The documents the dream country's roadmap asks for, in roadmap order (general set when no dream country). */
+/**
+ * The documents the student's route needs, in roadmap order: the dream
+ * country's roadmap, plus its chosen pathway's and visa category's
+ * documents (general set when no dream country).
+ */
 export function requiredDocuments(abroad: StudyAbroadProfile): DocumentKind[] {
-  const defs = roadmapDefs(abroad.dreamCountryCode ? getCountry(abroad.dreamCountryCode) : undefined);
-  const kinds: DocumentKind[] = [];
-  for (const d of defs) for (const k of d.documents ?? []) if (!kinds.includes(k)) kinds.push(k);
-  return kinds;
+  return requiredDocumentNeeds(abroad).map((n) => n.kind);
+}
+
+export function requiredDocumentNeeds(abroad: StudyAbroadProfile): DocumentNeed[] {
+  const code = abroad.dreamCountryCode;
+  const country = code ? getCountry(code) : undefined;
+  return documentsFor(country, { ...(code ? roadmapContext(abroad, code) : {}), ...(abroad.degreeLevel ? { degreeLevel: abroad.degreeLevel } : {}) });
 }
 
 // ------------------------------------------------------------------ next action
