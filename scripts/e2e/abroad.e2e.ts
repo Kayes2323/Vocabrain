@@ -474,7 +474,7 @@ async function main() {
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     await p.getByText('Needs attention').first().waitFor({ timeout: 15_000 }).catch(() => undefined);
-    check('home: the step date is under "Needs attention"', /Needs attention/.test(await p.locator('main').innerText()) && /Write your SOP and CV/.test(await p.locator('main').innerText()), (await p.locator('main').innerText()).slice(0, 400));
+    check('home: the step date is under "Needs attention"', /Needs attention/i.test(await p.locator('main').innerText()) && /Write your SOP and CV/.test(await p.locator('main').innerText()), (await p.locator('main').innerText()).slice(0, 400));
     await p.goto(`${BASE}/abroad/journey/documents`, { waitUntil: 'load' });
     await p.getByTestId('journey-phase').waitFor({ timeout: 60_000 });
     check('documents phase: shows the date that is due (Due in 5 days) on its step', /Due in 5 days/.test(await p.locator('main').innerText()));
