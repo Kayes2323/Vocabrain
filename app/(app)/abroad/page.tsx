@@ -11,7 +11,7 @@ import { HubBar } from '@/components/abroad/HubBar';
 import { JourneyBars, JourneyTimeline, STAGE_TONE } from '@/components/abroad/JourneyTimeline';
 import { TrustNote } from '@/components/abroad/TrustNote';
 import { countVerifiedDataPoints, getCountry } from '@/lib/content/countries';
-import { abroadJourney, abroadNextAction, formatIntake, hasAbroadGoal, markStage, setDreamCountry, type AbroadStage } from '@/lib/engine';
+import { abroadAlerts, abroadJourney, abroadNextAction, formatIntake, hasAbroadGoal, markStage, setDreamCountry, type AbroadStage } from '@/lib/engine';
 import { useBilingual } from '@/components/abroad/useBilingual';
 import { daysUntil } from '@/lib/abroad/status';
 import { findSection, ABROAD_SECTIONS } from '@/lib/navigation';
@@ -39,6 +39,24 @@ export default function AbroadPage() {
   const { abroad } = profile;
   const journey = abroadJourney(profile);
   const next = abroadNextAction(profile);
+  // The next action already shows the most urgent date; don't repeat it as an alert.
+  const alerts = abroadAlerts(profile, new Date(), 4)
+    .filter((al) => !(next.kind === 'date' && al.kind === 'deadline' && al.date === next.date && JSON.stringify(al.title) === JSON.stringify(next.title)))
+    .slice(0, 3);
+  const alertText = (al: (typeof alerts)[number]) => {
+    switch (al.kind) {
+      case 'deadline':
+        return t('sa.alerts.deadline', { title: typeof al.title === 'string' ? al.title : text(al.title), when: dueWhen(al.date) });
+      case 'document-update':
+        return t('sa.alerts.document-update', { doc: t(`sa.docKinds.${al.document}`) });
+      case 'document-missing':
+        return t('sa.alerts.document-missing', { doc: t(`sa.docKinds.${al.document}`), step: text(al.step) });
+      case 'scholarship':
+        return t('sa.alerts.scholarship', { name: al.name, when: dueWhen(al.date) });
+      case 'needs-review':
+        return t('sa.alerts.needs-review', { section: t(`sa.sections.${al.section}`) });
+    }
+  };
   const dueWhen = (date: string) => {
     const n = daysUntil(date);
     return n === 0 ? t('sa.dl.today') : n > 0 ? t('sa.dl.inDays', { n }) : t('sa.dl.ago', { n: -n });
@@ -136,6 +154,23 @@ export default function AbroadPage() {
                 </div>
               )}
             </Panel>
+          )}
+
+          {alerts.length > 0 && (
+            <Section title={t('sa.home.attentionTitle')} variant="label">
+              <RowGroup>
+                {alerts.map((al) => (
+                  <ListRow
+                    key={al.id}
+                    href={al.href}
+                    icon={al.kind === 'deadline' || al.kind === 'scholarship' ? CalendarClock : FileText}
+                    iconTone="warning"
+                    title={alertText(al)}
+                    trailing={<span className="text-sm font-medium text-brand">{t('sa.alerts.view')}</span>}
+                  />
+                ))}
+              </RowGroup>
+            </Section>
           )}
 
           {started && !journey.complete && (

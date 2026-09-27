@@ -33,7 +33,7 @@ ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
   - Universities = the student's own list (no verified university profiles yet); Scholarships and official Deadlines: none verified yet; Documents: readiness + general preparation guides; Visa: 12-part guide per country, mostly not verified yet.
   - Verified official data (with source + date) so far: United Kingdom, Canada, Australia, Germany (living-cost money to show, work while studying, post-study work where confirmed). Other countries and tuition/scholarship/visa details: not verified yet.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, study-abroad cost calculator, applications tracker, pre-departure checklist, SOP/CV builders.`;
+Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, applications tracker, pre-departure checklist, SOP/CV builders.`;
 }
 
 export interface AppGuide {
@@ -292,7 +292,10 @@ export const APP_GUIDES: AppGuide[] = [
     status: 'AVAILABLE',
     title: 'Documents (CV, SOP, recommendation letters, transcripts…)',
     where: 'Study Abroad → Documents (/abroad/documents)',
-    steps: ['See the documents your plan needs, set each to Not started / In progress / Ready, and read general guidance on what to include and common mistakes.'],
+    steps: [
+      'See the documents your route needs (country, pathway, visa, chosen universities/programs/scholarships), each with why / who asks / when / where and the official requirement when verified.',
+      'Set each to Not started / In progress / Ready and add your own valid-until date (past it → Needs update). Roadmap steps link straight to their documents.',
+    ],
   },
   {
     id: 'abroad-scholarships-visa',
@@ -302,9 +305,20 @@ export const APP_GUIDES: AppGuide[] = [
     steps: ['Scholarships and visa parts appear only with an official source and date; everything else is marked not verified yet. Compare puts up to three countries side by side.'],
   },
   {
+    id: 'abroad-cost',
+    status: 'AVAILABLE',
+    title: 'Cost planner (How much might I need?)',
+    where: 'Study Abroad → Money → Cost (/abroad/cost)',
+    steps: [
+      'Per group (tuition, living, visa & application, accommodation, other) see OFFICIAL figures (sourced), ESTIMATES (low/typical/high, labelled) and YOUR BUDGET — never mixed.',
+      'Enter your own tuition budget, monthly living budget and total money; the planning view shows the estimated total, your money and the difference when currencies match. No currency conversion, no affordability verdict.',
+    ],
+    notes: ['No official costs or estimates are verified for most countries yet; the page says so.'],
+  },
+  {
     id: 'study-abroad-tools',
     status: 'PLANNED',
-    title: 'Cost calculator, applications tracker, pre-departure checklist, SOP/CV builders',
+    title: 'Applications tracker, pre-departure checklist, SOP/CV builders',
     where: 'Not in the app yet (shown as "Soon" in Study Abroad)',
     steps: ['Mino can explain general concepts (what an SOP is, how intakes work) but not current fees, deadlines or rules.'],
   },

@@ -103,7 +103,7 @@ export const ABROAD_SECTION_GROUPS: SectionGroup[] = [
   {
     titleKey: 'abroad.groups.plan',
     sections: [
-      { id: 'cost', icon: Calculator, href: '/abroad/cost', status: 'planned', phase: 4 },
+      { id: 'cost', icon: Calculator, href: '/abroad/cost', status: 'available', phase: 4 },
       { id: 'scholarships', icon: Landmark, href: '/abroad/scholarships', status: 'available', phase: 4 },
       { id: 'deadlines', icon: CalendarClock, href: '/abroad/deadlines', status: 'available', phase: 4 },
     ],

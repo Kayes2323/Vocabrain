@@ -15,8 +15,9 @@ import { answerQuestion, clearAnswer, missingQuestions, profileAnswer, PROFILE_Q
 import { checkFilter, explainMatch, filterPrograms, filtersFromProfile, programRows, universityCities } from '../lib/abroad/programs';
 import { compareUniversities } from '../lib/abroad/compare';
 import { costPlan, officialCosts, perYear } from '../lib/abroad/costs';
-import { documentExplanation, documentGroups, needsPathwayChoice } from '../lib/abroad/documents';
-import { documentViewStatus, requiredDocumentNeeds, setDocumentValidUntil, studentRouteContext } from '../lib/engine';
+import { documentExplanation, documentGroups, needsPathwayChoice, stepDocuments } from '../lib/abroad/documents';
+import { costsForMino } from '../lib/abroad/summary';
+import { abroadAlerts, documentViewStatus, requiredDocumentNeeds, setDocumentValidUntil, studentRouteContext } from '../lib/engine';
 import { studentProfileForMino, abroadSummary as summaryFor } from '../lib/abroad/summary';
 import type { Program, Scholarship, University } from '../lib/models';
 import { compareTable, parseCompare } from '../lib/abroad/compare';
@@ -941,6 +942,74 @@ test('B4 document status: persisted; own expiry date → "needs update"; status 
   assert.equal(a.documents?.passport?.validUntil, undefined);
   const loaded = withProfileDefaults('u1', JSON.parse(JSON.stringify({ ...base(), abroad: setDocumentValidUntil(a, 'passport', '2026-01-01', now) })) as UserProfile);
   assert.equal(documentViewStatus(loaded.abroad, 'passport', now), 'needs-update');
+});
+
+/** Runs fn with TEST ONLY costs on South Korea's registry entry, then removes them. */
+function withKrCosts(fn: () => void) {
+  const kr = getCountry('KR')!;
+  kr.costs = TEST_COSTS().costs;
+  try {
+    fn();
+  } finally {
+    delete kr.costs;
+  }
+}
+
+test('B4 roadmap ↔ documents: each document surfaces on the step where it is used; status from the one store', () => {
+  withKrGuide(
+    (g) => {
+      g.categories![0].documents = [{ kind: 'admission-letter', purpose: 'visa' }];
+    },
+    () => {
+      let p = withAbroad(base(), { dreamCountryCode: 'KR', preferredCountryCodes: ['KR'] });
+      p = { ...p, abroad: setPathway(p.abroad, 'KR', 'degree') };
+      const r = countryRoadmap(p, 'KR', NOW);
+      const byStep = stepDocuments(r.steps, documentsFor(getCountry('KR'), studentRouteContext(p.abroad, 'KR')));
+      assert.ok(byStep.visa.includes('admission-letter'), 'visa document on the visa step');
+      assert.deepEqual(byStep['sop-cv'], ['sop', 'cv'], 'general documents stay on their own step');
+      assert.ok(!byStep.submit.includes('admission-letter'));
+      p = { ...p, abroad: setDocumentStatus(p.abroad, 'admission-letter', 'ready', NOW) };
+      assert.equal(documentViewStatus(p.abroad, 'admission-letter', NOW), 'ready', 'same status wherever it is shown');
+    },
+  );
+});
+
+test('B4 Mino: costs as OFFICIAL / ESTIMATE / own budget; hidden values never sent; documents say why and whether verified', () => {
+  withKrCosts(() => {
+    let p = withAbroad(base(), { dreamCountryCode: 'KR', preferredCountryCodes: ['KR'] });
+    p = { ...p, abroad: answerQuestion(p.abroad, 'livingBudget', { amount: 800, currency: 'USD' }, NOW) };
+    const c = costsForMino(p, 'KR', NOW)!;
+    assert.match(String(c.groups['visa-application'].official), /USD 100 once/);
+    assert.ok(!JSON.stringify(c).includes('999'), 'a not-verified fee never reaches Mino');
+    assert.match(c.groups.living.estimate, /^ESTIMATE USD 8400–USD 14400 per year$/);
+    assert.match(c.groups.living.myBudget, /student's own number/);
+    assert.equal(c.available, 'not provided');
+    const line = abroadSnapshotLine(p, NOW);
+    assert.match(line, /costs: .*living official not verified, ESTIMATE/);
+    assert.match(line, /documents ready 0\/\d+ \(.*official requirement NOT verified/);
+  });
+  assert.equal(costsForMino(withAbroad(base(), {}), 'KR', NOW)!.groups.tuition.official, 'not verified', 'shipped: nothing to quote');
+});
+
+test('B4 alerts: only what is due, one per thing, actionable, capped', () => {
+  const now = new Date('2026-09-27T10:00:00');
+  let p = withAbroad(base(), { degreeLevel: 'masters', dreamCountryCode: 'DE', preferredCountryCodes: ['DE'] });
+  assert.deepEqual(abroadAlerts(p, now), [], 'nothing due → no alerts');
+  p = { ...p, abroad: addDeadline(p.abroad, { title: 'Apply A', date: '2026-09-29', kind: 'university' }, now) };
+  p = { ...p, abroad: setDocumentValidUntil(setDocumentStatus(p.abroad, 'passport', 'ready', now), 'passport', '2026-09-01', now) };
+  p = { ...p, abroad: markStep(markStep(p.abroad, 'DE', 'eligibility', true, now), 'DE', 'budget', true, now) };
+  p = { ...p, abroad: markStep(markStep(p.abroad, 'DE', 'programs', true, now), 'DE', 'shortlist', true, now) };
+  p = { ...p, abroad: markStage(p.abroad, 'english', true, now) };
+  const all = abroadAlerts(p, now, 10);
+  assert.deepEqual(all.map((a) => a.kind), ['deadline', 'document-update', 'document-missing', 'document-missing']);
+  assert.deepEqual(all.filter((a) => a.kind === 'document-missing').map((a) => a.kind === 'document-missing' && a.document), ['transcript', 'certificate'], 'documents of the current step (Collect academic documents)');
+  assert.equal(all[1].href, '/abroad/documents?open=passport');
+  assert.equal(new Set(all.map((a) => a.id)).size, all.length, 'no duplicates');
+  assert.equal(abroadAlerts(p, now).length, 3, 'capped');
+  p = { ...p, abroad: setDocumentStatus(p.abroad, 'transcript', 'drafting', now) };
+  assert.ok(!abroadAlerts(p, now, 10).some((a) => a.id === 'document-missing:transcript'), 'started → the alert goes away');
+  const later = abroadAlerts(p, new Date('2027-10-01T10:00:00'), 10);
+  assert.ok(later.some((a) => a.id === 'needs-review:work'), 'stale official facts for the dream country need review');
 });
 
 console.log(`\n${passed} passed`);

@@ -1,6 +1,8 @@
-import { documentsFor, type DocumentContext, type DocumentNeed } from '@/lib/abroad/documents';
+import { documentsFor, stepDocuments, type DocumentContext, type DocumentNeed } from '@/lib/abroad/documents';
+import { countrySections, factStatus } from '@/lib/abroad/sections';
+import { SCHOLARSHIPS } from '@/lib/content/scholarships';
 import { roadmapDefs } from '@/lib/abroad/roadmap';
-import { deadlineBucket, type DeadlineBucket } from '@/lib/abroad/status';
+import { daysUntil, deadlineBucket, type DeadlineBucket } from '@/lib/abroad/status';
 import { getCountry } from '@/lib/content/countries';
 import { DEADLINES } from '@/lib/content/deadlines';
 import type {
@@ -261,4 +263,63 @@ export function abroadNextAction(profile: UserProfile, now = new Date()): Abroad
   }
   const journey = abroadJourney(profile, now);
   return { kind: 'stage', stageId: journey.current.id, href: journey.current.href };
+}
+
+// ------------------------------------------------------------------ alerts
+
+export type AbroadAlert =
+  | { id: string; kind: 'deadline'; title: string | Bilingual; date: string; bucket: DeadlineBucket; href: string }
+  | { id: string; kind: 'document-update'; document: DocumentKind; href: string }
+  | { id: string; kind: 'document-missing'; document: DocumentKind; step: Bilingual; href: string }
+  | { id: string; kind: 'scholarship'; name: string; date: string; href: string }
+  | { id: string; kind: 'needs-review'; section: string; href: string };
+
+const ALERT_ORDER: AbroadAlert['kind'][] = ['deadline', 'document-update', 'scholarship', 'document-missing', 'needs-review'];
+
+/**
+ * What needs the student's attention now — computed from the same state as
+ * every screen (deadlines, document progress, roadmap, saved scholarships,
+ * fact review dates). One alert per thing (stable ids), only when something
+ * is actually due, and each one points to where it is fixed.
+ */
+export function abroadAlerts(profile: UserProfile, now = new Date(), limit = 3): AbroadAlert[] {
+  const a = profile.abroad;
+  const out = new Map<string, AbroadAlert>();
+  const put = (alert: AbroadAlert) => out.has(alert.id) || out.set(alert.id, alert);
+
+  // Missed and this-week dates (student's, roadmap targets, IELTS, official).
+  for (const d of allDeadlines(profile, now)) {
+    if (d.done || (d.bucket !== 'missed' && d.bucket !== 'this-week')) continue;
+    put({ id: `deadline:${d.id}`, kind: 'deadline', title: d.title, date: d.date, bucket: d.bucket, href: d.href ?? '/abroad/deadlines' });
+  }
+  // Documents past the student's own valid-until date.
+  for (const [kind, p] of Object.entries(a.documents ?? {})) {
+    if (p && documentViewStatus(a, kind as DocumentKind, now) === 'needs-update') {
+      put({ id: `document-update:${kind}`, kind: 'document-update', document: kind as DocumentKind, href: `/abroad/documents?open=${kind}` });
+    }
+  }
+  // Saved scholarships closing within two weeks (verified deadlines only).
+  for (const s of SCHOLARSHIPS.filter((x) => (a.savedScholarships ?? []).includes(x.id))) {
+    const date = s.deadline && factStatus(s.deadline, 'scholarships', now) !== 'not-verified' ? s.deadline.value : undefined;
+    const days = date ? daysUntil(date, now) : undefined;
+    if (date && days !== undefined && days >= 0 && days <= 14) put({ id: `scholarship:${s.id}`, kind: 'scholarship', name: s.name, date, href: '/abroad/scholarships' });
+  }
+  const code = a.dreamCountryCode;
+  const country = code ? getCountry(code) : undefined;
+  if (country) {
+    // Documents for the step the student is on now, still not started.
+    const roadmap = countryRoadmap(profile, country.code, now);
+    const step = roadmap.current;
+    if (step) {
+      const docs = stepDocuments(roadmap.steps, documentsFor(country, studentRouteContext(a, country.code)))[step.id] ?? [];
+      for (const kind of docs) {
+        if (documentViewStatus(a, kind, now) === 'not-started') put({ id: `document-missing:${kind}`, kind: 'document-missing', document: kind, step: step.title, href: `/abroad/documents?open=${kind}` });
+      }
+    }
+    // Official facts for the dream country that are past their review date.
+    for (const sec of countrySections(country, now, studentRouteContext(a, country.code))) {
+      if (sec.status === 'needs-review') put({ id: `needs-review:${sec.id}`, kind: 'needs-review', section: sec.id, href: `/abroad/countries/${country.code.toLowerCase()}?tab=${sec.tab}` });
+    }
+  }
+  return [...out.values()].sort((x, y) => ALERT_ORDER.indexOf(x.kind) - ALERT_ORDER.indexOf(y.kind)).slice(0, limit);
 }

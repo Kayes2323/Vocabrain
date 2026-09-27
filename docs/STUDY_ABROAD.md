@@ -94,6 +94,37 @@ Generic and data-driven — engines never name a country, code or rule.
   reviewed vs student-entered, and the rule never to state facts about
   student-entered universities or to rank.
 
+## Costs & documents (Korea Phase B4)
+
+- **Costs** (`Country.costs`): `OfficialCost` (sourced amount + currency + period,
+  applicability), `CostEstimate` (low / typical / high, one currency and period,
+  basis, date). The student's budget (`student.budget`: tuition/year,
+  living/month, total) is separate. `costPlan` (`lib/abroad/costs.ts`) groups
+  tuition · living · visa & application · accommodation · other; hides
+  not-verified amounts (offers the official page); an all-in living estimate
+  replaces its parts; periods convert to a year by arithmetic, **currencies
+  never convert** (“Currency conversion unavailable”); no affordability score.
+  Registry money-to-show facts appear as official, period “as stated” (never summed).
+  Page: `/abroad/cost?country=` (Money hub).
+- **Documents**: requirements come from country, pathway, visa category,
+  university, program and scholarship (`DocumentRequirement` with purpose,
+  sourced requirement, submitted-to, applicability). The student's route
+  context (`studentRouteContext`) adds the reviewed universities/programs
+  on their list and saved scholarships. `documentExplanation` answers why /
+  who / when / where; a not-verified requirement is never passed on. Status is
+  the one `abroad.documents` store plus a student-set `validUntil` → “needs
+  update”. No pathway yet → visa documents hidden with a “choose your pathway” notice.
+- **Roadmap ↔ documents**: `stepDocuments` places each document on the step
+  where it is used; chips show status and open `/abroad/documents?open=<kind>`.
+- **Alerts** (`abroadAlerts`): missed / this-week dates, documents past their
+  valid-until date, saved scholarships closing in 14 days, not-started
+  documents of the current step, stale official facts — one per thing, top 3
+  on Study Abroad home, each linking to the fix; the item already shown as the
+  next action is not repeated.
+- **Mino**: costs as OFFICIAL / ESTIMATE / own budget, documents with why and
+  whether the requirement is verified, alerts — and the rules never to
+  invent, relabel, convert or give a verdict.
+
 ## Routes
 
 | Route | What |
@@ -109,7 +140,8 @@ Generic and data-driven — engines never name a country, code or rule.
 | `/abroad/profile` | Study profile: every answer or “Not provided”, edit / remove |
 | `/abroad/scholarships` | Country scholarship facts + verified scholarships (none yet), funding filter |
 | `/abroad/deadlines` | Own dates + roadmap targets + IELTS test + official dates, by bucket |
-| `/abroad/documents` | Required documents from the roadmap, readiness, general guides |
+| `/abroad/documents` | Documents you may need: summary → cards (why/who/when/where, official requirement, status, valid-until) |
+| `/abroad/cost` | How much might I need? Official / Estimate / Your budget per group + planning view |
 | `/abroad/visa`, `/abroad/visa/[code]` | 12-part visa guide per country, official pages |
 
 Five hubs (`components/abroad/HubBar.tsx`): Journey · Explore · Money · Apply · Visa & go.

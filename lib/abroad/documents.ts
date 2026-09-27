@@ -132,3 +132,24 @@ export function documentExplanation(need: DocumentNeed) {
     generalOnly: need.reasons.every((r) => r.from === 'roadmap'),
   };
 }
+
+/**
+ * Which documents each roadmap step should surface: the step's own general
+ * documents, plus every sourced document whose stage is the step's stage
+ * (placed on the last step of that stage, where it is actually used).
+ * Status still comes from the one document progress store.
+ */
+export function stepDocuments(steps: { id: string; stage: string; documents?: DocumentKind[] }[], needs: DocumentNeed[]): Record<string, DocumentKind[]> {
+  const out: Record<string, DocumentKind[]> = {};
+  const lastOfStage = new Map<string, string>();
+  for (const s of steps) lastOfStage.set(s.stage, s.id);
+  for (const s of steps) out[s.id] = [...(s.documents ?? [])];
+  for (const n of needs) {
+    for (const r of n.reasons) {
+      const stage = r.from === 'roadmap' ? undefined : PURPOSE_STAGE[r.purpose];
+      const stepId = stage && lastOfStage.get(stage);
+      if (stepId && !out[stepId].includes(n.kind)) out[stepId].push(n.kind);
+    }
+  }
+  return out;
+}

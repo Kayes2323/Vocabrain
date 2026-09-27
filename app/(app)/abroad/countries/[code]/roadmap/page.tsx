@@ -13,7 +13,8 @@ import { useBilingual } from '@/components/abroad/useBilingual';
 import { countryHref } from '@/lib/abroad/countries';
 import { roadmapHref } from '@/lib/abroad/roadmap';
 import { getCountry } from '@/lib/content/countries';
-import { countryRoadmap, markStep, setDreamCountry, setStepDue, type RoadmapStep } from '@/lib/engine';
+import { countryRoadmap, documentViewStatus, markStep, setDreamCountry, setStepDue, studentRouteContext, type RoadmapStep } from '@/lib/engine';
+import { documentsFor, stepDocuments } from '@/lib/abroad/documents';
 import { cn } from '@/lib/utils';
 
 /**
@@ -41,6 +42,7 @@ export default function CountryRoadmapPage() {
   if (!profile) return <ScreenSkeleton />;
 
   const roadmap = countryRoadmap(profile, country.code);
+  const docsByStep = stepDocuments(roadmap.steps, documentsFor(country, studentRouteContext(profile.abroad, country.code)));
   const dream = profile.abroad.dreamCountryCode ? getCountry(profile.abroad.dreamCountryCode) : undefined;
   const openId = open ?? roadmap.current?.id ?? null;
   const doneSteps = roadmap.steps.filter((s) => s.status === 'done' && !s.current);
@@ -139,15 +141,25 @@ export default function CountryRoadmapPage() {
                       </a>
                     </p>
                   )}
-                  {s.documents?.length ? (
+                  {docsByStep[s.id]?.length ? (
                     <div className="space-y-1.5">
                       <p className="text-xs font-medium text-muted-foreground">{t('sa.roadmap.documents')}</p>
                       <div className="flex flex-wrap gap-1.5">
-                        {s.documents.map((d) => (
-                          <Link key={d} href="/abroad/documents" className="inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs">
-                            <FileText className="size-3.5" aria-hidden /> {t(`sa.docKinds.${d}`)}
-                          </Link>
-                        ))}
+                        {docsByStep[s.id].map((d) => {
+                          const st = documentViewStatus(profile.abroad, d);
+                          return (
+                            <Link
+                              key={d}
+                              href={`/abroad/documents?open=${d}`}
+                              className={cn('inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs', st === 'ready' && 'border-success/40 text-success', st === 'needs-update' && 'border-warning/50 text-warning')}
+                              data-step-doc={d}
+                              data-status={st}
+                            >
+                              <span aria-hidden>{st === 'ready' ? '✓' : st === 'needs-update' ? '⚠' : '○'}</span>
+                              <FileText className="size-3.5" aria-hidden /> {t(`sa.docKinds.${d}`)}
+                            </Link>
+                          );
+                        })}
                       </div>
                     </div>
                   ) : null}
