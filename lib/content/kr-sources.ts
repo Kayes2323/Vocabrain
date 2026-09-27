@@ -59,3 +59,12 @@ export function krFact(
     ...(opts.applicableDegree ? { applicableDegree: opts.applicableDegree } : {}),
   };
 }
+
+// C2.1 · Ministry of Education / NIIED guidebook. The PDF carries no edition date; it cites the part-time rules
+// "effective from July 2023" and apostille parties "as of November 7, 2023", so it is at least that recent.
+export const KR_NIIED_GUIDEBOOK = gov(
+  'Study in Korea (Ministry of Education / NIIED) – "The Global First Step of Studying Abroad in South Korea" guidebook (undated; cites rules to Nov 2023)',
+  'https://www.studyinkorea.go.kr/public/new/file/guideBook_en.pdf',
+);
+export const KR_TOPIK = gov('TOPIK – Test of Proficiency in Korean (NIIED)', 'https://www.topik.go.kr');
+export const KR_ACADEMYINFO = gov('Higher Education in Korea (Academyinfo)', 'https://www.academyinfo.go.kr');

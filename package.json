@@ -16,6 +16,7 @@
     "test:pwa-install": "npx -y tsx scripts/test-pwa-install.ts",
     "test:journey": "npx -y tsx scripts/test-journey-phases.ts",
     "test:study-options": "npx -y tsx scripts/test-study-options.ts",
+    "test:kr": "npx -y tsx scripts/test-kr-content.ts",
     "test:plan": "npx -y tsx scripts/test-study-plan.ts",
     "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:abroad": "npx -y tsx scripts/test-country-match.ts",

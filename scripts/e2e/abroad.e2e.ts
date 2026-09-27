@@ -389,7 +389,10 @@ async function main() {
     check('six tabs in order', (await tabs.allInnerTexts()).join('|') === 'Overview|Universities|Money|Apply|Visa & life|My roadmap', (await tabs.allInnerTexts()).join('|'));
     check('Overview selected by default', (await tabs.first().getAttribute('aria-selected')) === 'true');
     const krStatuses = await p.locator('[data-section]').evaluateAll((els) => els.map((e) => e.getAttribute('data-status')));
-    check('South Korea: every section “Not verified yet” (nothing invented)', krStatuses.length > 0 && krStatuses.every((s) => s === 'not-yet'), krStatuses.join(','));
+    check('South Korea overview: only Education has official facts (C2.1); the rest “Not verified yet”', krStatuses.length > 0 && krStatuses.filter((s) => s !== 'not-yet').length === 1 && (await p.locator('[data-section="education"]').getAttribute('data-status')) !== 'not-yet', krStatuses.join(','));
+    await p.locator('[data-section="education"] h3 button').click();
+    check('KR education: official guidebook linked once at the end of the section', (await p.locator('[data-section="education"] [data-section-sources] a[href*="studyinkorea.go.kr"]').count()) === 1);
+    await p.locator('[data-section]').first().locator('h3 button').click(); // back to the section open by default
     const firstSection = p.locator('[data-section]').first();
     check('open section shows Official information block', /Official information/i.test(await firstSection.innerText()) && /Not verified yet\. Official facts will appear here/.test(await firstSection.innerText()));
     check('open section shows a separate Mino block', /Mino’s explanation/i.test(await firstSection.innerText()));
@@ -419,14 +422,19 @@ async function main() {
     check('guide: only D-2 content (no D-4 blocks leak into the degree guide)', (await p.locator('[data-guide-block*="kr-d4"]').count()) === 0 && (await p.locator('[data-guide-block*="kr-d2"]').count()) > 0);
     check('guide: "Sources" list at the end — short linked names with the date checked', (await p.getByTestId('guide-sources').locator('a[href^="http"]').count()) >= 3 && /checked/.test(await p.getByTestId('guide-sources').innerText()) && !/https?:\/\//.test(await p.getByTestId('guide-sources').innerText()));
     check('guide: Mino is one optional link, not the interface', (await guideEl.getByRole('link', { name: /Mino/ }).count()) === 1 && (await p.getByTestId('guide-ask-mino').getAttribute('href')) === '/mino?ask=abroad-option&country=kr&option=degree-bachelors');
+    const c21 = async (id: string) => p.locator(`[data-guide-section="${id}"]`).innerText();
+    check('C2.1 guide: study, admission, language and application now read as verified text', (await p.locator('[data-guide-section="study"][data-verified="true"], [data-guide-section="admission"][data-verified="true"], [data-guide-section="language"][data-verified="true"], [data-guide-section="application"][data-verified="true"]').count()) === 4);
+    check("C2.1 guide (Bachelor's): 12-year schooling rule, TOPIK 3 vs English-taught, spring/fall intake", /12-year program/.test(await c21('admission')) && /TOPIK level 3 or above/.test(await c21('language')) && /TOPIK is not mandatory/.test(await c21('language')) && /Spring semester/.test(await c21('application')));
     check('guide desktop: no sideways scroll', await noHorizontalScroll(p), await overflowers(p));
     await shot(p, 'ex-01-kr-bachelors-guide');
     await p.goto(`${BASE}/abroad/countries/kr/study/degree-masters`, { waitUntil: 'load' });
     await guideEl.waitFor({ timeout: 60_000 });
     check('personal: Master’s guide shows the student’s goal (Master’s · Computer Science)', /Master's · Computer Science/.test(await p.getByTestId('guide-for-you').innerText()));
+    check("C2.1 guide (Master's): bachelor's degree required, no school-years rule; thesis and graduate schools", /You hold a bachelor's degree/.test(await c21('admission')) && !/12-year/.test(await c21('admission')) && /24 credits/.test(await c21('study')));
     await p.goto(`${BASE}/abroad/countries/kr/study/language`, { waitUntil: 'load' });
     await guideEl.waitFor({ timeout: 60_000 });
     check('language option: D-4 guide, no D-2 blocks', /D-4 visa/.test(await guideEl.innerText()) && (await p.locator('[data-guide-block*="kr-d4"]').count()) > 0 && (await p.locator('[data-guide-block*="kr-d2"]').count()) === 0);
+    check('C2.1 guide (language course): institute admission steps, no degree-only TOPIK/intake rules', /Submit documents → document evaluation/.test(await c21('admission')) && !/TOPIK level 3 or above|Spring semester/.test(await guideEl.innerText()));
     await p.goto(`${BASE}/abroad/countries/us`, { waitUntil: 'load' });
     await p.getByTestId('study-options').waitFor({ timeout: 60_000 });
     check('a country without pathways: one general option (same system, no special case)', (await p.locator('[data-study-option]').evaluateAll((els) => els.map((e) => e.getAttribute('data-study-option')))).join(',') === 'general');
@@ -678,7 +686,8 @@ async function main() {
     await p.locator('[data-pathway="language"]').click();
     let y = await pb((v) => v.pathwayByCountry?.KR === 'language');
     check('Firestore: pathway saved per country', y.pathwayByCountry?.KR === 'language');
-    check('KR sections stay honest: all Not verified yet', (await p.locator('[data-section][data-status="not-yet"]').count()) === (await p.locator('[data-section]').count()));
+    const filled = (await p.locator('[data-section]:not([data-status="not-yet"])').evaluateAll((els) => els.map((e) => e.getAttribute('data-section')))).join(',');
+    check('KR sections stay honest: only the sourced C2.1 sections are filled', filled === 'education', filled);
     check('Germany hub has no pathway picker', await (async () => { await p.goto(`${BASE}/abroad/countries/de`, { waitUntil: 'load' }); await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 }); return (await p.getByTestId('pathway-picker').count()) === 0; })());
     await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await p.getByTestId('visa-parts').waitFor({ timeout: 60_000 });

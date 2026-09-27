@@ -1,6 +1,7 @@
 import type { Country, CountryData, SourceRef } from '@/lib/models';
 import { KR_KIS_NAVIGATOR, KR_SIK_VISA } from './kr-sources';
 import { KR_SHARED_DOCUMENTS } from './kr-shared';
+import { KR_LANGUAGE_LANGUAGE, KR_SECTIONS } from './kr-country';
 
 /**
  * Destination registry. Every figure is a SourcedValue copied from an official
@@ -88,6 +89,8 @@ export const COUNTRIES: Country[] = [
     // The TOPIK answer comes from the student's profile (same option values).
     // Visa documents both routes ask for (shown once a route is chosen).
     documents: KR_SHARED_DOCUMENTS,
+    // C2.1: education system, admission, language and application (Ministry of Education / NIIED).
+    sections: KR_SECTIONS,
     workQuestions: [
       {
         id: 'korean',
@@ -136,6 +139,7 @@ export const COUNTRIES: Country[] = [
           bn: 'Korean ভাষা (বা training program) পড়া — degree-র আগে, বা আলাদাভাবে।',
         },
         visaCategoryIds: ['kr-d4'],
+        languageRequirements: KR_LANGUAGE_LANGUAGE,
         links: [KR_SIK_VISA, KR_KIS_NAVIGATOR],
       },
     ],

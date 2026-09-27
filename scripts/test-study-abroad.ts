@@ -189,8 +189,13 @@ test('hub: 24 sections in the approved order (+ Arrival appended as 25), spread 
 
 test('hub: the same template serves every country; statuses come from verified facts only', () => {
   for (const c of COUNTRIES) assert.equal(countrySections(c, NOW).length, COUNTRY_SECTION_IDS.length, c.code);
+  const jp = countrySections(getCountry('JP')!, NOW);
+  assert.ok(jp.every((s) => s.status === 'not-yet' && s.facts.length === 0), 'no facts → not verified yet');
   const kr = countrySections(getCountry('KR')!, NOW);
-  assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0), 'no facts → not verified yet');
+  for (const s of kr) {
+    const facts = s.facts.length + s.blocks.reduce((n, b) => n + b.facts.length, 0);
+    assert.equal(s.status === 'not-yet', facts === 0, `${s.id}: status follows its verified facts`);
+  }
   const de = countrySections(getCountry('DE')!, NOW);
   assert.equal(de.find((s) => s.id === 'work')!.status, 'verified');
   const ca = countrySections(getCountry('CA')!, NOW);
@@ -511,12 +516,15 @@ test('B1 applicability: pathway / degree filters; unknown answers hide nothing',
   assert.deepEqual(ids({ pathway: 'language' }), ['language-visa']);
 });
 
-test('B1 South Korea today: no invented facts anywhere (C1.1: only official, fully sourced visa facts)', () => {
+test('B1 South Korea today: no invented facts anywhere (only official, fully sourced facts)', () => {
   const kr = countrySections(getCountry('KR')!);
-  assert.ok(kr.every((s) => s.status === 'not-yet' && s.facts.length === 0), 'hub sections: nothing yet');
-  const all = [undefined, 'kr-d2', 'kr-d4'].flatMap((c) => visaParts(getCountry('KR')!, NOW, c)).flatMap((p) => [...p.facts, ...(p.blocks ?? []).flatMap((b) => b.facts)]);
-  assert.ok(all.length > 0);
-  for (const f of all) assert.equal(f.fact.source.sourceType, 'official-government');
+  const hub = kr.flatMap((s) => [...s.facts, ...s.blocks.flatMap((b) => b.facts)]);
+  const visa = [undefined, 'kr-d2', 'kr-d4'].flatMap((c) => visaParts(getCountry('KR')!, NOW, c)).flatMap((p) => [...p.facts, ...(p.blocks ?? []).flatMap((b) => b.facts)]);
+  assert.ok(hub.length > 0 && visa.length > 0);
+  for (const f of [...hub, ...visa]) {
+    assert.equal(f.fact.source.sourceType, 'official-government');
+    assert.ok(f.fact.source.url?.startsWith('https://') && f.fact.lastVerified && f.fact.reviewedAt && f.fact.status && f.fact.confidence, f.label.en);
+  }
 });
 
 // ---------------------------------------------------------------- Korea B2: pathways & visa categories

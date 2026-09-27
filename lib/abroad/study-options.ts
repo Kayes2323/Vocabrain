@@ -145,7 +145,10 @@ function fromSection(s: ResolvedSection | undefined): GuideBlock[] {
     status: b.status,
     reviewAs: s.id,
   }));
-  return [main, ...subs].filter(hasContent);
+  // A section whose own facts do not apply to this option (e.g. degree-only admission rules on a
+  // language option) but whose sub-blocks do: show the sub-blocks only, not a "not verified" line.
+  const keepMain = main.facts.length > 0 || !subs.some((b) => b.facts.length > 0);
+  return [...(keepMain ? [main] : []), ...subs].filter(hasContent);
 }
 
 function fromVisaPart(p: ResolvedVisaPart | undefined, prefix = ''): GuideBlock[] {
