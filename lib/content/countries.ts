@@ -167,6 +167,16 @@ export const COUNTRIES: Country[] = [
   { code: 'MY', name: 'Malaysia', region: 'Asia', flag: '🇲🇾', capital: 'Kuala Lumpur', data: {} },
   { code: 'TR', name: 'Turkey', region: 'Europe', flag: '🇹🇷', capital: 'Ankara', data: {} },
   { code: 'CH', name: 'Switzerland', region: 'Europe', flag: '🇨🇭', capital: 'Bern', data: {} },
+  { code: 'AT', name: 'Austria', region: 'Europe', flag: '🇦🇹', capital: 'Vienna', data: {} },
+  { code: 'PL', name: 'Poland', region: 'Europe', flag: '🇵🇱', capital: 'Warsaw', data: {} },
+  { code: 'CZ', name: 'Czech Republic', region: 'Europe', flag: '🇨🇿', capital: 'Prague', data: {} },
+  { code: 'HU', name: 'Hungary', region: 'Europe', flag: '🇭🇺', capital: 'Budapest', data: {} },
+  { code: 'MT', name: 'Malta', region: 'Europe', flag: '🇲🇹', capital: 'Valletta', data: {} },
+  { code: 'CY', name: 'Cyprus', region: 'Europe', flag: '🇨🇾', capital: 'Nicosia', data: {} },
+  { code: 'SI', name: 'Slovenia', region: 'Europe', flag: '🇸🇮', capital: 'Ljubljana', data: {} },
+  { code: 'LT', name: 'Lithuania', region: 'Europe', flag: '🇱🇹', capital: 'Vilnius', data: {} },
+  { code: 'LV', name: 'Latvia', region: 'Europe', flag: '🇱🇻', capital: 'Riga', data: {} },
+  { code: 'RO', name: 'Romania', region: 'Europe', flag: '🇷🇴', capital: 'Bucharest', data: {} },
 ];
 
 // Attach the supplied photos (a country's own `hero` always wins).
@@ -184,6 +194,22 @@ export function getCountry(code: string): Country | undefined {
 export const PRIORITY_COUNTRIES = COUNTRIES.filter((c) => c.priority).sort((a, b) => a.priority! - b.priority!);
 /** Every other destination, by name. */
 export const OTHER_COUNTRIES = COUNTRIES.filter((c) => !c.priority).sort((a, b) => a.name.localeCompare(b.name));
+
+/**
+ * The order of the destination cards: grouped by region (Europe, then Asia,
+ * then other regions). Inside a group, long-established international-study
+ * destinations come first. An editorial order, never a ranking.
+ */
+export const DESTINATION_GROUPS: { id: 'europe' | 'asia' | 'other'; codes: string[] }[] = [
+  { id: 'europe', codes: ['GB', 'DE', 'FR', 'NL', 'IE', 'IT', 'SE', 'CH', 'AT', 'DK', 'FI', 'NO', 'ES', 'PL', 'CZ', 'HU', 'TR', 'MT', 'CY', 'SI', 'LT', 'LV', 'RO'] },
+  { id: 'asia', codes: ['KR', 'JP', 'CN', 'MY'] },
+  { id: 'other', codes: ['US', 'CA', 'AU', 'NZ'] },
+];
+
+/** The cards of each group, in order. */
+export function destinationGroups(): { id: 'europe' | 'asia' | 'other'; countries: Country[] }[] {
+  return DESTINATION_GROUPS.map((g) => ({ id: g.id, countries: g.codes.map((code) => getCountry(code)!) }));
+}
 
 /** Number of sourced data points a country currently has. */
 export function countVerifiedDataPoints(country: Country): number {

@@ -34,7 +34,7 @@ import { DEADLINES } from '../lib/content/deadlines';
 import { VISA_GUIDES } from '../lib/content/visa';
 import { DOCUMENT_GUIDES } from '../lib/content/documents';
 import { ROADMAP_TEMPLATE } from '../lib/content/roadmap';
-import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, getCountry } from '../lib/content/countries';
+import { COUNTRIES, OTHER_COUNTRIES, PRIORITY_COUNTRIES, destinationGroups, getCountry } from '../lib/content/countries';
 import { countryHref, countryIndicators } from '../lib/abroad/countries';
 import { actionHref, appliesTo, countrySections, factNeedsReview, factStatus, groupStatus, HUB_TABS, SECTION_DEFS, sectionNumber, sectionsOfTab } from '../lib/abroad/sections';
 import type { Country, SectionFact } from '../lib/models';
@@ -168,7 +168,7 @@ test('persistence: old profiles load unchanged; journey marks survive a save/loa
 // ---------------------------------------------------------------- 3B countries
 test('country photos: each belongs to a real country, files exist, sizes and focal points set, never enlarged', () => {
   const codes = Object.keys(COUNTRY_PHOTOS);
-  assert.deepEqual(codes.sort(), ['AU', 'CA', 'CH', 'CN', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'IE', 'IT', 'JP', 'KR', 'MY', 'NL', 'NO', 'NZ', 'SE', 'TR', 'US']);
+  assert.deepEqual(codes.sort(), ['AT', 'AU', 'CA', 'CH', 'CN', 'CY', 'CZ', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'HU', 'IE', 'IT', 'JP', 'KR', 'LT', 'LV', 'MT', 'MY', 'NL', 'NO', 'NZ', 'PL', 'RO', 'SE', 'SI', 'TR', 'US']);
   for (const code of codes) {
     const photo = COUNTRY_PHOTOS[code]!;
     const country = getCountry(code)!;
@@ -183,6 +183,40 @@ test('country photos: each belongs to a real country, files exist, sizes and foc
     for (const s of photo.srcSet!) assert.ok(fs.existsSync(path.join(process.cwd(), 'public', s.src)), `${s.src} exists`);
   }
   assert.equal(getCountry('IE')?.hero?.src, '/images/countries/ie-1300.jpg', 'Ireland card uses the photo chosen for Ireland');
+});
+
+test('destinations: grouped Europe → Asia → other regions, every country exactly once, 10 new European countries', () => {
+  const groups = destinationGroups();
+  assert.deepEqual(groups.map((g) => g.id), ['europe', 'asia', 'other']);
+  const all = groups.flatMap((g) => g.countries.map((c) => c.code));
+  assert.equal(all.length, COUNTRIES.length, 'every country is shown');
+  assert.equal(new Set(all).size, all.length, 'no country twice');
+  for (const c of groups[0].countries) assert.equal(c.region, 'Europe', `${c.code} in Europe`);
+  for (const c of groups[1].countries) assert.equal(c.region, 'Asia', `${c.code} in Asia`);
+  for (const c of groups[2].countries) assert.ok(!['Europe', 'Asia'].includes(c.region), `${c.code} in other regions`);
+  assert.deepEqual(groups[0].countries.slice(0, 4).map((c) => c.code), ['GB', 'DE', 'FR', 'NL'], 'established destinations first');
+  assert.deepEqual(groups[1].countries.map((c) => c.code), ['KR', 'JP', 'CN', 'MY']);
+  const added: Record<string, [string, string, string]> = {
+    RO: ['Romania', 'Bucharest', 'ro-1585.jpg'],
+    CY: ['Cyprus', 'Nicosia', 'cy-1000.webp'],
+    MT: ['Malta', 'Valletta', 'mt-1920.webp'],
+    SI: ['Slovenia', 'Ljubljana', 'si-1600.jpg'],
+    CZ: ['Czech Republic', 'Prague', 'cz-1000.jpg'],
+    LV: ['Latvia', 'Riga', 'lv-1920.webp'],
+    LT: ['Lithuania', 'Vilnius', 'lt-878.jpg'],
+    HU: ['Hungary', 'Budapest', 'hu-612.jpg'],
+    PL: ['Poland', 'Warsaw', 'pl-643.jpg'],
+    AT: ['Austria', 'Vienna', 'at-1232.jpg'],
+  };
+  for (const [code, [name, capital, file]] of Object.entries(added)) {
+    const c = getCountry(code)!;
+    assert.equal(c.name, name);
+    assert.equal(c.capital, capital);
+    assert.equal(c.region, 'Europe');
+    assert.equal(c.hero?.src, `/images/countries/${file}`, `${code} uses its own photo`);
+    assert.ok(groups[0].countries.includes(c), `${code} sits with the other European countries`);
+    assert.equal(getCountryGuide(code), undefined, `${code}: no invented guide`);
+  }
 });
 
 test('countries: 14 priority destinations in the approved order (New Zealand included), others after', () => {

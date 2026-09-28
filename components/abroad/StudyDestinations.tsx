@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { CountryCard } from '@/components/abroad/CountryCard';
-import { OTHER_COUNTRIES, PRIORITY_COUNTRIES } from '@/lib/content/countries';
+import { destinationGroups } from '@/lib/content/countries';
 import { toggleShortlist } from '@/lib/engine';
 import type { Country } from '@/lib/models';
 import { cn } from '@/lib/utils';
@@ -14,9 +14,10 @@ import { cn } from '@/lib/utils';
 const REGIONS = ['Asia', 'Europe', 'North America', 'Oceania'] as const;
 
 /**
- * "Study Destinations": the country cards, in the curated order (an editorial
- * order, never a ranking), with a small region filter and search. Used on the
- * Study Abroad landing and on /abroad/countries.
+ * "Study Destinations": the country cards grouped by region (Europe, Asia,
+ * other regions), each group in a curated order (an editorial order, never a
+ * ranking), with a small region filter and search. Used on the Study Abroad
+ * landing and on /abroad/countries.
  */
 export function StudyDestinations({ headingLevel = 'h2' }: { headingLevel?: 'h1' | 'h2' }) {
   const { t } = useLocale();
@@ -32,8 +33,9 @@ export function StudyDestinations({ headingLevel = 'h2' }: { headingLevel?: 'h1'
 
   if (!profile) return null;
   const shortlist = profile.abroad.preferredCountryCodes ?? [];
-  const priority = filter(PRIORITY_COUNTRIES);
-  const others = filter(OTHER_COUNTRIES);
+  const groups = destinationGroups()
+    .map((g) => ({ id: g.id, countries: filter(g.countries) }))
+    .filter((g) => g.countries.length > 0);
   const card = (c: Country) => (
     <CountryCard
       key={c.code}
@@ -87,27 +89,21 @@ export function StudyDestinations({ headingLevel = 'h2' }: { headingLevel?: 'h1'
         </div>
       </div>
 
-      {priority.length + others.length === 0 && <p className="px-1 text-muted-foreground">{t('sa.explorer.noMatch', { q: query })}</p>}
+      {groups.length === 0 && <p className="px-1 text-muted-foreground">{t('sa.explorer.noMatch', { q: query })}</p>}
 
-      {priority.length > 0 && (
-        <div className="space-y-3">
+      {groups.map((g, i) => (
+        <div key={g.id} className={cn('space-y-3', i > 0 && 'pt-2')}>
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 px-1">
-            <h3 className="text-sm font-semibold">{t('sa.landing.popular')}</h3>
-            <p className="text-xs text-muted-foreground">{t('sa.landing.popularNote')}</p>
+            <h3 className="text-sm font-semibold" data-group-heading={g.id}>
+              {t(`sa.landing.groups.${g.id}`)}
+            </h3>
+            {i === 0 && <p className="text-xs text-muted-foreground">{t('sa.landing.popularNote')}</p>}
           </div>
-          <div className={grid} data-testid="priority-countries">
-            {priority.map(card)}
-          </div>
-        </div>
-      )}
-      {others.length > 0 && (
-        <div className="space-y-3 pt-2">
-          <h3 className="px-1 text-sm font-semibold">{t('sa.landing.more')}</h3>
-          <div className={grid} data-testid="other-countries">
-            {others.map(card)}
+          <div className={grid} data-testid={`countries-${g.id}`}>
+            {g.countries.map(card)}
           </div>
         </div>
-      )}
+      ))}
     </section>
   );
 }

@@ -210,6 +210,7 @@ export const saBn: LocaleDictionary['sa'] = {
     destinationsTitle: 'Study Destinations',
     destinationsBody: 'দেশগুলো ঘুরে দেখুন, আর জানুন সেখানে কী পড়তে পারেন।',
     popular: 'জনপ্রিয় Study Destination',
+    groups: { europe: 'Europe', asia: 'Asia', other: 'অন্যান্য destination' },
     popularNote: 'এটা আমাদের সাজানো ক্রম, কোনো অফিসিয়াল র‍্যাঙ্কিং নয়।',
     more: 'আরও destination',
     toolsTitle: 'পরিকল্পনার টুল',

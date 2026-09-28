@@ -275,9 +275,9 @@ async function main() {
     }
 
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
-    await p.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
+    await p.getByTestId('countries-europe').waitFor({ timeout: 60_000 });
     check('landing: country cards first, no journey or roadmap on the front page', (await p.getByTestId('abroad-journey').count()) === 0 && (await p.getByTestId('abroad-start').count()) === 0 && (await p.locator('[data-phase]').count()) === 0 && (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0);
-    check('landing: every card titled "Study in …"', (await p.getByTestId('study-in').count()) === 21 && (await p.locator('[data-country="KR"]').getByTestId('study-in').innerText()) === 'Study in South Korea' && (await p.locator('[data-country="IE"]').getByTestId('study-in').innerText()) === 'Study in Ireland');
+    check('landing: every card titled "Study in …"', (await p.getByTestId('study-in').count()) === 31 && (await p.locator('[data-country="KR"]').getByTestId('study-in').innerText()) === 'Study in South Korea' && (await p.locator('[data-country="IE"]').getByTestId('study-in').innerText()) === 'Study in Ireland');
     check('landing: no ranking score shown', !/\d+\s*%|#\d|score/i.test(await p.getByTestId('study-destinations').innerText()));
     check('landing desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-guide-00-landing');
@@ -357,10 +357,16 @@ async function main() {
     // ============================================================ 3B · Country explorer
     console.log('\n[3B] Country explorer');
     await p.goto(`${BASE}/abroad/countries`, { waitUntil: 'load' });
-    await p.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
-    const priorityCodes = await p.getByTestId('priority-countries').locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')));
-    check('14 priority countries, in order, New Zealand last', priorityCodes.join(',') === 'KR,DE,AU,GB,CA,US,JP,IT,FR,NL,SE,FI,IE,NZ', priorityCodes.join(','));
-    check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 7);
+    await p.getByTestId('countries-europe').waitFor({ timeout: 60_000 });
+    const groupCodes = async (id: string) => (await p.getByTestId(`countries-${id}`).locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')))).join(',');
+    const headings = await p.locator('[data-group-heading]').allInnerTexts();
+    check('destinations grouped by region: Europe, Asia, Other destinations', headings.join('|') === 'Europe|Asia|Other destinations', headings.join('|'));
+    check('Europe: established destinations first, the 10 new countries integrated', (await groupCodes('europe')) === 'GB,DE,FR,NL,IE,IT,SE,CH,AT,DK,FI,NO,ES,PL,CZ,HU,TR,MT,CY,SI,LT,LV,RO', await groupCodes('europe'));
+    check('Asia together; other regions together', (await groupCodes('asia')) === 'KR,JP,CN,MY' && (await groupCodes('other')) === 'US,CA,AU,NZ', `${await groupCodes('asia')} / ${await groupCodes('other')}`);
+    const allCodes = await p.locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')));
+    check('31 countries, none twice', allCodes.length === 31 && new Set(allCodes).size === 31, allCodes.join(','));
+    const newNames = await p.locator('[data-country]').evaluateAll((els) => Object.fromEntries(els.map((e) => [e.getAttribute('data-country'), e.querySelector('[data-testid="study-in"]')?.textContent])));
+    check('new countries spelled correctly', ([['RO', 'Romania'], ['CY', 'Cyprus'], ['MT', 'Malta'], ['SI', 'Slovenia'], ['CZ', 'Czech Republic'], ['LV', 'Latvia'], ['LT', 'Lithuania'], ['HU', 'Hungary'], ['PL', 'Poland'], ['AT', 'Austria']] as const).every(([c, n]) => newNames[c] === `Study in ${n}`), JSON.stringify(newNames));
     check('Home hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Home' }).getAttribute('aria-current')) === 'page');
     const broken = await p.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0).length);
     // Photos are lazy-loaded: bring each card into view once so they all load.
@@ -372,7 +378,7 @@ async function main() {
     );
     const withPhoto = photos.filter((x) => x.photo);
     check('no broken images', broken === 0, `${broken} broken`);
-    check('all 21 country cards show their photo, no placeholders', withPhoto.length === 21 && (await p.locator('[data-placeholder]').count()) === 0, withPhoto.map((x) => x.card).join(','));
+    check('all 31 country cards show their photo, no placeholders', withPhoto.length === 31 && (await p.locator('[data-placeholder]').count()) === 0, withPhoto.map((x) => x.card).join(','));
     check('Ireland photo sits in the Ireland card', (await p.locator('[data-country="IE"] [data-country-photo="IE"] img').getAttribute('src'))?.startsWith('/images/countries/ie-') === true);
     check('all card photos share one frame ratio', new Set(await p.locator('[data-country-photo]').evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(); return (r.width / r.height).toFixed(2); }))).size === 1);
     check('every photo sits in its own country\'s card', withPhoto.every((x) => x.photo === x.card), JSON.stringify(withPhoto));
@@ -398,6 +404,18 @@ async function main() {
     check('Firestore: shortlist toggles back on', (sb.preferredCountryCodes as string[]).includes('KR'));
     check('dream country badge on Germany', /Dream country/.test(await p.locator('[data-country="DE"]').innerText()));
     check('explorer desktop: no sideways scroll', await noHorizontalScroll(p));
+    await p.getByRole('button', { name: 'Europe', exact: true }).click();
+    check('region filter: Europe keeps its order and includes the new countries', (await p.locator('[data-country]').count()) === 23 && (await p.locator('[data-country="MT"]').count()) === 1);
+    await p.getByRole('button', { name: 'All', exact: true }).click();
+    const newHrefs: string[] = [];
+    for (const code of ['RO', 'CY', 'MT', 'SI', 'CZ', 'LV', 'LT', 'HU', 'PL', 'AT']) newHrefs.push(`${code}:${await p.locator(`[data-country="${code}"]`).getByRole('link', { name: 'Explore' }).getAttribute('href')}`);
+    check('every new country card links to its own country page', newHrefs.every((h) => h.endsWith(`/abroad/countries/${h.slice(0, 2).toLowerCase()}`)), newHrefs.join(' '));
+    await p.locator('[data-country="CZ"]').getByRole('link', { name: 'Explore' }).click();
+    await p.waitForURL('**/abroad/countries/cz');
+    await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('a new country (Czech Republic) opens its country page like the others', /Czech Republic/.test(await p.getByRole('heading', { level: 1 }).innerText()) && (await p.getByTestId('country-guide').count()) === 0);
+    await p.goBack({ waitUntil: 'load' });
+    await p.getByTestId('countries-europe').waitFor({ timeout: 60_000 });
     await shot(p, 'sa-3b-01-explorer');
 
     // ============================================================ 3C · Country hub (one template)
@@ -1277,7 +1295,7 @@ async function main() {
     await shot(q, 'sa-3a-05-mobile-dark');
     await setDark(q, false);
     await q.goto(`${BASE}/abroad/countries`, { waitUntil: 'load' });
-    await q.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
+    await q.getByTestId('countries-europe').waitFor({ timeout: 60_000 });
     check('bn explorer mobile: no sideways scroll', await noHorizontalScroll(q));
     check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখুন' }).count()) >= 13);
     await shot(q, 'sa-3b-02-explorer-mobile', false);

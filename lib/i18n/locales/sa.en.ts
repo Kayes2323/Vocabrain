@@ -211,6 +211,7 @@ export const saEn = {
     destinationsTitle: 'Study Destinations',
     destinationsBody: 'Explore countries and discover what you can study there.',
     popular: 'Popular study destinations',
+    groups: { europe: 'Europe', asia: 'Asia', other: 'Other destinations' },
     popularNote: 'Our editorial order, not an official ranking.',
     more: 'More destinations',
     toolsTitle: 'Plan your study',
