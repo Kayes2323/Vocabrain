@@ -605,6 +605,39 @@ async function main() {
     const trPhText = await p.getByTestId('degree-guide').innerText();
     check('TR PhD: proficiency exam and dissertation, TRY 13,000 stipend', /proficiency exam/.test(trPhText) && /13,000/.test(trPhText) && (await p.locator('[data-document="program-extras"]').count()) === 1);
     await shot(p, 'sa-guide-tr-03-phd');
+    // ============================================================ United Kingdom guide (its own research)
+    console.log('\n[Guide] United Kingdom');
+    await p.goto(`${BASE}/abroad/countries/gb`, { waitUntil: 'load' });
+    await p.getByTestId('country-guide').waitFor({ timeout: 60_000 });
+    const gbGuide = p.getByTestId('country-guide');
+    check('GB guide: "Study in United Kingdom" heading and photo; cards Bachelor’s, Master’s, PhD', /Study in United Kingdom/.test(await p.getByRole('heading', { level: 1 }).innerText()) && (await gbGuide.locator('[data-country-photo="GB"]').count()) === 1 && (await p.getByTestId('guide-degrees').locator('[data-degree]').evaluateAll((els) => els.map((e) => e.getAttribute('data-degree')).join(','))) === 'bachelors,masters,phd');
+    const gbFaq = p.getByTestId('guide-faq');
+    const gbFaqText = await gbFaq.innerText();
+    check('GB guide: most asked first — HSC, cost, IELTS, funds, work, scholarship, Chevening, stay after', (await gbFaq.locator('[data-faq]').first().getAttribute('data-faq')) === 'hsc' && /£1,529/.test(gbFaqText) && /Chevening/.test(gbFaqText) && /Graduate visa/.test(gbFaqText));
+    check('GB guide: nothing from other countries', !/TOPIK|Sperrkonto|MEXT|Universitaly|TR-YÖS/.test(await gbGuide.innerText()));
+    check('GB guide: GOV.UK sources at the end, per-section sources', (await gbGuide.locator('[data-section-sources]').count()) >= 3 && (await p.getByTestId('guide-sources').locator('a[href*="gov.uk"]').count()) >= 3);
+    check('GB guide desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-gb-01-country');
+    await p.getByTestId('guide-degrees').locator('[data-degree="bachelors"]').click();
+    await p.waitForURL('**/abroad/countries/gb/degree/bachelors');
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const gbBa = p.getByTestId('degree-guide');
+    const gbBaText = await gbBa.innerText();
+    check("GB bachelor's: HSC → foundation, UCAS dates, CAS and visa", /foundation/.test(gbBaText) && /13 January 2027/.test(gbBaText) && /CAS/.test(gbBaText) && /£558/.test(gbBaText));
+    check("GB bachelor's: tuition marked not verified; costs official vs estimate in pounds", (await gbBa.locator('[data-guide-q="tuition"] [data-guide-status="not-verified"]').count()) === 1 && (await gbBa.getByTestId('guide-costs').locator('[data-cost-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-cost-group')).join(','))) === 'official,estimate,mine' && /£776/.test(await gbBa.getByTestId('guide-costs').locator('[data-cost-group="official"]').innerText()));
+    check("GB bachelor's: documents A–E incl. CAS and TB test, no research proposal", (await gbBa.locator('[data-doc-group]').count()) === 5 && (await gbBa.locator('[data-document="cas"]').count()) === 1 && (await gbBa.locator('[data-document="tb-test"]').count()) === 1 && (await gbBa.locator('[data-document="research-proposal"]').count()) === 0);
+    check("GB bachelor's: university examples alphabetical", (await gbBa.getByTestId('guide-universities').locator('[data-university]').evaluateAll((els) => els.map((e) => e.getAttribute('data-university')).join(','))) === 'gb-imperial,gb-kcl,gb-ucl,gb-birmingham,gb-cambridge,gb-edinburgh,gb-manchester,gb-oxford');
+    check("GB bachelor's desktop: no sideways scroll", await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-gb-02-bachelors');
+    await p.goto(`${BASE}/abroad/countries/gb/degree/masters`, { waitUntil: 'load' });
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const gbMaText = await p.getByTestId('degree-guide').innerText();
+    check("GB master's: Chevening, Commonwealth, GREAT; GPA example; no UCAS dates", /Chevening/.test(gbMaText) && /3\.2\/4/.test(gbMaText) && !/13 January 2027/.test(gbMaText) && (await p.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')).sort().join(','))) === 'gb-chevening,gb-commonwealth-masters,gb-great-bangladesh');
+    await p.goto(`${BASE}/abroad/countries/gb/degree/phd`, { waitUntil: 'load' });
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const gbPhText = await p.getByTestId('degree-guide').innerText();
+    check('GB PhD: supervisor, research proposal, funded vs self-funded', /supervisor/.test(gbPhText) && /self-funded/i.test(gbPhText) && (await p.locator('[data-document="research-proposal"]').count()) === 1);
+    await shot(p, 'sa-guide-gb-03-phd');
     await p.goto(`${BASE}/abroad/countries/ca`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
     check('a country without a guide keeps its existing page (nothing borrowed from South Korea)', (await p.getByTestId('country-guide').count()) === 0);
@@ -791,10 +824,13 @@ async function main() {
     // ============================================================ 3G · Scholarships
     console.log('\n[3G] Scholarships');
     await p.goto(`${BASE}/abroad/scholarships?country=gb`, { waitUntil: 'load' });
-    await p.getByTestId('schol-empty').waitFor({ timeout: 60_000 });
+    await p.locator('[data-scholarship="gb-chevening"]').waitFor({ timeout: 60_000 });
     check('Money hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Money' }).getAttribute('aria-current')) === 'page');
-    check('?country=gb selects the UK', (await p.getByLabel('Country').inputValue()) === 'GB');
-    check('no invented scholarship facts', /No verified scholarship information for United Kingdom yet/.test(await p.getByTestId('schol-official').innerText()));
+    check('?country=gb selects the UK and lists its official scholarships', (await p.getByLabel('Country').inputValue()) === 'GB' && (await p.locator('[data-scholarship="gb-commonwealth-masters"]').count()) === 1);
+    await p.goto(`${BASE}/abroad/scholarships?country=ca`, { waitUntil: 'load' });
+    await p.getByTestId('schol-empty').waitFor({ timeout: 60_000 });
+    check('?country=ca selects Canada', (await p.getByLabel('Country').inputValue()) === 'CA');
+    check('no invented scholarship facts', /No verified scholarship information for Canada yet/.test(await p.getByTestId('schol-official').innerText()));
     check('no invented scholarships', /No verified scholarships here yet/.test(await p.getByTestId('schol-empty').innerText()));
     // C2.4 · South Korea: the GKS records, in the source's words (never "Fully funded").
     await p.goto(`${BASE}/abroad/scholarships?country=kr`, { waitUntil: 'load' });
@@ -807,7 +843,7 @@ async function main() {
     else check('GKS-G: no guessed deadline (status unknown until NIIED announces it)', (await p.locator('[data-scholarship="kr-gks-g"]').getAttribute('data-status')) === 'unknown' && !/Deadline/.test(gksTxt));
     check('KR scholarships: no "Fully funded" claim on any GKS record', !/Fully funded|Partly funded/.test(await p.locator('[data-scholarship]').allInnerTexts().then((x) => x.join(' '))));
     check('KR scholarships: official GKS facts shown at the top', /Global Korea Scholarship/.test(await p.getByTestId('schol-official').innerText()));
-    await p.goto(`${BASE}/abroad/scholarships?country=gb`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/scholarships?country=ca`, { waitUntil: 'load' });
     await p.getByTestId('schol-empty').waitFor({ timeout: 60_000 });
     await p.getByRole('button', { name: 'Fully funded' }).click();
     check('funding filter toggles', (await p.getByRole('button', { name: 'Fully funded' }).getAttribute('aria-pressed')) === 'true');
@@ -1246,6 +1282,12 @@ async function main() {
     check('bn TR bachelor’s: Bangla question headings, respectful আপনি', /HSC দিয়ে কি আবেদন করা যায়\?/.test(bnTr) && /Turkey-র student visa কীভাবে পাবেন\?/.test(bnTr) && !/তুমি|তোমার/.test(await q.locator('main').innerText()));
     check('bn TR bachelor’s mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-guide-tr-04-bachelors-mobile-bn');
+    await q.goto(`${BASE}/abroad/countries/gb/degree/bachelors`, { waitUntil: 'load' });
+    await q.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const bnGb = await q.getByTestId('degree-guide').innerText();
+    check('bn GB bachelor’s: Bangla question headings, respectful আপনি', /HSC শেষ করে কি সরাসরি UK-তে Bachelor's করা যায়\?/.test(bnGb) && /UK Student visa-র জন্য কত টাকা দেখাতে হয়\?/.test(bnGb) && !/তুমি|তোমার/.test(await q.locator('main').innerText()));
+    check('bn GB bachelor’s mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-guide-gb-04-bachelors-mobile-bn');
     await q.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await q.getByTestId('study-options').waitFor({ timeout: 60_000 });
     check('bn: study options heading in Bangla', /একটা program বেছে নিন/.test(await q.getByTestId('study-options').innerText()));
