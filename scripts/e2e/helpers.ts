@@ -20,8 +20,8 @@ export const LABELS = {
 // ------------------------------------------------------------------ results
 const results: [string, boolean, string][] = [];
 export function check(name: string, ok: boolean, detail: unknown = '') {
-  results.push([name, ok, String(detail).slice(0, 160)]);
-  console.log(ok ? '  PASS' : '  FAIL', name, ok ? '' : String(detail).slice(0, 160));
+  results.push([name, ok, String(detail).slice(0, 400)]);
+  console.log(ok ? '  PASS' : '  FAIL', name, ok ? '' : String(detail).slice(0, 400));
 }
 export function report(): number {
   const failed = results.filter((r) => !r[1]);

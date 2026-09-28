@@ -38,6 +38,7 @@ const docBox = (p: Page) =>
     return JSON.stringify([Math.round(r.left), Math.round(r.top + window.scrollY), Math.round(r.width), Math.round(r.height)]);
   });
 
+let lastWordBoxes = '';
 /** The tapped word is not hidden behind the card. */
 async function wordVisible(p: Page, word: import('playwright-core').Locator) {
   await sleep(3200);
@@ -45,6 +46,7 @@ async function wordVisible(p: Page, word: import('playwright-core').Locator) {
   const c = await p.locator('[data-reading-card] > div').boundingBox();
   if (!c) return false;
   const overlap = w.x < c.x + c.width && w.x + w.width > c.x && w.y < c.y + c.height && w.y + w.height > c.y;
+  lastWordBoxes = JSON.stringify({ word: w, card: c, scrollY: await p.evaluate(() => window.scrollY) });
   return !overlap && w.y >= 0;
 }
 
@@ -131,7 +133,7 @@ async function main() {
     check('word: context meaning in Bangla (bn)', /এই বাক্যে/.test(await m.getByTestId('meaning-context').innerText()));
     check('word: card inside the phone screen', await inViewport(m, 'meaning-card'));
     check('word: no layout shift', (await docBox(m)) === before, `${before} → ${await docBox(m)}`);
-    check('word: tapped word stays visible above the card', await wordVisible(m, femaleBtn));
+    check('word: tapped word stays visible above the card', await wordVisible(m, femaleBtn), lastWordBoxes);
     check('word: no horizontal scroll', await noHorizontalScroll(m));
     await sleep(300);
     await shot(m, 'rl-word-bn-mobile', false);
