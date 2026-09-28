@@ -610,7 +610,7 @@ export const sentenceBasicsLessons: Lesson[] = [
               { en: 'Answers the question directly', bn: 'সরাসরি প্রশ্নের answer' },
               { en: 'One subject and one main verb', bn: 'একটা subject আর একটা main verb' },
             ],
-            explanation: { en: 'Start with a direct answer. You will learn to extend it in the next lessons.', bn: 'আগে সরাসরি answer। কীভাবে বাড়াবে সেটা পরের lesson-এ শিখবে।' },
+            explanation: { en: 'Start with a direct answer. You will learn to extend it in the next lessons.', bn: 'আগে সরাসরি answer। কীভাবে বাড়াবেন সেটা পরের lesson-এ শিখবেন।' },
             tag: 'sentence-structure',
           },
         ],
@@ -741,7 +741,7 @@ export const sentenceBasicsLessons: Lesson[] = [
         title: { en: 'Main idea + supporting idea', bn: 'Main idea + supporting idea' },
         body: {
           en: 'A complex sentence has a main clause (it can stand alone) and a dependent clause (it cannot). The dependent clause starts with a word like because, although, when, if or which. You will study these fully in Module 8; here you learn to recognise and build simple ones.',
-          bn: 'Complex sentence-এ থাকে একটা main clause (একা দাঁড়াতে পারে) আর একটা dependent clause (একা পারে না)। Dependent clause শুরু হয় because, although, when, if বা which ধরনের শব্দ দিয়ে। Module 8-এ এগুলো বিস্তারিত পড়বে; এখানে চিনতে আর সহজ কয়েকটা বানাতে শিখবে।',
+          bn: 'Complex sentence-এ থাকে একটা main clause (একা দাঁড়াতে পারে) আর একটা dependent clause (একা পারে না)। Dependent clause শুরু হয় because, although, when, if বা which ধরনের শব্দ দিয়ে। Module 8-এ এগুলো বিস্তারিত পড়বেন; এখানে চিনতে আর সহজ কয়েকটা বানাতে শিখবেন।',
         },
         points: [
           { en: 'because = reason · although = contrast · when = time · if = condition', bn: 'because = কারণ · although = বিপরীত · when = সময় · if = শর্ত' },

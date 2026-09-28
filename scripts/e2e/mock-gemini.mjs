@@ -177,6 +177,27 @@ http
             practice: { sentence: 'My brother and ___ (i) share a room.', answers: ['I'] },
           }) }]);
         }
+        const commonErrorRules = /Common-error feedback \(target: /.test(system);
+        if (commonErrorRules && /\binformations\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\binformations\b/, 'information'),
+            feedback: bn ? 'ভালো চেষ্টা! information-এ -s বসে না।' : 'Good try! information never takes -s.',
+            fixes: [{ quote: 'some informations about', fix: 'some information about', why: bn ? 'UNCOUNTABLE: information uncountable — বাংলার "তথ্যগুলো"-র মতো -s বসে না।' : 'UNCOUNTABLE: information is uncountable, so no -s.' }],
+            practice: { sentence: 'How much ___ (luggage) can I bring?', answers: ['luggage'] },
+          }) }]);
+        }
+        if (commonErrorRules && /\bdo (a lot of )?mistakes\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: student.replace(/\bdo (a lot of )?mistakes\b/, (m, a) => `make ${a ?? ''}mistakes`),
+            feedback: bn ? 'ভালো চেষ্টা! mistake-এর সাথে make বসে।' : 'Good try! mistakes take make.',
+            fixes: [{ quote: 'do a lot of mistakes', fix: 'make a lot of mistakes', why: bn ? 'COLLOCATION: বাংলায় "ভুল করা", কিন্তু English-এ make a mistake।' : 'COLLOCATION: make a mistake, not do.' }],
+            practice: { sentence: 'I need to ___ a decision soon.', answers: ['make'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',

@@ -63,14 +63,13 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement, Prepositions, Connectors, Complex Sentences and Punctuation (9
-lessons + a Final Mastery Challenge each), Vocabulary Foundation. Common Errors
-shows "Soon".
+Agreement, Prepositions, Connectors, Complex Sentences, Punctuation and Common
+Errors (9 lessons + a Final Mastery Challenge each), Vocabulary Foundation.
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
 shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
-`docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md` and
-`docs/PUNCTUATION_CURRICULUM.md`.
+`docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
+`docs/PUNCTUATION_CURRICULUM.md` and `docs/COMMON_ERRORS_CURRICULUM.md`.
 
 ## Tests
 
@@ -322,6 +321,21 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   `pn-colon-semi` (+ fix guides). **Challenge** `punctuation` (6 parts × 4 items).
 - **Mino.** Punctuation tasks judge punctuation and capitals only, one rule per issue.
 - **E2E.** `scripts/e2e/punctuation.e2e.ts` (shared flow in `module-spec.ts`).
+
+## Phase H: Common Errors to Fix
+
+- **Module 10** (`common-errors.ts` ce-1…ce-6, `common-errors-apply.ts` ce-7…ce-9): 8
+  taught v2 lessons + the review test. Six concepts (`ce-translation`, `ce-countable`,
+  `ce-plural`, `ce-collocation`, `ce-word-pair`, `ce-natural`) under a new error tag
+  `common-error`; the module also lists `collocation`, `plural` and `countable` so
+  mistakes with those tags point here. See `docs/COMMON_ERRORS_CURRICULUM.md`.
+- **Patterns.** `ce-translation`, `ce-uncountable`, `ce-plural-form`, `ce-collocation-pair`,
+  `ce-confused-pair`, `ce-redundant` (+ fix guides). **Challenge** `common-errors`
+  (6 parts × 4 items).
+- **Mino.** Common-error tasks name the error type (translation, uncountable, plural,
+  collocation, word pair, repetition) and the Bangla cause, one fix per error. The Mino
+  product knowledge no longer lists modules 5–10 as "Soon" (that line had gone stale).
+- **E2E.** `scripts/e2e/common-errors.e2e.ts` (shared flow in `module-spec.ts`).
 
 ## Known issue: `pnpm lint`
 

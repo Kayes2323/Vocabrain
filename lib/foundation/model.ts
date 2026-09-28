@@ -33,7 +33,8 @@ export type ErrorTag =
   | 'reading'
   | 'listening'
   | 'part-of-speech'
-  | 'countable';
+  | 'countable'
+  | 'common-error';
 
 /** The job a word does in a sentence. Mistakes record the job expected and the job chosen. */
 export type Pos = 'noun' | 'pronoun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'conjunction' | 'interjection' | 'determiner';

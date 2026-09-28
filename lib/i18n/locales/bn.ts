@@ -374,7 +374,7 @@ export const bn: LocaleDictionary = {
       'sentence-structure': 'sentence structure', subject: 'subject', verb: 'verb', object: 'object', tense: 'tense', 'word-form': 'word form',
       article: 'article', agreement: 'subject–verb agreement', preposition: 'preposition', connector: 'connector',
       'complex-sentence': 'complex sentence', punctuation: 'punctuation', plural: 'singular/plural', vocabulary: 'vocabulary',
-      collocation: 'collocation', reading: 'reading', listening: 'listening',
+      collocation: 'collocation', reading: 'reading', listening: 'listening', countable: 'countable/uncountable', 'common-error': 'common error',
     },
     module: {
       ieltsLink: 'IELTS-এ কোথায় কাজে লাগবে',

@@ -57,6 +57,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'pn-comma-use': { title: l('Where commas go (and where they don’t)', 'Comma কোথায় বসে (আর কোথায় না)'), modules: ['punctuation'] },
   'pn-apostrophes': { title: l('Apostrophes (’s, s’, its / it’s)', 'Apostrophe (’s, s’, its / it’s)'), modules: ['punctuation'] },
   'pn-colon-semi': { title: l('Colons and semicolons', 'Colon আর semicolon'), modules: ['punctuation'] },
+  'ce-translation': { title: l('Word-for-word translation (I am agree, give an exam)', 'Word ধরে অনুবাদ (I am agree, give an exam)'), modules: ['common-errors'] },
+  'ce-uncountable': { title: l('Uncountable nouns (informations, advices)', 'Uncountable noun (informations, advices)'), modules: ['common-errors'] },
+  'ce-plural-form': { title: l('Plurals after numbers and one of the …', 'সংখ্যা আর one of the …-এর পরে plural'), modules: ['common-errors'] },
+  'ce-collocation-pair': { title: l('Collocations (make / do / take, heavy rain)', 'Collocation (make / do / take, heavy rain)'), modules: ['common-errors'] },
+  'ce-confused-pair': { title: l('Confusing pairs (say / tell, lend / borrow, rise / raise)', 'গুলিয়ে যাওয়া জোড়া (say / tell, lend / borrow, rise / raise)'), modules: ['common-errors'] },
+  'ce-redundant': { title: l('Saying it twice (return back, more better)', 'দুবার বলা (return back, more better)'), modules: ['common-errors'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -455,6 +461,60 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Colons and semicolons are rarely taught in Bangla-medium schools, so they are used as decoration or as commas.', 'বাংলা মাধ্যম স্কুলে colon আর semicolon কম শেখানো হয়, তাই এগুলো সাজসজ্জা বা comma হিসেবে ব্যবহার হয়।'),
     recognise: l('Before a colon, could the sentence end with a full stop? Before and after a semicolon, are there two full sentences?', 'Colon-এর আগে কি sentence full stop দিয়ে শেষ হতে পারত? Semicolon-এর আগে আর পরে কি দুটো পূর্ণ sentence?'),
     avoid: l('Use at most one colon and one semicolon per essay, and only when you are sure.', 'Essay-তে সর্বোচ্চ একটা colon আর একটা semicolon, আর শুধু নিশ্চিত হলে।'),
+  },
+  'ce-translation': {
+    rule: l(
+      'Learn the English phrase, not the Bangla words: I agree · it depends on · take / sit an exam · take medicine · turn on / off the light · my cousin · I am from Khulna.',
+      'বাংলা word না, English phrase-টা শিখুন: I agree · it depends on · take / sit an exam · take medicine · turn on / off the light · my cousin · I am from Khulna।',
+    ),
+    why: l('Bangla says আমি একমত, পরীক্ষা দেওয়া, ওষুধ খাওয়া, লাইট জ্বালানো, cousin ভাই — translated word by word they become "am agree", "give an exam", "eat medicine", "open the light", "cousin brother".', 'বাংলায় আমি একমত, পরীক্ষা দেওয়া, ওষুধ খাওয়া, লাইট জ্বালানো, cousin ভাই — word ধরে অনুবাদ করলে হয় "am agree", "give an exam", "eat medicine", "open the light", "cousin brother"।'),
+    recognise: l('Look for am / is before agree or depend, and for give / eat / open with exams, medicine and machines.', 'agree বা depend-এর আগে am / is, আর exam, ওষুধ, যন্ত্রের সাথে give / eat / open খুঁজুন।'),
+    avoid: l('When a sentence came to you in Bangla first, check the verb: is it the verb English uses with this noun?', 'Sentence আগে বাংলায় মাথায় এলে verb যাচাই করুন: এই noun-এর সাথে English কি এই verb-ই ব্যবহার করে?'),
+  },
+  'ce-uncountable': {
+    rule: l(
+      'Uncountable nouns have no -s, no a / an and a singular verb: information, advice, knowledge, research, evidence, feedback, equipment, furniture, luggage, homework, news, traffic, progress, accommodation. Use much / less / some / a lot of, or a piece of.',
+      'Uncountable noun-এ -s নেই, a / an নেই, singular verb: information, advice, knowledge, research, evidence, feedback, equipment, furniture, luggage, homework, news, traffic, progress, accommodation। much / less / some / a lot of, বা a piece of ব্যবহার করুন।',
+    ),
+    why: l('Bangla can add গুলো / সমূহ to any noun (তথ্যগুলো), so "informations" feels natural. English decides by the word, not the idea.', 'বাংলায় যেকোনো noun-এ গুলো / সমূহ বসে (তথ্যগুলো), তাই "informations" স্বাভাবিক লাগে। English-এ word ঠিক করে, idea না।'),
+    recognise: l('Check every noun from the list: is there an -s, an a / an, many or a plural verb?', 'তালিকার প্রতিটা noun যাচাই করুন: -s, a / an, many বা plural verb আছে কি?'),
+    avoid: l('Keep a list of the 15 uncountable nouns and learn them with much: much information, much research.', '১৫টা uncountable noun-এর তালিকা রাখুন আর much দিয়ে শিখুন: much information, much research।'),
+  },
+  'ce-plural-form': {
+    rule: l(
+      'Plural after numbers above one, many, several, a few, both, the number of and one of the …; singular after a / one / each / every / another. Describers stay singular: a two-week course. people and children are already plural.',
+      'এক-এর বেশি সংখ্যা, many, several, a few, both, the number of আর one of the …-এর পরে plural; a / one / each / every / another-এর পরে singular। বর্ণনা singular থাকে: a two-week course। people আর children নিজেই plural।',
+    ),
+    why: l('Bangla drops the plural after numbers and quantifiers (দুই বছর, অনেক ছাত্র) because the number already shows it. English still marks it.', 'বাংলায় সংখ্যা আর quantifier-এর পরে plural চিহ্ন বাদ যায় (দুই বছর, অনেক ছাত্র), কারণ সংখ্যাই বুঝিয়ে দেয়। English-এ তবু চিহ্ন লাগে।'),
+    recognise: l('Find every number and quantifier and look at the noun right after it.', 'প্রতিটা সংখ্যা আর quantifier খুঁজে ঠিক পরের noun দেখুন।'),
+    avoid: l('In Task 1, circle each number while proofreading and check the -s after it.', 'Task 1 proofread করার সময় প্রতিটা সংখ্যা চিহ্নিত করে পরের -s যাচাই করুন।'),
+  },
+  'ce-collocation-pair': {
+    rule: l(
+      'make a mistake / decision / progress / money · do homework / research / exercise / a job · take a break / a photo / action / part in · have an effect on · pay attention · heavy rain / traffic · high price / cost.',
+      'make a mistake / decision / progress / money · do homework / research / exercise / a job · take a break / a photo / action / part in · have an effect on · pay attention · heavy rain / traffic · high price / cost।',
+    ),
+    why: l('Bangla uses করা for make, do and take, and বেশি for heavy, high and strong, so one Bangla word has several English partners.', 'বাংলায় make, do আর take-এ "করা", আর heavy, high, strong-এ "বেশি" — তাই একটা বাংলা word-এর কয়েকটা English জোড়া।'),
+    recognise: l('Look at every make / do / take / have and every adjective before rain, traffic, price and cost.', 'প্রতিটা make / do / take / have আর rain, traffic, price, cost-এর আগের adjective দেখুন।'),
+    avoid: l('Learn new nouns with their verb: not "decision" but "make a decision".', 'নতুন noun verb-সহ শিখুন: শুধু "decision" না, "make a decision"।'),
+  },
+  'ce-confused-pair': {
+    rule: l(
+      'tell + person, say + words · lend TO, borrow FROM · teach someone, learn from someone · rise (no object), raise something · hear / listen to · lose a thing, miss a bus or class.',
+      'tell + মানুষ, say + কথা · lend TO, borrow FROM · teach someone, learn from someone · rise (object নেই), raise something · hear / listen to · জিনিস lose, bus বা class miss।',
+    ),
+    why: l('Bangla has one verb for each pair (বলা, ধার, শেখা, শোনা, হারানো) and shows the direction with other words; English puts the direction inside the verb.', 'বাংলায় প্রতিটা জোড়ার জন্য একটা verb (বলা, ধার, শেখা, শোনা, হারানো), আর দিক বোঝায় অন্য word দিয়ে; English-এ দিক verb-এর ভেতরেই।'),
+    recognise: l('Ask who gives and who receives, and whether the verb has an object.', 'জিজ্ঞেস করুন কে দেয়, কে নেয়, আর verb-এর object আছে কি না।'),
+    avoid: l('In Task 1, use rise / fall for trends; use raise / reduce only when someone changes something.', 'Task 1-এ trend-এর জন্য rise / fall; কেউ কিছু বদলালে তবেই raise / reduce।'),
+  },
+  'ce-redundant': {
+    rule: l(
+      'Say each idea once: return, repeat, reply (no back / again) · discuss, emphasise, mention, enter, reach (no about / on / into / to) · one comparative (better, not more better) · the reason is that · it / they / this instead of repeating a noun.',
+      'প্রতিটা idea একবার বলুন: return, repeat, reply (back / again না) · discuss, emphasise, mention, enter, reach (about / on / into / to না) · comparative একটা (better, more better না) · the reason is that · noun বারবার না বলে it / they / this।',
+    ),
+    why: l('Bangla doubles for emphasis (ফিরে আসা, আবার বলা), uses নিয়ে after আলোচনা and says বেশি ভালো, so the doubled English sounds complete.', 'বাংলায় জোর দিতে দ্বিগুণ বলা হয় (ফিরে আসা, আবার বলা), আলোচনা-র পরে নিয়ে বসে আর "বেশি ভালো" বলা হয়, তাই দ্বিগুণ English সম্পূর্ণ লাগে।'),
+    recognise: l('Read each verb: does the next word repeat its meaning? Read each comparative: is there more + -er?', 'প্রতিটা verb পড়ুন: পরের word কি একই অর্থ আবার বলে? প্রতিটা comparative পড়ুন: more + -er আছে কি?'),
+    avoid: l('If you can remove a word and the meaning stays the same, remove it.', 'একটা word বাদ দিলে অর্থ একই থাকলে বাদ দিন।'),
   },
 };
 

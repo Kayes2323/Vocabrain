@@ -8,6 +8,7 @@ import { COMPLEX_FINAL_PARTS } from './complex-final';
 import { CONNECTOR_FINAL_PARTS } from './connectors-final';
 import { PUNCTUATION_FINAL_PARTS } from './punctuation-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
+import { COMMON_ERRORS_FINAL_PARTS } from './common-errors-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -78,6 +79,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Punctuation Final Mastery Challenge', 'Punctuation Final Mastery Challenge'), name: l('Punctuation', 'Punctuation'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: PUNCTUATION_FINAL_PARTS,
     concepts: ['pn-capital', 'pn-end', 'pn-comma', 'pn-comma-error', 'pn-apostrophe', 'pn-colon'],
+  },
+  {
+    id: 'common-errors', moduleId: 'common-errors', mark: 'E★', minutes: 15, areas: 'concept',
+    title: l('Common Errors Final Mastery Challenge', 'Common Errors Final Mastery Challenge'), name: l('Common Errors', 'Common Errors'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: COMMON_ERRORS_FINAL_PARTS,
+    concepts: ['ce-translation', 'ce-countable', 'ce-plural', 'ce-collocation', 'ce-word-pair', 'ce-natural'],
   },
 ];
 

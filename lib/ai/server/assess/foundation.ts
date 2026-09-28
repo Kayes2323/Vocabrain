@@ -89,7 +89,16 @@ Punctuation feedback (target: ${concept.title.en}):
 - Treat straight and curly apostrophes and quotes as the same.
 - The follow-up gap practises the same punctuation decision in a NEW sentence; the answer is one word or a punctuation mark.
 `
-                  : '';
+                  : concept?.tag === 'common-error'
+                    ? `
+Common-error feedback (target: ${concept.title.en}):
+- Look only for the common errors of Bangla speakers and name the TYPE of each: TRANSLATION (word-for-word phrases: "am / is agree", "is depend", "give an exam" → take / sit, "eat medicine" → take, "open / close the light / fan" → turn on / off, "cousin brother / sister" → cousin, "good name", "I am coming from" for origin); UNCOUNTABLE (information, advice, knowledge, research, evidence, feedback, equipment, furniture, luggage, homework, news, traffic, progress, accommodation — no -s, no a / an, singular verb, much / less not many / fewer); PLURAL (plural after numbers, many, several, both, the number of, one of the …; singular after every / each / a / another; people, children; describers stay singular: a two-week course); COLLOCATION (make a mistake / decision / progress, do homework / research / exercise, take a break / action / part in, have an effect on, pay attention, heavy rain / traffic, high price / cost); WORD PAIR (say / tell, lend / borrow, learn / teach, rise / raise, hear / listen, lose / miss); REPETITION (return back, repeat again, reply back, discuss about, emphasise on, enter into, reach to, more better, the reason is because, free of cost, a noun and a pronoun for the same subject).
+- Accept both British and American spellings and both "make a decision" and "take a decision".
+- Mention the Bangla word behind the error briefly when it helps (একমত, দেওয়া, খাওয়া, করা, বলা, ধার, শেখা, গুলো).
+- Keep each error apart from the others — give each its own fix; do not rewrite correct sentences for style.
+- The follow-up gap practises the same error type in a NEW sentence; the answer is one word or a short phrase.
+`
+                    : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

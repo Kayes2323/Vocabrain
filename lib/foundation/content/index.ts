@@ -22,6 +22,8 @@ import { COMPLEX_CONCEPTS, cxClauses, cxNounClauses, cxReasonPurpose, cxRelative
 import { cxInIelts, cxMistakes, cxReview } from './complex-apply';
 import { PUNCTUATION_CONCEPTS, pnApostrophes, pnCapitals, pnColonsParagraphs, pnCommaErrors, pnCommas, pnEndMarks } from './punctuation';
 import { pnMistakes, pnProofread, pnReview } from './punctuation-apply';
+import { ceCollocation, ceCountable, ceNatural, cePlural, ceTranslation, ceWordPairs, COMMON_ERROR_CONCEPTS } from './common-errors';
+import { ceHabits, ceInIelts, ceReview } from './common-errors-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -170,11 +172,10 @@ export const MODULES: Module[] = [
     number: 10,
     title: t('Common Errors to Fix', 'যে ভুলগুলো ঠিক করতে হবে'),
     description: t('Errors that come from translating directly from Bangla, fixed with practice.', 'বাংলা থেকে সরাসরি অনুবাদ করতে গিয়ে যে ভুল হয়, practice দিয়ে সেগুলো ঠিক করা।'),
-    ieltsLink: t('Personalised from your own practice data where available.', 'যেখানে সম্ভব, আপনার নিজের practice data থেকে personalised।'),
+    ieltsLink: t('Lexical Resource and Grammatical Accuracy: the errors examiners notice first.', 'Lexical Resource আর Grammatical Accuracy: যে ভুল examiner সবার আগে লক্ষ করেন।'),
     skill: 'grammar',
-    tags: ['collocation', 'plural', 'article', 'preposition'],
-    lessons: [],
-    planned: [t('Direct translation', 'সরাসরি অনুবাদ'), t('Singular/plural and countable nouns', 'Singular/plural আর countable noun'), t('Collocations', 'Collocations'), t('Repetition and natural phrasing', 'Repetition আর স্বাভাবিক phrasing')],
+    tags: ['common-error', 'collocation', 'plural', 'countable'],
+    lessons: [ceTranslation, ceCountable, cePlural, ceCollocation, ceWordPairs, ceNatural, ceHabits, ceInIelts, ceReview],
   },
   {
     id: 'vocabulary-foundation',
@@ -187,7 +188,7 @@ export const MODULES: Module[] = [
     tags: ['vocabulary', 'collocation'],
     lessons: [],
     href: '/ielts/vocabulary/foundation',
-    planned: [t('How to learn a word for IELTS', 'IELTS-এর জন্য কীভাবে একটা শব্দ শিখবে'), t('Synonyms and paraphrasing', 'Synonym আর paraphrasing'), t('Collocations', 'Collocations'), t('Using new words in Writing and Speaking', 'Writing আর Speaking-এ নতুন শব্দ ব্যবহার')],
+    planned: [t('How to learn a word for IELTS', 'IELTS-এর জন্য কীভাবে একটা শব্দ শিখবেন'), t('Synonyms and paraphrasing', 'Synonym আর paraphrasing'), t('Collocations', 'Collocations'), t('Using new words in Writing and Speaking', 'Writing আর Speaking-এ নতুন শব্দ ব্যবহার')],
   },
 
   // ---------------------------------------------------------------- Level 2
@@ -197,7 +198,7 @@ export const MODULES: Module[] = [
     number: 1,
     title: t('What is IELTS?', 'IELTS কী?'),
     description: t('Academic vs General Training, the four skills, timing, Band Scores.', 'Academic আর General Training, চার skill, সময়, Band Score।'),
-    ieltsLink: t('Know the test before you train for it.', 'Training-এর আগে test-টা চেনেন।'),
+    ieltsLink: t('Know the test before you train for it.', 'Training-এর আগে test-টা চিনে নিন।'),
     skill: 'reading',
     tags: [],
     lessons: [],
@@ -258,7 +259,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 
