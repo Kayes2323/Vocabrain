@@ -44,6 +44,7 @@ import { degreeAnswers, DOC_GROUPS, documentsFor as guideDocumentsFor, GUIDE_DEG
 import { DE_GUIDE } from '../lib/content/de-guide';
 import { KR_GUIDE } from '../lib/content/kr-guide';
 import { JP_GUIDE } from '../lib/content/jp-guide';
+import { IT_GUIDE } from '../lib/content/it-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1542,11 +1543,12 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT']);
+  assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('kr')?.code, 'KR');
   assert.equal(getCountryGuide('de')?.code, 'DE');
   assert.equal(getCountryGuide('jp')?.code, 'JP');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1811,6 +1813,84 @@ test('Japan: registries, scholarships per degree, no ranking or "fully funded"',
   assert.equal(SCHOLARSHIPS.find((s) => s.id === 'jp-mext-undergraduate')!.eligibility.status, 'needs-review', 'the 2020 Embassy page is flagged');
   const m = guideForMino(JP_GUIDE, 'bachelors');
   assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+});
+
+// ---------------------------------------------------------------- Italy guide
+const itPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(IT_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(IT_GUIDE.degrees[l].intro);
+test('Italy: its own research from Italian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(IT_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /Korea|TOPIK|GKS|KRW|Sperrkonto|blocked account|Studienkolleg|uni-assist|DAAD|MEXT|JASSO|EJU|JPY|Certificate of Eligibility/i);
+  assert.doesNotMatch(JSON.stringify(KR_GUIDE) + JSON.stringify(DE_GUIDE) + JSON.stringify(JP_GUIDE), /Universitaly|TOLC|CIMEA|MAECI|DSU|Italy/);
+  const hosts = new Set(guideSources([...IT_GUIDE.overview, ...IT_GUIDE.faqs, ...(IT_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(IT_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /esteri\.it|vfsglobal\.com|universitaly|mur\.gov\.it|cisiaonline\.it|integrazionemigranti\.gov\.it|er-go\.it|polimi\.it|unibo\.it|unipi\.it|unipv\.eu/, `${h} is an official Italian source`);
+  assert.ok(hosts.has('ambdhaka.esteri.it'), 'the Embassy of Italy in Dhaka is used');
+});
+
+test('Italy: key facts read from the official sources, disagreements shown', () => {
+  const faq = (id: string) => IT_GUIDE.faqs.find((f) => f.id === id)!;
+  for (const id of ['hsc', 'ielts', 'tolc', 'cost', 'funds', 'dsu', 'scholarships', 'visa', 'documents', 'work', 'after', 'italian', 'bachelors', 'masters', 'phd', 'universities', 'bangladesh'])
+    assert.ok(IT_GUIDE.faqs.some((f) => f.id === id), `faq ${id}`);
+  assert.match(faq('hsc').a[0].en, /at least 12 years/);
+  assert.match(faq('funds').a[0].en, /10,179\.85/);
+  assert.match(faq('work').a[0].en, /20 hours a week.*1,040 hours/);
+  assert.match(faq('tolc').a[0].en, /EUR 35/);
+  assert.match(faq('bangladesh').a[0].en, /30 November 2026/);
+  const ug = degreeAnswers(IT_GUIDE.degrees.bachelors);
+  const funds = ug.find((a) => a.id === 'funds')!;
+  assert.ok(funds.discrepancy && /6 months/.test(funds.discrepancy.en) && /12 months/.test(funds.discrepancy.en), 'the 6- vs 12-month bank statement rule is shown with both sources');
+  assert.equal(ug.find((a) => a.id === 'visa-time')!.status, 'not-verified', 'visa time and fee are not invented');
+  assert.equal(ug.find((a) => a.id === 'gpa')!.status, 'not-verified');
+  assert.equal(ug.find((a) => a.id === 'living')!.status, 'not-verified', 'no invented living cost');
+  for (const id of ['who', 'hsc-direct', 'hsc-enough', 'twelve', 'exam', 'tolc', 'subjects', 'ielts', 'english', 'italian', 'gpa', 'tuition', 'living', 'process', 'universitaly', 'visa', 'funds', 'scholarships', 'dsu', 'work', 'after'])
+    assert.ok(ug.some((a) => a.id === id), `bachelors: ${id}`);
+  const pg = degreeAnswers(IT_GUIDE.degrees.phd);
+  assert.match(pg.find((a) => a.id === 'stipend')!.a[0].en, /16,243/);
+  assert.equal(pg.find((a) => a.id === 'duration')!.status, 'not-verified');
+});
+
+test('Italy: degree isolation, documents once, costs in EUR and never converted', () => {
+  assert.match(itPage('bachelors'), /TOLC-I/);
+  assert.doesNotMatch(itPage('masters') + itPage('phd'), /TOLC-I|TOLC@HOME|12 years of schooling/);
+  assert.doesNotMatch(itPage('bachelors'), /research proposal|dottorato|16,243/i);
+  assert.doesNotMatch(itPage('masters'), /16,243|PhD call/);
+  assert.doesNotMatch(itPage('bachelors'), /EUR 1,200 a month for master/);
+  assert.deepEqual(guideDocumentsFor(IT_GUIDE, 'bachelors').some((d) => d.id === 'tolc'), true);
+  assert.deepEqual(guideDocumentsFor(IT_GUIDE, 'masters').some((d) => d.id === 'tolc'), false);
+  assert.deepEqual(guideDocumentsFor(IT_GUIDE, 'bachelors').some((d) => d.id === 'program-extras'), false);
+  assert.deepEqual(guideDocumentsFor(IT_GUIDE, 'phd').some((d) => d.id === 'program-extras'), true);
+  const docs = IT_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  assert.equal(new Set(docs.map((d) => d.name.en)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  for (const id of ['cimea-dov', 'finance', 'family-income']) assert.ok(docs.find((d) => d.id === id)!.groups.includes('bangladesh'), `${id} is a Bangladesh document`);
+  for (const l of GUIDE_DEGREES) {
+    const c = IT_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in euro`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|USD/, `${l}/${x.id} not converted`);
+      assert.ok(/[ঀ-৿]/.test(x.value.bn) && /[ঀ-৿]/.test(x.label.bn), `${l}/${x.id}: bilingual`);
+    }
+    assert.equal(c.official.find((x) => x.id === 'funds-min')!.amount!.value, 10179.85);
+    assert.ok(c.estimates.every((x) => x.status === 'not-verified'), `${l}: unverified costs say so`);
+  }
+  assert.ok(IT_GUIDE.degrees.bachelors.costs.official.some((x) => x.id === 'tolc-fee'));
+  assert.ok(!IT_GUIDE.degrees.masters.costs.official.some((x) => x.id === 'tolc-fee'), 'the TOLC fee stays on the bachelor’s page');
+});
+
+test('Italy: registries, scholarships per degree, Mino knowledge', () => {
+  const it = UNIVERSITIES.filter((u) => u.countryCode === 'IT');
+  assert.deepEqual(it.map((u) => u.name).sort(), ['Politecnico di Milano', 'Sapienza University of Rome', 'University of Bologna', 'University of Padua', 'University of Pisa']);
+  assert.ok(it.every((u) => /^https:\/\//.test(u.officialUrl) && u.officialSource?.sourceType === 'official-university'));
+  const sch = (l: string) => SCHOLARSHIPS.filter((s) => s.countryCode === 'IT' && s.degreeLevels.includes(l as never)).map((s) => s.id).sort();
+  assert.deepEqual(sch('bachelors'), ['it-dsu-regional']);
+  assert.deepEqual(sch('masters'), ['it-dsu-regional', 'it-maeci']);
+  assert.deepEqual(sch('phd'), ['it-maeci']);
+  assert.ok(SCHOLARSHIPS.filter((s) => s.countryCode === 'IT').every((s) => !s.funding && !/fully[- ]funded/i.test(JSON.stringify(s))));
+  const m = guideForMino(IT_GUIDE, 'masters');
+  assert.ok([...m.mostAsked, ...m.degrees.masters.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.ok(!('bachelors' in m.degrees), 'Mino gets only the asked degree');
+  assert.equal(IT_GUIDE.factors!.find((f) => f.id === 'living-cost')!.status, 'not-verified');
+  assert.equal(IT_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 20);
 });
 
 console.log(`\n${passed} passed`);
