@@ -28,6 +28,8 @@ import { VOCABULARY_CONCEPTS, vcContext, vcKnowWord, vcParaphrase, vcPrecise, vc
 import { vcHabits, vcInIelts, vcReview } from './vocabulary-apply';
 import { IELTS_INTRO_CONCEPTS, ibBands, ibDelivery, ibFormat, ibMarking, ibPlan, ibVersions } from './ielts-intro';
 import { ibMyths, ibReview, ibYourPlan } from './ielts-intro-apply';
+import { LISTENING_CONCEPTS, lsFormat, lsPart1, lsPart2, lsPart3, lsPart4, lsRules } from './listening';
+import { lsReview, lsStrategy, lsTraps } from './listening-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -217,11 +219,10 @@ export const MODULES: Module[] = [
     title: t('Understanding IELTS Listening', 'IELTS Listening বুঝি'),
     short: t('Listening', 'Listening'),
     description: t('Parts 1–4, question types, answer rules and traps.', 'Part 1–4, question type, answer-এর নিয়ম আর trap।'),
-    ieltsLink: t('Mino finds which Part is weakest for you from your tests.', 'আপনার test থেকে Mino খুঁজে বের করে কোন Part আপনার জন্য সবচেয়ে দুর্বল।'),
+    ieltsLink: t('Know each Part, its question types and its traps before you take practice tests.', 'Practice test দেওয়ার আগে প্রতিটা Part, তার প্রশ্নের ধরন আর ফাঁদ চিনে নিন।'),
     skill: 'listening',
     tags: ['listening'],
-    lessons: [],
-    planned: [t('How Listening works', 'Listening কীভাবে চলে'), t('Part 1', 'Part 1'), t('Part 2', 'Part 2'), t('Part 3', 'Part 3'), t('Part 4', 'Part 4'), t('Question types', 'Question types')],
+    lessons: [lsFormat, lsPart1, lsPart2, lsPart3, lsPart4, lsRules, lsTraps, lsStrategy, lsReview],
   },
   {
     id: 'reading-foundation',
@@ -265,7 +266,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

@@ -240,6 +240,27 @@ http
             practice: { sentence: 'In computer Listening you get ___ minutes to check your answers.', answers: ['2', 'two'] },
           }) }]);
         }
+        const listeningRules = /IELTS Listening feedback \(target: /.test(system);
+        if (listeningRules && /\btwice\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(/\btwice\b/, 'once'),
+            feedback: bn ? 'ভালো চেষ্টা! Test-এ প্রতিটা recording একবারই বাজে।' : 'Good try! In the test each recording is heard once.',
+            fixes: [{ quote: 'play each recording twice', fix: 'play each recording once', why: bn ? 'Each recording is heard once — pause ছাড়া practice করুন।' : 'Each recording is heard once, so practise without replays.' }],
+            practice: { sentence: 'In IELTS Listening, each recording is heard ___.', answers: ['once'] },
+          }) }]);
+        }
+        if (listeningRules && /Exactly, a survey is too slow/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace('Exactly, a survey is too slow', 'I’m not so sure, a survey is too slow'),
+            feedback: bn ? 'ভালো চেষ্টা! "Exactly" একমত বোঝায়।' : 'Good try! "Exactly" shows agreement.',
+            fixes: [{ quote: 'Exactly, a survey is too slow', fix: 'I’m not so sure — a survey is too slow', why: bn ? 'দ্বিমতের জন্য "I’m not so sure" বলুন।' : 'To reject the idea, use "I’m not so sure".' }],
+            practice: { sentence: 'To show agreement, a speaker might say "___."', answers: ['Exactly', 'True'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',

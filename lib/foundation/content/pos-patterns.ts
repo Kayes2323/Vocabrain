@@ -75,6 +75,13 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'ib-band-calc': { title: l('Band Scores and the overall', 'Band Score আর overall'), modules: ['ielts-intro'] },
   'ib-marking-fact': { title: l('How each skill is marked', 'প্রতিটা skill কীভাবে নম্বর পায়'), modules: ['ielts-intro'] },
   'ib-requirement': { title: l('Reading requirements and planning', 'Requirement পড়া আর plan'), modules: ['ielts-intro'] },
+  'ls-format-fact': { title: l('How Listening works (parts, heard once, order)', 'Listening কীভাবে চলে (part, একবার শোনা, ক্রম)'), modules: ['listening-foundation'] },
+  'ls-spelling-number': { title: l('Spelled names and numbers', 'বানান করা নাম আর সংখ্যা'), modules: ['listening-foundation'] },
+  'ls-distractor': { title: l('Corrections and distractors', 'শোধরানো আর distractor'), modules: ['listening-foundation'] },
+  'ls-map-language': { title: l('Map and direction language', 'Map আর দিকের ভাষা'), modules: ['listening-foundation'] },
+  'ls-opinion': { title: l('Opinions and decisions in discussions', 'আলোচনায় মতামত আর সিদ্ধান্ত'), modules: ['listening-foundation'] },
+  'ls-signpost': { title: l('Lecture signposts and word types', 'Lecture-এর দিকনির্দেশক আর word-এর ধরন'), modules: ['listening-foundation'] },
+  'ls-answer-rules': { title: l('Word limits, plurals and spelling', 'Word-এর সীমা, plural আর বানান'), modules: ['listening-foundation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -617,6 +624,48 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Old posts and friends’ requirements replace the organisation’s current official page.', 'পুরোনো post আর বন্ধুর requirement প্রতিষ্ঠানের বর্তমান official page-এর জায়গা নিয়ে নেয়।'),
     recognise: l('Read the requirement line by line: version, overall, minimums, how recent.', 'Requirement লাইন ধরে পড়ুন: version, overall, সর্বনিম্ন, কত পুরোনো।'),
     avoid: l('Check the official page before booking, and aim slightly above every minimum.', 'Book-এর আগে official page দেখুন, আর প্রতিটা সর্বনিম্নের একটু ওপরে লক্ষ্য রাখুন।'),
+  },
+  'ls-format-fact': {
+    rule: l('4 parts, 40 questions, about 30 minutes. Parts 1–2 everyday, Parts 3–4 academic. Each recording is heard once, and answers follow the order of the recording within a question group.', '৪ part, ৪০ প্রশ্ন, প্রায় ৩০ মিনিট। Part 1–2 দৈনন্দিন, Part 3–4 academic। প্রতিটা recording একবার শোনা যায়, আর একটা প্রশ্ন-দলে উত্তর recording-এর ক্রমে আসে।'),
+    why: l('Practising with pauses and replays hides how the real test works.', 'Pause আর বারবার শুনে practice আসল test কীভাবে চলে তা লুকিয়ে রাখে।'),
+    recognise: l('Before each part, check which part it is and what kind of speakers to expect.', 'প্রতিটা part-এর আগে দেখুন কোন part আর কেমন speaker আসবেন।'),
+    avoid: l('Practise every recording once, without pausing, and move on after a miss.', 'প্রতিটা recording একবার শুনে practice করুন, pause ছাড়া, আর মিস হলে এগিয়ে যান।'),
+  },
+  'ls-spelling-number': {
+    rule: l('Write names exactly as spelled, with a capital. "double 3" = 33; "oh" can be 0; fifTEEN (stress at the end) vs FIFty (stress at the start).', 'নাম বানান অনুযায়ী হুবহু লিখুন, capital-সহ। "double 3" = 33; "oh" মানে 0 হতে পারে; fifTEEN (শেষে জোর) বনাম FIFty (শুরুতে জোর)।'),
+    why: l('Familiar spellings replace the spelled letters, and -teen / -ty sound alike when spoken quickly.', 'পরিচিত বানান বানান-করা অক্ষরের জায়গা নেয়, আর দ্রুত বললে -teen / -ty একই রকম শোনায়।'),
+    recognise: l('Write letters as you hear them, then read them back once.', 'যেমন শোনেন তেমন অক্ষর লিখুন, তারপর একবার মিলিয়ে নিন।'),
+    avoid: l('Practise letters and numbers aloud: A / E / I, G / J, V / W, 13 / 30.', 'অক্ষর আর সংখ্যা জোরে practice করুন: A / E / I, G / J, V / W, 13 / 30।'),
+  },
+  'ls-distractor': {
+    rule: l('The final answer counts. Listen for "sorry", "actually", "no", "but" and "in fact": the answer that follows replaces the first one.', 'শেষ উত্তর গোনা হয়। "sorry", "actually", "no", "but", "in fact" শুনুন: এর পরের উত্তর প্রথমটার জায়গা নেয়।'),
+    why: l('The first number or place mentioned is written down before the correction arrives.', 'শোধরানো আসার আগেই প্রথম শোনা সংখ্যা বা জায়গা লিখে ফেলা হয়।'),
+    recognise: l('After writing an answer, keep listening for a moment before moving to the next question.', 'উত্তর লেখার পরে পরের প্রশ্নে যাওয়ার আগে এক মুহূর্ত শুনতে থাকুন।'),
+    avoid: l('Write lightly first, and change it if a correction follows.', 'প্রথমে হালকা করে লিখুন, শোধরানো এলে বদলান।'),
+  },
+  'ls-map-language': {
+    rule: l('Find the starting point first. opposite = facing across · next to / beside = at the side · between X and Y · behind · at the end of · go past = pass it first.', 'আগে শুরুর জায়গা খুঁজুন। opposite = সামনাসামনি · next to / beside = পাশে · between X and Y · behind · at the end of · go past = আগে পার হওয়া।'),
+    why: l('Position words are confused (opposite / next to), and the listener’s left is mixed with the speaker’s left.', 'অবস্থানের word গুলিয়ে যায় (opposite / next to), আর শ্রোতার বাঁ আর speaker-এর বাঁ মিশে যায়।'),
+    recognise: l('Put your finger on the start and move it with every instruction.', 'শুরুর জায়গায় আঙুল রাখুন আর প্রতিটা নির্দেশে সরান।'),
+    avoid: l('Practise describing routes in your own building with these phrases.', 'এই phrase দিয়ে নিজের বাড়ি বা প্রতিষ্ঠানের পথ বর্ণনা practice করুন।'),
+  },
+  'ls-opinion': {
+    rule: l('Answers depend on what speakers finally agree or decide. Agreement: "Exactly", "True", "Fair enough". Disagreement: "I’m not so sure", "Maybe, but…". Options are paraphrased.', 'উত্তর নির্ভর করে speaker-রা শেষে কীসে একমত বা কী সিদ্ধান্ত নেন তার ওপর। একমত: "Exactly", "True", "Fair enough"। দ্বিমত: "I’m not so sure", "Maybe, but…"। Option paraphrase করা।'),
+    why: l('An option is chosen as soon as its words are heard, before the other speaker rejects it.', 'অন্য speaker বাতিল করার আগেই option-এর word শোনামাত্র বেছে ফেলা হয়।'),
+    recognise: l('Underline who the question asks about, then wait for the reply to each suggestion.', 'প্রশ্ন কাকে নিয়ে দাগ দিন, তারপর প্রতিটা প্রস্তাবের উত্তরের অপেক্ষা করুন।'),
+    avoid: l('Listen for meaning, not matching words; matching words are often the trap.', 'মিল-word না, অর্থ শুনুন; মিল-word প্রায়ই ফাঁদ।'),
+  },
+  'ls-signpost': {
+    rule: l('Signposts show where you are: firstly · turning to · another · finally · to sum up. "For instance" introduces an example, not a main point. Predict the word type from the grammar around the gap.', 'দিকনির্দেশক দেখায় কোথায় আছেন: firstly · turning to · another · finally · to sum up। "For instance" উদাহরণ শুরু করে, মূল point না। ফাঁকের আশেপাশের grammar থেকে word-এর ধরন আন্দাজ করুন।'),
+    why: l('Without signposts, listeners lose their place in a long lecture and write examples instead of main points.', 'দিকনির্দেশক ছাড়া লম্বা lecture-এ শ্রোতা জায়গা হারান আর মূল point-এর বদলে উদাহরণ লেখেন।'),
+    recognise: l('Circle each heading in the notes and match it to a signpost.', 'Note-এর প্রতিটা heading চিহ্নিত করুন আর দিকনির্দেশকের সাথে মেলান।'),
+    avoid: l('If you miss a gap, jump to the next heading when you hear its signpost.', 'একটা ফাঁক মিস হলে পরের heading-এর দিকনির্দেশক শুনে সেখানে চলে যান।'),
+  },
+  'ls-answer-rules': {
+    rule: l('Obey the word limit exactly: every word counts (a, the, of); hyphenated words count as one; a number is allowed only with "and/or a number". Answers must fit the grammar (plural after many / several) and be spelled correctly.', 'Word-এর সীমা হুবহু মানুন: প্রতিটা word গোনা হয় (a, the, of); hyphen-যুক্ত word একটা; "and/or a number" থাকলে তবেই সংখ্যা। উত্তর grammar-এ মানাতে হবে (many / several-এর পরে plural) আর বানান ঠিক হতে হবে।'),
+    why: l('A correct idea is written with an extra article, without a plural -s, or misspelled.', 'ঠিক idea বাড়তি article-সহ, plural -s ছাড়া, বা ভুল বানানে লেখা হয়।'),
+    recognise: l('Count the words and read the answer inside the note’s sentence.', 'Word গুনুন আর note-এর sentence-এর ভেতরে উত্তরটা পড়ে দেখুন।'),
+    avoid: l('Keep a list of words you often misspell (accommodation, environment, government).', 'প্রায়ই ভুল বানান হয় এমন word-এর তালিকা রাখুন (accommodation, environment, government)।'),
   },
 };
 

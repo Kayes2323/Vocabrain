@@ -11,6 +11,7 @@ import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 import { COMMON_ERRORS_FINAL_PARTS } from './common-errors-final';
 import { VOCABULARY_FINAL_PARTS } from './vocabulary-final';
 import { IELTS_INTRO_FINAL_PARTS } from './ielts-intro-final';
+import { LISTENING_FINAL_PARTS } from './listening-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -99,6 +100,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('What is IELTS? Final Mastery Challenge', 'IELTS কী? Final Mastery Challenge'), name: l('What is IELTS?', 'IELTS কী?'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: IELTS_INTRO_FINAL_PARTS,
     concepts: ['ib-versions', 'ib-format', 'ib-delivery', 'ib-bands', 'ib-marking', 'ib-plan'],
+  },
+  {
+    id: 'listening-foundation', moduleId: 'listening-foundation', mark: 'L★', minutes: 15, areas: 'concept',
+    title: l('Listening Final Mastery Challenge', 'Listening Final Mastery Challenge'), name: l('Listening', 'Listening'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: LISTENING_FINAL_PARTS,
+    concepts: ['ls-format', 'ls-part1', 'ls-part2', 'ls-part3', 'ls-part4', 'ls-rules'],
   },
 ];
 

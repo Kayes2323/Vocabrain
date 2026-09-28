@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 71);
+  assert.equal(CONCEPTS.length, 77);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const listeningBasics = MODULES.find((m) => m.id === 'listening-foundation')!;
+  const readingBasics = MODULES.find((m) => m.id === 'reading-foundation')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(listeningBasics, fp), undefined);
+  assert.equal(stepBeforeModule(readingBasics, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 11);
+  assert.equal(CHALLENGES.length, 12);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -1092,6 +1092,60 @@ test('What is IELTS? Final Mastery Challenge: 6 parts × 4 items at levels 1–3
   assert.equal(stage.soon, undefined, 'IELTS Basics is no longer "Soon"');
 });
 
+// ---------------------------------------------------------------- listening (level 2)
+test('Listening: 8 taught v2 lessons + a review test, transcript-based, facts only', () => {
+  const ids = ['ls-1', 'ls-2', 'ls-3', 'ls-4', 'ls-5', 'ls-6', 'ls-7', 'ls-8', 'ls-9'];
+  const { mod, taught } = checkV2Module('listening-foundation', ids, 'listening', 'ls-', ids);
+  assert.equal(mod.level, 2);
+  assert.equal(mod.number, 2);
+  for (const x of taught.filter((t) => t.id !== 'ls-7' && t.id !== 'ls-8')) {
+    const c = x.steps.find((st) => st.kind === 'concept');
+    assert.ok(c && c.kind === 'concept' && c.points?.some((pt) => /Common mix-up/.test(pt.en)), `${x.id} names the common mix-up`);
+  }
+  assert.equal(grade2(ex('ls-2-r1'), '14'), true);
+  assert.equal(grade2(ex('ls-2-r1'), '12'), false);
+  assert.equal(grade2(ex('ls-2-r4'), '772'), true);
+  assert.equal(grade2(ex('ls-6-r4'), 'city museum'), true);
+  assert.equal(grade2(ex('ls-6-r4'), 'the city museum'), false);
+  const sp = ex('ls-2-c2') as Extract<Exercise, { type: 'spot' }>;
+  assert.equal(grade2(sp, `${sp.wrong}:£13`), true);
+  assert.equal(grade2(sp, `${sp.wrong}:£3`), false);
+});
+
+test('Listening: concepts are mastery-capable and reviewable; every pattern has a fix of 5 questions', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'listening').map((c) => c.id);
+  assert.deepEqual(ids, ['ls-format', 'ls-part1', 'ls-part2', 'ls-part3', 'ls-part4', 'ls-rules']);
+  const exs = MODULES.find((m) => m.id === 'listening-foundation')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked answer`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'ls-2-p1', '6 o’clock', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'ls-2-p4', 'Tuesday', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'ls-7-p1', '£12', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'listening-foundation', NOW).find((x) => x.pair === 'ls-distractor')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Listening pattern: Corrections and distractors ×3.*fix\/ls-distractor/);
+  for (const k of ['ls-format-fact', 'ls-spelling-number', 'ls-distractor', 'ls-map-language', 'ls-opinion', 'ls-signpost', 'ls-answer-rules']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'listening' && exercisePattern(q) === k));
+  }
+});
+
+test('Listening Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals', () => {
+  const ch = getChallenge('listening-foundation')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 72, level: 2, parts: {} }, NOW, 'listening-foundation');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Listening Final Mastery Challenge: last 72%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -1219,6 +1273,14 @@ asyncTests.push(['Mino IELTS-facts feedback: facts first, no fees or dates, esti
   assert.match(seen!.system!, /Judge the IELTS facts in the answer/);
   assert.doesNotMatch(seen!.system!, /Judge ONLY grammar and the target structure/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['General Training for my master’s']);
+}]);
+asyncTests.push(['Mino Listening feedback: strategy and facts first, what a listener should write', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'minor', usesTarget: true, corrected: 'I will play each recording once.', feedback: 'ভালো!', fixes: [{ quote: 'twice', fix: 'once', why: 'The test plays each recording once.' }], practice: { sentence: 'Each recording is heard ___.', answers: ['once'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  await assessFoundationSentence(fake, ex('ls-1-y1') as Extract<Exercise, { type: 'write' }>, 'I will play each recording twice.', 'bn');
+  assert.match(seen!.system!, /IELTS Listening feedback \(target: How IELTS Listening works\)/);
+  assert.match(seen!.system!, /each recording is heard once/);
+  assert.match(seen!.system!, /Judge the IELTS facts in the answer/);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

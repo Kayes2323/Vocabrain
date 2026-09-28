@@ -118,13 +118,22 @@ IELTS facts feedback (target: ${concept.title.en}):
 - verdict: "correct" when the facts are right (small grammar slips are fine), "minor" for a small factual slip, "needs-work" for a wrong key fact. usesTarget: did they address the target topic?
 - The follow-up gap checks the same fact in a NEW sentence; the answer is one word or a number.
 `
-                        : '';
+                        : concept?.tag === 'listening'
+                          ? `
+IELTS Listening feedback (target: ${concept.title.en}):
+- This is an IELTS Listening skills task. Judge the Listening facts and strategy first, using ONLY the facts given in the task; then correct grammar only where it blocks the meaning.
+- Facts you may rely on: 4 parts, 40 questions, about 30 minutes; Parts 1–2 everyday, Parts 3–4 academic; each recording is heard once; answers follow the order of the recording within a question group; spelling, plurals and word limits count (articles count as words, hyphenated words count as one); corrections and rejected ideas are distractors; "Choose TWO" gives one mark per correct letter in any order.
+- If the student wrote a script or directions, check that it models the target feature clearly (a spelled name, a correction, direction language, agreement, signposts) and say what a listener should write.
+- Never state fees, dates or result times.
+- The follow-up gap checks the same point in a NEW sentence; the answer is one word or a number.
+`
+                          : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
-${concept?.tag === 'ielts-basics' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
+${concept?.tag === 'ielts-basics' || concept?.tag === 'listening' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
 ${focusRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).

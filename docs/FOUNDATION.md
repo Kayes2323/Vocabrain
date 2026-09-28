@@ -66,12 +66,13 @@ Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
 Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
 Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
 Vocabulary also links to the daily word missions).
-LEVEL 2 — IELTS Basics: What is IELTS? (9 lessons + a Final Mastery Challenge);
-Listening/Reading/Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+LEVEL 2 — IELTS Basics: What is IELTS? and Understanding IELTS Listening (9
+lessons + a Final Mastery Challenge each); Reading/Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
 `docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md`,
-`docs/VOCABULARY_CURRICULUM.md` and `docs/IELTS_INTRO_CURRICULUM.md`.
+`docs/VOCABULARY_CURRICULUM.md`, `docs/IELTS_INTRO_CURRICULUM.md` and
+`docs/LISTENING_CURRICULUM.md`.
 
 ## Tests
 
@@ -375,6 +376,19 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   where it blocks meaning), never states fees or dates, and treats scores as estimates.
 - **E2E.** `scripts/e2e/ielts-intro.e2e.ts`. The shared spec escapes regex characters in
   module names ("What is IELTS?").
+
+## Phase K: LEVEL 2 — Understanding IELTS Listening
+
+- **Module** `listening-foundation` (`listening.ts` ls-1…ls-6, `listening-apply.ts`
+  ls-7…ls-9), tag `listening`, concepts `ls-format`, `ls-part1`…`ls-part4`, `ls-rules`.
+  Transcript-based practice (no audio needed). See `docs/LISTENING_CURRICULUM.md`.
+- **Patterns.** `ls-format-fact`, `ls-spelling-number`, `ls-distractor`,
+  `ls-map-language`, `ls-opinion`, `ls-signpost`, `ls-answer-rules` (+ fix guides).
+  **Challenge** `listening-foundation`.
+- **Mino.** Listening tasks are judged facts and strategy first (like `ielts-basics`), and
+  scripts the student writes are checked for the target feature and what a listener
+  should write.
+- **E2E.** `scripts/e2e/listening.e2e.ts`.
 
 ## Known issue: `pnpm lint`
 
