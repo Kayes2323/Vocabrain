@@ -14,6 +14,9 @@ import type { Bilingual, SourceRef } from '@/lib/models';
 
 export type GuideStatus = 'verified' | 'partly-verified' | 'needs-review' | 'not-verified';
 
+/** What an answer is: an official fact, a planning estimate, or general guidance (never shown as a fact). */
+export type GuideKind = 'fact' | 'estimate' | 'guidance';
+
 export interface GuideAnswer {
   id: string;
   q: Bilingual;
@@ -23,6 +26,14 @@ export interface GuideAnswer {
   list?: Bilingual[];
   /** Omitted = verified. */
   status?: GuideStatus;
+  /** Omitted = fact. */
+  kind?: GuideKind;
+  /** high = the authority itself (embassy, ministry); medium = an official summary (e.g. DAAD). */
+  confidence?: 'high' | 'medium';
+  /** Two official sources disagree: both are cited and neither is chosen. */
+  discrepancy?: Bilingual;
+  /** The same rule for every degree level (labelled so on the page). */
+  allDegrees?: boolean;
   sources: SourceRef[];
 }
 
@@ -34,6 +45,10 @@ export interface GuideCost {
   value: Bilingual;
   note?: Bilingual;
   status?: GuideStatus;
+  /** Structured amount (the source's currency; never converted). */
+  amount?: { value: number; max?: number; currency: string; period: 'semester' | 'month' | 'year' | 'one-time' };
+  /** Who or what the amount applies to. */
+  appliesTo?: Bilingual;
   source: SourceRef;
 }
 
@@ -45,7 +60,40 @@ export interface GuideCosts {
 }
 
 /** Data the page reads from the existing registries, filtered to the country and degree. */
-export type GuideEmbed = 'costs' | 'universities' | 'scholarships';
+export type GuideEmbed = 'costs' | 'universities' | 'scholarships' | 'documents';
+
+/** Where a document belongs: general, program-specific, visa, Bangladesh-specific, after arrival. */
+export const DOC_GROUPS = ['general', 'program', 'visa', 'bangladesh', 'arrival'] as const;
+export type GuideDocGroup = (typeof DOC_GROUPS)[number];
+
+/** One document, explained once and referenced from every group that needs it. */
+export interface GuideDocument {
+  id: string;
+  name: Bilingual;
+  why: Bilingual;
+  who: Bilingual;
+  when: Bilingual;
+  where: Bilingual;
+  prepare: Bilingual;
+  groups: GuideDocGroup[];
+  /** Omitted = every degree. */
+  degrees?: GuideDegree[];
+  status?: GuideStatus;
+  sources: SourceRef[];
+}
+
+/**
+ * A comparable, sourced value for Mino's future country comparison (not shown
+ * to students yet). Estimates stay estimates; a not-verified factor has no value.
+ */
+export interface GuideFactor {
+  id: 'public-tuition' | 'funds-to-show' | 'living-cost' | 'work-during-study' | 'post-study-stay' | 'english-programs' | 'visa-fee';
+  value?: { min?: number; max?: number; unit: string; text: Bilingual };
+  kind: GuideKind;
+  status: GuideStatus;
+  degrees?: GuideDegree[];
+  source?: SourceRef;
+}
 
 export type GuideItem = GuideAnswer | { embed: GuideEmbed };
 
@@ -75,6 +123,14 @@ export interface CountryGuide {
   degrees: Record<GuideDegree, DegreeGuide>;
   /** The date the facts were last read from their sources (YYYY-MM-DD). */
   checkedAt: string;
+  /** Living in the country (accommodation, transport, registration…), shown after the questions. */
+  life?: GuideAnswer[];
+  /** Documents, each explained once (the `documents` embed groups them). */
+  documents?: GuideDocument[];
+  /** Show a small source list at the end of each major section. */
+  sourcesPerSection?: boolean;
+  /** Comparable values for Mino (future country comparison). */
+  factors?: GuideFactor[];
 }
 
 export const isAnswer = (item: GuideItem): item is GuideAnswer => 'q' in item;
@@ -95,3 +151,39 @@ export function guideSources(answers: GuideAnswer[], costs: GuideCost[] = [], ex
 
 /** All answers in a degree guide, in reading order. */
 export const degreeAnswers = (d: DegreeGuide): GuideAnswer[] => d.sections.flatMap((s) => s.items.filter(isAnswer));
+
+/** A country's documents for one degree (each once). */
+export const documentsFor = (g: CountryGuide, level: GuideDegree): GuideDocument[] => (g.documents ?? []).filter((d) => !d.degrees || d.degrees.includes(level));
+
+/**
+ * What Mino may use from a guide: each answer labelled FACT / ESTIMATE /
+ * GUIDANCE, or NOT VERIFIED with no answer text (so nothing unverified can be
+ * repeated as fact). Filtered to one degree when the student has one.
+ */
+export function guideForMino(g: CountryGuide, level?: GuideDegree) {
+  const label = (a: GuideAnswer) =>
+    a.status === 'not-verified' ? 'NOT VERIFIED' : a.kind === 'estimate' ? 'ESTIMATE' : a.kind === 'guidance' ? 'GUIDANCE' : 'FACT';
+  const item = (a: GuideAnswer) => ({
+    question: a.q.en,
+    label: label(a),
+    ...(a.status === 'not-verified' ? {} : { answer: a.a.map((p) => p.en).join(' ') }),
+    ...(a.status && a.status !== 'verified' ? { status: a.status } : {}),
+    ...(a.discrepancy ? { sourcesDisagree: a.discrepancy.en } : {}),
+    sources: a.sources.map((s) => ({ name: s.name, url: s.url })),
+  });
+  const levels = level ? [level] : GUIDE_DEGREES;
+  const costs = (l: GuideDegree) => [
+    ...g.degrees[l].costs.official.filter((c) => c.status !== 'not-verified').map((c) => ({ label: 'FACT', item: c.label.en, value: c.value.en, ...(c.status && c.status !== 'verified' ? { status: c.status } : {}), source: c.source.name })),
+    ...g.degrees[l].costs.estimates.map((c) => ({ label: 'ESTIMATE', item: c.label.en, value: c.value.en, source: c.source.name })),
+  ];
+  return {
+    checkedAt: g.checkedAt,
+    overview: g.overview.map(item),
+    mostAsked: g.faqs.map(item),
+    ...(g.life ? { living: g.life.map(item) } : {}),
+    degrees: Object.fromEntries(levels.map((l) => [l, { answers: degreeAnswers(g.degrees[l]).map(item), costs: costs(l) }])),
+    ...(g.documents ? { documents: g.documents.filter((d) => !level || !d.degrees || d.degrees.includes(level)).map((d) => ({ name: d.name.en, label: d.status === 'not-verified' ? 'NOT VERIFIED' : 'FACT', groups: d.groups, ...(d.status === 'not-verified' ? {} : { why: d.why.en, when: d.when.en, where: d.where.en }) })) } : {}),
+    factors: (g.factors ?? []).filter((f) => !level || !f.degrees || f.degrees.includes(level)).map((f) => ({ id: f.id, label: f.status === 'not-verified' ? 'NOT VERIFIED' : f.kind.toUpperCase(), ...(f.status === 'not-verified' || !f.value ? {} : { value: f.value.text.en }), ...(f.source ? { source: f.source.name } : {}) })),
+    rule: 'Answer from these labelled items only. FACT = official; ESTIMATE = a planning range, always say it is an estimate; GUIDANCE = general advice; NOT VERIFIED = say it is not verified yet and point to the official source. When sourcesDisagree is present, name both sources and do not choose one.',
+  };
+}

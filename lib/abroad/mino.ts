@@ -4,6 +4,8 @@ import { countryPathways, visaCategoriesFor } from './pathways';
 import { countrySections, factStatus } from './sections';
 import { verifiedVisaName, visaParts } from './visa';
 import { checkWork } from './work';
+import { guideForMino, isGuideDegree } from './guides';
+import { getCountryGuide } from '@/lib/content/country-guides';
 
 /** What Mino must say whenever something is not verified. */
 export const NOT_VERIFIED_RULE =
@@ -83,6 +85,11 @@ export function countryFactsForMino(country: Country, opts: { pathway?: string; 
         : work.state === 'needs-answers'
           ? { state: 'needsAnswers', ask: work.questions.map((q) => q.label.en), officialPages: work.links.map((l) => l.url) }
           : { state: 'notVerified', officialPages: work.links.map((l) => l.url) },
+    // The country's reading guide (when it has one), each item labelled FACT / ESTIMATE / GUIDANCE / NOT VERIFIED.
+    ...(() => {
+      const g = getCountryGuide(country.code);
+      return g ? { guide: guideForMino(g, isGuideDegree(opts.degreeLevel) ? opts.degreeLevel : undefined) } : {};
+    })(),
     officialPages: [...new Set(sections.flatMap((sec) => [...sec.facts.map((f) => f.fact.source.url), ...(sec.links ?? []).map((l) => l.url)]).filter(Boolean))],
     rule: NOT_VERIFIED_RULE,
   };

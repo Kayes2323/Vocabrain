@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useBilingual } from '@/components/abroad/useBilingual';
-import { degreeAnswers, GUIDE_DEGREES, guideSources, isAnswer, type CountryGuide, type GuideDegree, type GuideItem } from '@/lib/abroad/guides';
+import { degreeAnswers, documentsFor, GUIDE_DEGREES, guideSources, isAnswer, type CountryGuide, type GuideDegree, type GuideItem, type GuideSection } from '@/lib/abroad/guides';
 import { scholarshipsFor } from '@/lib/content/scholarships';
 import { PROGRAMS, universitiesIn } from '@/lib/content/universities';
 import type { Country, SourceRef } from '@/lib/models';
 import { cn } from '@/lib/utils';
-import { CostBreakdown, GuideQA, GuideScholarships, GuideSources, GuideUniversities } from './GuideParts';
+import { CostBreakdown, GuideDocuments, GuideQA, GuideScholarships, GuideSources, GuideUniversities, SectionSources } from './GuideParts';
 
 /** One degree in one country, as a long read: bold questions, answers right below, sources at the end. */
 export function DegreeGuideView({ country, guide, level }: { country: Country; guide: CountryGuide; level: GuideDegree }) {
@@ -28,11 +28,26 @@ export function DegreeGuideView({ country, guide, level }: { country: Country; g
     ...unis.flatMap((u) => [u.ownership?.source, u.officialSource].filter((x): x is SourceRef => Boolean(x))),
     ...PROGRAMS.filter((p) => p.degreeLevel === level && unis.some((u) => u.id === p.universityId)).flatMap((p) => (p.officialSource ? [p.officialSource] : [])),
   ];
+  const docs = documentsFor(guide, level);
+  const costs = [...degree.costs.official, ...degree.costs.estimates];
+  // One section's own sources (its answers, and the registry data it embeds).
+  const sectionSources = (sec: GuideSection) => {
+    const embeds = sec.items.filter((i) => !isAnswer(i)).map((i) => (i as { embed: string }).embed);
+    return guideSources(
+      sec.items.filter(isAnswer),
+      embeds.includes('costs') ? costs : [],
+      [
+        ...(embeds.includes('documents') ? docs.flatMap((d) => d.sources) : []),
+        ...(embeds.includes('universities') || embeds.includes('scholarships') ? registrySources : []),
+      ],
+    );
+  };
 
   const item = (it: GuideItem, i: number) => {
     if (isAnswer(it)) return <GuideQA key={it.id} answer={it} />;
     if (it.embed === 'costs') return <CostBreakdown key={`costs-${i}`} costs={degree.costs} />;
     if (it.embed === 'universities') return <GuideUniversities key={`unis-${i}`} code={country.code} level={level} />;
+    if (it.embed === 'documents') return <GuideDocuments key={`docs-${i}`} documents={docs} />;
     return <GuideScholarships key={`sch-${i}`} code={country.code} level={level} />;
   };
 
@@ -65,6 +80,7 @@ export function DegreeGuideView({ country, guide, level }: { country: Country; g
             {text(s.title)}
           </h2>
           {s.items.map(item)}
+          {guide.sourcesPerSection && <SectionSources sources={sectionSources(s)} />}
         </section>
       ))}
 
@@ -79,7 +95,7 @@ export function DegreeGuideView({ country, guide, level }: { country: Country; g
         </div>
       </nav>
 
-      <GuideSources sources={guideSources(degreeAnswers(degree), [...degree.costs.official, ...degree.costs.estimates], registrySources)} checkedAt={guide.checkedAt} />
+      <GuideSources sources={guideSources(degreeAnswers(degree), costs, [...registrySources, ...docs.flatMap((d) => d.sources)])} checkedAt={guide.checkedAt} />
     </article>
   );
 }

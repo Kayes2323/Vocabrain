@@ -458,6 +458,45 @@ async function main() {
     await p.goto(`${BASE}/abroad/countries/kr/degree/diploma`, { waitUntil: 'load' });
     await p.getByTestId('degree-not-found').waitFor({ timeout: 60_000 });
     check('unknown degree → clear message + way back', (await p.getByRole('link', { name: 'Study in South Korea' }).count()) === 1);
+
+    // ============================================================ Germany guide (its own research)
+    console.log('\n[Guide] Germany');
+    await p.goto(`${BASE}/abroad/countries/de`, { waitUntil: 'load' });
+    await p.getByTestId('country-guide').waitFor({ timeout: 60_000 });
+    const deGuide = p.getByTestId('country-guide');
+    check('DE guide: "Study in Germany" heading and photo', /Study in Germany/.test(await p.getByRole('heading', { level: 1 }).innerText()) && (await deGuide.locator('[data-country-photo="DE"]').count()) === 1);
+    check('DE guide: degree cards Bachelor’s, Master’s, PhD', (await p.getByTestId('guide-degrees').locator('[data-degree]').evaluateAll((els) => els.map((e) => e.getAttribute('data-degree')).join(','))) === 'bachelors,masters,phd');
+    const deFaq = p.getByTestId('guide-faq');
+    check('DE guide: most asked questions incl. APS and blocked account', (await deFaq.locator('[data-faq]').count()) >= 20 && /Is APS required\?/.test(await deFaq.innerText()) && /11,904/.test(await deFaq.innerText()));
+    check('DE guide: nothing from South Korea', !/Korea|TOPIK|D-2|GKS|₩|KRW/.test(await deGuide.innerText()));
+    check('DE guide: living in Germany section', /Living in Germany/.test(await p.getByTestId('guide-life').innerText()));
+    check('DE guide: small sources at the end of each major section', (await deGuide.locator('[data-section-sources]').count()) >= 3 && (await p.getByTestId('guide-sources').locator('a[href*="diplo.de"]').count()) >= 1);
+    check('DE guide: estimates and unknowns are labelled', (await deFaq.locator('[data-guide-kind="estimate"]').count()) >= 1 && (await deFaq.locator('[data-guide-status="not-verified"]').count()) >= 1);
+    check('DE guide: no Mino, no journey on the page', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0 && !/My roadmap|Build my plan/.test(await p.locator('main').innerText()));
+    check('DE guide desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-de-01-country');
+    await p.getByTestId('guide-degrees').locator('[data-degree="bachelors"]').click();
+    await p.waitForURL('**/abroad/countries/de/degree/bachelors');
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const deBa = p.getByTestId('degree-guide');
+    const deBaText = await deBa.innerText();
+    check("DE bachelor's: HSC route (Studienkolleg / one year) explained", /Studienkolleg/.test(deBaText) && /one completed academic year/i.test(deBaText));
+    check("DE bachelor's: documents grouped A–E, each document explained once", (await deBa.locator('[data-doc-group]').count()) === 5 && (await deBa.locator('[data-document="passport"]').count()) === 1 && (await deBa.locator('[data-document="supervisor-letter"]').count()) === 0);
+    check("DE bachelor's: costs split Official / Estimate / Your own budget", (await deBa.getByTestId('guide-costs').locator('[data-cost-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-cost-group')).join(','))) === 'official,estimate,mine' && /EUR 11,904/.test(await deBa.getByTestId('guide-costs').locator('[data-cost-group="official"]').innerText()));
+    check("DE bachelor's: sources that disagree are shown, not chosen", (await deBa.locator('[data-discrepancy]').count()) >= 3);
+    check("DE bachelor's: verified universities, alphabetical", (await deBa.getByTestId('guide-universities').locator('[data-university]').evaluateAll((els) => els.map((e) => e.getAttribute('data-university')).join(','))) === 'de-rwth,de-stuttgart');
+    check("DE bachelor's: Deutschlandstipendium only (DAAD funds master’s and up)", (await deBa.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')).join(','))) === 'de-deutschlandstipendium');
+    check("DE bachelor's: only bachelor's rules", !/supervisor|VPD|EPOS/.test(deBaText));
+    check("DE bachelor's desktop: no sideways scroll", await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-de-02-bachelors');
+    await p.goto(`${BASE}/abroad/countries/de/degree/masters`, { waitUntil: 'load' });
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const deMaText = await p.getByTestId('degree-guide').innerText();
+    check("DE master's: VFS intake, EPOS and Deutschlandstipendium, no Studienkolleg exam", /VFS/.test(deMaText) && (await p.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')).sort().join(','))) === 'de-daad-epos,de-deutschlandstipendium' && !/Feststellungsprüfung/.test(deMaText));
+    await p.goto(`${BASE}/abroad/countries/de/degree/phd`, { waitUntil: 'load' });
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    check('DE PhD: supervisor letter in the documents, no bachelor/master tuition', (await p.locator('[data-document="supervisor-letter"]').count()) === 1 && !/1,684|Baden-Württemberg \(non-EU/.test(await p.getByTestId('guide-costs').innerText()));
+    await shot(p, 'sa-guide-de-03-phd');
     await p.goto(`${BASE}/abroad/countries/ca`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
     check('a country without a guide keeps its existing page (nothing borrowed from South Korea)', (await p.getByTestId('country-guide').count()) === 0);
@@ -525,7 +564,7 @@ async function main() {
     await p.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
 
-    await p.goto(`${BASE}/abroad/countries/de?tab=money`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/de/hub?tab=money`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
     check('?tab=money opens the Money tab', (await p.getByRole('tab', { name: 'Money' }).getAttribute('aria-selected')) === 'true');
     const work = p.locator('[data-section="work"]');
@@ -556,7 +595,7 @@ async function main() {
     await p.goto(`${BASE}/abroad/countries/au?tab=visa`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
     check('same template for Australia: Post-study verified', (await p.locator('[data-section="post-study"]').getAttribute('data-status')) === 'verified');
-    await p.goto(`${BASE}/abroad/countries/de?tab=roadmap`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/de/hub?tab=roadmap`, { waitUntil: 'load' });
     await p.getByTestId('hub-roadmap').waitFor({ timeout: 60_000 });
     check('hub roadmap tab: summary with the current step', /4 of 16 steps done · Now: Research programs/.test(await p.getByTestId('hub-roadmap').innerText()), await p.getByTestId('hub-roadmap').innerText());
 
@@ -619,7 +658,8 @@ async function main() {
     await p.getByLabel('Country').waitFor({ timeout: 60_000 });
     check('defaults to the dream country', (await p.getByLabel('Country').inputValue()) === 'DE');
     check('Home hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Home' }).getAttribute('aria-current')) === 'page');
-    check('no invented universities: honest empty state', /No verified university profiles for Germany yet/.test(await p.getByTestId('uni-verified-empty').innerText()));
+    await p.getByTestId('uni-registry').waitFor({ timeout: 30_000 });
+    check('Germany: only the verified universities, no invented programs', /RWTH Aachen University/.test(await p.getByTestId('uni-registry').innerText()) && /University of Stuttgart/.test(await p.getByTestId('uni-registry').innerText()) && (await p.getByTestId('uni-verified-empty').count()) === 1);
     await p.getByRole('button', { name: 'Add a university' }).click();
     await p.getByLabel('University name').fill('TU Test');
     await p.getByLabel('Official website (optional)').fill('https://www.tu-test.example');
@@ -781,7 +821,7 @@ async function main() {
     check('Firestore: pathway saved per country', y.pathwayByCountry?.KR === 'language');
     const filled = (await p.locator('[data-section]:not([data-status="not-yet"])').evaluateAll((els) => els.map((e) => e.getAttribute('data-section')))).join(',');
     check('KR sections stay honest: only the sourced C2.1 sections are filled', filled === 'education', filled);
-    check('Germany hub has no pathway picker', await (async () => { await p.goto(`${BASE}/abroad/countries/de`, { waitUntil: 'load' }); await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 }); return (await p.getByTestId('pathway-picker').count()) === 0; })());
+    check('Germany hub has no pathway picker', await (async () => { await p.goto(`${BASE}/abroad/countries/de/hub`, { waitUntil: 'load' }); await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 }); return (await p.getByTestId('pathway-picker').count()) === 0; })());
     await p.goto(`${BASE}/abroad/visa/kr`, { waitUntil: 'load' });
     await p.getByTestId('visa-parts').waitFor({ timeout: 60_000 });
     check('language pathway → only D-4', (await p.getByTestId('visa-categories').locator('[data-category]').allInnerTexts()).join() === 'D-4' && (await p.getByTestId('visa-parts').getAttribute('data-category')) === 'D-4');
@@ -856,7 +896,7 @@ async function main() {
     await p.goto(`${BASE}/abroad/visa/de`, { waitUntil: 'load' });
     await p.getByTestId('work-check').waitFor({ timeout: 60_000 });
     check('Germany: no categories; Can I work? shows the sourced rule', (await p.getByTestId('visa-categories').count()) === 0 && (await p.getByTestId('work-check').getAttribute('data-state')) === 'answered' && /140 full days/.test(await p.getByTestId('work-check').innerText()));
-    await p.goto(`${BASE}/abroad/countries/de?tab=apply`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/de/hub?tab=apply`, { waitUntil: 'load' });
     await p.getByTestId('apply-steps').waitFor({ timeout: 60_000 });
     const lorBox = p.locator('[data-apply-step="lor"]');
     check('Apply checklist lists the roadmap’s application steps', (await p.locator('[data-apply-step]').count()) >= 8 && (await lorBox.getAttribute('data-status')) !== 'done');
@@ -870,7 +910,7 @@ async function main() {
     await p.locator('[data-step="lor"]').getByRole('button', { name: /Ask for recommendation letters/ }).click();
     await p.locator('[data-step="lor"]').getByRole('button', { name: 'Not done yet' }).click();
     y = await pb((v) => v.journey?.steps?.DE?.lor?.status !== 'done');
-    await p.goto(`${BASE}/abroad/countries/de?tab=apply`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/de/hub?tab=apply`, { waitUntil: 'load' });
     await p.getByTestId('apply-steps').waitFor({ timeout: 60_000 });
     check('roadmap un-tick → Apply shows it open again', (await p.locator('[data-apply-step="lor"]').getAttribute('data-status')) !== 'done');
 
@@ -1076,6 +1116,11 @@ async function main() {
     check('bn degree: Master’s guide in Bangla, sources at the end', /অন্য subject থেকে আবেদন করা যায় কি\?/.test(await q.getByTestId('degree-guide').innerText()) && (await q.getByTestId('guide-sources').locator('a').count()) >= 8);
     check('bn degree mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await shot(q, 'sa-guide-05-masters-mobile-bn');
+    await q.goto(`${BASE}/abroad/countries/de/degree/bachelors`, { waitUntil: 'load' });
+    await q.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    check('bn DE bachelor’s: in Bangla, respectful আপনি', /HSC দিয়ে আবেদন করা যায় কি\?/.test(await q.getByTestId('degree-guide').innerText()) && !/তুমি|তোমার/.test(await q.locator('main').innerText()));
+    check('bn DE bachelor’s mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-guide-de-04-bachelors-mobile-bn');
     await q.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await q.getByTestId('study-options').waitFor({ timeout: 60_000 });
     check('bn: study options heading in Bangla', /একটা program বেছে নিন/.test(await q.getByTestId('study-options').innerText()));

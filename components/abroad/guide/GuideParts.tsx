@@ -6,7 +6,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { formatMoney, useFormatDate } from '@/components/abroad/FactRow';
 import { useBilingual } from '@/components/abroad/useBilingual';
-import type { GuideAnswer, GuideCost, GuideCosts, GuideDegree, GuideStatus } from '@/lib/abroad/guides';
+import { DOC_GROUPS, type GuideAnswer, type GuideCost, type GuideCosts, type GuideDegree, type GuideDocument, type GuideStatus } from '@/lib/abroad/guides';
 import { scholarshipsFor } from '@/lib/content/scholarships';
 import { PROGRAMS, universitiesIn } from '@/lib/content/universities';
 import type { Bilingual, SourceRef } from '@/lib/models';
@@ -51,6 +51,41 @@ export function AnswerBody({ a, list }: { a: Bilingual[]; list?: Bilingual[] }) 
   );
 }
 
+/** Small labels under a question: status, estimate / guidance, "same for all degrees". Nothing for a plain verified fact. */
+export function AnswerTags({ answer }: { answer: GuideAnswer }) {
+  const { t } = useLocale();
+  const kind = answer.kind && answer.kind !== 'fact' ? answer.kind : undefined;
+  if ((!answer.status || answer.status === 'verified') && !kind && !answer.allDegrees) return null;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      <GuideStatusTag status={answer.status} />
+      {kind && (
+        <span className="inline-flex h-6 items-center rounded-full bg-muted px-2.5 text-xs font-medium text-muted-foreground" data-guide-kind={kind}>
+          {t(`sa.book.kind.${kind}`)}
+        </span>
+      )}
+      {answer.allDegrees && (
+        <span className="inline-flex h-6 items-center rounded-full bg-brand/10 px-2.5 text-xs font-medium text-brand" data-all-degrees="">
+          {t('sa.book.allDegrees')}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Two official sources disagree: said plainly, neither chosen. */
+export function Discrepancy({ note }: { note?: Bilingual }) {
+  const { t } = useLocale();
+  const text = useBilingual();
+  if (!note) return null;
+  return (
+    <p className="rounded-xl border-l-[3px] border-warning bg-warning-soft/60 px-3.5 py-2.5 text-sm leading-6 text-foreground/85" data-discrepancy="">
+      <span className="font-semibold">{t('sa.book.discrepancy')}: </span>
+      {text(note)}
+    </p>
+  );
+}
+
 /** One question (bold, prominent) with its answer right below. */
 export function GuideQA({ answer, level = 'h3' }: { answer: GuideAnswer; level?: 'h2' | 'h3' }) {
   const text = useBilingual();
@@ -59,10 +94,88 @@ export function GuideQA({ answer, level = 'h3' }: { answer: GuideAnswer; level?:
     <article className="space-y-3" data-guide-q={answer.id}>
       <div className="space-y-2">
         <Heading className="text-lg font-bold tracking-tight text-balance sm:text-xl">{text(answer.q)}</Heading>
-        <GuideStatusTag status={answer.status} />
+        <AnswerTags answer={answer} />
       </div>
       <AnswerBody a={answer.a} list={answer.list} />
+      <Discrepancy note={answer.discrepancy} />
     </article>
+  );
+}
+
+/** A small source list closing one section (when the guide asks for it). */
+export function SectionSources({ sources }: { sources: SourceRef[] }) {
+  const { t } = useLocale();
+  if (!sources.length) return null;
+  return (
+    <div className="space-y-1.5 text-xs text-muted-foreground" data-section-sources="">
+      <p className="font-semibold uppercase tracking-wide">{t('sa.book.sectionSources')}</p>
+      <ul className="flex flex-wrap gap-x-3 gap-y-1">
+        {sources.map((s, i) => (
+          <li key={`${s.name}-${i}`} className="min-w-0 break-words">
+            {s.url ? (
+              <a href={s.url} target="_blank" rel="noreferrer" className="underline-offset-4 hover:text-foreground hover:underline">
+                {s.name}
+              </a>
+            ) : (
+              s.name
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/** Documents grouped A–E; each document is explained once below the groups. */
+export function GuideDocuments({ documents }: { documents: GuideDocument[] }) {
+  const { t } = useLocale();
+  const text = useBilingual();
+  if (!documents.length) return null;
+  return (
+    <section className="space-y-6" data-testid="guide-documents">
+      <h3 className="text-lg font-bold tracking-tight sm:text-xl">{t('sa.book.docs.title')}</h3>
+      <div className="space-y-4">
+        {DOC_GROUPS.map((g, i) => {
+          const docs = documents.filter((d) => d.groups.includes(g));
+          if (!docs.length) return null;
+          return (
+            <div key={g} className="space-y-1.5" data-doc-group={g}>
+              <p className="text-[15px] font-semibold">
+                {String.fromCharCode(65 + i)}. {t(`sa.book.docs.groups.${g}`)}
+              </p>
+              <p className="text-[15px] leading-7 text-foreground/85">
+                {docs.map((d, j) => (
+                  <span key={d.id}>
+                    {j > 0 && ' · '}
+                    <a href={`#doc-${d.id}`} className="underline decoration-foreground/20 underline-offset-4 hover:decoration-foreground">
+                      {text(d.name)}
+                    </a>
+                  </span>
+                ))}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+      <div className="space-y-5 border-t pt-5">
+        <p className="text-sm font-semibold text-muted-foreground">{t('sa.book.docs.aboutEach')}</p>
+        {documents.map((d) => (
+          <div key={d.id} id={`doc-${d.id}`} className="scroll-mt-6 space-y-2" data-document={d.id}>
+            <p className="flex flex-wrap items-center gap-2 text-[17px] font-semibold">
+              {text(d.name)} <GuideStatusTag status={d.status} />
+            </p>
+            <dl className="grid gap-x-4 gap-y-1.5 text-[15px] leading-6 sm:grid-cols-[8rem_1fr]">
+              {(['why', 'who', 'when', 'where', 'prepare'] as const).map((k) => (
+                <div key={k} className="contents">
+                  <dt className="font-medium text-muted-foreground">{t(`sa.book.docs.${k}`)}</dt>
+                  <dd className="text-foreground/85">{text(d[k])}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -180,6 +293,7 @@ export function CostBreakdown({ costs }: { costs: GuideCosts }) {
 /** Universities in the country's registry (alphabetical, never ranked), with this degree's verified programs. */
 export function GuideUniversities({ code, level }: { code: string; level: GuideDegree }) {
   const { t } = useLocale();
+  const text = useBilingual();
   const unis = [...universitiesIn(code)].sort((x, y) => x.name.localeCompare(y.name));
   if (!unis.length) return null;
   return (
@@ -195,6 +309,7 @@ export function GuideUniversities({ code, level }: { code: string; level: GuideD
               <p className="text-sm text-muted-foreground">
                 {[u.ownership ? t(`sa.book.uni.${u.ownership.value}`) : undefined, u.city, u.studyLanguages?.value.includes('en') ? t('sa.book.uni.english') : undefined].filter(Boolean).join(' · ')}
               </p>
+              {u.description && <p className="text-[15px] text-foreground/85">{text(u.description)}</p>}
               {programs.length > 0 ? (
                 <div className="text-sm">
                   <span className="text-muted-foreground">{t('sa.book.uni.programs')}: </span>

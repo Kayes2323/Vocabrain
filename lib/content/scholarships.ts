@@ -1,5 +1,6 @@
 import type { Scholarship } from '@/lib/models';
 import { KR_SCHOLARSHIPS } from './kr-scholarships';
+import { DE_SCHOLARSHIPS } from './de-registry';
 
 /**
  * Reviewed scholarship records. Each one is checked on its
@@ -7,6 +8,6 @@ import { KR_SCHOLARSHIPS } from './kr-scholarships';
  * SourcedValues). Status (open / opening soon / closed / passed) is always
  * computed from those dates — see lib/abroad/status.ts.
  */
-export const SCHOLARSHIPS: Scholarship[] = [...KR_SCHOLARSHIPS];
+export const SCHOLARSHIPS: Scholarship[] = [...KR_SCHOLARSHIPS, ...DE_SCHOLARSHIPS];
 
 export const scholarshipsFor = (code: string | undefined) => (code ? SCHOLARSHIPS.filter((s) => !s.countryCode || s.countryCode === code.toUpperCase()) : SCHOLARSHIPS);

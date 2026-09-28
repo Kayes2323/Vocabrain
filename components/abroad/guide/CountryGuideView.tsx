@@ -8,7 +8,7 @@ import { useBilingual } from '@/components/abroad/useBilingual';
 import { GUIDE_DEGREES, guideSources, type CountryGuide } from '@/lib/abroad/guides';
 import { countryHref } from '@/lib/abroad/countries';
 import type { Country } from '@/lib/models';
-import { AnswerBody, GuideQA, GuideSources, GuideStatusTag } from './GuideParts';
+import { AnswerBody, AnswerTags, Discrepancy, GuideQA, GuideSources, SectionSources } from './GuideParts';
 
 /** The country guide: a short introduction, the overview, the degree choice and the most asked questions. */
 export function CountryGuideView({ country, guide }: { country: Country; guide: CountryGuide }) {
@@ -19,7 +19,9 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
     { id: 'overview', label: t('sa.book.overview') },
     { id: 'degrees', label: t('sa.book.degrees') },
     { id: 'questions', label: t('sa.book.faq') },
+    ...(guide.life ? [{ id: 'living', label: t('sa.book.life', { country: country.name }) }] : []),
   ];
+  const per = guide.sourcesPerSection;
 
   return (
     <article className="mx-auto max-w-3xl space-y-10 pb-8 sm:space-y-12" data-testid="country-guide" data-country-guide={country.code}>
@@ -50,6 +52,7 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
         {guide.overview.map((a) => (
           <GuideQA key={a.id} answer={a} />
         ))}
+        {per && <SectionSources sources={guideSources(guide.overview)} />}
       </section>
 
       <section id="degrees" className="scroll-mt-6 space-y-5 border-t pt-10" aria-labelledby="degrees-title" data-testid="guide-degrees">
@@ -84,12 +87,26 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
           <div key={a.id} className="space-y-3 border-l-[3px] border-brand/60 pl-4 sm:pl-5" data-faq={a.id}>
             <div className="space-y-2">
               <h3 className="text-lg font-bold tracking-tight text-balance sm:text-xl">{text(a.q)}</h3>
-              <GuideStatusTag status={a.status} />
+              <AnswerTags answer={a} />
             </div>
             <AnswerBody a={a.a} list={a.list} />
+            <Discrepancy note={a.discrepancy} />
           </div>
         ))}
+        {per && <SectionSources sources={guideSources(guide.faqs)} />}
       </section>
+
+      {guide.life && (
+        <section id="living" className="scroll-mt-6 space-y-8 border-t pt-10" aria-labelledby="living-title" data-testid="guide-life">
+          <h2 id="living-title" className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {t('sa.book.life', { country: country.name })}
+          </h2>
+          {guide.life.map((a) => (
+            <GuideQA key={a.id} answer={a} />
+          ))}
+          {per && <SectionSources sources={guideSources(guide.life)} />}
+        </section>
+      )}
 
       <Link
         href={`${countryHref(country.code)}/hub`}
@@ -99,7 +116,7 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
         {t('sa.book.more')} <ChevronRight className="size-4 text-muted-foreground" aria-hidden />
       </Link>
 
-      <GuideSources sources={guideSources([...guide.overview, ...guide.faqs])} checkedAt={guide.checkedAt} />
+      <GuideSources sources={guideSources([...guide.overview, ...guide.faqs, ...(guide.life ?? [])])} checkedAt={guide.checkedAt} />
     </article>
   );
 }
