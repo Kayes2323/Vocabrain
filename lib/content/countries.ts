@@ -166,6 +166,7 @@ export const COUNTRIES: Country[] = [
   { code: 'CN', name: 'China', region: 'Asia', flag: '🇨🇳', capital: 'Beijing', data: {} },
   { code: 'MY', name: 'Malaysia', region: 'Asia', flag: '🇲🇾', capital: 'Kuala Lumpur', data: {} },
   { code: 'TR', name: 'Turkey', region: 'Europe', flag: '🇹🇷', capital: 'Ankara', data: {} },
+  { code: 'CH', name: 'Switzerland', region: 'Europe', flag: '🇨🇭', capital: 'Bern', data: {} },
 ];
 
 // Attach the supplied photos (a country's own `hero` always wins).

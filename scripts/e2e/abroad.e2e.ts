@@ -355,7 +355,7 @@ async function main() {
     await p.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
     const priorityCodes = await p.getByTestId('priority-countries').locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')));
     check('14 priority countries, in order, New Zealand last', priorityCodes.join(',') === 'KR,DE,AU,GB,CA,US,JP,IT,FR,NL,SE,FI,IE,NZ', priorityCodes.join(','));
-    check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 6);
+    check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 7);
     check('Explore hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
     const broken = await p.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0).length);
     // Photos are lazy-loaded: bring each card into view once so they all load.
@@ -367,7 +367,7 @@ async function main() {
     );
     const withPhoto = photos.filter((x) => x.photo);
     check('no broken images', broken === 0, `${broken} broken`);
-    check('11 country cards show their photo, 9 keep the flag placeholder', withPhoto.length === 11 && (await p.locator('[data-placeholder]').count()) === 9, withPhoto.map((x) => x.card).join(','));
+    check('20 country cards show their photo, only Ireland keeps the flag placeholder', withPhoto.length === 20 && (await p.locator('[data-placeholder]').count()) === 1 && (await p.locator('[data-country="IE"] [data-placeholder]').count()) === 1, withPhoto.map((x) => x.card).join(','));
     check('every photo sits in its own country\'s card', withPhoto.every((x) => x.photo === x.card), JSON.stringify(withPhoto));
     check('photos actually load', withPhoto.every((x) => x.w > 0), JSON.stringify(withPhoto.filter((x) => !x.w)));
     const fit = await p.locator('[data-country-photo] img').first().evaluate((i) => getComputedStyle(i).objectFit);

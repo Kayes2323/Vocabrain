@@ -157,7 +157,7 @@ test('persistence: old profiles load unchanged; journey marks survive a save/loa
 // ---------------------------------------------------------------- 3B countries
 test('country photos: each belongs to a real country, files exist, sizes and focal points set, never enlarged', () => {
   const codes = Object.keys(COUNTRY_PHOTOS);
-  assert.deepEqual(codes.sort(), ['AU', 'CA', 'DE', 'DK', 'FR', 'GB', 'IT', 'KR', 'NZ', 'SE', 'US']);
+  assert.deepEqual(codes.sort(), ['AU', 'CA', 'CH', 'CN', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'IT', 'JP', 'KR', 'MY', 'NL', 'NO', 'NZ', 'SE', 'TR', 'US']);
   for (const code of codes) {
     const photo = COUNTRY_PHOTOS[code]!;
     const country = getCountry(code)!;
