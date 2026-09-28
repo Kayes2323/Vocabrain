@@ -43,6 +43,7 @@ import { COUNTRY_SECTION_IDS, VISA_PART_IDS } from '../lib/models';
 import { degreeAnswers, DOC_GROUPS, documentsFor as guideDocumentsFor, GUIDE_DEGREES, guideForMino, guideSources, isAnswer, type GuideAnswer } from '../lib/abroad/guides';
 import { DE_GUIDE } from '../lib/content/de-guide';
 import { KR_GUIDE } from '../lib/content/kr-guide';
+import { JP_GUIDE } from '../lib/content/jp-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1541,10 +1542,11 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP']);
   assert.equal(getCountryGuide('kr')?.code, 'KR');
   assert.equal(getCountryGuide('de')?.code, 'DE');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('jp')?.code, 'JP');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1747,6 +1749,68 @@ test('Mino: guide knowledge is labelled and never leaks unverified answers', () 
   assert.deepEqual(Object.keys(facts.guide!.degrees), ['phd']);
   assert.ok(!('guide' in countryFactsForMino(getCountry('CA')!, { now: NOW })), 'no guide for a country without one');
   assert.ok(!JSON.stringify(guideForMino(DE_GUIDE)).includes('"answer":"Not verified yet'), 'not-verified text is withheld');
+});
+
+
+// ---------------------------------------------------------------- Japan guide
+test('Japan: its own research, nothing from South Korea or Germany (and both untouched)', () => {
+  const t = JSON.stringify(JP_GUIDE);
+  assert.doesNotMatch(t, /Korea|TOPIK|D-2|GKS|KRW|₩|Sperrkonto|blocked account|Studienkolleg|uni-assist|DAAD|EUR /i);
+  assert.doesNotMatch(JSON.stringify(KR_GUIDE) + JSON.stringify(DE_GUIDE), /Japan|MEXT|JASSO|EJU|Certificate of Eligibility|JPY/);
+  const hosts = new Set(guideSources([...JP_GUIDE.overview, ...JP_GUIDE.faqs, ...(JP_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(JP_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /emb-japan\.go\.jp|mofa\.go\.jp|studyinjapan\.go\.jp/, `${h} is an official Japanese source`);
+});
+
+test('Japan: key facts read from the official sources', () => {
+  const faq = (id: string) => JP_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.match(faq('bachelors').a[0].en, /12 years/);
+  assert.match(faq('work').a[0].en, /28 hours a week/);
+  assert.match(faq('cost').a[0].en, /535,800/);
+  assert.equal(faq('grades').status, 'not-verified');
+  const visa = degreeAnswers(JP_GUIDE.degrees.bachelors).find((a) => a.id === 'visa-time')!;
+  assert.equal(visa.status, 'not-verified', 'Bangladesh processing time and fee are not invented');
+  const ug = degreeAnswers(JP_GUIDE.degrees.bachelors).find((a) => a.id === 'tuition')!;
+  assert.ok(ug.discrepancy && /1,100,000/.test(ug.discrepancy.en) && /1,300,000/.test(ug.discrepancy.en), 'private first-year figures that differ are both shown');
+  for (const id of ['bachelors', 'masters', 'phd', 'grades', 'exam', 'japanese', 'ielts', 'cost', 'documents', 'visa', 'work', 'scholarships', 'universities', 'bangladesh'])
+    assert.ok(JP_GUIDE.faqs.some((f) => f.id === id), `faq ${id}`);
+});
+
+test('Japan: degree isolation, documents once, costs in JPY and never converted', () => {
+  // Page text only (source names are titles, not content).
+  const t = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(JP_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(JP_GUIDE.degrees[l].intro);
+  assert.match(t('bachelors'), /EJU/);
+  assert.doesNotMatch(t('bachelors'), /research proposal|thesis advisor|16 years/i);
+  assert.doesNotMatch(t('masters'), /second half of a doctoral|EJU \(Examination/);
+  assert.doesNotMatch(t('phd'), /EJU \(Examination|12 years of formal school education/);
+  assert.deepEqual(guideDocumentsFor(JP_GUIDE, 'bachelors').some((d) => d.id === 'research-proposal'), false);
+  assert.deepEqual(guideDocumentsFor(JP_GUIDE, 'masters').some((d) => d.id === 'research-proposal'), true);
+  const docs = JP_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  assert.equal(new Set(docs.map((d) => d.name.en)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const l of GUIDE_DEGREES) {
+    const c = JP_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      assert.equal(x.amount?.currency, 'JPY', `${l}/${x.id} in yen`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|USD/, `${l}/${x.id} not converted`);
+    }
+    assert.equal(c.official.find((x) => x.id === 'national-tuition')!.amount!.value, 535800);
+  }
+  assert.ok(JP_GUIDE.degrees.bachelors.costs.estimates.some((x) => x.id === 'first-year-private'));
+  assert.ok(!JP_GUIDE.degrees.masters.costs.estimates.some((x) => x.id === 'first-year-private'), 'undergraduate figures stay off the master’s page');
+});
+
+test('Japan: registries, scholarships per degree, no ranking or "fully funded"', () => {
+  const jp = UNIVERSITIES.filter((u) => u.countryCode === 'JP');
+  assert.deepEqual(jp.map((u) => u.name).sort(), ['Institute of Science Tokyo', 'Kyoto University', 'Osaka University', 'The University of Tokyo', 'Tohoku University']);
+  assert.ok(!jp.some((u) => u.name === 'Tokyo Institute of Technology'), 'current institutional name used');
+  const sch = (l: string) => SCHOLARSHIPS.filter((s) => s.countryCode === 'JP' && s.degreeLevels.includes(l as never)).map((s) => s.id).sort();
+  assert.deepEqual(sch('bachelors'), ['jp-jasso-honors', 'jp-mext-undergraduate']);
+  assert.deepEqual(sch('masters'), ['jp-jasso-honors', 'jp-mext-research']);
+  assert.ok(SCHOLARSHIPS.filter((s) => s.countryCode === 'JP').every((s) => !s.funding && !/fully[- ]funded/i.test(JSON.stringify(s))));
+  assert.equal(SCHOLARSHIPS.find((s) => s.id === 'jp-mext-undergraduate')!.eligibility.status, 'needs-review', 'the 2020 Embassy page is flagged');
+  const m = guideForMino(JP_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
 });
 
 console.log(`\n${passed} passed`);
