@@ -89,5 +89,5 @@ export interface WordInfo {
   collocations: string[];
   exampleSentence?: string;
   /** Where the definition came from, e.g. "Mino glossary". */
-  dictionarySource: 'glossary' | 'word-bank' | 'dictionary-api' | 'none';
+  dictionarySource: 'glossary' | 'word-bank' | 'dictionary-api' | 'mino' | 'none';
 }

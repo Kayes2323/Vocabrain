@@ -7,6 +7,7 @@
 import type { Page } from 'playwright-core';
 import { LEXICON, LIBRARY, flatten, getLibraryPassage, questionCount, vocabView, type FlatQuestion } from '../../lib/content/reading-library';
 import { PASSAGES } from '../../lib/content/passages';
+import { tokenize } from '../../components/reading/tokenize';
 import { BASE, check, getDoc, launch, noHorizontalScroll, report, shot, signUp, uidOf, watchErrors } from './helpers';
 
 const stamp = Date.now();
@@ -70,6 +71,8 @@ async function main() {
     const view = vocabView(LEXICON[v.lemma], v);
     await m.locator(`[data-testid="vocab-word"][data-lemma="${v.lemma}"]`).first().click();
     await m.getByTestId('vocab-card').waitFor();
+    check('popup: Mino loading shows first (key word)', await m.getByTestId('mino-word-loading').waitFor({ timeout: 2000 }).then(() => true, () => false));
+    await m.getByTestId('vocab-primary').waitFor();
     check('popup: Bangla meaning first (bn)', (await m.getByTestId('vocab-primary').innerText()).trim() === view.bn, view.bn);
     check('popup: English meaning too', (await m.getByTestId('vocab-secondary').innerText()).trim() === view.en, view.en);
     const ctx = await m.getByTestId('vocab-context').innerText();
@@ -87,12 +90,44 @@ async function main() {
     check('save: card switches to Saved', true);
     await m.getByTestId('vocab-card').getByRole('button', { name: 'এখন না' }).click();
 
-    // A plain word still opens the normal dictionary card
-    const plain = m.getByTestId('library-passage').locator('button:not([data-testid="vocab-word"])').nth(3);
-    await plain.click();
-    await m.getByRole('dialog').waitFor();
-    check('plain word: dictionary card opens inside the screen', await m.getByRole('dialog').locator('> div').boundingBox().then((b) => !!b && b.y >= 0 && b.y + b.height <= 740.5 && b.x >= 0 && b.x + b.width <= 360.5));
-    await m.keyboard.press('Escape');
+    // Every word is clickable: the words inside the passage buttons are exactly the passage's words
+    const buttonWords = (await m.getByTestId('library-passage').locator('button').allInnerTexts()).flatMap((x) => tokenize(x).filter((t) => t.isWord).map((t) => t.text));
+    const passageWords = p1.paragraphs.flatMap((x) => tokenize(x).filter((t) => t.isWord).map((t) => t.text));
+    check('every word: all passage words are clickable', buttonWords.join(' ') === passageWords.join(' '), `${buttonWords.length}/${passageWords.length}`);
+    check('every word: key words stay underlined', (await m.getByTestId('vocab-word').first().evaluate((e) => getComputedStyle(e).textDecorationLine)).includes('underline'));
+
+    // Any other word: Mino loading → contextual meaning, in the page, cached per word
+    const wordCalls: string[] = [];
+    m.on('request', (r) => r.url().includes('/api/mino/word-meaning') && wordCalls.push(r.postData() ?? ''));
+    const article = m.getByTestId('library-passage');
+    const before = await article.boundingBox();
+    const url = m.url();
+    const plainWord = (w: string, i = 0) => article.locator('button:not([data-testid="vocab-word"])', { hasText: new RegExp(`^${w}$`) }).nth(i);
+    await plainWord('female').click();
+    check('word: Mino loading animation shows', await m.getByTestId('mino-word-loading').waitFor({ timeout: 3000 }).then(() => true, () => false));
+    await m.getByTestId('meaning-bn').waitFor({ timeout: 30_000 });
+    check('word: stays on the reading page (no dictionary / Mino page)', m.url() === url);
+    check('word: contextual Bangla meaning', (await m.getByTestId('meaning-bn').innerText()).includes('মাদি'));
+    check('word: English meaning', (await m.getByTestId('meaning-en').innerText()).length > 5);
+    check('word: part of speech', (await m.getByTestId('meaning-pos').innerText()).trim() === 'adjective');
+    check('word: context meaning in Bangla (bn)', /এই বাক্যে/.test(await m.getByTestId('meaning-context').innerText()));
+    check('word: card inside the phone screen', await inViewport(m, 'meaning-card'));
+    check('word: no layout shift', JSON.stringify(await article.boundingBox()) === JSON.stringify(before));
+    check('word: no horizontal scroll', await noHorizontalScroll(m));
+    await sleep(300);
+    await shot(m, 'rl-word-bn-mobile', false);
+
+    await plainWord('sand').click();
+    await m.getByTestId('meaning-word').filter({ hasText: /^sand$/i }).waitFor({ timeout: 30_000 });
+    check('word: one card at a time (new word replaces it)', (await m.getByTestId('meaning-card').count()) === 1);
+    await plainWord('female', 1).click();
+    await m.getByTestId('meaning-bn').filter({ hasText: 'মাদি' }).waitFor({ timeout: 10_000 });
+    check('cache: the same word again makes no new AI request', wordCalls.length === 2, wordCalls.length);
+    await m.getByTestId('meaning-card').getByRole('button', { name: 'Save to Brain' }).click();
+    await m.getByTestId('meaning-card').getByRole('link', { name: /Saved/ }).waitFor({ timeout: 20_000 });
+    check('word: Mino meaning saves to Brain', true);
+    await m.getByTestId('meaning-close').click();
+    check('word: close button closes the card', (await m.getByTestId('meaning-card').count()) === 0);
 
     // Questions: all right except one, autosave, reload
     const qs = flatten(p1);
@@ -127,9 +162,15 @@ async function main() {
     await m.reload({ waitUntil: 'load' });
     await m.getByTestId('library-result').waitFor({ timeout: 60_000 });
     check('reload: checked result persists', true);
+    const callsBefore = wordCalls.length;
+    await plainWord('female').click();
+    await m.getByTestId('meaning-bn').waitFor({ timeout: 10_000 });
+    check('cache: survives a reload in this session (no new request)', wordCalls.length === callsBefore, wordCalls.length - callsBefore);
+    await m.getByTestId('meaning-close').click();
 
     // Notebook shows the saved word (existing vocabulary system, no parallel list)
     await m.goto(BASE + '/ielts/vocabulary/notebook', { waitUntil: 'load' });
+    await m.getByText('female', { exact: true }).first().waitFor({ timeout: 30_000 }).then(() => check('notebook: Mino word appears in My Brain', true)).catch((e) => check('notebook: Mino word appears in My Brain', false, e));
     await m.getByText(v.lemma, { exact: true }).first().waitFor({ timeout: 30_000 }).then(() => check('notebook: saved word appears in My Brain', true)).catch((e) => check('notebook: saved word appears in My Brain', false, e));
 
     // List shows progress
@@ -157,6 +198,16 @@ async function main() {
     check('en popup: Bangla too', (await d.getByTestId('vocab-secondary').innerText()).trim() === view17.bn);
     check('en popup: inside the screen', await inViewport(d, 'vocab-card'));
     await d.keyboard.press('Escape');
+    const art17 = d.getByTestId('library-passage');
+    const artBox = (await art17.boundingBox())!;
+    await art17.locator('button:not([data-testid="vocab-word"])', { hasText: /^material$/ }).first().click();
+    await d.getByTestId('meaning-en').waitFor({ timeout: 30_000 });
+    check('en word: English context meaning', /Here "material"/.test(await d.getByTestId('meaning-context').innerText()));
+    const cardBox = (await d.getByTestId('meaning-card').locator('> div').boundingBox())!;
+    check('en word: card sits beside the passage, not over it', cardBox.x >= artBox.x + artBox.width, `${cardBox.x} vs ${artBox.x + artBox.width}`);
+    check('en word: no layout shift', JSON.stringify(await art17.boundingBox()) === JSON.stringify(artBox));
+    await shot(d, 'rl-word-en-desktop', false);
+    await d.keyboard.press('Escape');
     await answerAll(d, flatten(p17));
     await d.getByTestId('library-check').click();
     await d.getByTestId('library-result').waitFor();
@@ -168,6 +219,8 @@ async function main() {
     // Legacy passage still works
     await d.goto(`${BASE}/ielts/reading/${PASSAGES[0].id}`, { waitUntil: 'load' });
     await d.getByRole('button', { name: /Finish reading/ }).waitFor({ timeout: 60_000 }).then(() => check('legacy passage still opens', true)).catch((e) => check('legacy passage still opens', false, e));
+    await d.locator('article button').nth(5).click();
+    await d.getByTestId('meaning-en').waitFor({ timeout: 30_000 }).then(() => check('legacy passage: Mino meaning card works', true)).catch((e) => check('legacy passage: Mino meaning card works', false, e));
 
     // English mobile: table questions stack without sideways scroll
     const em = await (await browser.newContext({ viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true })).newPage();

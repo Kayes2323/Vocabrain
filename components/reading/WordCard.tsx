@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import type { WordInfo } from '@/lib/models';
 import { cn } from '@/lib/utils';
+import { CardFrame } from './CardFrame';
 import { canSpeak, speakWord } from './speak';
 
 export interface WordCardProps {
@@ -44,12 +45,7 @@ export function WordCard({ token, sentence, info, loading, savedId, saving, onSa
   const secondaryMeaning = locale === 'bn' ? (info?.meaningBn ? info?.meaning : undefined) : info?.meaning ? info?.meaningBn : undefined;
 
   return (
-    <div
-      role="dialog"
-      aria-label={token}
-      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-50 px-3 pb-3 md:bottom-6 md:left-60"
-    >
-      <div className="mx-auto max-h-[min(56dvh,34rem)] max-w-lg animate-in overflow-y-auto overscroll-contain rounded-2xl border bg-card p-4 shadow-lg duration-200 slide-in-from-bottom-4 fade-in">
+    <CardFrame label={token}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -108,7 +104,6 @@ export function WordCard({ token, sentence, info, loading, savedId, saving, onSa
           </Button>
         </div>
         {extra}
-      </div>
-    </div>
+    </CardFrame>
   );
 }

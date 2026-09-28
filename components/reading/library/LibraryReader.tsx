@@ -9,16 +9,17 @@ import { Callout, PageHeader, Panel, StatusChip } from '@/components/ds';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { lemmaCandidates, lookupWord, unknownWordInfo } from '@/lib/content/dictionary';
+import { lemmaCandidates, unknownWordInfo } from '@/lib/content/dictionary';
 import {
   LEXICON, LIBRARY, flatten, nextPassage, paragraphLetter, questionCount, scorePassage, segmentParagraph, vocabView, vocabWordInfo,
   type LibraryPassage, type PassageVocab, type VocabView,
 } from '@/lib/content/reading-library';
 import { markActivityDone, wordId } from '@/lib/engine';
-import type { WordInfo, WordSource } from '@/lib/models';
+import type { WordSource } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { sentenceAt, tokenize } from '../tokenize';
-import { WordCard } from '../WordCard';
+import { MeaningCard } from '../MeaningCard';
+import { meaningWordInfo, resultLemma, useMeaningLookup } from '../word-meaning';
 import { Questions } from './Questions';
 import { VocabCard } from './VocabCard';
 
@@ -42,10 +43,10 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
   const [answers, setAnswers] = useState<Record<string, string>>(() => stored?.answers ?? {});
   const [checked, setChecked] = useState<boolean>(() => !!stored?.checked);
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [info, setInfo] = useState<WordInfo | undefined>();
-  const [loading, setLoading] = useState(false);
+  const [vocabReady, setVocabReady] = useState(false);
   const [saving, setSaving] = useState(false);
-  const requestId = useRef(0);
+  const meaning = useMeaningLookup(passage.id);
+  const vocabTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   const total = questionCount(passage);
@@ -123,24 +124,22 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
   const pickVocab = (key: string, v: PassageVocab, surface: string, sentence: string) => {
     const lex = LEXICON[v.lemma];
     if (!lex) return;
-    requestId.current++;
-    setInfo(undefined);
-    setLoading(false);
+    meaning.cancel();
     setSelection({ kind: 'vocab', key, view: vocabView(lex, v), surface, sentence });
+    // Key words are written in the lexicon; Mino's short loading keeps every word click the same.
+    setVocabReady(false);
+    if (vocabTimer.current) clearTimeout(vocabTimer.current);
+    vocabTimer.current = setTimeout(() => setVocabReady(true), 300);
   };
 
-  const pickWord = async (key: string, token: string, sentence: string) => {
+  /** Any other word: Mino explains it in this sentence (once per word per passage, then cached). */
+  const pickWord = (key: string, token: string, sentence: string) => {
     setSelection({ kind: 'word', key, token, sentence });
-    setInfo(undefined);
-    setLoading(true);
-    const id = ++requestId.current;
-    // A library word used without its highlight here: show the same lexicon entry (one entry per word).
-    const lex = lemmaCandidates(token).map((c) => LEXICON[c]).find(Boolean);
-    const result = lex ? vocabWordInfo(vocabView(lex, { lemma: lex.lemma, match: [], ctx: { en: '', bn: '' } })) : await lookupWord(token);
-    if (id !== requestId.current) return;
-    setInfo(result);
-    setLoading(false);
+    void meaning.lookup(token, sentence);
   };
+  useEffect(() => () => {
+    if (vocabTimer.current) clearTimeout(vocabTimer.current);
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setSelection(null);
@@ -153,7 +152,13 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
     if (!selection) return;
     setSaving(true);
     try {
-      const wordInfo = selection.kind === 'vocab' ? vocabWordInfo(selection.view) : (info ?? unknownWordInfo(selection.token));
+      const r = meaning.result;
+      const wordInfo =
+        selection.kind === 'vocab'
+          ? vocabWordInfo(selection.view)
+          : r?.kind === 'mino'
+            ? meaningWordInfo(r.meaning)
+            : (r?.info ?? unknownWordInfo(selection.token));
       const word = await brain.save(wordInfo, source, selection.sentence);
       toast.success(t('reading.savedToast', { word: word.word }));
     } catch {
@@ -166,7 +171,8 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
   const savedId = (() => {
     if (!selection) return undefined;
     if (selection.kind === 'vocab') return brain.words.find((w) => w.lemma === selection.view.lemma)?.id;
-    return brain.words.find((w) => lemmaCandidates(selection.token).includes(w.lemma) || (info && w.id === wordId(info.lemma)))?.id;
+    const lemma = resultLemma(meaning.result);
+    return brain.words.find((w) => lemmaCandidates(selection.token).includes(w.lemma) || (lemma && w.id === wordId(lemma)))?.id;
   })();
 
   const askMino = selection && (
@@ -308,6 +314,7 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
       {selection?.kind === 'vocab' && (
         <VocabCard
           view={selection.view}
+          loading={!vocabReady}
           surface={selection.surface}
           sentence={selection.sentence}
           savedId={savedId}
@@ -318,11 +325,9 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
         />
       )}
       {selection?.kind === 'word' && (
-        <WordCard
+        <MeaningCard
           token={selection.token}
-          sentence={selection.sentence}
-          info={info}
-          loading={loading}
+          result={meaning.result}
           savedId={savedId}
           saving={saving}
           onSave={save}

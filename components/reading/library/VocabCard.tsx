@@ -7,6 +7,9 @@ import { StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import type { VocabView } from '@/lib/content/reading-library';
 import { canSpeak, speakWord } from '../speak';
+import { CardFrame } from '../CardFrame';
+import { MinoLoading } from '../MeaningCard';
+
 
 interface VocabCardProps {
   view: VocabView;
@@ -18,6 +21,8 @@ interface VocabCardProps {
   onSave: () => void;
   onDismiss: () => void;
   extra?: React.ReactNode;
+  /** Mino's short loading before the card fills in. */
+  loading?: boolean;
 }
 
 function Highlighted({ sentence, token }: { sentence: string; token: string }) {
@@ -38,19 +43,13 @@ function Highlighted({ sentence, token }: { sentence: string; token: string }) {
  * bottom of the screen and scrolls inside itself, so it never leaves the
  * viewport or covers the whole passage.
  */
-export function VocabCard({ view, surface, sentence, savedId, saving, onSave, onDismiss, extra }: VocabCardProps) {
+export function VocabCard({ view, surface, sentence, savedId, saving, onSave, onDismiss, extra, loading }: VocabCardProps) {
   const { t, locale } = useLocale();
   const bnFirst = locale === 'bn';
   const tierTone = view.tier === 'core' ? 'success' : view.tier === 'useful' ? 'brand' : 'warning';
 
   return (
-    <div
-      role="dialog"
-      aria-label={view.lemma}
-      data-testid="vocab-card"
-      className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-50 px-3 pb-3 md:bottom-6 md:left-60"
-    >
-      <div className="mx-auto max-h-[min(56dvh,34rem)] max-w-lg animate-in overflow-y-auto overscroll-contain rounded-2xl border bg-card p-4 shadow-lg duration-200 slide-in-from-bottom-4 fade-in">
+    <CardFrame label={view.lemma} testId="vocab-card">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -73,6 +72,10 @@ export function VocabCard({ view, surface, sentence, savedId, saving, onSave, on
           </Button>
         </div>
 
+        {loading ? (
+          <MinoLoading word={surface} />
+        ) : (
+        <>
         <div className="mt-3 space-y-3 text-[15px]">
           <div className="space-y-0.5">
             <p className="font-medium" data-testid="vocab-primary" lang={bnFirst ? 'bn' : 'en'}>
@@ -129,7 +132,8 @@ export function VocabCard({ view, surface, sentence, savedId, saving, onSave, on
           </Button>
         </div>
         {extra}
-      </div>
-    </div>
+        </>
+        )}
+    </CardFrame>
   );
 }

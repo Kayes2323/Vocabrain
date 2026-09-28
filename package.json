@@ -11,6 +11,7 @@
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
     "test:reading-library": "npx -y tsx scripts/test-reading-library.ts",
+    "test:word-meaning": "npx -y tsx scripts/test-word-meaning.ts",
     "test:vocab-foundation": "npx -y tsx scripts/test-vocab-foundation.ts",
     "test:mino-knowledge": "npx -y tsx scripts/test-mino-knowledge.ts",
     "test:mino-motion": "npx -y tsx scripts/test-mino-motion.ts",

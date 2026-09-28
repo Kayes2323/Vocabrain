@@ -37,6 +37,27 @@ http
         res.end(JSON.stringify({ candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5, totalTokenCount: 15 } }));
       };
 
+      if (b.generationConfig?.responseMimeType === 'application/json' && /Word meaning in context/.test(system)) {
+        // Reading word lookups: a contextual meaning for the clicked word, in the prompt's JSON shape.
+        const text = b.contents?.[0]?.parts?.[0]?.text ?? '';
+        const word = (text.match(/<word>([\s\S]*?)<\/word>/) ?? [])[1] ?? '';
+        const sentence = (text.match(/<sentence>([\s\S]*?)<\/sentence>/) ?? [])[1] ?? '';
+        const known = {
+          female: { pos: 'adjective', bn: 'স্ত্রী / মাদি', en: 'of the sex that lays eggs or gives birth' },
+        };
+        const k = known[word.toLowerCase()] ?? { pos: 'word', bn: `“${word}” শব্দের অর্থ`, en: `the meaning of "${word}" here` };
+        return reply([{ text: JSON.stringify({
+          word,
+          lemma: word.toLowerCase(),
+          partOfSpeech: k.pos,
+          bn: k.bn,
+          en: k.en,
+          contextBn: `এই বাক্যে “${word}” মানে ${k.bn}।`,
+          contextEn: `Here "${word}" means ${k.en}. (${sentence.length} chars of context)`,
+          example: `An example with ${word}.`,
+          exampleBn: `${word} দিয়ে একটা উদাহরণ।`,
+        }) }]);
+      }
       if (b.generationConfig?.responseMimeType === 'application/json') {
         const student = (b.contents?.[0]?.parts?.[0]?.text.match(/<student>([\s\S]*)<\/student>/) ?? [])[1] ?? '';
         const bn = /natural Bangla/.test(system);

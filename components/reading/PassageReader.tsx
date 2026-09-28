@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Callout, Panel, StatusChip } from '@/components/ds';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { lookupWord, unknownWordInfo } from '@/lib/content/dictionary';
+import { unknownWordInfo } from '@/lib/content/dictionary';
 import type { Passage } from '@/lib/content/passages';
 import { lemmaCandidates } from '@/lib/content/dictionary';
 import { wordId } from '@/lib/engine';
-import type { WordInfo } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { sentenceAt, tokenize } from './tokenize';
-import { WordCard } from './WordCard';
+import { MeaningCard } from './MeaningCard';
+import { meaningWordInfo, resultLemma, useMeaningLookup } from './word-meaning';
 
 interface Selection {
   key: string;
@@ -27,27 +27,20 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
   const { t } = useLocale();
   const brain = useBrain();
   const [selection, setSelection] = useState<Selection | null>(null);
-  const [info, setInfo] = useState<WordInfo | undefined>();
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedHere, setSavedHere] = useState<string[]>([]);
-  const requestId = useRef(0);
+  const meaning = useMeaningLookup(passage.id);
 
   const savedLemmas = new Set(brain.words.map((w) => w.lemma));
   const isSaved = (token: string) => lemmaCandidates(token).some((c) => savedLemmas.has(c));
 
+  // Any word: Mino explains it in this sentence (cached per word for this passage).
   const select = useCallback(
-    async (key: string, token: string, sentence: string) => {
+    (key: string, token: string, sentence: string) => {
       setSelection({ key, token, sentence });
-      setInfo(undefined);
-      setLoading(true);
-      const id = ++requestId.current;
-      const result = await lookupWord(token, passage.glossary);
-      if (id !== requestId.current) return;
-      setInfo(result);
-      setLoading(false);
+      void meaning.lookup(token, sentence);
     },
-    [passage.glossary],
+    [meaning],
   );
 
   useEffect(() => {
@@ -60,8 +53,9 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
     if (!selection) return;
     setSaving(true);
     try {
+      const r = meaning.result;
       const word = await brain.save(
-        info ?? unknownWordInfo(selection.token),
+        r?.kind === 'mino' ? meaningWordInfo(r.meaning) : (r?.info ?? unknownWordInfo(selection.token)),
         { type: 'reading-passage', title: passage.title, passageId: passage.id, licenseStatus: passage.licenseStatus },
         selection.sentence,
       );
@@ -75,7 +69,7 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
   };
 
   const selectedSavedId = selection
-    ? brain.words.find((w) => lemmaCandidates(selection.token).includes(w.lemma) || (info && w.id === wordId(info.lemma)))?.id
+    ? brain.words.find((w) => lemmaCandidates(selection.token).includes(w.lemma) || (resultLemma(meaning.result) && w.id === wordId(resultLemma(meaning.result)!)))?.id
     : undefined;
 
   return (
@@ -127,11 +121,9 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
       </p>
 
       {selection && (
-        <WordCard
+        <MeaningCard
           token={selection.token}
-          sentence={selection.sentence}
-          info={info}
-          loading={loading}
+          result={meaning.result}
           savedId={selectedSavedId}
           saving={saving}
           onSave={save}

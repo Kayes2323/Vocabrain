@@ -55,7 +55,7 @@ export const APP_GUIDES: AppGuide[] = [
     where: 'IELTS → Reading (/ielts/reading)',
     steps: [
       '20 original Mino passages in IELTS Academic style, written to Cambridge-level difficulty but not copied from any published test: 6 Foundation, 8 Intermediate, 6 Advanced. Topics include wildlife, agriculture, education, health, technology, culture, psychology, history, environment, economics, space, architecture, human behaviour, climate, archaeology, innovation, science, urban development, future technology and society.',
-      'Highlighted words show their meaning in THIS passage (Bangla and English), a simple definition, an example with its Bangla, the word type, synonyms and a tier (Core / Useful / Advanced). Any other word can be tapped for a dictionary meaning.',
+      'Every word in a passage can be tapped. Underlined key words show their meaning in THIS passage from the Mino lexicon (Bangla and English, example with its Bangla, word type, synonyms, tier Core / Useful / Advanced). Any other word: Mino shows a short loading animation and then, in a card on the same page, its Bangla meaning, a simple English meaning, part of speech, its meaning in this sentence and a short example. A word is explained once per passage and then reused (no repeated AI call). Nothing opens a separate dictionary page.',
       '"Save to Brain" saves the word to the same My Brain notebook and review schedule, with the passage sentence.',
       'Each passage has 10–17 IELTS-style questions (TRUE/FALSE/NOT GIVEN, YES/NO/NOT GIVEN, multiple choice, choose TWO, matching headings, matching information, matching names, sentence / summary / note / table completion, short answer). Answers save automatically; "Check answers" shows each answer with an explanation, in Bangla when the answer was wrong.',
       'Levels are a guide, never a lock: after 3 checked passages at a level the next level is suggested. There is no ranking or points; the result is simply how many answers were correct.',
@@ -69,7 +69,7 @@ export const APP_GUIDES: AppGuide[] = [
     where: 'IELTS → Reading (/ielts/reading)',
     steps: [
       'Open a passage and read.',
-      'Tap any word you don’t know: a card shows its meaning (English and Bangla), synonyms and collocations.',
+      'Tap any word you don’t know: Mino shows its meaning in that sentence (Bangla and English), part of speech and a short example, on the same page.',
       'Tap "Save to Brain". The word is saved with the exact sentence where you met it and the passage as its source.',
       'Saved words appear in My Brain and come back in Review on a spaced schedule.',
     ],

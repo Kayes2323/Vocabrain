@@ -84,3 +84,24 @@ export async function vocabFeedback(
     return { ok: false, error: 'unavailable' };
   }
 }
+
+/** Mino explains one word of a reading passage in its sentence (signed-in students only). */
+export async function wordMeaning(
+  passageId: string,
+  word: string,
+  sentence: string,
+): Promise<{ ok: true; meaning: import('./server/assess/word-meaning').WordMeaning; cached: boolean } | { ok: false; error: import('./types').MinoErrorCode }> {
+  const user = auth?.currentUser;
+  if (!user) return { ok: false, error: 'unauthenticated' };
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/mino/word-meaning', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ passageId, word, sentence }),
+    });
+    return (await res.json().catch(() => ({ ok: false, error: 'unavailable' }))) as never;
+  } catch {
+    return { ok: false, error: 'unavailable' };
+  }
+}

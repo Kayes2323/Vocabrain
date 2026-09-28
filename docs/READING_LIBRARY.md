@@ -44,10 +44,33 @@ listed under "Short vocabulary readings".
   important person, *issue*, *develop*, *driver* = a main cause). Only that
   one meaning is shown, never a dump of every meaning.
 - Tiers: Core / Useful / Advanced. Very common words are not highlighted
-  but can still be tapped for a dictionary meaning.
+  but can still be tapped: Mino explains them (see below).
 - "Save to Brain" uses the existing Brain (`useBrain().save`) with the
   context meaning, Bangla meaning, example and the passage sentence; the
   word appears in My Brain and in Review. There is no separate list.
+
+## Every word is clickable (Mino contextual meanings)
+
+- Key words (`vocab`) are underlined and use the lexicon (instant, curated).
+- Every other word is a button too. A click shows Mino's small loading
+  animation inside the card, then Mino's meaning **for that sentence**:
+  Bangla meaning, simple English meaning, part of speech, the meaning in this
+  sentence and a short example. No page change.
+- Flow: `components/reading/word-meaning.ts` (`useMeaningLookup`) →
+  `lib/ai/client.ts` `wordMeaning()` → `POST /api/mino/word-meaning` →
+  `lib/ai/server/assess/word-meaning.ts` (Gemini, fast tier, JSON).
+- The route requires a signed-in student, accepts only a sentence that is
+  really in that passage (library or legacy), has its own rate limit
+  (`checkWordLookupLimit`: 30/min, 400/day) and keeps a server-side cache of
+  recent explanations. The Gemini key stays on the server.
+- The browser caches one explanation per word per passage (memory +
+  sessionStorage), so clicking the same word again makes no new request.
+- If Mino is unavailable the card falls back to the dictionary meaning.
+- Works for every current and future passage automatically: nothing has to be
+  written per word.
+- The card floats (bottom sheet on phones, beside the passage on wide
+  screens), so the passage never moves; one card at a time.
+- "Save to Brain" saves Mino's meaning to the existing My Brain.
 
 ## Questions
 
