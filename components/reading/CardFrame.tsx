@@ -33,7 +33,16 @@ export function CardFrame({ label, testId, children, className }: { label: strin
  * If the word the student tapped ends up behind the card, scroll just enough
  * to show it above the card. Text never moves inside the page.
  */
+let pending: number[] = [];
+
+/** Stops any visibility checks still waiting from an earlier tap (a newer tap or a closed card). */
+export function stopKeepingVisible() {
+  pending.forEach((t) => window.clearTimeout(t));
+  pending = [];
+}
+
 export function keepWordVisible(word: HTMLElement | null) {
+  stopKeepingVisible();
   if (!word) return;
   const check = () => {
     const card = document.querySelector<HTMLElement>('[data-reading-card] > div');
@@ -47,5 +56,5 @@ export function keepWordVisible(word: HTMLElement | null) {
     window.scrollTo({ top: Math.max(0, wordBottom - c.top + 24), behavior: 'smooth' });
   };
   // Check again as the card fills in (loading → meaning makes it taller).
-  for (const ms of [260, 700, 1300, 2500]) window.setTimeout(check, ms);
+  pending = [260, 700, 1300, 2500].map((ms) => window.setTimeout(check, ms));
 }
