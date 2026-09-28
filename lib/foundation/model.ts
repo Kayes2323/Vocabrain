@@ -36,7 +36,8 @@ export type ErrorTag =
   | 'countable'
   | 'common-error'
   | 'ielts-basics'
-  | 'writing';
+  | 'writing'
+  | 'speaking';
 
 /** The job a word does in a sentence. Mistakes record the job expected and the job chosen. */
 export type Pos = 'noun' | 'pronoun' | 'verb' | 'adjective' | 'adverb' | 'preposition' | 'conjunction' | 'interjection' | 'determiner';

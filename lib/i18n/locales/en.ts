@@ -372,7 +372,7 @@ export const en = {
       'sentence-structure': 'sentence structure', subject: 'subject', verb: 'verb', object: 'object', tense: 'tense', 'word-form': 'word form',
       article: 'article', agreement: 'subject–verb agreement', preposition: 'preposition', connector: 'connector',
       'complex-sentence': 'complex sentence', punctuation: 'punctuation', plural: 'singular/plural', vocabulary: 'vocabulary',
-      collocation: 'collocation', reading: 'reading', listening: 'listening', countable: 'countable/uncountable', 'common-error': 'common errors', 'ielts-basics': 'IELTS basics', writing: 'writing',
+      collocation: 'collocation', reading: 'reading', listening: 'listening', countable: 'countable/uncountable', 'common-error': 'common errors', 'ielts-basics': 'IELTS basics', writing: 'writing', speaking: 'speaking',
     },
     module: {
       ieltsLink: 'Where this helps in IELTS',

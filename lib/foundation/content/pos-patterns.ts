@@ -94,6 +94,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'wr-task-response': { title: l('Answering the exact Task 2 question', 'Task 2-এর ঠিক প্রশ্নের উত্তর'), modules: ['writing-foundation'] },
   'wr-paragraph-unit': { title: l('Developed paragraphs', 'বিকশিত paragraph'), modules: ['writing-foundation'] },
   'wr-cohesion-word': { title: l('Cohesion and natural word choice', 'Cohesion আর স্বাভাবিক word বাছাই'), modules: ['writing-foundation'] },
+  'sp-format-fact': { title: l('Speaking parts, timing and criteria', 'Speaking-এর অংশ, সময় আর criteria'), modules: ['speaking-foundation'] },
+  'sp-extend': { title: l('Extending Part 1 answers', 'Part 1-এর উত্তর বাড়ানো'), modules: ['speaking-foundation'] },
+  'sp-long-turn': { title: l('The Part 2 long turn', 'Part 2-এর long turn'), modules: ['speaking-foundation'] },
+  'sp-discussion': { title: l('Part 3 opinions, comparing and speculating', 'Part 3-এর মতামত, তুলনা আর অনুমান'), modules: ['speaking-foundation'] },
+  'sp-natural': { title: l('Fluency and natural spoken language', 'Fluency আর স্বাভাবিক কথ্য ভাষা'), modules: ['speaking-foundation'] },
+  'sp-pronunciation': { title: l('Stress, endings and clear sounds', 'Stress, ending আর পরিষ্কার ধ্বনি'), modules: ['speaking-foundation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -750,6 +756,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('More linkers and rarer words are thought to mean a higher band.', 'বেশি linker আর বিরল word মানে বেশি band — এমন ধারণা।'),
     recognise: l('Look at the start of each sentence: is it "Moreover" again? Is a noun repeated?', 'প্রতিটা sentence-এর শুরু দেখুন: আবার "Moreover"? কোনো noun-এর পুনরাবৃত্তি?'),
     avoid: l('Learn words with their partners (play a role, make an effort, have an effect).', 'Word-কে সঙ্গীসহ শিখুন (play a role, make an effort, have an effect)।'),
+  },
+  'sp-format-fact': {
+    rule: l('Speaking: 11–14 minutes, face to face with an examiner (also in computer-delivered IELTS), 3 parts. Part 1 (4–5 min) familiar topics; Part 2 a cue card, 1 minute to prepare, 1–2 minutes to speak; Part 3 (4–5 min) a deeper discussion. Four equal criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation.', 'Speaking: ১১–১৪ মিনিট, examiner-এর সাথে সামনাসামনি (computer-delivered IELTS-এও), ৩ অংশ। Part 1 (৪–৫ মিনিট) পরিচিত বিষয়; Part 2 cue card, ১ মিনিট প্রস্তুতি, ১–২ মিনিট বলা; Part 3 (৪–৫ মিনিট) গভীর আলোচনা। চারটা সমান criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation।'),
+    why: l('Myths fill the gaps: a computer interview, a longer test, or a native accent being needed.', 'ভুল ধারণা ফাঁক পূরণ করে: computer-এ interview, লম্বা test, বা native accent লাগবে।'),
+    recognise: l('Can you say what happens in each part, and for how long?', 'প্রতিটা অংশে কী হয় আর কতক্ষণ — বলতে পারেন?'),
+    avoid: l('Practise with the real timings: 1 minute notes, 1–2 minutes speaking.', 'প্রকৃত সময়ে practice করুন: ১ মিনিট note, ১–২ মিনিট বলা।'),
+  },
+  'sp-extend': {
+    rule: l('Part 1: answer the exact question, then add a reason and a detail or example — about 2–3 natural sentences — and match the tense of the question (Do you → present, Did you → past).', 'Part 1: ঠিক প্রশ্নের উত্তর দিন, তারপর কারণ আর detail বা উদাহরণ যোগ করুন — প্রায় ২–৩টা স্বাভাবিক sentence — আর প্রশ্নের tense মেলান (Do you → present, Did you → past)।'),
+    why: l('Short answers feel safe, and the tense is taken from habit instead of the question.', 'ছোট উত্তর নিরাপদ মনে হয়, আর tense প্রশ্ন থেকে না নিয়ে অভ্যাস থেকে আসে।'),
+    recognise: l('Did you stop after one word, or answer "Did you…" in the present?', 'এক word-এ থেমেছেন, নাকি "Did you…"-এর উত্তর present-এ দিয়েছেন?'),
+    avoid: l('Think "answer → because → for example" for every question.', 'প্রতিটা প্রশ্নে ভাবুন "উত্তর → because → for example"।'),
+  },
+  'sp-long-turn': {
+    rule: l('Part 2: use the minute for key words on every prompt (not a script), speak through the prompts in order for 1–2 minutes, follow the card’s tense, and add a reason, a memory or a comparison if you finish early.', 'Part 2: মিনিটটা প্রতিটা prompt-এর key word-এ দিন (script নয়), ক্রমে ১–২ মিনিট বলুন, card-এর tense মানুন, আর আগে শেষ হলে একটা কারণ, স্মৃতি বা তুলনা যোগ করুন।'),
+    why: l('Full sentences are written in the minute, or a prepared talk replaces the real card.', 'মিনিটে পুরো sentence লেখা হয়, বা প্রস্তুত কথা আসল card-এর জায়গা নেয়।'),
+    recognise: l('Do your notes cover every prompt in two or three words each?', 'আপনার note কি প্রতিটা prompt দুই-তিন word-এ ধরে?'),
+    avoid: l('Practise with a timer: 1 minute notes, 2 minutes speaking.', 'Timer দিয়ে practice: ১ মিনিট note, ২ মিনিট বলা।'),
+  },
+  'sp-discussion': {
+    rule: l('Part 3: talk about people in general, give an opinion with a reason, compare (then / now, places, groups) and speculate with tentative language (likely, might, I’d imagine). Any reasonable opinion is fine.', 'Part 3: সাধারণভাবে মানুষ নিয়ে বলুন, কারণসহ মতামত দিন, তুলনা করুন (তখন / এখন, জায়গা, দল) আর অনিশ্চিত ভাষায় অনুমান করুন (likely, might, I’d imagine)। যেকোনো যুক্তিসঙ্গত মত চলে।'),
+    why: l('General questions get personal stories, and predictions sound certain.', 'সাধারণ প্রশ্নে ব্যক্তিগত গল্প আসে, আর ভবিষ্যদ্বাণী নিশ্চিত শোনায়।'),
+    recognise: l('Is your answer about "people", or only about "I"? Did you say "definitely" about the future?', 'উত্তর কি "মানুষ" নিয়ে, নাকি শুধু "আমি"? ভবিষ্যৎ নিয়ে "definitely" বলেছেন?'),
+    avoid: l('Start with "I think the main reason is…" and add "Compared with…" or "It’s likely that…".', '"I think the main reason is…" দিয়ে শুরু করে "Compared with…" বা "It’s likely that…" যোগ করুন।'),
+  },
+  'sp-natural': {
+    rule: l('Fluency is a natural pace with connected ideas, not speed. Use short thinking phrases instead of silence, spoken links (and, but, so, because, actually), quick self-correction ("I mean…"), and natural phrases rather than essay words or forced idioms.', 'Fluency মানে যুক্ত idea-সহ স্বাভাবিক গতি, দ্রুততা নয়। নীরবতার বদলে ছোট ভাবার phrase, কথ্য link (and, but, so, because, actually), দ্রুত শোধরানো ("I mean…"), আর essay-র word বা জোর করা idiom-এর বদলে স্বাভাবিক phrase।'),
+    why: l('Writing-style English and memorised idioms are used to sound advanced.', 'Advanced শোনাতে লেখার ধরনের English আর মুখস্থ idiom ব্যবহার হয়।'),
+    recognise: l('Listen back: do you hear "Moreover", long silences or apologies?', 'শুনে দেখুন: "Moreover", লম্বা নীরবতা বা ক্ষমা চাওয়া শোনা যায়?'),
+    avoid: l('If a word will not come, paraphrase it and keep going.', 'Word মনে না পড়লে paraphrase করে চালিয়ে যান।'),
+  },
+  'sp-pronunciation': {
+    rule: l('Pronunciation means being easy to understand, not a native accent: correct word stress (it can move: PHO-to-graph → pho-TO-gra-phy), stress on key words, clear -ed (/t/ /d/ /ɪd/) and -s endings, and no extra vowel before s + consonant (school, not "ischool").', 'Pronunciation মানে সহজে বোঝা যাওয়া, native accent নয়: সঠিক word stress (সরে যেতে পারে: PHO-to-graph → pho-TO-gra-phy), মূল word-এ জোর, পরিষ্কার -ed (/t/ /d/ /ɪd/) আর -s ending, আর s + consonant-এর আগে বাড়তি vowel নয় (school, "ischool" নয়)।'),
+    why: l('Bangla rarely starts words with s + consonant and has no word-final -ed / -s pattern, so vowels are added and endings dropped.', 'বাংলায় s + consonant দিয়ে শুরু word কম আর word-শেষে -ed / -s-এর ধরন নেই, তাই vowel যোগ হয় আর ending বাদ পড়ে।'),
+    recognise: l('Record yourself: do you hear "ischool" or "Yesterday I walk"?', 'নিজেকে record করুন: "ischool" বা "Yesterday I walk" শোনা যায়?'),
+    avoid: l('Learn the stress with every new word, and read aloud daily.', 'প্রতিটা নতুন word-এর সাথে stress শিখুন, আর প্রতিদিন জোরে পড়ুন।'),
   },
 };
 

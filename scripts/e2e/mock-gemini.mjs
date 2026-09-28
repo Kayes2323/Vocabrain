@@ -303,6 +303,27 @@ http
             practice: { sentence: 'Discuss ___ views and give your own opinion.', answers: ['both'] },
           }) }]);
         }
+        const speakingRules = /IELTS Speaking feedback \(target: /.test(system);
+        if (speakingRules && /30 minutes on a computer/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace('30 minutes on a computer', '11–14 minutes, face to face with an examiner'),
+            feedback: bn ? 'ভালো চেষ্টা! Speaking examiner-এর সাথে সামনাসামনি হয়।' : 'Good try! Speaking is with an examiner, in person.',
+            fixes: [{ quote: '30 minutes on a computer', fix: '11–14 minutes, face to face with an examiner', why: bn ? 'Speaking is face to face with an examiner — computer-delivered IELTS-এও।' : 'Speaking is face to face with an examiner, even in computer-delivered IELTS.' }],
+            practice: { sentence: 'IELTS Speaking has ___ parts.', answers: ['3', 'three'] },
+          }) }]);
+        }
+        if (speakingRules && /I like my village/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: 'Many young people move to cities because most jobs and universities are there. It’s likely that this will change a little as more people work online.',
+            feedback: bn ? 'ভালো চেষ্টা! Part 3-এ সাধারণ মানুষ নিয়ে বলুন।' : 'Good try! In Part 3, talk about people in general.',
+            fixes: [{ quote: 'I like my village', fix: 'Many young people move to cities because most jobs are there', why: bn ? 'প্রশ্নটা সাধারণ — কারণসহ মতামত আর ভবিষ্যৎ নিয়ে অনুমান দিন।' : 'The question is general: give a reason and a prediction.' }],
+            practice: { sentence: 'It’s ___ that more people will work from home.', answers: ['likely', 'possible'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',

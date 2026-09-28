@@ -36,9 +36,10 @@
     "test:e2e:listening": "bash scripts/e2e/run.sh listening",
     "test:e2e:reading": "bash scripts/e2e/run.sh reading",
     "test:e2e:writing": "bash scripts/e2e/run.sh writing",
+    "test:e2e:speaking": "bash scripts/e2e/run.sh speaking",
     "test:e2e:abroad": "bash scripts/e2e/run.sh abroad",
     "test:e2e:home": "bash scripts/e2e/run.sh home",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading writing abroad home"
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading writing speaking abroad home"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

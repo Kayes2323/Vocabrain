@@ -34,6 +34,8 @@ import { READING_CONCEPTS, rdChoice, rdCompletion, rdHeadings, rdParaphrase, rdS
 import { rdReview, rdStrategy, rdTraps } from './reading-apply';
 import { WRITING_CONCEPTS, wrCohesion, wrData, wrFormat, wrOverview, wrParagraphs, wrQuestion } from './writing';
 import { wrPlan, wrReview, wrTraps } from './writing-apply';
+import { SPEAKING_CONCEPTS, spFluency, spFormat, spPart1, spPart2, spPart3, spPronunciation } from './speaking';
+import { spPlan, spReview, spTraps } from './speaking-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -258,17 +260,16 @@ export const MODULES: Module[] = [
     number: 5,
     title: t('Understanding IELTS Speaking', 'IELTS Speaking বুঝি'),
     short: t('Speaking', 'Speaking'),
-    description: t('Parts 1–3, extending answers, natural vocabulary.', 'Part 1–3, answer বাড়ানো, স্বাভাবিক vocabulary।'),
+    description: t('Parts 1–3, extending answers, fluency and clear pronunciation.', 'Part 1–3, উত্তর বাড়ানো, fluency আর পরিষ্কার pronunciation।'),
     ieltsLink: t('Natural, precise language — not memorised idioms.', 'স্বাভাবিক, নির্ভুল ভাষা — মুখস্থ idiom না।'),
     skill: 'speaking',
-    tags: [],
-    lessons: [],
-    planned: [t('How Speaking works', 'Speaking কীভাবে চলে'), t('Part 1: answer and extend', 'Part 1: answer আর বাড়ানো'), t('Part 2: the long turn', 'Part 2: long turn'), t('Part 3: opinions, comparing, speculating', 'Part 3: মতামত, তুলনা, অনুমান')],
+    tags: ['speaking'],
+    lessons: [spFormat, spPart1, spPart2, spPart3, spFluency, spPronunciation, spTraps, spPlan, spReview],
   },
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS, ...SPEAKING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

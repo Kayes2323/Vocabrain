@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 89);
+  assert.equal(CONCEPTS.length, 95);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,7 +250,7 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const writingBasics = MODULES.find((m) => m.id === 'speaking-foundation')!;
+  const writingBasics = { ...MODULES.find((m) => m.id === 'speaking-foundation')!, lessons: [] };
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
   assert.equal(stepBeforeModule(writingBasics, fp), undefined);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 14);
+  assert.equal(CHALLENGES.length, 15);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -1251,6 +1251,59 @@ test('Writing Final Mastery Challenge: 6 parts × 4 items at levels 1–3, store
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Writing Final Mastery Challenge: last 72%/);
 });
 
+test('Speaking: 8 taught v2 lessons + a review test, facts only, written practice', () => {
+  const ids = ['sp-1', 'sp-2', 'sp-3', 'sp-4', 'sp-5', 'sp-6', 'sp-7', 'sp-8', 'sp-9'];
+  const { mod, taught } = checkV2Module('speaking-foundation', ids, 'speaking', 'sp-', ids);
+  assert.equal(mod.level, 2);
+  assert.equal(mod.number, 5);
+  for (const x of taught.filter((t) => t.id !== 'sp-7' && t.id !== 'sp-8')) {
+    const c = x.steps.find((st) => st.kind === 'concept');
+    assert.ok(c && c.kind === 'concept' && c.points?.some((pt) => /Common mix-up/.test(pt.en)), `${x.id} names the common mix-up`);
+  }
+  assert.ok(MODULES.every((m) => !m.planned || m.id === 'parts-of-speech'), 'no LEVEL 2 module is left as "Soon"');
+  const sp = ex('sp-2-r3') as Extract<Exercise, { type: 'spot' }>;
+  assert.equal(grade2(sp, `${sp.wrong}:liked`), true);
+  assert.equal(grade2(ex('sp-1-r1'), '3'), true);
+  assert.equal(grade2(ex('sp-3-r1'), '1–2'), true);
+  const src = mod.lessons.map((x) => JSON.stringify(x)).join('\n');
+  assert.doesNotMatch(src, /native accent is (needed|required)/i);
+});
+
+test('Speaking: concepts are mastery-capable and reviewable; every pattern has a fix of 5 questions', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'speaking').map((c) => c.id);
+  assert.deepEqual(ids, ['sp-format', 'sp-part1', 'sp-part2', 'sp-part3', 'sp-fluency', 'sp-pron']);
+  const exs = MODULES.find((m) => m.id === 'speaking-foundation')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked answer`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'sp-4-p1', 'Yes.', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'sp-4-p2', 'Travelling is fun.', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'sp-4-p3', 'I like trains.', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'speaking-foundation', NOW).find((x) => x.pair === 'sp-discussion')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open Speaking pattern: Part 3 opinions, comparing and speculating ×3.*fix\/sp-discussion/);
+  for (const k of ['sp-format-fact', 'sp-extend', 'sp-long-turn', 'sp-discussion', 'sp-natural', 'sp-pronunciation']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'speaking' && exercisePattern(q) === k));
+  }
+});
+
+test('Speaking Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals', () => {
+  const ch = getChallenge('speaking-foundation')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  for (const i of ch.parts.flatMap((x) => x.items)) assert.equal(grade2(i, canonicalAnswer(i)), true, i.id);
+  const fp = recordFinal(empty(), { score: 64, level: 2, parts: {} }, NOW, 'speaking-foundation');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Speaking Final Mastery Challenge: last 64%/);
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -1403,6 +1456,15 @@ asyncTests.push(['Mino Writing feedback: task first, data checked against the ta
   assert.match(seen!.system!, /Never give a band score/);
   assert.match(seen!.system!, /Judge the Writing task first/);
   assert.match(seen!.system!, /Science Museum 120,000/);
+}]);
+asyncTests.push(['Mino Speaking feedback: judged as spoken practice, never claims to hear the student, no band scores', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'minor', usesTarget: true, corrected: 'x', feedback: 'ভালো!', fixes: [], practice: null }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  await assessFoundationSentence(fake, ex('sp-4-y1') as Extract<Exercise, { type: 'write' }>, 'I moved to Dhaka.', 'bn');
+  assert.match(seen!.system!, /IELTS Speaking feedback \(target: Part 3: opinions, comparing, speculating\)/);
+  assert.match(seen!.system!, /never claim to have heard them/);
+  assert.match(seen!.system!, /Never give a band score/);
+  assert.match(seen!.system!, /Judge the answer as spoken Speaking practice first/);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

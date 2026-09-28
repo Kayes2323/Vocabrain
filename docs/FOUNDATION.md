@@ -67,14 +67,15 @@ Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
 Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
 Vocabulary also links to the daily word missions).
 LEVEL 2 — IELTS Basics: What is IELTS?, Understanding IELTS Listening,
-Understanding IELTS Reading and Understanding IELTS Writing (9 lessons + a Final
-Mastery Challenge each); Speaking shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+Understanding IELTS Reading, Understanding IELTS Writing and Understanding IELTS
+Speaking (9 lessons + a Final Mastery Challenge each). Every Foundation module
+now has lessons; no module card shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
 `docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md`,
 `docs/VOCABULARY_CURRICULUM.md`, `docs/IELTS_INTRO_CURRICULUM.md`,
-`docs/LISTENING_CURRICULUM.md`, `docs/READING_CURRICULUM.md` and
-`docs/WRITING_CURRICULUM.md`.
+`docs/LISTENING_CURRICULUM.md`, `docs/READING_CURRICULUM.md`,
+`docs/WRITING_CURRICULUM.md` and `docs/SPEAKING_CURRICULUM.md`.
 
 ## Tests
 
@@ -418,6 +419,22 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   target. Mino never gives a band score here; estimated bands stay in the Writing
   practice test.
 - **E2E.** `scripts/e2e/writing.e2e.ts`.
+
+## Phase N: LEVEL 2 — Understanding IELTS Speaking
+
+- **Module** `speaking-foundation` (`speaking.ts` sp-1…sp-6, `speaking-apply.ts`
+  sp-7…sp-9), new tag `speaking`, concepts `sp-format`, `sp-part1`, `sp-part2`, `sp-part3`,
+  `sp-fluency`, `sp-pron`. Students write what they would say. See
+  `docs/SPEAKING_CURRICULUM.md`.
+- **Patterns.** `sp-format-fact`, `sp-extend`, `sp-long-turn`, `sp-discussion`,
+  `sp-natural`, `sp-pronunciation` (+ fix guides). **Challenge** `speaking-foundation`.
+- **Mino.** Speaking tasks are judged as spoken answers first (the exact question, the
+  shape each part needs, natural spoken English), then grammar. Mino comments on
+  pronunciation only through what the student wrote, never claims to have heard them, and
+  never gives a band score here.
+- **E2E.** `scripts/e2e/speaking.e2e.ts`.
+- With this module every LEVEL 1 and LEVEL 2 module has lessons; no Foundation card shows
+  "Soon" any more.
 
 ## Known issue: `pnpm lint`
 

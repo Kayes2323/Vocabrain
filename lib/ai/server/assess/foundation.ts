@@ -145,13 +145,22 @@ IELTS Writing feedback (target: ${concept.title.en}):
 - Never give a band score, and never state fees, dates or result times.
 - The follow-up gap checks the same point in a NEW sentence; the answer is one word or a number.
 `
-                              : '';
+                              : concept?.tag === 'speaking'
+                                ? `
+IELTS Speaking feedback (target: ${concept.title.en}):
+- The student has WRITTEN what they would say in the Speaking test. Judge it as a spoken answer first: does it answer the exact question or cue card, with the length and shape the part needs, in natural spoken English (not essay language, not memorised-sounding); then grammar only where it matters.
+- Facts you may rely on: 11–14 minutes, face to face with an examiner (also in computer-delivered IELTS), 3 parts; Part 1 (4–5 minutes) familiar topics, answers extended with a reason and a detail; Part 2 a cue card, 1 minute to prepare, 1–2 minutes of speaking; Part 3 (4–5 minutes) a deeper discussion linked to Part 2 with opinions, comparisons and speculation; four equally weighted criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation; pronunciation means being easy to understand, not a native accent; memorised scripts sound unnatural.
+- You cannot hear the student: comment on pronunciation only through what they wrote (stress marks, -ed / -s endings they listed), never claim to have heard them.
+- Any reasonable opinion is fine. Never give a band score, and never state fees, dates or result times.
+- The follow-up gap checks the same point in a NEW sentence; the answer is one word or a number.
+`
+                                : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
-${concept?.tag === 'ielts-basics' || concept?.tag === 'listening' || concept?.tag === 'reading' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : concept?.tag === 'writing' ? 'Judge the Writing task first, then the language (see the rules below).' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
+${concept?.tag === 'ielts-basics' || concept?.tag === 'listening' || concept?.tag === 'reading' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : concept?.tag === 'writing' ? 'Judge the Writing task first, then the language (see the rules below).' : concept?.tag === 'speaking' ? 'Judge the answer as spoken Speaking practice first, then the language (see the rules below).' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
 ${focusRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).
