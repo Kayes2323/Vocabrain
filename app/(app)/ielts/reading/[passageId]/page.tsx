@@ -5,15 +5,31 @@ import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
 import { BrainCircuit, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { EmptyState, PageHeader, StatusChip } from '@/components/ds';
+import { EmptyState, PageHeader, ScreenSkeleton, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { PassageReader } from '@/components/reading/PassageReader';
+import { LibraryReader } from '@/components/reading/library/LibraryReader';
+import { getLibraryPassage } from '@/lib/content/reading-library';
 import { getPassage } from '@/lib/content/passages';
 import { markActivityDone } from '@/lib/engine';
 
 export default function PassagePage() {
   const { passageId } = useParams<{ passageId: string }>();
+  const library = getLibraryPassage(passageId);
+  if (library) return <LibraryPassagePage passageId={passageId} />;
+  return <LegacyPassagePage passageId={passageId} />;
+}
+
+/** Reading Library passage: waits for the profile so saved answers load before the first render. */
+function LibraryPassagePage({ passageId }: { passageId: string }) {
+  const { profile } = useProfile();
+  const passage = getLibraryPassage(passageId)!;
+  if (!profile) return <ScreenSkeleton />;
+  return <LibraryReader key={passage.id} passage={passage} />;
+}
+
+function LegacyPassagePage({ passageId }: { passageId: string }) {
   const passage = getPassage(passageId);
   const { t } = useLocale();
   const { updateProfile } = useProfile();

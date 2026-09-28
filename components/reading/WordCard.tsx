@@ -18,6 +18,8 @@ export interface WordCardProps {
   saving: boolean;
   onSave: () => void;
   onDismiss: () => void;
+  /** Optional quiet action under the buttons (e.g. Ask Mino). */
+  extra?: React.ReactNode;
 }
 
 function Highlighted({ sentence, token }: { sentence: string; token: string }) {
@@ -36,7 +38,7 @@ function Highlighted({ sentence, token }: { sentence: string; token: string }) {
  * Compact word card anchored to the bottom of the screen so the passage stays
  * readable. One primary action: Save to Brain.
  */
-export function WordCard({ token, sentence, info, loading, savedId, saving, onSave, onDismiss }: WordCardProps) {
+export function WordCard({ token, sentence, info, loading, savedId, saving, onSave, onDismiss, extra }: WordCardProps) {
   const { t, locale } = useLocale();
   const primaryMeaning = locale === 'bn' ? info?.meaningBn || info?.meaning : info?.meaning || info?.meaningBn;
   const secondaryMeaning = locale === 'bn' ? (info?.meaningBn ? info?.meaning : undefined) : info?.meaning ? info?.meaningBn : undefined;
@@ -47,7 +49,7 @@ export function WordCard({ token, sentence, info, loading, savedId, saving, onSa
       aria-label={token}
       className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-50 px-3 pb-3 md:bottom-6 md:left-60"
     >
-      <div className="mx-auto max-w-lg animate-in slide-in-from-bottom-4 fade-in rounded-2xl border bg-card p-4 shadow-lg duration-200">
+      <div className="mx-auto max-h-[min(56dvh,34rem)] max-w-lg animate-in overflow-y-auto overscroll-contain rounded-2xl border bg-card p-4 shadow-lg duration-200 slide-in-from-bottom-4 fade-in">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -105,6 +107,7 @@ export function WordCard({ token, sentence, info, loading, savedId, saving, onSa
             {t('reading.dismiss')}
           </Button>
         </div>
+        {extra}
       </div>
     </div>
   );

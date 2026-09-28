@@ -1,5 +1,6 @@
 'use client';
 
+import { getLibraryPassage } from '@/lib/content/reading-library';
 import { getStudyOption, studyOptionName } from '@/lib/abroad/study-options';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -226,10 +227,23 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
     if (asked.current || !loaded) return;
     const params = new URLSearchParams(window.location.search);
     const ask = params.get('ask');
-    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa' && ask !== 'abroad-compare' && ask !== 'abroad-option') return;
+    if (ask !== 'result' && ask !== 'plan' && ask !== 'feedback' && ask !== 'abroad' && ask !== 'lesson' && ask !== 'foundation' && ask !== 'foundation-review' && ask !== 'pos-final' && ask !== 'final' && ask !== 'abroad-next' && ask !== 'abroad-fit' && ask !== 'abroad-section' && ask !== 'abroad-step' && ask !== 'abroad-unis' && ask !== 'abroad-doc' && ask !== 'abroad-visa' && ask !== 'abroad-compare' && ask !== 'abroad-option' && ask !== 'reading') return;
     asked.current = true;
     window.history.replaceState(null, '', '/mino');
-    if (ask === 'result') {
+    if (ask === 'reading') {
+      // Only a sentence that really is in a library passage is sent, word for word.
+      const passage = getLibraryPassage(params.get('passage') ?? '');
+      const sentence = (params.get('s') ?? '').slice(0, 400);
+      const word = (params.get('w') ?? '').slice(0, 60);
+      if (passage && sentence && passage.paragraphs.some((p) => p.includes(sentence))) {
+        send(
+          word && sentence.includes(word)
+            ? t('reading.lib.askPromptWord', { title: passage.title, word, sentence })
+            : t('reading.lib.askPrompt', { title: passage.title, sentence }),
+          'ielts-coach',
+        );
+      }
+    } else if (ask === 'result') {
       const skill = params.get('skill') ?? 'reading';
       send(t('mino.askResult', { test: params.get('test') ?? '', skill: t(`skills.${skill}`), date: params.get('date') ?? '' }), 'ielts-coach');
     } else if (ask === 'lesson') {

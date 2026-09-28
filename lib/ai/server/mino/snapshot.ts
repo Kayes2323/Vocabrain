@@ -103,7 +103,7 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
   const plan = buildDailyPlan(profile, brain, now);
   const tasks = plan.tasks.map((task) => `${t(task.titleKey)}${task.done ? ' ✓' : ''} (${task.minutes} min, ${task.href})`).join('; ');
   lines.push(`- Today's plan (${plan.mode}): ${tasks}.`);
-  lines.push(`- Study streak data: last active ${study.lastActiveDate ?? 'never'}; readings finished ${study.readPassages?.length ?? 0}.`);
+  lines.push(`- Study streak data: last active ${study.lastActiveDate ?? 'never'}; readings finished ${study.readPassages?.length ?? 0}; Reading Library passages checked ${Object.values(study.readingLibrary ?? {}).filter((r) => r.checked || r.score).length}.`);
 
   // Study abroad
   const abroadBits = [

@@ -200,6 +200,17 @@ export interface StudyProgress {
   lastActiveDate?: string;
   /** Passage ids the student finished reading. */
   readPassages?: string[];
+  /** Reading Library answers and results, by passage id. */
+  readingLibrary?: Record<string, ReadingLibraryProgress>;
+}
+
+/** The student's saved state for one Reading Library passage. */
+export interface ReadingLibraryProgress {
+  answers: Record<string, string>;
+  /** Answers were checked at least once. */
+  checked?: boolean;
+  score?: { correct: number; total: number };
+  updatedAt: string;
 }
 
 /** Areas the Foundation diagnostic checks. */

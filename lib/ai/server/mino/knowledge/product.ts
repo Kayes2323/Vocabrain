@@ -49,6 +49,20 @@ export interface AppGuide {
 /** Real workflows in the current build. Every `where` route must exist. */
 export const APP_GUIDES: AppGuide[] = [
   {
+    id: 'reading-library',
+    status: 'AVAILABLE',
+    title: 'IELTS Reading Library (20 original passages with questions)',
+    where: 'IELTS → Reading (/ielts/reading)',
+    steps: [
+      '20 original Mino passages in IELTS Academic style, written to Cambridge-level difficulty but not copied from any published test: 6 Foundation, 8 Intermediate, 6 Advanced. Topics include wildlife, agriculture, education, health, technology, culture, psychology, history, environment, economics, space, architecture, human behaviour, climate, archaeology, innovation, science, urban development, future technology and society.',
+      'Highlighted words show their meaning in THIS passage (Bangla and English), a simple definition, an example with its Bangla, the word type, synonyms and a tier (Core / Useful / Advanced). Any other word can be tapped for a dictionary meaning.',
+      '"Save to Brain" saves the word to the same My Brain notebook and review schedule, with the passage sentence.',
+      'Each passage has 10–17 IELTS-style questions (TRUE/FALSE/NOT GIVEN, YES/NO/NOT GIVEN, multiple choice, choose TWO, matching headings, matching information, matching names, sentence / summary / note / table completion, short answer). Answers save automatically; "Check answers" shows each answer with an explanation, in Bangla when the answer was wrong.',
+      'Levels are a guide, never a lock: after 3 checked passages at a level the next level is suggested. There is no ranking or points; the result is simply how many answers were correct.',
+      'Stuck on a sentence? The word card has "Ask Mino about this sentence". Mino then explains that sentence simply; Mino is not called for every word.',
+    ],
+  },
+  {
     id: 'save-to-brain',
     status: 'AVAILABLE',
     title: 'Save to Brain (save a word while reading)',
