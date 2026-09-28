@@ -261,6 +261,27 @@ http
             practice: { sentence: 'To show agreement, a speaker might say "___."', answers: ['Exactly', 'True'] },
           }) }]);
         }
+        const readingRules = /IELTS Reading feedback \(target: /.test(system);
+        if (readingRules && /10 extra minutes/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(' and then use 10 extra minutes to transfer my answers', ', writing my answers as I go'),
+            feedback: bn ? 'ভালো চেষ্টা! Reading-এ answer transfer-এর জন্য আলাদা সময় নেই।' : 'Good try! Reading has no extra time to transfer answers.',
+            fixes: [{ quote: 'use 10 extra minutes to transfer my answers', fix: 'write my answers within the 60 minutes', why: bn ? 'Reading-এ no extra time to transfer — ৬০ মিনিটের মধ্যেই লিখুন।' : 'There is no extra time to transfer answers in Reading, so write them within the 60 minutes.' }],
+            practice: { sentence: 'IELTS Reading gives ___ extra time to transfer answers.', answers: ['no'] },
+          }) }]);
+        }
+        if (readingRules && /Heading: One family in Khulna/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace('Heading: One family in Khulna', 'Heading: Coastal villages turn to rainwater'),
+            feedback: bn ? 'ভালো চেষ্টা! Khulna-র পরিবার শুধু একটা উদাহরণ।' : 'Good try! The Khulna family is only an example.',
+            fixes: [{ quote: 'Heading: One family in Khulna', fix: 'Heading: Coastal villages turn to rainwater', why: bn ? '"for example" দেখায় এটা উদাহরণ — heading পুরো paragraph-এর মূল idea ধরবে।' : '"for example" shows it is an example; the heading must cover the whole paragraph.' }],
+            practice: { sentence: 'A heading should match the main ___ of the paragraph.', answers: ['idea'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',

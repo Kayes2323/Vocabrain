@@ -12,6 +12,7 @@ import { COMMON_ERRORS_FINAL_PARTS } from './common-errors-final';
 import { VOCABULARY_FINAL_PARTS } from './vocabulary-final';
 import { IELTS_INTRO_FINAL_PARTS } from './ielts-intro-final';
 import { LISTENING_FINAL_PARTS } from './listening-final';
+import { READING_FINAL_PARTS } from './reading-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -106,6 +107,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Listening Final Mastery Challenge', 'Listening Final Mastery Challenge'), name: l('Listening', 'Listening'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: LISTENING_FINAL_PARTS,
     concepts: ['ls-format', 'ls-part1', 'ls-part2', 'ls-part3', 'ls-part4', 'ls-rules'],
+  },
+  {
+    id: 'reading-foundation', moduleId: 'reading-foundation', mark: 'R★', minutes: 15, areas: 'concept',
+    title: l('Reading Final Mastery Challenge', 'Reading Final Mastery Challenge'), name: l('Reading', 'Reading'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: READING_FINAL_PARTS,
+    concepts: ['rd-skim', 'rd-paraphrase', 'rd-tfng', 'rd-headings', 'rd-choice', 'rd-completion'],
   },
 ];
 

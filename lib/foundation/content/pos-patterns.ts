@@ -82,6 +82,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'ls-opinion': { title: l('Opinions and decisions in discussions', 'আলোচনায় মতামত আর সিদ্ধান্ত'), modules: ['listening-foundation'] },
   'ls-signpost': { title: l('Lecture signposts and word types', 'Lecture-এর দিকনির্দেশক আর word-এর ধরন'), modules: ['listening-foundation'] },
   'ls-answer-rules': { title: l('Word limits, plurals and spelling', 'Word-এর সীমা, plural আর বানান'), modules: ['listening-foundation'] },
+  'rd-skim-scan': { title: l('Skimming, scanning and timing', 'Skimming, scanning আর সময়'), modules: ['reading-foundation'] },
+  'rd-paraphrase-match': { title: l('Matching paraphrases', 'Paraphrase মেলানো'), modules: ['reading-foundation'] },
+  'rd-tfng-logic': { title: l('TRUE / FALSE / NOT GIVEN logic', 'TRUE / FALSE / NOT GIVEN যুক্তি'), modules: ['reading-foundation'] },
+  'rd-main-idea': { title: l('Main ideas and headings', 'মূল idea আর heading'), modules: ['reading-foundation'] },
+  'rd-option-elimination': { title: l('Eliminating options', 'Option বাদ দেওয়া'), modules: ['reading-foundation'] },
+  'rd-word-limit': { title: l('Completion word limits', 'Completion-এর word-এর সীমা'), modules: ['reading-foundation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -666,6 +672,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('A correct idea is written with an extra article, without a plural -s, or misspelled.', 'ঠিক idea বাড়তি article-সহ, plural -s ছাড়া, বা ভুল বানানে লেখা হয়।'),
     recognise: l('Count the words and read the answer inside the note’s sentence.', 'Word গুনুন আর note-এর sentence-এর ভেতরে উত্তরটা পড়ে দেখুন।'),
     avoid: l('Keep a list of words you often misspell (accommodation, environment, government).', 'প্রায়ই ভুল বানান হয় এমন word-এর তালিকা রাখুন (accommodation, environment, government)।'),
+  },
+  'rd-skim-scan': {
+    rule: l('Skim for the main idea of each paragraph (title, first sentences, key nouns); scan for names, numbers, dates and key words. About 20 minutes per passage; 60 minutes include writing answers (no transfer time); no negative marking — guess, flag, move on.', 'প্রতিটা paragraph-এর মূল idea-র জন্য skim (শিরোনাম, প্রথম sentence, মূল noun); নাম, সংখ্যা, তারিখ আর মূল word-এর জন্য scan। প্রতি passage-এ প্রায় ২০ মিনিট; ৬০ মিনিটের মধ্যেই উত্তর লেখা (তোলার সময় নেই); ভুলে নম্বর কাটে না — আন্দাজ, চিহ্ন, এগিয়ে যাওয়া।'),
+    why: l('Reading word by word and translating every unknown word uses up the time.', 'Word ধরে পড়া আর প্রতিটা অজানা word অনুবাদ সময় শেষ করে দেয়।'),
+    recognise: l('Check the clock after each passage: are you near 20 minutes?', 'প্রতিটা passage-এর পরে ঘড়ি দেখুন: প্রায় ২০ মিনিট হয়েছে?'),
+    avoid: l('Skim first, then read closely only where the answer is.', 'আগে skim, তারপর শুধু উত্তরের জায়গায় মন দিয়ে পড়ুন।'),
+  },
+  'rd-paraphrase-match': {
+    rule: l('Questions paraphrase the passage: synonyms, word forms, opposites with "not", general / specific. Use names, numbers and dates to find the place; then match meaning. Identical words in an option are often a trap.', 'প্রশ্ন passage-কে paraphrase করে: synonym, word form, "not"-সহ উল্টো, সাধারণ / নির্দিষ্ট। জায়গা খুঁজতে নাম, সংখ্যা, তারিখ; তারপর অর্থ মেলান। Option-এ হুবহু word প্রায়ই ফাঁদ।'),
+    why: l('Looking for the exact question words leads to "not there" or to copied-word traps.', 'প্রশ্নের হুবহু word খুঁজলে "নেই" মনে হয় বা হুবহু-word-এর ফাঁদে পড়া হয়।'),
+    recognise: l('Ask: does this option say the same thing, or only use the same words?', 'জিজ্ঞেস করুন: option কি একই কথা বলে, নাকি শুধু একই word ব্যবহার করে?'),
+    avoid: l('Watch claim strength: suggest ≠ prove, some ≠ all.', 'দাবির জোর খেয়াল করুন: suggest ≠ prove, some ≠ all।'),
+  },
+  'rd-tfng-logic': {
+    rule: l('TRUE = the passage says it (every part); FALSE = the passage says the opposite; NOT GIVEN = the passage does not say. TFNG checks facts; YNNG checks the writer’s views. Use only the passage.', 'TRUE = passage বলে (প্রতিটা অংশ); FALSE = passage উল্টো বলে; NOT GIVEN = passage বলে না। TFNG তথ্য যাচাই করে; YNNG লেখকের মত। শুধু passage ব্যবহার করুন।'),
+    why: l('Missing information is marked FALSE, and own knowledge fills the gaps.', 'অনুপস্থিত তথ্যকে FALSE ধরা হয়, আর নিজের জ্ঞান ফাঁক পূরণ করে।'),
+    recognise: l('Before choosing FALSE, point to the words that contradict the statement.', 'FALSE বাছার আগে বাক্যের বিপরীত word-গুলো দেখিয়ে দিন।'),
+    avoid: l('Underline qualifiers (all, only, most) and numbers in every statement.', 'প্রতিটা বাক্যে qualifier (all, only, most) আর সংখ্যা দাগ দিন।'),
+  },
+  'rd-main-idea': {
+    rule: l('Read all headings first; there are more headings than paragraphs. Find each paragraph’s central idea, ignore examples and details, and match the whole paragraph. A repeated word is often a distractor.', 'আগে সব heading পড়ুন; heading paragraph-এর চেয়ে বেশি। প্রতিটা paragraph-এর কেন্দ্রীয় idea খুঁজুন, উদাহরণ আর খুঁটিনাটি বাদ দিন, পুরো paragraph মেলান। পুনরাবৃত্ত word প্রায়ই distractor।'),
+    why: l('A heading is chosen because it matches one example or one repeated word.', 'একটা উদাহরণ বা একটা পুনরাবৃত্ত word মেলে বলে heading বাছা হয়।'),
+    recognise: l('Ask: does this heading cover the whole paragraph, or just one sentence?', 'জিজ্ঞেস করুন: heading কি পুরো paragraph ধরে, নাকি শুধু একটা sentence?'),
+    avoid: l('Cross out headings as you use or reject them.', 'ব্যবহৃত বা বাতিল heading কেটে দিন।'),
+  },
+  'rd-option-elimination': {
+    rule: l('Read the stem, find the section, then eliminate options that are contradicted, not relevant or only partly true. Matching Features: find names first. Sentence Endings: grammar and meaning must fit. Choose TWO: one mark per correct letter.', 'মূল প্রশ্ন পড়ুন, অংশটা খুঁজুন, তারপর বিপরীত, অপ্রাসঙ্গিক বা আংশিক সত্য option বাদ দিন। Matching Features: আগে নাম। Sentence Endings: grammar আর অর্থ মিলতে হবে। Choose TWO: প্রতি সঠিক অক্ষরে এক নম্বর।'),
+    why: l('Options are read before the passage, so a familiar-sounding option is chosen.', 'Passage-এর আগে option পড়া হয়, তাই পরিচিত শোনানো option বেছে নেওয়া হয়।'),
+    recognise: l('For each wrong option, name why it is wrong.', 'প্রতিটা ভুল option কেন ভুল তার নাম দিন।'),
+    avoid: l('Stem → section → options, every time.', 'প্রতিবার মূল প্রশ্ন → অংশ → option।'),
+  },
+  'rd-word-limit': {
+    rule: l('Completion words come from the passage: obey the word limit exactly (every word counts; hyphenated words count as one; a number only with "and/or a number"), copy the spelling, and check the grammar fit.', 'Completion-এর word passage থেকে আসে: word-এর সীমা হুবহু মানুন (প্রতিটা word গোনা হয়; hyphen-যুক্ত একটা; "and/or a number" থাকলে তবেই সংখ্যা), বানান তুলুন, আর grammar-এর মিল দেখুন।'),
+    why: l('Answers are written in the student’s own words or with an extra "the".', 'উত্তর নিজের word-এ বা বাড়তি "the"-সহ লেখা হয়।'),
+    recognise: l('Count the words and reread the full sentence with your answer.', 'Word গুনুন আর আপনার উত্তরসহ পুরো sentence আবার পড়ুন।'),
+    avoid: l('Read the instruction before every question group.', 'প্রতিটা প্রশ্ন-দলের আগে নির্দেশ পড়ুন।'),
   },
 };
 

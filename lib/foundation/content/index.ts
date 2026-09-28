@@ -30,6 +30,8 @@ import { IELTS_INTRO_CONCEPTS, ibBands, ibDelivery, ibFormat, ibMarking, ibPlan,
 import { ibMyths, ibReview, ibYourPlan } from './ielts-intro-apply';
 import { LISTENING_CONCEPTS, lsFormat, lsPart1, lsPart2, lsPart3, lsPart4, lsRules } from './listening';
 import { lsReview, lsStrategy, lsTraps } from './listening-apply';
+import { READING_CONCEPTS, rdChoice, rdCompletion, rdHeadings, rdParaphrase, rdSkim, rdTfng } from './reading';
+import { rdReview, rdStrategy, rdTraps } from './reading-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -234,8 +236,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Every Reading answer is backed by evidence in the passage.', 'Reading-এর প্রতিটা answer-এর প্রমাণ passage-এই থাকে।'),
     skill: 'reading',
     tags: ['reading'],
-    lessons: [],
-    planned: [t('Skimming and scanning', 'Skimming আর scanning'), t('Keywords and paraphrasing', 'Keyword আর paraphrasing'), t('True / False / Not Given', 'True / False / Not Given'), t('Matching Headings', 'Matching Headings'), t('Time management', 'Time management')],
+    lessons: [rdSkim, rdParaphrase, rdTfng, rdHeadings, rdChoice, rdCompletion, rdTraps, rdStrategy, rdReview],
   },
   {
     id: 'writing-foundation',
@@ -266,7 +267,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

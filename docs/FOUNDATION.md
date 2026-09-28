@@ -66,13 +66,14 @@ Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
 Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
 Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
 Vocabulary also links to the daily word missions).
-LEVEL 2 — IELTS Basics: What is IELTS? and Understanding IELTS Listening (9
-lessons + a Final Mastery Challenge each); Reading/Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+LEVEL 2 — IELTS Basics: What is IELTS?, Understanding IELTS Listening and
+Understanding IELTS Reading (9 lessons + a Final Mastery Challenge each);
+Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
 `docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md`,
-`docs/VOCABULARY_CURRICULUM.md`, `docs/IELTS_INTRO_CURRICULUM.md` and
-`docs/LISTENING_CURRICULUM.md`.
+`docs/VOCABULARY_CURRICULUM.md`, `docs/IELTS_INTRO_CURRICULUM.md`,
+`docs/LISTENING_CURRICULUM.md` and `docs/READING_CURRICULUM.md`.
 
 ## Tests
 
@@ -389,6 +390,19 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   scripts the student writes are checked for the target feature and what a listener
   should write.
 - **E2E.** `scripts/e2e/listening.e2e.ts`.
+
+## Phase L: LEVEL 2 — Understanding IELTS Reading
+
+- **Module** `reading-foundation` (`reading.ts` rd-1…rd-6, `reading-apply.ts`
+  rd-7…rd-9), tag `reading`, concepts `rd-skim`, `rd-paraphrase`, `rd-tfng`,
+  `rd-headings`, `rd-choice`, `rd-completion`. Short original passages. See
+  `docs/READING_CURRICULUM.md`.
+- **Patterns.** `rd-skim-scan`, `rd-paraphrase-match`, `rd-tfng-logic`, `rd-main-idea`,
+  `rd-option-elimination`, `rd-word-limit` (+ fix guides). **Challenge** `reading-foundation`.
+- **Mino.** Reading tasks are judged facts and strategy first (like `listening`), using
+  only the passage in the task; labels, headings and paraphrases the student writes are
+  checked against that passage.
+- **E2E.** `scripts/e2e/reading.e2e.ts`.
 
 ## Known issue: `pnpm lint`
 
