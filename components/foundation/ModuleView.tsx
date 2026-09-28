@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Circle, CircleDashed, ClipboardCheck, Clock, SkipForward, Sparkles, Trophy } from 'lucide-react';
+import { ArrowRight, BookOpen, CheckCircle2, Circle, CircleDashed, ClipboardCheck, Clock, SkipForward, Sparkles, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, ListRow, PageHeader, Panel, ProgressBar, RowGroup, ScreenSkeleton, Section, StatusChip, useGuideReminder } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -130,6 +130,12 @@ function LessonsView({ module }: { module: Module }) {
             description={text(challenge.tagline)}
             trailing={final ? <StatusChip tone={final.best >= 80 ? 'success' : 'warning'}>{t('foundation.final.bestShort', { best: final.best })}</StatusChip> : undefined}
           />
+        </RowGroup>
+      )}
+
+      {module.practice && (
+        <RowGroup>
+          <ListRow href={module.practice.href} icon={BookOpen} iconTone="brand" title={text(module.practice.title)} description={text(module.practice.description)} />
         </RowGroup>
       )}
 

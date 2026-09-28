@@ -661,7 +661,7 @@ export function foundationSummaryLines(fp: FoundationProgress, now = new Date())
   lines.push(`- Foundation today: ${t ? `${t.lessons} lessons, ${t.questions} questions (${t.correct} correct)` : 'nothing yet'}.`);
   lines.push(...posSummaryLines(fp, now));
   // Named patterns that belong to a grammar module (Parts of Speech has its own lines above).
-  for (const [moduleId, name] of [['tenses', 'Tenses'], ['articles', 'Articles'], ['agreement', 'Subject–Verb Agreement'], ['prepositions', 'Prepositions'], ['connectors', 'Connectors'], ['complex-sentences', 'Complex Sentences'], ['punctuation', 'Punctuation'], ['common-errors', 'Common Errors']] as const) {
+  for (const [moduleId, name] of [['tenses', 'Tenses'], ['articles', 'Articles'], ['agreement', 'Subject–Verb Agreement'], ['prepositions', 'Prepositions'], ['connectors', 'Connectors'], ['complex-sentences', 'Complex Sentences'], ['punctuation', 'Punctuation'], ['common-errors', 'Common Errors'], ['vocabulary-foundation', 'Vocabulary']] as const) {
     for (const p of patternsFor(fp, moduleId, now).filter((x) => !x.modules.includes('parts-of-speech') && x.modules[0] === moduleId).slice(0, 2)) {
       lines.push(
         `- Open ${name} pattern: ${POS_NAMED_PATTERNS[p.pair].title.en} ×${p.count} in ${REVIEW_WINDOW_DAYS} days (latest: "${p.latest.prompt}" → answered "${p.latest.answer}", correct "${p.latest.correctAnswer}", ${p.latest.at.slice(0, 10)}). A 5-question fix is at /ielts/foundation/fix/${p.pair}.`,

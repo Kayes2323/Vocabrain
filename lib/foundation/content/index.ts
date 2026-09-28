@@ -24,6 +24,8 @@ import { PUNCTUATION_CONCEPTS, pnApostrophes, pnCapitals, pnColonsParagraphs, pn
 import { pnMistakes, pnProofread, pnReview } from './punctuation-apply';
 import { ceCollocation, ceCountable, ceNatural, cePlural, ceTranslation, ceWordPairs, COMMON_ERROR_CONCEPTS } from './common-errors';
 import { ceHabits, ceInIelts, ceReview } from './common-errors-apply';
+import { VOCABULARY_CONCEPTS, vcContext, vcKnowWord, vcParaphrase, vcPrecise, vcRegister, vcUseWords } from './vocabulary';
+import { vcHabits, vcInIelts, vcReview } from './vocabulary-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -182,13 +184,16 @@ export const MODULES: Module[] = [
     level: 1,
     number: 11,
     title: t('Vocabulary Foundation', 'Vocabulary Foundation'),
-    description: t('Encounter → understand → save → recall → use → review, with your Brain.', 'Encounter → understand → save → recall → use → review, আপনার Brain দিয়ে।'),
+    description: t('How to learn, understand and use words for IELTS, plus daily word missions with your Brain.', 'IELTS-এর জন্য word কীভাবে শিখবেন, বুঝবেন আর ব্যবহার করবেন, আর Brain-এ save করার প্রতিদিনের word mission।'),
     ieltsLink: t('Lexical Resource in Writing and Speaking; paraphrase spotting in Reading and Listening.', 'Writing আর Speaking-এ Lexical Resource; Reading আর Listening-এ paraphrase চেনা।'),
     skill: 'vocabulary',
-    tags: ['vocabulary', 'collocation'],
-    lessons: [],
-    href: '/ielts/vocabulary/foundation',
-    planned: [t('How to learn a word for IELTS', 'IELTS-এর জন্য কীভাবে একটা শব্দ শিখবেন'), t('Synonyms and paraphrasing', 'Synonym আর paraphrasing'), t('Collocations', 'Collocations'), t('Using new words in Writing and Speaking', 'Writing আর Speaking-এ নতুন শব্দ ব্যবহার')],
+    tags: ['vocabulary'],
+    lessons: [vcKnowWord, vcContext, vcParaphrase, vcRegister, vcPrecise, vcUseWords, vcHabits, vcInIelts, vcReview],
+    practice: {
+      href: '/ielts/vocabulary/foundation',
+      title: t('Daily word missions', 'প্রতিদিনের word mission'),
+      description: t('Learn the course words and save them to your Brain for spaced review.', 'Course-এর word শিখুন আর spaced review-এর জন্য Brain-এ save করুন।'),
+    },
   },
 
   // ---------------------------------------------------------------- Level 2
@@ -259,7 +264,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

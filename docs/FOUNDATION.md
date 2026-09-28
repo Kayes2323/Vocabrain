@@ -63,13 +63,15 @@ collection, no rules change; works for guests on-device):
 LEVEL 1 — Foundation Grammar: Sentence Basics (9 lessons), Tenses for IELTS
 (15 lessons + the Tenses Final Mastery Challenge), Parts of Speech (12 units),
 Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
-Agreement, Prepositions, Connectors, Complex Sentences, Punctuation and Common
-Errors (9 lessons + a Final Mastery Challenge each), Vocabulary Foundation.
+Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
+Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
+Vocabulary also links to the daily word missions).
 LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
 shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
-`docs/PUNCTUATION_CURRICULUM.md` and `docs/COMMON_ERRORS_CURRICULUM.md`.
+`docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md` and
+`docs/VOCABULARY_CURRICULUM.md`.
 
 ## Tests
 
@@ -336,6 +338,24 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   collocation, word pair, repetition) and the Bangla cause, one fix per error. The Mino
   product knowledge no longer lists modules 5–10 as "Soon" (that line had gone stale).
 - **E2E.** `scripts/e2e/common-errors.e2e.ts` (shared flow in `module-spec.ts`).
+
+## Phase I: Vocabulary Foundation lessons
+
+- **Module 11** (`vocabulary.ts` vc-1…vc-6, `vocabulary-apply.ts` vc-7…vc-9): 8 taught v2
+  skill lessons + the review test, tag `vocabulary`, concepts `voc-learn`, `voc-context`,
+  `voc-paraphrase`, `voc-register`, `voc-precise`, `voc-use`. See
+  `docs/VOCABULARY_CURRICULUM.md`.
+- **One word system.** The lessons teach how to learn and use words; the words themselves
+  stay in the existing daily word missions (`lib/vocab-foundation`, saved to the Brain).
+  The module no longer has `href`: its card opens the module page, which links to the
+  missions through the new `Module.practice` row. No second word store.
+- **Patterns.** `voc-word-pattern`, `voc-context-clue`, `voc-synonym-fit`,
+  `voc-register-mix`, `voc-vague-word`, `voc-form-tone` (+ fix guides). **Challenge**
+  `vocabulary-foundation` (6 parts × 4 items).
+- **Mino.** Vocabulary tasks judge word choice only and name one check per issue
+  (pattern, synonym, register, precision, form, tone, word parts); accuracy before rarity.
+- **E2E.** `scripts/e2e/vocabulary.e2e.ts`; `module-spec.ts` accepts an optional
+  `practiceLink` and checks it opens the missions.
 
 ## Known issue: `pnpm lint`
 

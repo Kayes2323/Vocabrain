@@ -9,6 +9,7 @@ import { CONNECTOR_FINAL_PARTS } from './connectors-final';
 import { PUNCTUATION_FINAL_PARTS } from './punctuation-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 import { COMMON_ERRORS_FINAL_PARTS } from './common-errors-final';
+import { VOCABULARY_FINAL_PARTS } from './vocabulary-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -85,6 +86,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Common Errors Final Mastery Challenge', 'Common Errors Final Mastery Challenge'), name: l('Common Errors', 'Common Errors'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: COMMON_ERRORS_FINAL_PARTS,
     concepts: ['ce-translation', 'ce-countable', 'ce-plural', 'ce-collocation', 'ce-word-pair', 'ce-natural'],
+  },
+  {
+    id: 'vocabulary-foundation', moduleId: 'vocabulary-foundation', mark: 'V★', minutes: 15, areas: 'concept',
+    title: l('Vocabulary Final Mastery Challenge', 'Vocabulary Final Mastery Challenge'), name: l('Vocabulary', 'Vocabulary'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: VOCABULARY_FINAL_PARTS,
+    concepts: ['voc-learn', 'voc-context', 'voc-paraphrase', 'voc-register', 'voc-precise', 'voc-use'],
   },
 ];
 

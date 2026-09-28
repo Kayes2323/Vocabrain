@@ -259,6 +259,8 @@ export interface Module {
   short?: L;
   /** Lessons not written yet: shown as "coming soon" and counted in progress totals. */
   planned?: L[];
+  /** A linked daily practice that lives elsewhere (e.g. the word missions), shown on the module page. */
+  practice?: { href: string; title: L; description: L };
 }
 
 export interface Level {

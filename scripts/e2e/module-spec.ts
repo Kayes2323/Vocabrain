@@ -27,6 +27,8 @@ export interface ModuleSpec {
   fix: { pattern: string; title: string; rule: RegExp };
   mastery: { lesson: string; concept: string; write: string };
   bn: { lesson: string; stopAt: string; resumed: RegExp; english: RegExp; write: string; expect: RegExp };
+  /** A linked daily practice shown on the module page (e.g. the word missions). */
+  practiceLink?: { href: string; title: string };
 }
 
 async function skipTo(p: Page, exerciseId: string, lang: 'en' | 'bn', answer: boolean, collect?: (t: string) => void) {
@@ -74,6 +76,13 @@ export async function runModuleSpec(s: ModuleSpec) {
     check(`${s.name} module opens with ${s.lessonCount} lessons`, (await p.locator(lessonSel).count()) === s.lessonCount, await p.locator(lessonSel).count());
     check(`no ${s.name} lesson is marked "Soon"`, (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0);
     check(`the ${s.name} Final Mastery Challenge is listed`, await p.locator(challengeSel).isVisible());
+    if (s.practiceLink) {
+      const link = p.locator(`main a[href="${s.practiceLink.href}"]`).filter({ hasText: s.practiceLink.title });
+      check(`the module page links to "${s.practiceLink.title}"`, await link.isVisible());
+      await link.click();
+      await p.waitForURL((u) => u.pathname === s.practiceLink!.href, { timeout: 30_000 });
+      check(`"${s.practiceLink.title}" opens ${s.practiceLink.href}`, new URL(p.url()).pathname === s.practiceLink.href, p.url());
+    }
     await shot(p, `${s.shotPrefix}-en-01-module`);
 
     console.log('\n[2] A lesson with deliberate mistakes and Mino');

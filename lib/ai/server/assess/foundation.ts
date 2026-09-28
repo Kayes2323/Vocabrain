@@ -98,7 +98,17 @@ Common-error feedback (target: ${concept.title.en}):
 - Keep each error apart from the others — give each its own fix; do not rewrite correct sentences for style.
 - The follow-up gap practises the same error type in a NEW sentence; the answer is one word or a short phrase.
 `
-                    : '';
+                    : concept?.tag === 'vocabulary'
+                      ? `
+Vocabulary feedback (target: ${concept.title.en}):
+- Judge word choice only (Lexical Resource); do not rewrite grammar or ideas unless a word fix needs it.
+- For each issue, quote the words, give the fix and name ONE check: PATTERN (the word that follows: afford to + verb, access to, contribute to, benefit from, an impact on, the consequences of); SYNONYM (a dictionary synonym that changes the meaning, strength or grammar: strange for foreign, raised for rose, must for should, describes that for shows that); REGISTER (informal words in Task 2 or Academic Task 1: kids, stuff, a lot of, get, go up, really, gonna — or memorised, over-formal phrases in Speaking); PRECISION (good, bad, thing, nice, very + a strong adjective); FORM (affect / effect, economic / economical, advice / advise, significant / significantly, benefit / beneficial); TONE (consequence and notorious for negative results, benefit and renowned for positive ones); WORD PARTS (a prefix or suffix with the wrong meaning).
+- Praise ambitious words that are used accurately; never push rarer words for their own sake — accuracy comes first.
+- Speaking answers may be informal; only flag register when it clashes with the task.
+- Mention the Bangla cause briefly when it helps (one Bangla meaning for several English words, dictionary synonyms).
+- The follow-up gap practises the same word decision in a NEW sentence; the answer is one word or a short phrase.
+`
+                      : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}

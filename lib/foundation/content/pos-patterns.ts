@@ -63,6 +63,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'ce-collocation-pair': { title: l('Collocations (make / do / take, heavy rain)', 'Collocation (make / do / take, heavy rain)'), modules: ['common-errors'] },
   'ce-confused-pair': { title: l('Confusing pairs (say / tell, lend / borrow, rise / raise)', 'গুলিয়ে যাওয়া জোড়া (say / tell, lend / borrow, rise / raise)'), modules: ['common-errors'] },
   'ce-redundant': { title: l('Saying it twice (return back, more better)', 'দুবার বলা (return back, more better)'), modules: ['common-errors'] },
+  'voc-word-pattern': { title: l('Word patterns (afford to, access to, benefit from)', 'Word pattern (afford to, access to, benefit from)'), modules: ['vocabulary-foundation'] },
+  'voc-context-clue': { title: l('Meaning from context and word parts', 'Context আর word-এর অংশ থেকে অর্থ'), modules: ['vocabulary-foundation'] },
+  'voc-synonym-fit': { title: l('Synonyms that fit (paraphrasing)', 'মানানসই synonym (paraphrasing)'), modules: ['vocabulary-foundation'] },
+  'voc-register-mix': { title: l('Formal or informal words for the task', 'Task অনুযায়ী formal বা informal word'), modules: ['vocabulary-foundation'] },
+  'voc-vague-word': { title: l('Vague words (good, bad, thing, very)', 'অস্পষ্ট word (good, bad, thing, very)'), modules: ['vocabulary-foundation'] },
+  'voc-form-tone': { title: l('Word form and tone (affect / effect, economic)', 'Word form আর সুর (affect / effect, economic)'), modules: ['vocabulary-foundation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -515,6 +521,60 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Bangla doubles for emphasis (ফিরে আসা, আবার বলা), uses নিয়ে after আলোচনা and says বেশি ভালো, so the doubled English sounds complete.', 'বাংলায় জোর দিতে দ্বিগুণ বলা হয় (ফিরে আসা, আবার বলা), আলোচনা-র পরে নিয়ে বসে আর "বেশি ভালো" বলা হয়, তাই দ্বিগুণ English সম্পূর্ণ লাগে।'),
     recognise: l('Read each verb: does the next word repeat its meaning? Read each comparative: is there more + -er?', 'প্রতিটা verb পড়ুন: পরের word কি একই অর্থ আবার বলে? প্রতিটা comparative পড়ুন: more + -er আছে কি?'),
     avoid: l('If you can remove a word and the meaning stays the same, remove it.', 'একটা word বাদ দিলে অর্থ একই থাকলে বাদ দিন।'),
+  },
+  'voc-word-pattern': {
+    rule: l(
+      'Learn each word with the words that follow it: afford to + verb · access to · contribute to · benefit from (verb) / the benefit of (noun) · an impact on · the consequences of.',
+      'প্রতিটা word পরের word-সহ শিখুন: afford to + verb · access to · contribute to · benefit from (verb) / the benefit of (noun) · an impact on · the consequences of।',
+    ),
+    why: l('Word lists give one Bangla meaning (access = সুযোগ), so the English pattern is guessed from Bangla ("সুযোগ-এর" → access of).', 'Word-এর তালিকায় একটা বাংলা অর্থ থাকে (access = সুযোগ), তাই English pattern বাংলা থেকে আন্দাজ করা হয় ("সুযোগ-এর" → access of)।'),
+    recognise: l('After every new word, look at the next small word (to, of, from, on): is it the one English uses?', 'প্রতিটা নতুন word-এর পরের ছোট word (to, of, from, on) দেখুন: English কি এটাই ব্যবহার করে?'),
+    avoid: l('Save words to your Brain with a full example sentence, not just a Bangla meaning.', 'শুধু বাংলা অর্থ না, পুরো উদাহরণ sentence-সহ word Brain-এ save করুন।'),
+  },
+  'voc-context-clue': {
+    rule: l(
+      'Guess from clues: a definition (, or / that is), an example (such as), a contrast (unlike, but) or a result (so … that); and from word parts: un- / dis- not, re- again, over- / under- too much / too little, -less without, -able can be.',
+      'সংকেত থেকে আন্দাজ করুন: সংজ্ঞা (, or / that is), উদাহরণ (such as), বিপরীত (unlike, but) বা ফল (so … that); আর word-এর অংশ থেকে: un- / dis- না, re- আবার, over- / under- অতিরিক্ত / অপর্যাপ্ত, -less ছাড়া, -able করা যায়।',
+    ),
+    why: l('Many students learned to translate every word, so one unknown word stops their reading and the clues around it are missed.', 'অনেকে প্রতিটা word অনুবাদ করতে শিখেছেন, তাই একটা অজানা word-এ পড়া থেমে যায় আর আশেপাশের সংকেত চোখ এড়িয়ে যায়।'),
+    recognise: l('Read the sentence before and after the word, and split the word into prefix + root + suffix.', 'Word-এর আগের আর পরের sentence পড়ুন, আর word-টাকে prefix + মূল + suffix-এ ভাগ করুন।'),
+    avoid: l('In Reading, aim for the general meaning (positive or negative, more or less) and keep going.', 'Reading-এ সাধারণ অর্থ ধরুন (ভালো না খারাপ, বেশি না কম) আর এগিয়ে যান।'),
+  },
+  'voc-synonym-fit': {
+    rule: l(
+      'A synonym must keep the meaning, the strength and the grammar: rose (no object) not raised · should not must · foreign not strange · shows that not describes that. Or paraphrase by changing the form (increased → an increase in) or the structure.',
+      'Synonym-কে অর্থ, জোর আর grammar রাখতে হবে: raised না rose (object নেই) · must না should · strange না foreign · describes that না shows that। বা form (increased → an increase in) বা গঠন বদলে paraphrase করুন।',
+    ),
+    why: l('A Bangla–English dictionary lists several English words for one Bangla word (বিদেশি → foreign, strange, alien), so any of them seems right.', 'বাংলা–English dictionary-তে একটা বাংলা word-এর কয়েকটা English word থাকে (বিদেশি → foreign, strange, alien), তাই যেকোনোটা ঠিক মনে হয়।'),
+    recognise: l('Put the new word back into the sentence: does it still say exactly the same thing, with the same grammar?', 'নতুন word sentence-এ বসিয়ে দেখুন: হুবহু একই কথা বলে, একই grammar-এ?'),
+    avoid: l('Keep technical words (primary school, emissions) and change the words around them.', 'Technical word (primary school, emissions) রাখুন, আশেপাশের word বদলান।'),
+  },
+  'voc-register-mix': {
+    rule: l(
+      'Task 2 and Academic Task 1 are formal: children, many / a large number of, obtain, increase, extremely, address a problem. Speaking and letters to friends can use natural informal words. Never in writing: gonna, gotta, stuff, u.',
+      'Task 2 আর Academic Task 1 formal: children, many / a large number of, obtain, increase, extremely, address a problem। Speaking আর বন্ধুকে letter-এ স্বাভাবিক informal word চলে। লেখায় কখনো না: gonna, gotta, stuff, u।',
+    ),
+    why: l('Everyday English is learned from films and chat (informal), and essay English from memorised phrases, so the two get mixed.', 'দৈনন্দিন English শেখা হয় সিনেমা আর chat থেকে (informal), আর essay-র English মুখস্থ phrase থেকে, তাই দুটো মিশে যায়।'),
+    recognise: l('Look for kids, stuff, a lot of, get, go up, really and phrasal verbs in essays; and for heavy memorised phrases in Speaking.', 'Essay-তে kids, stuff, a lot of, get, go up, really আর phrasal verb খুঁজুন; আর Speaking-এ ভারী মুখস্থ phrase।'),
+    avoid: l('Before writing, ask: who is reading this — an examiner or a friend?', 'লেখার আগে জিজ্ঞেস করুন: কে পড়বেন — examiner না বন্ধু?'),
+  },
+  'voc-vague-word': {
+    rule: l(
+      'Replace general words with precise ones: good → beneficial / effective · bad → harmful / severe · thing → factor / aspect / drawback · people → residents / employees. Strong adjectives (crucial, essential, vital, enormous) take no very.',
+      'সাধারণ word-এর বদলে নির্দিষ্ট word: good → beneficial / effective · bad → harmful / severe · thing → factor / aspect / drawback · people → residents / employees। জোরালো adjective (crucial, essential, vital, enormous)-এর সাথে very না।',
+    ),
+    why: l('ভালো, খারাপ and জিনিস cover a huge range in Bangla, so good, bad and thing feel complete in English.', 'বাংলায় ভালো, খারাপ আর জিনিস অনেক কিছু বোঝায়, তাই English-এ good, bad আর thing সম্পূর্ণ মনে হয়।'),
+    recognise: l('Circle good, bad, nice, thing, stuff and very in your answer, and ask "what kind?" or "which?".', 'উত্তরে good, bad, nice, thing, stuff আর very চিহ্নিত করুন, আর জিজ্ঞেস করুন "কী রকম?" বা "কোনটা?"।'),
+    avoid: l('Learn topic words in pairs: advantage / drawback, beneficial / harmful, increase / decline.', 'Topic word জোড়ায় শিখুন: advantage / drawback, beneficial / harmful, increase / decline।'),
+  },
+  'voc-form-tone': {
+    rule: l(
+      'Check the form and the feeling: affect (verb) / effect (noun) · economic (about the economy) / economical (saves money) · advice (n) / advise (v) · significant (adj) / significantly (adv) · consequence and notorious lean negative, benefit and renowned are positive.',
+      'Form আর অনুভূতি যাচাই করুন: affect (verb) / effect (noun) · economic (অর্থনীতি-সংক্রান্ত) / economical (সাশ্রয়ী) · advice (n) / advise (v) · significant (adj) / significantly (adv) · consequence আর notorious নেতিবাচক, benefit আর renowned ইতিবাচক।',
+    ),
+    why: l('One Bangla meaning (অর্থনৈতিক, ফলাফল) covers several English words, so the difference in form and tone is hidden.', 'একটা বাংলা অর্থ (অর্থনৈতিক, ফলাফল) কয়েকটা English word বোঝায়, তাই form আর সুরের পার্থক্য লুকিয়ে থাকে।'),
+    recognise: l('Ask what job the gap needs (noun after "the", verb after "can", adverb after a verb) and whether the result is good or bad.', 'জিজ্ঞেস করুন জায়গাটার কী কাজ ("the"-এর পরে noun, "can"-এর পরে verb, verb-এর পরে adverb), আর ফলটা ভালো না খারাপ।'),
+    avoid: l('If you are not sure of a new word in the exam, use a word you know well.', 'Exam-এ নতুন word নিয়ে নিশ্চিত না হলে ভালো করে জানা word ব্যবহার করুন।'),
   },
 };
 

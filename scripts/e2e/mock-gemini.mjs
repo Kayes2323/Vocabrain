@@ -198,6 +198,27 @@ http
             practice: { sentence: 'I need to ___ a decision soon.', answers: ['make'] },
           }) }]);
         }
+        const vocabularyRules = /Vocabulary feedback \(target: /.test(system);
+        if (vocabularyRules && /\baccess of\b/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(/\baccess of\b/, 'access to'),
+            feedback: bn ? 'ভালো চেষ্টা! access-এর পরে to বসে।' : 'Good try! access is followed by to.',
+            fixes: [{ quote: 'access of mobile internet', fix: 'access to mobile internet', why: bn ? 'PATTERN: access to — বাংলার "সুযোগ-এর" থেকে of আসে।' : 'PATTERN: the word after access is to.' }],
+            practice: { sentence: 'Tourism contributes ___ the local economy.', answers: ['to'] },
+          }) }]);
+        }
+        if (vocabularyRules && /\blots of kids\b/i.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(/\b[Ll]ots of kids\b/, 'many children'),
+            feedback: bn ? 'ভালো চেষ্টা! Task 2-এ formal word লাগে।' : 'Good try! Task 2 needs formal words.',
+            fixes: [{ quote: 'lots of kids', fix: 'Many children', why: bn ? 'REGISTER: essay-তে kids আর lots of informal।' : 'REGISTER: kids and lots of are informal in an essay.' }],
+            practice: { sentence: 'Applicants must ___ a visa before travelling.', answers: ['obtain'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',
