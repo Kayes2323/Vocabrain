@@ -254,4 +254,17 @@ export const COUNTRY_PHOTOS: Partial<Record<string, LicensedImage>> = {
     srcSet: [{ src: '/images/countries/tr-640.webp', width: 640 }, { src: '/images/countries/tr-960.webp', width: 960 }, { src: '/images/countries/tr-1280.webp', width: 1280 }, { src: '/images/countries/tr-1920.webp', width: 1920 }],
     position: 'center 40%',
   },
+  // Ireland: the photo the owner chose for this card (Gothic cathedral towers). Alt text only describes what is shown.
+  IE: {
+    src: '/images/countries/ie-1300.jpg',
+    alt: { en: 'Gothic cathedral towers at golden hour', bn: 'সোনালি আলোয় গথিক ক্যাথেড্রালের টাওয়ার' },
+    credit: SUPPLIED,
+    source: 'Mino team',
+    sourceUrl: '',
+    license: '',
+    width: 1300,
+    height: 1300,
+    srcSet: [{ src: '/images/countries/ie-640.webp', width: 640 }, { src: '/images/countries/ie-960.webp', width: 960 }, { src: '/images/countries/ie-1300.jpg', width: 1300 }],
+    position: 'center 35%',
+  },
 };

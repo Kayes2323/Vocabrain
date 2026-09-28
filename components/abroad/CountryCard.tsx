@@ -76,65 +76,61 @@ interface CountryCardProps {
   onToggleShortlist: () => void;
 }
 
-/** One destination: image, name, what is verified, and two actions (explore, shortlist). */
+/**
+ * One destination: the photo with a "Study in …" label, the name, a small
+ * verified-facts indicator when there is sourced data, and Explore. The whole
+ * card opens the country; shortlisting stays one small button.
+ */
 export function CountryCard({ country, shortlisted, dream, onToggleShortlist }: CountryCardProps) {
   const { t } = useLocale();
-  const text = useBilingual();
-  const ind = countryIndicators(country);
+  const facts = countryIndicators(country).facts;
   const href = countryHref(country.code);
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-2xl border bg-card transition-colors hover:border-foreground/20" data-country={country.code}>
-      <Link href={href} className="block" tabIndex={-1} aria-hidden>
-        <CountryImage country={country} className="aspect-[16/8] sm:aspect-[16/9]" />
-      </Link>
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="text-lg font-semibold tracking-tight">
-              <Link href={href} className="after:absolute after:inset-0 focus-visible:outline-none">
-                <span aria-hidden>{country.flag}</span> {country.name}
-              </Link>
-            </h3>
-            {country.capital && <p className="text-xs text-muted-foreground">{country.capital}</p>}
-          </div>
-          {dream && (
-            <span className="inline-flex h-6 shrink-0 items-center gap-1 rounded-full bg-brand-soft px-2 text-xs font-medium text-brand">
-              <Star className="size-3" aria-hidden /> {t('sa.card.dream')}
-            </span>
-          )}
+    <article
+      className="group relative flex flex-col overflow-hidden rounded-3xl border bg-card shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgb(15_23_42/0.06),0_16px_32px_-12px_rgb(15_23_42/0.2)] motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+      data-country={country.code}
+    >
+      <div className="relative">
+        <CountryImage country={country} className="aspect-[16/10]" />
+        <span className="absolute top-3 left-3 inline-flex h-7 items-center rounded-full bg-white/90 px-3 text-xs font-semibold text-slate-900 shadow-sm backdrop-blur-sm" data-testid="study-in">
+          {t('sa.landing.studyIn', { country: country.name })}
+        </span>
+        {dream && (
+          <span className="absolute top-3 right-3 inline-flex h-7 items-center gap-1 rounded-full bg-brand px-2.5 text-xs font-semibold text-brand-foreground shadow-sm">
+            <Star className="size-3.5" aria-hidden /> {t('sa.card.dream')}
+          </span>
+        )}
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+        <div className="min-w-0">
+          <h3 className="text-lg font-semibold tracking-tight">
+            <Link href={href} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none">
+              <span aria-hidden>{country.flag}</span> {country.name}
+            </Link>
+          </h3>
+          {country.capital && <p className="text-sm text-muted-foreground">{country.capital}</p>}
         </div>
-        {country.tagline && <p className="text-sm text-muted-foreground">{text(country.tagline)}</p>}
-        <div className="flex flex-wrap gap-1.5">
-          {ind.verified.length > 0 ? (
-            <>
-              {ind.verified.slice(0, 3).map((id) => (
-                <span key={id} className="inline-flex h-7 items-center gap-1 rounded-lg bg-success-soft px-2 text-xs text-success">
-                  <CheckCircle2 className="size-3.5" aria-hidden /> {t(`sa.indicators.${id}`)}
-                </span>
-              ))}
-              <span className="inline-flex h-7 items-center rounded-lg bg-muted px-2 text-xs text-muted-foreground">{t('sa.indicators.facts', { n: ind.facts })}</span>
-            </>
-          ) : (
-            <span className="inline-flex h-7 items-center rounded-lg bg-muted px-2 text-xs text-muted-foreground" title={t('sa.indicators.noneHint')}>
-              {t('sa.indicators.none')}
-            </span>
-          )}
-        </div>
+        {facts > 0 && (
+          <p className="inline-flex w-fit items-center gap-1 rounded-full bg-success-soft px-2.5 py-1 text-xs font-medium text-success" data-testid="card-verified">
+            <CheckCircle2 className="size-3.5" aria-hidden /> {t('sa.landing.verifiedInfo', { n: facts })}
+          </p>
+        )}
         <div className="relative z-10 mt-auto flex items-center justify-between gap-2 pt-1">
-          <Link href={href} className="inline-flex h-10 items-center gap-1.5 text-sm font-semibold text-brand">
+          <Link href={href} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-foreground px-4 text-sm font-semibold text-background transition-colors hover:bg-foreground/90">
             {t('sa.card.explore')} <ArrowRight className="size-4" aria-hidden />
           </Link>
           <button
             type="button"
             onClick={onToggleShortlist}
             aria-pressed={shortlisted}
+            aria-label={shortlisted ? t('sa.card.shortlisted') : t('sa.card.shortlist')}
+            title={shortlisted ? t('sa.card.shortlisted') : t('sa.card.shortlist')}
             className={cn(
-              'inline-flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium transition-colors',
-              shortlisted ? 'border-brand/30 bg-brand-soft text-brand' : 'bg-card hover:border-foreground/20',
+              'grid size-10 place-items-center rounded-full border transition-colors',
+              shortlisted ? 'border-brand/30 bg-brand-soft text-brand' : 'bg-card text-muted-foreground hover:border-foreground/20 hover:text-foreground',
             )}
           >
             {shortlisted ? <BookmarkCheck className="size-4" aria-hidden /> : <Bookmark className="size-4" aria-hidden />}
-            {shortlisted ? t('sa.card.shortlisted') : t('sa.card.shortlist')}
           </button>
         </div>
       </div>

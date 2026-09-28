@@ -106,16 +106,6 @@ function CountryHub() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
         <div className="min-w-0 space-y-5">
           <StudyOptions country={country} />
-          <Link
-            href={`/mino?${new URLSearchParams({ ask: 'abroad-fit', country: lower })}`}
-            className="block rounded-2xl border bg-card p-4 transition-colors hover:border-foreground/20"
-            data-testid="hub-fit"
-          >
-            <p className="flex items-center gap-2 font-semibold">
-              <Sparkles className="size-4 text-brand" aria-hidden /> {t('sa.hub.fitTitle', { country: country.name })}
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">{t('sa.hub.fitBody')}</p>
-          </Link>
           <PathwayPicker country={country} />
           <div className="flex gap-2">
             {isDream ? (
@@ -145,6 +135,16 @@ function CountryHub() {
               <Star className="size-4" aria-hidden /> {t('sa.hub.isDream')}
             </p>
           )}
+          <Link
+            href={`/mino?${new URLSearchParams({ ask: 'abroad-fit', country: lower })}`}
+            className="block rounded-2xl border bg-card p-4 transition-colors hover:border-foreground/20"
+            data-testid="hub-fit"
+          >
+            <p className="flex items-center gap-2 font-semibold">
+              <Sparkles className="size-4 text-brand" aria-hidden /> {t('sa.hub.fitTitle', { country: country.name })}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">{t('sa.hub.fitBody')}</p>
+          </Link>
 
           <nav aria-label={t('sa.tabs.label')} className="sticky top-0 z-10 -mx-4 border-b bg-background/95 px-4 backdrop-blur sm:mx-0 sm:px-0">
             <div className="flex gap-1 overflow-x-auto" role="tablist">

@@ -3,7 +3,7 @@
  * Study Abroad product can grow without touching the rest of the dictionary.
  */
 export const saEn = {
-  hubs: { journey: 'Journey', explore: 'Explore', money: 'Money', apply: 'Apply', visa: 'Visa & go', label: 'Study Abroad sections' },
+  hubs: { home: 'Home', journey: 'Journey', explore: 'Explore', money: 'Money', apply: 'Apply', visa: 'Visa & go', label: 'Study Abroad sections' },
   status: { done: 'Completed', 'in-progress': 'In progress', upcoming: 'Upcoming', attention: 'Needs attention' },
   attention: {
     missed: 'Your date passed {n} days ago',
@@ -46,7 +46,7 @@ export const saEn = {
     docsLabel: 'Documents in this phase',
     budget: 'Budget information',
     openPhase: 'Open {phase}',
-    back: 'Journey',
+    back: 'Study Abroad',
     askMino: 'Questions about this phase? Ask Mino',
     noCountrySteps: 'Choose your country to see the checklist for this phase.',
     english: {
@@ -87,8 +87,8 @@ export const saEn = {
     },
   },
   guide: {
-    studyOptions: 'Study options',
-    studyOptionsBody: 'Choose an option to read everything about it on one page.',
+    studyOptions: 'Choose a program',
+    studyOptionsBody: 'Tap a program to see everything about it on one page.',
     general: 'Studying in {country}',
     generalBody: 'Everything verified about studying here, on one page.',
     visaLine: '{code} visa',
@@ -134,6 +134,23 @@ export const saEn = {
       notes: 'Important notes',
       sources: 'Sources',
     },
+  },
+  landing: {
+    journeyTitle: 'Your Study Abroad journey',
+    now: 'Now',
+    startHere: 'Start here',
+    startLine: 'Tell us what you want to study and when. Then we’ll show where you are.',
+    startCta: 'Set my goal',
+    details: 'Details',
+    destinationsTitle: 'Study Destinations',
+    destinationsBody: 'Explore countries and discover what you can study there.',
+    popular: 'Popular study destinations',
+    popularNote: 'Our editorial order, not an official ranking.',
+    more: 'More destinations',
+    toolsTitle: 'Plan your study',
+    tools: { match: 'Find my country', universities: 'Universities', compare: 'Shortlist & compare', cost: 'Cost planner' },
+    studyIn: 'Study in {country}',
+    verifiedInfo: '{n} verified facts',
   },
   home: {
     title: 'Study Abroad',

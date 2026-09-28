@@ -2,7 +2,7 @@ import type { LocaleDictionary } from './types';
 
 /** Study Abroad copy (বাংলা), namespace `sa`. Terms like Visa, IELTS, SOP stay in English. */
 export const saBn: LocaleDictionary['sa'] = {
-  hubs: { journey: 'Journey', explore: 'Explore', money: 'টাকা-পয়সা', apply: 'Apply', visa: 'Visa ও যাত্রা', label: 'Study Abroad-এর অংশগুলো' },
+  hubs: { home: 'হোম', journey: 'Journey', explore: 'Explore', money: 'টাকা-পয়সা', apply: 'Apply', visa: 'Visa ও যাত্রা', label: 'Study Abroad-এর অংশগুলো' },
   status: { done: 'শেষ', 'in-progress': 'চলছে', upcoming: 'সামনে', attention: 'মনোযোগ দরকার' },
   attention: {
     missed: 'আপনার তারিখ {n} দিন আগে পার হয়ে গেছে',
@@ -45,7 +45,7 @@ export const saBn: LocaleDictionary['sa'] = {
     docsLabel: 'এই ধাপের documents',
     budget: 'Budget-এর তথ্য দেখুন',
     openPhase: '{phase} খুলুন',
-    back: 'Journey',
+    back: 'Study Abroad',
     askMino: 'এই ধাপ নিয়ে প্রশ্ন? Mino-কে জিজ্ঞেস করুন',
     noCountrySteps: 'এই ধাপের checklist দেখতে আগে আপনার দেশ বেছে নিন।',
     english: {
@@ -86,8 +86,8 @@ export const saBn: LocaleDictionary['sa'] = {
     },
   },
   guide: {
-    studyOptions: 'পড়ার সুযোগগুলো',
-    studyOptionsBody: 'একটা বেছে নিন — সেটার সব তথ্য এক page-এ পড়তে পারবেন।',
+    studyOptions: 'একটা program বেছে নিন',
+    studyOptionsBody: 'Program-এ tap করলে তার সব তথ্য এক page-এ দেখবেন।',
     general: '{country}-এ পড়াশোনা',
     generalBody: 'এখানে পড়াশোনা নিয়ে যা verified, সব এক page-এ।',
     visaLine: '{code} visa',
@@ -133,6 +133,23 @@ export const saBn: LocaleDictionary['sa'] = {
       notes: 'জরুরি কথা',
       sources: 'তথ্যের উৎস',
     },
+  },
+  landing: {
+    journeyTitle: 'আপনার Study Abroad Journey',
+    now: 'এখন',
+    startHere: 'এখান থেকে শুরু',
+    startLine: 'কী পড়তে চান আর কখন, জানালে আপনি কোন ধাপে আছেন দেখিয়ে দেব।',
+    startCta: 'লক্ষ্য ঠিক করুন',
+    details: 'বিস্তারিত',
+    destinationsTitle: 'Study Destinations',
+    destinationsBody: 'দেশগুলো ঘুরে দেখুন, আর জানুন সেখানে কী পড়তে পারেন।',
+    popular: 'জনপ্রিয় Study Destination',
+    popularNote: 'এটা আমাদের সাজানো ক্রম, কোনো অফিসিয়াল র‍্যাঙ্কিং নয়।',
+    more: 'আরও destination',
+    toolsTitle: 'পরিকল্পনার টুল',
+    tools: { match: 'আমার জন্য কোন দেশ', universities: 'University', compare: 'Shortlist ও তুলনা', cost: 'খরচের হিসাব' },
+    studyIn: '{country}-এ পড়াশোনা',
+    verifiedInfo: '{n}টা যাচাই করা তথ্য',
   },
   home: {
     title: 'Study Abroad',

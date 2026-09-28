@@ -157,7 +157,7 @@ test('persistence: old profiles load unchanged; journey marks survive a save/loa
 // ---------------------------------------------------------------- 3B countries
 test('country photos: each belongs to a real country, files exist, sizes and focal points set, never enlarged', () => {
   const codes = Object.keys(COUNTRY_PHOTOS);
-  assert.deepEqual(codes.sort(), ['AU', 'CA', 'CH', 'CN', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'IT', 'JP', 'KR', 'MY', 'NL', 'NO', 'NZ', 'SE', 'TR', 'US']);
+  assert.deepEqual(codes.sort(), ['AU', 'CA', 'CH', 'CN', 'DE', 'DK', 'ES', 'FI', 'FR', 'GB', 'IE', 'IT', 'JP', 'KR', 'MY', 'NL', 'NO', 'NZ', 'SE', 'TR', 'US']);
   for (const code of codes) {
     const photo = COUNTRY_PHOTOS[code]!;
     const country = getCountry(code)!;
@@ -171,7 +171,7 @@ test('country photos: each belongs to a real country, files exist, sizes and foc
     assert.equal(widths[widths.length - 1], photo.width, `${code} largest file is the original size (not enlarged)`);
     for (const s of photo.srcSet!) assert.ok(fs.existsSync(path.join(process.cwd(), 'public', s.src)), `${s.src} exists`);
   }
-  assert.equal(getCountry('IE')?.hero, undefined, 'Ireland keeps its placeholder (no photo of Ireland supplied)');
+  assert.equal(getCountry('IE')?.hero?.src, '/images/countries/ie-1300.jpg', 'Ireland card uses the photo chosen for Ireland');
 });
 
 test('countries: 14 priority destinations in the approved order (New Zealand included), others after', () => {

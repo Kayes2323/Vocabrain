@@ -276,12 +276,14 @@ async function main() {
 
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
     await p.getByTestId('abroad-start').waitFor({ timeout: 60_000 });
-    check('new student sees one clear start card', await p.getByRole('link', { name: /Start my journey/ }).isVisible());
+    check('new student sees one clear start card', await p.getByRole('link', { name: /Set my goal/ }).isVisible());
+    check('new student: no stage guessed (no phase shown before a goal)', (await p.locator('[data-phase]').count()) === 0);
+    check('landing: Study Destinations below the journey', (await p.getByTestId('study-destinations').count()) === 1 && (await p.getByRole('heading', { name: 'Study Destinations', exact: true }).count()) === 1);
     const hubs = p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link');
-    check('hub bar: Journey · Explore · Money · Apply · Visa & go', (await hubs.allInnerTexts()).join('|') === 'Journey|Explore|Money|Apply|Visa & go', (await hubs.allInnerTexts()).join('|'));
-    check('Journey hub is marked current', (await hubs.first().getAttribute('aria-current')) === 'page');
+    check('hub bar: Home · Money · Apply · Visa & go', (await hubs.allInnerTexts()).join('|') === 'Home|Money|Apply|Visa & go', (await hubs.allInnerTexts()).join('|'));
+    check('Home hub is marked current', (await hubs.first().getAttribute('aria-current')) === 'page');
     await shot(p, 'sa-3a-01-new-student');
-    await p.getByRole('link', { name: /Start my journey/ }).click();
+    await p.getByRole('link', { name: /Set my goal/ }).click();
     await p.waitForURL('**/setup/abroad');
     check('start card opens the goal setup', p.url().endsWith('/setup/abroad'));
 
@@ -297,8 +299,10 @@ async function main() {
     check('six phases: English · Documents · University · Apply · Visa · Departure', (await p.locator('[data-phase]').allInnerTexts()).map((x) => x.trim()).join('|') === 'English|Documents|University|Apply|Visa|Departure', (await p.locator('[data-phase]').allInnerTexts()).join('|'));
     // English follows IELTS (this student set a target in onboarding → in progress); nothing is completed or ready from missing data.
     check('nothing is marked done from missing data', (await p.locator('[data-phase][data-status="completed"], [data-phase][data-status="ready"]').count()) === 0 && (await p.locator('[data-phase="english"]').getAttribute('data-status')) === 'in-progress' && (await p.locator('[data-phase][data-status="not-started"]').count()) === 5);
-    check('one primary action (Explore countries)', (await p.getByTestId('abroad-continue').count()) === 1 && (await p.getByTestId('abroad-continue').getAttribute('href')) === '/abroad/countries');
-    await p.getByRole('button', { name: 'Make Germany my dream country' }).click();
+    check('one primary action (choose a country → the destinations below)', (await p.getByTestId('abroad-continue').count()) === 1 && (await p.getByTestId('abroad-continue').getAttribute('href')) === '#destinations');
+    await patchField(`users/${uid}`, 'app.abroad.dreamCountryCode', 'DE');
+    await p.reload({ waitUntil: 'load' });
+    await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     let a = await waitForAbroad(uid, (x) => x.dreamCountryCode === 'DE');
     check('Firestore: dream country saved', a.dreamCountryCode === 'DE', JSON.stringify(a).slice(0, 160));
     await p.waitForFunction(() => document.querySelector('[data-testid="abroad-journey"]')?.getAttribute('data-current-phase') === 'english', null, { timeout: 10_000 });
@@ -306,9 +310,11 @@ async function main() {
     check('now: one primary action → IELTS preparation', (await p.getByTestId('abroad-continue').innerText()).includes('Open IELTS preparation') && (await p.getByTestId('abroad-continue').getAttribute('href')) === '/ielts');
     check('next: Documents Ready', /Next: Documents Ready/.test(await p.getByTestId('journey-next').innerText()));
     check('no long list of roadmap steps on Journey', (await p.locator('[data-step]').count()) === 0);
-    check('dream country card shows Germany', /Germany/.test(await p.getByTestId('abroad-dream').innerText()));
-    check('shortlist shows South Korea', /South Korea/.test(await p.getByTestId('abroad-shortlist').innerText()));
-    check('Mino appears once on Journey (not on every card)', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 1);
+    check('journey goal line shows the dream country Germany', /Germany/.test(await p.getByTestId('journey-goal').innerText()));
+    check('dream badge on the Germany card', /Dream country/.test(await p.locator('[data-country="DE"]').innerText()));
+    check('no Mino prompts on the landing', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0);
+    check('landing: one "Study in" badge per card', (await p.getByTestId('study-in').count()) === 21 && (await p.locator('[data-country="IE"]').getByTestId('study-in').innerText()) === 'Study in Ireland');
+    check('landing: planning tools are secondary links', (await p.getByTestId('abroad-tools').getByRole('link').evaluateAll((els) => els.map((e) => e.getAttribute('href')).join(','))) === '/abroad/country-match,/abroad/universities,/abroad/compare,/abroad/cost');
     // An earlier stage mark (saved data from the previous journey screen) still counts in the new phases.
     await patchField(`users/${uid}`, 'app.abroad.journey', { marks: { eligibility: { status: 'done', countryCode: 'DE', updatedAt: new Date().toISOString() } } });
     await p.reload({ waitUntil: 'load' });
@@ -327,7 +333,7 @@ async function main() {
     check('phase page desktop: no sideways scroll', await noHorizontalScroll(p));
     await p.waitForTimeout(500);
     await shot(p, 'sa-journey-02-phase-university');
-    await p.getByRole('link', { name: 'Journey', exact: true }).first().click();
+    await p.locator('main a[href="/abroad"]').first().click();
     await p.waitForURL(/\/abroad$/);
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('back to Journey from the phase page', true);
@@ -339,10 +345,6 @@ async function main() {
     check('dark mode: tokens switch (body is dark)', lightness(bg) < 30, bg);
     await shot(p, 'sa-3a-03-journey-dark');
     await setDark(p, false);
-    await p.getByTestId('abroad-ask-mino').click();
-    await p.waitForURL('**/mino**');
-    await p.getByText(/Look at my Study Abroad journey/).first().waitFor({ timeout: 30_000 });
-    check('Ask Mino opens Mino with the journey question', true);
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
     await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
     check('Foundation still opens (regression)', true);
@@ -356,7 +358,7 @@ async function main() {
     const priorityCodes = await p.getByTestId('priority-countries').locator('[data-country]').evaluateAll((els) => els.map((e) => e.getAttribute('data-country')));
     check('14 priority countries, in order, New Zealand last', priorityCodes.join(',') === 'KR,DE,AU,GB,CA,US,JP,IT,FR,NL,SE,FI,IE,NZ', priorityCodes.join(','));
     check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 7);
-    check('Explore hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
+    check('Home hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Home' }).getAttribute('aria-current')) === 'page');
     const broken = await p.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0).length);
     // Photos are lazy-loaded: bring each card into view once so they all load.
     for (const el of await p.locator('[data-country-photo]').all()) await el.scrollIntoViewIfNeeded();
@@ -367,15 +369,17 @@ async function main() {
     );
     const withPhoto = photos.filter((x) => x.photo);
     check('no broken images', broken === 0, `${broken} broken`);
-    check('20 country cards show their photo, only Ireland keeps the flag placeholder', withPhoto.length === 20 && (await p.locator('[data-placeholder]').count()) === 1 && (await p.locator('[data-country="IE"] [data-placeholder]').count()) === 1, withPhoto.map((x) => x.card).join(','));
+    check('all 21 country cards show their photo, no placeholders', withPhoto.length === 21 && (await p.locator('[data-placeholder]').count()) === 0, withPhoto.map((x) => x.card).join(','));
+    check('Ireland photo sits in the Ireland card', (await p.locator('[data-country="IE"] [data-country-photo="IE"] img').getAttribute('src'))?.startsWith('/images/countries/ie-') === true);
+    check('all card photos share one frame ratio', new Set(await p.locator('[data-country-photo]').evaluateAll((els) => els.map((e) => { const r = e.getBoundingClientRect(); return (r.width / r.height).toFixed(2); }))).size === 1);
     check('every photo sits in its own country\'s card', withPhoto.every((x) => x.photo === x.card), JSON.stringify(withPhoto));
     check('photos actually load', withPhoto.every((x) => x.w > 0), JSON.stringify(withPhoto.filter((x) => !x.w)));
     const fit = await p.locator('[data-country-photo] img').first().evaluate((i) => getComputedStyle(i).objectFit);
     check('photos cover the frame without stretching', fit === 'cover', fit);
     await shot(p, 'abroad-country-photos');
     const kr = p.locator('[data-country="KR"]');
-    check('South Korea card claims nothing unverified', /Profile coming/.test(await kr.innerText()));
-    check('Canada card shows only verified topics', /Work while studying/.test(await p.locator('[data-country="CA"]').innerText()) && /Verified facts: 3/.test(await p.locator('[data-country="CA"]').innerText()));
+    check('South Korea card claims nothing unverified (no verified chip)', (await kr.getByTestId('card-verified').count()) === 0);
+    check('Canada card shows its verified-facts count', (await p.locator('[data-country="CA"]').getByTestId('card-verified').innerText()) === '3 verified facts');
     check('Explore links to the country hub', (await kr.getByRole('link', { name: 'Explore' }).getAttribute('href')) === '/abroad/countries/kr');
     await p.getByRole('searchbox', { name: 'Search countries or capitals' }).fill('wellington');
     check('search by capital finds New Zealand', (await p.locator('[data-country]').count()) === 1 && (await p.locator('[data-country="NZ"]').count()) === 1);
@@ -552,7 +556,7 @@ async function main() {
     await p.goto(`${BASE}/abroad/universities`, { waitUntil: 'load' });
     await p.getByLabel('Country').waitFor({ timeout: 60_000 });
     check('defaults to the dream country', (await p.getByLabel('Country').inputValue()) === 'DE');
-    check('Explore hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
+    check('Home hub is current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Home' }).getAttribute('aria-current')) === 'page');
     check('no invented universities: honest empty state', /No verified university profiles for Germany yet/.test(await p.getByTestId('uni-verified-empty').innerText()));
     await p.getByRole('button', { name: 'Add a university' }).click();
     await p.getByLabel('University name').fill('TU Test');
@@ -1000,7 +1004,7 @@ async function main() {
     await shot(q, 'sa-3b-02-explorer-mobile', false);
     await q.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
     await q.getByTestId('study-options').waitFor({ timeout: 60_000 });
-    check('bn: study options heading in Bangla', /পড়ার সুযোগগুলো/.test(await q.getByTestId('study-options').innerText()));
+    check('bn: study options heading in Bangla', /একটা program বেছে নিন/.test(await q.getByTestId('study-options').innerText()));
     await q.locator('[data-study-option="degree-bachelors"]').click();
     await q.waitForURL('**/abroad/countries/kr/study/degree-bachelors');
     await q.getByTestId('study-guide').waitFor({ timeout: 60_000 });
