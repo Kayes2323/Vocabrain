@@ -41,7 +41,10 @@ export function keepWordVisible(word: HTMLElement | null) {
     const w = word.getBoundingClientRect();
     const c = card.getBoundingClientRect();
     const overlapsX = w.right > c.left && w.left < c.right;
-    if (overlapsX && w.bottom > c.top - 12) window.scrollBy({ top: w.bottom - c.top + 24, behavior: 'smooth' });
+    if (!overlapsX || w.bottom <= c.top - 12) return;
+    // An absolute target (not a relative step), so repeated checks during a smooth scroll never overshoot.
+    const wordBottom = w.bottom + window.scrollY;
+    window.scrollTo({ top: Math.max(0, wordBottom - c.top + 24), behavior: 'smooth' });
   };
   // Check again as the card fills in (loading → meaning makes it taller).
   for (const ms of [260, 700, 1300, 2500]) window.setTimeout(check, ms);
