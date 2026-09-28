@@ -108,13 +108,23 @@ Vocabulary feedback (target: ${concept.title.en}):
 - Mention the Bangla cause briefly when it helps (one Bangla meaning for several English words, dictionary synonyms).
 - The follow-up gap practises the same word decision in a NEW sentence; the answer is one word or a short phrase.
 `
-                      : '';
+                      : concept?.tag === 'ielts-basics'
+                        ? `
+IELTS facts feedback (target: ${concept.title.en}):
+- This is an IELTS knowledge task. Judge the IELTS facts first, using ONLY the facts given in the task; then correct grammar only where it blocks the meaning.
+- For each wrong or unclear fact, quote the student's words, give the correct fact and a one-line reason.
+- Never state fees, test dates, result times, retake rules or a specific institution's requirement; say these must be checked on the official IELTS or test centre website or the organisation's official page.
+- Scores in Mino are practice estimates, never official IELTS results.
+- verdict: "correct" when the facts are right (small grammar slips are fine), "minor" for a small factual slip, "needs-work" for a wrong key fact. usesTarget: did they address the target topic?
+- The follow-up gap checks the same fact in a NEW sentence; the answer is one word or a number.
+`
+                        : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
-Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice.
+${concept?.tag === 'ielts-basics' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
 ${focusRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).

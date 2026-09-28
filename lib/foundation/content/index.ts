@@ -26,6 +26,8 @@ import { ceCollocation, ceCountable, ceNatural, cePlural, ceTranslation, ceWordP
 import { ceHabits, ceInIelts, ceReview } from './common-errors-apply';
 import { VOCABULARY_CONCEPTS, vcContext, vcKnowWord, vcParaphrase, vcPrecise, vcRegister, vcUseWords } from './vocabulary';
 import { vcHabits, vcInIelts, vcReview } from './vocabulary-apply';
+import { IELTS_INTRO_CONCEPTS, ibBands, ibDelivery, ibFormat, ibMarking, ibPlan, ibVersions } from './ielts-intro';
+import { ibMyths, ibReview, ibYourPlan } from './ielts-intro-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -202,12 +204,11 @@ export const MODULES: Module[] = [
     level: 2,
     number: 1,
     title: t('What is IELTS?', 'IELTS কী?'),
-    description: t('Academic vs General Training, the four skills, timing, Band Scores.', 'Academic আর General Training, চার skill, সময়, Band Score।'),
+    description: t('Academic vs General Training, the four skills, timing, computer or paper, Band Scores, marking and requirements.', 'Academic আর General Training, চার skill, সময়, computer না paper, Band Score, marking আর requirement।'),
     ieltsLink: t('Know the test before you train for it.', 'Training-এর আগে test-টা চিনে নিন।'),
     skill: 'reading',
-    tags: [],
-    lessons: [],
-    planned: [t('IELTS Academic and General Training', 'IELTS Academic আর General Training'), t('The four skills and test timing', 'চার skill আর test-এর সময়'), t('Computer-delivered and paper-based', 'Computer-delivered আর paper-based'), t('Band Scores explained', 'Band Score বুঝি')],
+    tags: ['ielts-basics'],
+    lessons: [ibVersions, ibFormat, ibDelivery, ibBands, ibMarking, ibPlan, ibMyths, ibYourPlan, ibReview],
   },
   {
     id: 'listening-foundation',
@@ -264,7 +265,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

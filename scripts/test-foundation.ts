@@ -32,7 +32,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 65);
+  assert.equal(CONCEPTS.length, 71);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -250,10 +250,10 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const fp = empty();
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
-  const ieltsIntro = MODULES.find((m) => m.id === 'ielts-intro')!;
+  const listeningBasics = MODULES.find((m) => m.id === 'listening-foundation')!;
   assert.equal(stepBeforeModule(basics, fp), undefined);
   assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
-  assert.equal(stepBeforeModule(ieltsIntro, fp), undefined);
+  assert.equal(stepBeforeModule(listeningBasics, fp), undefined);
   assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
@@ -471,7 +471,7 @@ test('Tenses patterns: past-vs-perfect opens after 3, fixes with 5 tense questio
 test('Tenses Final Mastery Challenge: 8 parts, adaptive, per-concept items, stored in finals.tenses', () => {
   const ch = getChallenge('tenses')!;
   assert.equal(ch.parts.length, 8);
-  assert.equal(CHALLENGES.length, 10);
+  assert.equal(CHALLENGES.length, 11);
   for (const e of CHALLENGES.flatMap((c) => c.parts.flatMap((x) => x.items))) if (e.type !== 'write') assert.equal(grade2(e, canonicalAnswer(e)), true, e.id);
   assert.ok(ch.parts.every((x) => x.items.every((i) => ch.concepts.includes(i.concept!))), 'every item names its tense');
   assert.equal(finalStartLevel(empty(), ch.concepts), 2);
@@ -1020,6 +1020,78 @@ test('Vocabulary Final Mastery Challenge: 6 parts × 4 items at levels 1–3, st
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Vocabulary Final Mastery Challenge: last 77%/);
 });
 
+// ---------------------------------------------------------------- what is IELTS? (level 2)
+test('What is IELTS?: 8 taught v2 lessons + a review test, facts only, official sources for fees and dates', () => {
+  const ids = ['ib-1', 'ib-2', 'ib-3', 'ib-4', 'ib-5', 'ib-6', 'ib-7', 'ib-8', 'ib-9'];
+  const { mod, taught } = checkV2Module('ielts-intro', ids, 'ielts-basics', 'ib-', ids);
+  assert.equal(mod.level, 2);
+  assert.equal(mod.number, 1);
+  for (const x of taught.filter((t) => t.id !== 'ib-7')) {
+    const c = x.steps.find((st) => st.kind === 'concept');
+    assert.ok(c && c.kind === 'concept' && c.points?.some((pt) => /Common mix-up/.test(pt.en)), `${x.id} names the common mix-up`);
+  }
+  // Facts match the checked IELTS cards; no fees or dates are stated anywhere.
+  const src = mod.lessons.map((x) => JSON.stringify(x)).join('\n');
+  assert.doesNotMatch(src, /\b(BDT|Tk\.?\s?\d|taka\s?\d|\$\s?\d|£\s?\d)/i, 'no fees');
+  assert.match(src, /official IELTS or test centre website/);
+  assert.equal(grade2(ex('ib-4-r1'), '6.5'), true);
+  assert.equal(grade2(ex('ib-4-r1'), '6.25'), false);
+  assert.equal(grade2(ex('ib-4-r2'), '6'), true);
+  assert.equal(grade2(ex('ib-4-r2'), '6.0'), true);
+  assert.equal(grade2(ex('ib-2-r2'), '150'), true);
+  assert.equal(grade2(ex('ib-2-r2'), '250'), false);
+});
+
+test('What is IELTS?: band arithmetic in every item is right (average of four, nearest half band)', () => {
+  const overall = (bands: number[]) => { const a = bands.reduce((x, y) => x + y, 0) / 4; return Math.floor(a * 2 + 0.5) / 2; };
+  assert.equal(overall([7, 6.5, 6, 6.5]), 6.5);
+  assert.equal(overall([6.5, 6.5, 6, 6]), 6.5);
+  assert.equal(overall([7, 7, 6.5, 6.5]), 7);
+  assert.equal(overall([6.5, 6, 6, 6]), 6);
+  assert.equal(overall([6, 6, 5.5, 6]), 6);
+  assert.equal(overall([8, 7.5, 6.5, 7]), 7.5);
+  assert.equal(overall([5.5, 6, 5.5, 6]), 6);
+  assert.equal(overall([7, 7, 6, 6.5]), 6.5);
+  assert.equal(overall([8.5, 8, 6, 7]), 7.5);
+  assert.equal(overall([7, 6.5, 6.5, 6.5]), 6.5);
+});
+
+test('What is IELTS?: concepts are mastery-capable and reviewable; the pattern fix and summary line work', () => {
+  const ids = CONCEPTS.filter((c) => c.tag === 'ielts-basics').map((c) => c.id);
+  assert.deepEqual(ids, ['ib-versions', 'ib-format', 'ib-delivery', 'ib-bands', 'ib-marking', 'ib-plan']);
+  const exs = MODULES.find((m) => m.id === 'ielts-intro')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
+  for (const c of ids) {
+    assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked answer`);
+    assert.ok(reviewQuestions(empty(), c, NOW).length >= 5, `${c} has a review pool`);
+  }
+  const wrong = (f: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(f, { source: 'x', exercise: ex(id), answer, correct: false, attempt: 1, now: new Date(at) });
+  let fp = empty();
+  fp = wrong(fp, 'ib-4-p1', '0 to 100', '2026-09-20T10:00:00');
+  fp = wrong(fp, 'ib-4-p2', '6.0', '2026-09-21T10:00:00');
+  fp = wrong(fp, 'ib-4-p3', '6.5', '2026-09-22T10:00:00');
+  const p = patternsFor(fp, 'ielts-intro', NOW).find((x) => x.pair === 'ib-band-calc')!;
+  assert.equal(p.count, 3);
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /Open What is IELTS\? pattern: Band Scores and the overall ×3.*fix\/ib-band-calc/);
+  for (const k of ['ib-version-fact', 'ib-format-fact', 'ib-delivery-fact', 'ib-band-calc', 'ib-marking-fact', 'ib-requirement']) {
+    const g = POS_FIX_GUIDE[k];
+    assert.ok(g && g.rule.bn && g.why.bn && g.recognise.bn && g.avoid.bn, `${k} has a full guide`);
+    const qs = fixQuestions(empty(), k, NOW);
+    assert.equal(qs.length, 5, `${k} has 5 fix questions`);
+    assert.ok(qs.every((q) => q.tag === 'ielts-basics' && exercisePattern(q) === k));
+  }
+});
+
+test('What is IELTS? Final Mastery Challenge: 6 parts × 4 items at levels 1–3, stored in finals; the journey stage opens', () => {
+  const ch = getChallenge('ielts-intro')!;
+  assert.equal(ch.parts.length, 6);
+  assert.ok(ch.parts.every((x) => x.items.length === 4 && new Set(x.items.map((i) => i.level)).size === 3));
+  for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
+  const fp = recordFinal(empty(), { score: 90, level: 3, parts: {} }, NOW, 'ielts-intro');
+  assert.match(foundationSummaryLines(fp, NOW).join('\n'), /What is IELTS\? Final Mastery Challenge: last 90%/);
+  const stage = foundationJourney(empty()).find((s) => s.id === 'ielts-basics')!;
+  assert.equal(stage.soon, undefined, 'IELTS Basics is no longer "Soon"');
+});
+
 const asyncTests: [string, () => Promise<void>][] = [];
 asyncTests.push(['Mino sentence feedback: validated JSON, invented quotes dropped, student text isolated', async () => {
   let seen: AIRunRequest | undefined;
@@ -1137,6 +1209,16 @@ asyncTests.push(['Mino vocabulary feedback: word choice only, one check per issu
   assert.match(seen!.system!, /accuracy comes first/);
   assert.doesNotMatch(seen!.system!, /Common-error feedback/);
   assert.deepEqual(fb.fixes.map((f) => f.quote), ['access of']);
+}]);
+asyncTests.push(['Mino IELTS-facts feedback: facts first, no fees or dates, estimates are not results', async () => {
+  let seen: AIRunRequest | undefined;
+  const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: true, corrected: 'I need IELTS Academic for my master’s degree.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'General Training for my master’s', fix: 'Academic for my master’s', why: 'University study usually needs Academic.' }], practice: { sentence: 'Universities usually ask for IELTS ___.', answers: ['Academic'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
+  const fb = await assessFoundationSentence(fake, ex('ib-1-y1') as Extract<Exercise, { type: 'write' }>, 'I need General Training for my master’s degree.', 'bn');
+  assert.match(seen!.system!, /IELTS facts feedback \(target: IELTS Academic and General Training\)/);
+  assert.match(seen!.system!, /Never state fees, test dates, result times/);
+  assert.match(seen!.system!, /Judge the IELTS facts in the answer/);
+  assert.doesNotMatch(seen!.system!, /Judge ONLY grammar and the target structure/);
+  assert.deepEqual(fb.fixes.map((f) => f.quote), ['General Training for my master’s']);
 }]);
 void (async () => {
   for (const [name, fn] of asyncTests) {

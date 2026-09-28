@@ -190,7 +190,7 @@ export async function runModuleSpec(s: ModuleSpec) {
     await p.waitForURL('**/mino**');
     const minoReply = p.getByText(/^Mock Mino: /).last();
     await minoReply.waitFor({ timeout: 60_000 });
-    check(`Mino sees the stored ${s.name} challenge result`, new RegExp(`${s.name} Final Mastery Challenge: last \\d+%`).test(await minoReply.innerText()), await minoReply.innerText());
+    check(`Mino sees the stored ${s.name} challenge result`, new RegExp(`${s.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} Final Mastery Challenge: last \\d+%`).test(await minoReply.innerText()), await minoReply.innerText());
     await ctx.close();
 
     console.log('\n[8] Persistence: a fresh sign-in sees the same progress');

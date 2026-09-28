@@ -69,6 +69,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'voc-register-mix': { title: l('Formal or informal words for the task', 'Task অনুযায়ী formal বা informal word'), modules: ['vocabulary-foundation'] },
   'voc-vague-word': { title: l('Vague words (good, bad, thing, very)', 'অস্পষ্ট word (good, bad, thing, very)'), modules: ['vocabulary-foundation'] },
   'voc-form-tone': { title: l('Word form and tone (affect / effect, economic)', 'Word form আর সুর (affect / effect, economic)'), modules: ['vocabulary-foundation'] },
+  'ib-version-fact': { title: l('Academic or General Training', 'Academic না General Training'), modules: ['ielts-intro'] },
+  'ib-format-fact': { title: l('Test format and timing', 'Test-এর format আর সময়'), modules: ['ielts-intro'] },
+  'ib-delivery-fact': { title: l('Computer or paper', 'Computer না paper'), modules: ['ielts-intro'] },
+  'ib-band-calc': { title: l('Band Scores and the overall', 'Band Score আর overall'), modules: ['ielts-intro'] },
+  'ib-marking-fact': { title: l('How each skill is marked', 'প্রতিটা skill কীভাবে নম্বর পায়'), modules: ['ielts-intro'] },
+  'ib-requirement': { title: l('Reading requirements and planning', 'Requirement পড়া আর plan'), modules: ['ielts-intro'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -575,6 +581,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('One Bangla meaning (অর্থনৈতিক, ফলাফল) covers several English words, so the difference in form and tone is hidden.', 'একটা বাংলা অর্থ (অর্থনৈতিক, ফলাফল) কয়েকটা English word বোঝায়, তাই form আর সুরের পার্থক্য লুকিয়ে থাকে।'),
     recognise: l('Ask what job the gap needs (noun after "the", verb after "can", adverb after a verb) and whether the result is good or bad.', 'জিজ্ঞেস করুন জায়গাটার কী কাজ ("the"-এর পরে noun, "can"-এর পরে verb, verb-এর পরে adverb), আর ফলটা ভালো না খারাপ।'),
     avoid: l('If you are not sure of a new word in the exam, use a word you know well.', 'Exam-এ নতুন word নিয়ে নিশ্চিত না হলে ভালো করে জানা word ব্যবহার করুন।'),
+  },
+  'ib-version-fact': {
+    rule: l('Listening and Speaking are the same in both versions; Reading and Writing differ. Academic is usually for university study, General Training often for work, training or migration — the organisation’s official requirement decides. Academic Writing Task 1 describes visual information; General Training Task 1 is a letter.', 'দুই version-এ Listening আর Speaking একই; Reading আর Writing আলাদা। Academic সাধারণত university-র জন্য, General Training প্রায়ই কাজ, training বা migration-এর জন্য — প্রতিষ্ঠানের official requirement ঠিক করে। Academic Writing Task 1-এ visual তথ্যের বর্ণনা; General Training Task 1 একটা letter।'),
+    why: l('Advice from friends or agents ("GT is easier", "any IELTS is fine") replaces the official requirement.', 'বন্ধু বা agent-এর পরামর্শ ("GT সহজ", "যেকোনো IELTS চলবে") official requirement-এর জায়গা নিয়ে নেয়।'),
+    recognise: l('Before booking, ask: what is my purpose, and what does the official page of my university, employer or visa authority say?', 'Book করার আগে জিজ্ঞেস করুন: আমার উদ্দেশ্য কী, আর আমার university, employer বা visa কর্তৃপক্ষের official page কী বলে?'),
+    avoid: l('Save the official requirement link and read it again just before you book.', 'Official requirement-এর link save করুন আর book করার ঠিক আগে আবার পড়ুন।'),
+  },
+  'ib-format-fact': {
+    rule: l('Listening: 4 parts, 40 questions, about 30 minutes, heard once. Reading: 3 sections, 40 questions, 60 minutes, no extra transfer time. Writing: 60 minutes — Task 1 at least 150 words (~20 min), Task 2 at least 250 words (~40 min, counts for more). Speaking: 11–14 minutes, 3 parts, face to face.', 'Listening: ৪ part, ৪০ প্রশ্ন, প্রায় ৩০ মিনিট, একবার শোনা। Reading: ৩ section, ৪০ প্রশ্ন, ৬০ মিনিট, উত্তর তোলার আলাদা সময় নেই। Writing: ৬০ মিনিট — Task 1 কমপক্ষে ১৫০ word (~২০ মিনিট), Task 2 কমপক্ষে ২৫০ word (~৪০ মিনিট, গুরুত্ব বেশি)। Speaking: ১১–১৪ মিনিট, ৩ part, মুখোমুখি।'),
+    why: l('Practice without timing hides how the real test feels, so numbers are guessed or mixed up.', 'সময় ছাড়া practice-এ আসল test কেমন তা বোঝা যায় না, তাই সংখ্যা আন্দাজ করা হয় বা গুলিয়ে যায়।'),
+    recognise: l('For each skill, say the parts, the questions and the minutes from memory.', 'প্রতিটা skill-এর part, প্রশ্ন আর মিনিট মুখস্থ বলুন।'),
+    avoid: l('Always practise full sections at the real timing.', 'সবসময় আসল সময়ে পূর্ণ section practice করুন।'),
+  },
+  'ib-delivery-fact': {
+    rule: l('Computer-delivered and paper-based IELTS have the same content, timing and scoring; Speaking is face to face in both. On computer you type and see a word count; on paper you write by hand. Paper Listening gives 10 minutes to transfer answers; computer Listening gives 2 minutes to check.', 'Computer-delivered আর paper-based IELTS-এর content, সময় আর scoring একই; দুটোতেই Speaking মুখোমুখি। Computer-এ type করেন আর word count দেখেন; paper-এ হাতে লেখেন। Paper Listening-এ উত্তর তোলার ১০ মিনিট; computer Listening-এ যাচাইয়ের ২ মিনিট।'),
+    why: l('Rumours say one format is easier; in fact only the way of answering changes.', 'গুজব বলে একটা format সহজ; আসলে শুধু উত্তর দেওয়ার ধরন বদলায়।'),
+    recognise: l('Ask: do I type or handwrite faster and more accurately?', 'জিজ্ঞেস করুন: আমি type করে না হাতে লিখে দ্রুত আর নির্ভুল?'),
+    avoid: l('Practise in the format you will take; check dates and result times on the official website.', 'যে format-এ দেবেন সেটায় practice করুন; তারিখ আর result-এর সময় official website-এ দেখুন।'),
+  },
+  'ib-band-calc': {
+    rule: l('Bands are 0–9 in half bands. Overall = the average of the four bands, rounded to the nearest half band: an average ending in .25 rounds up to .5, one ending in .75 rounds up to the next whole band. Requirements often add a minimum for each skill.', 'Band 0–9, half band-সহ। Overall = চারটা band-এর গড়, কাছের half band-এ: .25-এ শেষ হলে বেড়ে .5, .75-এ শেষ হলে বেড়ে পরের পূর্ণ band। Requirement প্রায়ই প্রতিটা skill-এর সর্বনিম্ন যোগ করে।'),
+    why: l('Many students think the overall is the lowest band, or forget the per-skill minimum.', 'অনেকে ভাবেন overall মানে সবচেয়ে কম band, বা প্রতি skill-এর সর্বনিম্ন ভুলে যান।'),
+    recognise: l('Add the four bands, divide by 4, then round to the nearest half band.', 'চারটা band যোগ করুন, 4 দিয়ে ভাগ করুন, তারপর কাছের half band-এ round করুন।'),
+    avoid: l('Always check both the overall and every skill minimum.', 'সবসময় overall আর প্রতিটা skill-এর সর্বনিম্ন দুটোই দেখুন।'),
+  },
+  'ib-marking-fact': {
+    rule: l('Listening and Reading: one mark per correct answer, out of 40, converted to a band; spelling and word limits count. Writing: Task Achievement / Task Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy, equally weighted; Task 2 counts for more. Speaking: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation, equally weighted.', 'Listening আর Reading: প্রতি সঠিক উত্তরে এক নম্বর, ৪০-এর মধ্যে, band-এ রূপান্তর; বানান আর word-এর সীমা গোনা হয়। Writing: Task Achievement / Task Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy, সমান গুরুত্ব; Task 2-এর গুরুত্ব বেশি। Speaking: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation, সমান গুরুত্ব।'),
+    why: l('Myths like "long essays and rare words get high bands" hide what is really marked.', '"লম্বা essay আর কঠিন word-এ বেশি band"-এর মতো ভুল ধারণা আসলে কী গোনা হয় তা লুকিয়ে রাখে।'),
+    recognise: l('For each piece of advice, ask: which criterion does this improve?', 'প্রতিটা পরামর্শের জন্য জিজ্ঞেস করুন: এটা কোন criteria উন্নত করে?'),
+    avoid: l('Plan practice criterion by criterion, starting with your weakest.', 'Criteria ধরে ধরে practice plan করুন, সবচেয়ে দুর্বলটা দিয়ে শুরু।'),
+  },
+  'ib-requirement': {
+    rule: l('A requirement usually has a version, an overall band, a minimum for each skill and how recent the result must be (many organisations accept about two years). Both the overall and every minimum must be met. Fees, dates, result times and retakes: the official IELTS or test centre website only. Mino scores are practice estimates.', 'Requirement-এ সাধারণত থাকে version, overall band, প্রতি skill-এর সর্বনিম্ন আর result কত পুরোনো চলবে (অনেক প্রতিষ্ঠান প্রায় দুই বছর)। Overall আর প্রতিটা সর্বনিম্ন — দুটোই পূরণ করতে হয়। Fee, তারিখ, result-এর সময় আর retake: শুধু official IELTS বা test centre-এর website। Mino-র score practice-এর অনুমান।'),
+    why: l('Old posts and friends’ requirements replace the organisation’s current official page.', 'পুরোনো post আর বন্ধুর requirement প্রতিষ্ঠানের বর্তমান official page-এর জায়গা নিয়ে নেয়।'),
+    recognise: l('Read the requirement line by line: version, overall, minimums, how recent.', 'Requirement লাইন ধরে পড়ুন: version, overall, সর্বনিম্ন, কত পুরোনো।'),
+    avoid: l('Check the official page before booking, and aim slightly above every minimum.', 'Book-এর আগে official page দেখুন, আর প্রতিটা সর্বনিম্নের একটু ওপরে লক্ষ্য রাখুন।'),
   },
 };
 

@@ -219,6 +219,27 @@ http
             practice: { sentence: 'Applicants must ___ a visa before travelling.', answers: ['obtain'] },
           }) }]);
         }
+        const ieltsFactRules = /IELTS facts feedback \(target: /.test(system);
+        if (ieltsFactRules && /General Training for my master/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(/General Training for my master/, 'IELTS Academic for my master'),
+            feedback: bn ? 'ভালো চেষ্টা! University-র জন্য সাধারণত Academic লাগে।' : 'Good try! University study usually needs Academic.',
+            fixes: [{ quote: 'General Training for my master’s degree', fix: 'Academic for my master’s degree', why: bn ? 'University study usually needs Academic — official requirement দেখুন।' : 'University study usually needs Academic — check the official requirement.' }],
+            practice: { sentence: 'For a degree, universities usually ask for IELTS ___.', answers: ['Academic'] },
+          }) }]);
+        }
+        if (ieltsFactRules && /easier and gives higher scores/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace(/because it is easier and gives higher scores/, 'because I type faster than I write'),
+            feedback: bn ? 'ভালো চেষ্টা! দুই format-এর scoring একই।' : 'Good try! Both formats use the same scoring.',
+            fixes: [{ quote: 'it is easier and gives higher scores', fix: 'Neither format is easier', why: bn ? 'Neither format is easier: একই content আর scoring।' : 'Neither format is easier: same content and scoring.' }],
+            practice: { sentence: 'In computer Listening you get ___ minutes to check your answers.', answers: ['2', 'two'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',
@@ -233,7 +254,7 @@ http
       const last = b.contents.at(-1);
       const fr = last.parts.find((p) => p.functionResponse);
       if (!fr) return reply([{ functionCall: { name: 'getFoundationProgress', args: {} } }]);
-      const lines = system.match(/[A-Za-z– ]*Final Mastery Challenge: [^\n]*/g);
+      const lines = system.match(/[A-Za-z–? ]*Final Mastery Challenge: [^\n]*/g);
       return reply([{ text: `Mock Mino: ${lines ? lines.map((x) => x.trim()).join(' | ') : 'no challenge result in the snapshot'}` }]);
     });
   })

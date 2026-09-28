@@ -10,6 +10,7 @@ import { PUNCTUATION_FINAL_PARTS } from './punctuation-final';
 import { PREPOSITION_FINAL_PARTS } from './prepositions-final';
 import { COMMON_ERRORS_FINAL_PARTS } from './common-errors-final';
 import { VOCABULARY_FINAL_PARTS } from './vocabulary-final';
+import { IELTS_INTRO_FINAL_PARTS } from './ielts-intro-final';
 
 /**
  * Final Mastery Challenges, one per module that has one. They share one engine
@@ -92,6 +93,12 @@ export const CHALLENGES: ChallengeDef[] = [
     title: l('Vocabulary Final Mastery Challenge', 'Vocabulary Final Mastery Challenge'), name: l('Vocabulary', 'Vocabulary'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
     parts: VOCABULARY_FINAL_PARTS,
     concepts: ['voc-learn', 'voc-context', 'voc-paraphrase', 'voc-register', 'voc-precise', 'voc-use'],
+  },
+  {
+    id: 'ielts-intro', moduleId: 'ielts-intro', mark: 'I★', minutes: 15, areas: 'concept',
+    title: l('What is IELTS? Final Mastery Challenge', 'IELTS কী? Final Mastery Challenge'), name: l('What is IELTS?', 'IELTS কী?'), tagline: l('18 adaptive questions, a report topic by topic', '১৮টা adaptive প্রশ্ন, topic ধরে ধরে report'),
+    parts: IELTS_INTRO_FINAL_PARTS,
+    concepts: ['ib-versions', 'ib-format', 'ib-delivery', 'ib-bands', 'ib-marking', 'ib-plan'],
   },
 ];
 

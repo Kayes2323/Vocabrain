@@ -66,12 +66,12 @@ Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
 Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
 Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
 Vocabulary also links to the daily word missions).
-LEVEL 2 — IELTS Basics (What is IELTS?, Listening/Reading/Writing/Speaking)
-shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+LEVEL 2 — IELTS Basics: What is IELTS? (9 lessons + a Final Mastery Challenge);
+Listening/Reading/Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
-`docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md` and
-`docs/VOCABULARY_CURRICULUM.md`.
+`docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md`,
+`docs/VOCABULARY_CURRICULUM.md` and `docs/IELTS_INTRO_CURRICULUM.md`.
 
 ## Tests
 
@@ -356,6 +356,25 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   (pattern, synonym, register, precision, form, tone, word parts); accuracy before rarity.
 - **E2E.** `scripts/e2e/vocabulary.e2e.ts`; `module-spec.ts` accepts an optional
   `practiceLink` and checks it opens the missions.
+
+## Phase J: LEVEL 2 — What is IELTS?
+
+- **Module** `ielts-intro` (`ielts-intro.ts` ib-1…ib-6, `ielts-intro-apply.ts` ib-7…ib-9):
+  8 taught v2 lessons + the review test, tag `ielts-basics`, concepts `ib-versions`,
+  `ib-format`, `ib-delivery`, `ib-bands`, `ib-marking`, `ib-plan`. See
+  `docs/IELTS_INTRO_CURRICULUM.md`.
+- **Facts only.** Every fact matches `lib/ai/server/mino/knowledge/ielts.ts`. Fees, dates,
+  result times, retakes and institution requirements are never stated; lessons point to the
+  official IELTS / test centre website or the organisation's page. A unit test checks the
+  band arithmetic of the examples and that no fee appears.
+- **Knowledge lessons** name a "Common mix-up" in each concept step instead of a Bangla
+  grammar slip.
+- **Patterns.** `ib-version-fact`, `ib-format-fact`, `ib-delivery-fact`, `ib-band-calc`,
+  `ib-marking-fact`, `ib-requirement` (+ fix guides). **Challenge** `ielts-intro`.
+- **Mino.** For `ielts-basics` tasks the base prompt judges IELTS facts first (grammar only
+  where it blocks meaning), never states fees or dates, and treats scores as estimates.
+- **E2E.** `scripts/e2e/ielts-intro.e2e.ts`. The shared spec escapes regex characters in
+  module names ("What is IELTS?").
 
 ## Known issue: `pnpm lint`
 
