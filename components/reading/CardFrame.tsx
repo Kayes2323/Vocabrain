@@ -35,12 +35,14 @@ export function CardFrame({ label, testId, children, className }: { label: strin
  */
 export function keepWordVisible(word: HTMLElement | null) {
   if (!word) return;
-  window.setTimeout(() => {
+  const check = () => {
     const card = document.querySelector<HTMLElement>('[data-reading-card] > div');
     if (!card) return;
     const w = word.getBoundingClientRect();
     const c = card.getBoundingClientRect();
     const overlapsX = w.right > c.left && w.left < c.right;
     if (overlapsX && w.bottom > c.top - 12) window.scrollBy({ top: w.bottom - c.top + 24, behavior: 'smooth' });
-  }, 260);
+  };
+  // Check again as the card fills in (loading → meaning makes it taller).
+  for (const ms of [260, 700, 1300, 2500]) window.setTimeout(check, ms);
 }

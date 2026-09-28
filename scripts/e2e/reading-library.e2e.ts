@@ -40,7 +40,7 @@ const docBox = (p: Page) =>
 
 /** The tapped word is not hidden behind the card. */
 async function wordVisible(p: Page, word: import('playwright-core').Locator) {
-  await sleep(900);
+  await sleep(3200);
   const w = (await word.boundingBox())!;
   const c = await p.locator('[data-reading-card] > div').boundingBox();
   if (!c) return false;
