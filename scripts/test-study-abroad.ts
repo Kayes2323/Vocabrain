@@ -163,7 +163,7 @@ test('country photos: each belongs to a real country, files exist, sizes and foc
     const country = getCountry(code)!;
     assert.ok(country, `${code} is a country in the app`);
     assert.equal(country.hero, photo, `${code} card uses its own photo`);
-    assert.match(photo.src, new RegExp(`^/abroad/countries/${code.toLowerCase()}-\\d+\\.(jpg|webp)$`), `${code} file is named for its country`);
+    assert.match(photo.src, new RegExp(`^/images/countries/${code.toLowerCase()}-\\d+\\.(jpg|webp)$`), `${code} file is named for its country`);
     assert.ok(photo.width && photo.height && photo.position, `${code} size and focal point`);
     assert.ok(photo.alt.en && /[\u0980-\u09FF]/.test(photo.alt.bn), `${code} alt text in English and Bangla`);
     const widths = photo.srcSet!.map((s) => s.width);

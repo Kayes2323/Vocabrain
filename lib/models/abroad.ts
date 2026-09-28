@@ -181,7 +181,7 @@ export interface Bilingual {
  * which licence. Never add an image without all of these.
  */
 export interface LicensedImage {
-  /** Path under /public (e.g. /abroad/countries/kr.webp) or an allowed remote URL. */
+  /** Path under /public (e.g. /images/countries/kr.webp) or an allowed remote URL. */
   src: string;
   alt: Bilingual;
   /** Author / photographer as the source requires it to be credited. */
