@@ -47,6 +47,7 @@ import { JP_GUIDE } from '../lib/content/jp-guide';
 import { IT_GUIDE } from '../lib/content/it-guide';
 import { TR_GUIDE } from '../lib/content/tr-guide';
 import { GB_GUIDE } from '../lib/content/gb-guide';
+import { AU_GUIDE } from '../lib/content/au-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1545,14 +1546,14 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
   assert.equal(getCountryGuide('kr')?.code, 'KR');
   assert.equal(getCountryGuide('de')?.code, 'DE');
   assert.equal(getCountryGuide('jp')?.code, 'JP');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -2017,6 +2018,91 @@ test('UK: registries, scholarships per degree, Mino knowledge', () => {
   const m = guideForMino(GB_GUIDE, 'masters');
   assert.ok([...m.mostAsked, ...m.degrees.masters.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
   assert.equal(GB_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value!.min, 558);
+});
+
+// ---------------------------------------------------------------- Australia guide
+const auPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(AU_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(AU_GUIDE.degrees[l].intro);
+test('Australia: its own research from Australian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(AU_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|GKS|Sperrkonto|DAAD|MEXT|JASSO|EJU|Universitaly|TOLC|TR-YÖS|Türkiye|Chevening|CAS \(|£|EUR |JPY|KRW|GBP/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE]), /CRICOS|subclass 500|Australia Awards|OSHC|AUD /);
+  const hosts = new Set(guideSources([...AU_GUIDE.overview, ...AU_GUIDE.faqs, ...(AU_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(AU_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /\.gov\.au$|australiaawardsbangladesh\.org$|vfsglobal\.com$|\.edu\.au$|monash\.edu$/, `${h} is an official Australian source`);
+  assert.ok(hosts.has('immi.homeaffairs.gov.au'));
+});
+
+test('Australia: most asked first, key official figures, unverified ones not invented', () => {
+  const faq = (id: string) => AU_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(AU_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.equal(faq('requirements').q.bn, "Bangladesh থেকে Australia-তে Bachelor's পড়তে কী কী লাগে?");
+  assert.equal(faq('hsc').q.bn, "HSC শেষ করে কি সরাসরি Bachelor's-এ যাওয়া যায়?");
+  assert.equal(faq('cost').q.bn, 'Australia-তে পড়াশোনার খরচ কত?');
+  assert.equal(faq('ielts').q.bn, 'Australia-তে IELTS কত লাগে?');
+  assert.equal(faq('visa').q.bn, 'Student Visa-এর জন্য কী কী লাগে?');
+  assert.equal(faq('work').q.bn, 'Australia-তে পড়ার পাশাপাশি কাজ করা যায়?');
+  assert.equal(faq('scholarships').q.bn, 'Scholarship পাওয়া যায় কি?');
+  assert.equal(faq('after').q.bn, 'পড়াশোনা শেষে Australia-তে থাকা বা কাজ করার সুযোগ কী?');
+  assert.match(faq('funds').a[0].en, /29,710.*2,000.*87,856/);
+  assert.match(faq('work').a[0].en, /48 hours a fortnight/);
+  assert.match(faq('after').a[0].en, /485.*2 to 3 years.*5,750.*35/);
+  assert.match(faq('after').a[0].en, /does not promise permanent residence/);
+  assert.match(faq('ielts').a[0].en, /6\.0.*64.*50.*169/);
+  assert.match(faq('hsc').a[0].en, /UNSW.*foundation/);
+  assert.match(faq('bangladesh').a[0].en, /biometrics/);
+  assert.match(faq('bangladesh').a[0].en, /not verified yet/);
+  assert.match(faq('cost').a[0].en, /no single figure/);
+  const ug = degreeAnswers(AU_GUIDE.degrees.bachelors);
+  assert.equal(ug.find((a) => a.id === 'tuition')!.status, 'not-verified', 'no invented tuition figure');
+  assert.ok(ug.find((a) => a.id === 'living')!.discrepancy, 'visa minimum vs real cost disagreement shown');
+  assert.ok(ug.find((a) => a.id === 'hsc')!.discrepancy, 'universities differ on HSC');
+  for (const l of GUIDE_DEGREES) {
+    const c = AU_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'AUD', `${l}/${x.id} in Australian dollars`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|USD/, `${l}/${x.id} not converted`);
+    }
+    assert.deepEqual(c.official.map((x) => x.amount!.value), [2500, 29710, 2000]);
+    assert.deepEqual(c.estimates.map((x) => x.id), ['tuition', 'application-fee', 'oshc', 'rent', 'food-transport', 'setup'], 'costs kept separate');
+    assert.ok(c.estimates.every((x) => x.status === 'not-verified' && !x.amount), `${l}: unverified costs have no figure`);
+  }
+});
+
+test('Australia: degree isolation and documents (before vs after admission, university vs visa vs scholarship)', () => {
+  assert.match(auPage('bachelors'), /foundation/);
+  assert.doesNotMatch(auPage('masters') + auPage('phd'), /Group of Eight|NCUK/);
+  assert.match(auPage('masters'), /Australia Awards/);
+  assert.match(auPage('masters'), /99\.26/);
+  assert.match(auPage('phd'), /RTP/);
+  assert.match(auPage('phd'), /10%/);
+  assert.doesNotMatch(auPage('bachelors'), /99\.26|fees offset/);
+  assert.ok(guideDocumentsFor(AU_GUIDE, 'phd').some((d) => d.id === 'research-proposal'));
+  assert.ok(!guideDocumentsFor(AU_GUIDE, 'masters').some((d) => d.id === 'research-proposal'));
+  assert.ok(!guideDocumentsFor(AU_GUIDE, 'bachelors').some((d) => d.id === 'scholarship-docs'));
+  assert.ok(guideDocumentsFor(AU_GUIDE, 'bachelors').some((d) => d.id === 'welfare'));
+  const docs = AU_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  for (const id of ['coe', 'finance', 'genuine-student', 'oshc', 'health-check', 'police', 'biometrics']) assert.ok(docs.find((d) => d.id === id)!.groups.includes('visa'), `${id} is a visa document`);
+  for (const id of ['academic', 'english', 'cv-sop']) assert.ok(docs.find((d) => d.id === id)!.groups.includes('program'), `${id} is a university document`);
+  assert.match(docs.find((d) => d.id === 'scholarship-docs')!.why.en, /Scholarship documents/);
+  assert.match(docs.find((d) => d.id === 'coe')!.who.en, /after admission/);
+  assert.ok(docs.find((d) => d.id === 'biometrics')!.groups.includes('bangladesh'));
+});
+
+test('Australia: registries, scholarships per degree, Mino knowledge', () => {
+  const au = UNIVERSITIES.filter((u) => u.countryCode === 'AU' && u.id.startsWith('au-'));
+  assert.deepEqual(au.map((u) => u.id), ['au-adelaide', 'au-anu', 'au-monash', 'au-uq', 'au-melbourne', 'au-sydney', 'au-uwa', 'au-unsw']);
+  assert.ok(au.every((u) => u.officialUrl.startsWith('https://')));
+  const sch = (l: string) => SCHOLARSHIPS.filter((s) => s.countryCode === 'AU' && s.degreeLevels.includes(l as never)).map((s) => s.id).sort();
+  assert.deepEqual(sch('bachelors'), []);
+  assert.deepEqual(sch('masters'), ['au-australia-awards']);
+  assert.deepEqual(sch('phd'), ['au-rtp']);
+  assert.ok(SCHOLARSHIPS.filter((s) => s.countryCode === 'AU').every((s) => !s.funding && !/fully[- ]funded/i.test(JSON.stringify(s))));
+  const m = guideForMino(AU_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(AU_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value!.min, 2500);
+  assert.equal(AU_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 29710);
+  assert.equal(AU_GUIDE.factors!.find((f) => f.id === 'public-tuition')!.status, 'not-verified');
 });
 
 console.log(`\n${passed} passed`);
