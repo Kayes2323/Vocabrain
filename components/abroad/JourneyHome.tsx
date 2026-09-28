@@ -1,14 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { AlertTriangle, ArrowRight, CalendarClock, ChevronRight, Compass, FileText, GraduationCap, ListChecks, Wallet } from 'lucide-react';
+import { AlertTriangle, ArrowRight, CalendarClock, ChevronRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { PageHeader, Panel, ScreenSkeleton, StatusChip } from '@/components/ds';
 import { HubBar } from '@/components/abroad/HubBar';
 import { PHASE_TONE, PhaseStepper } from '@/components/abroad/PhaseStepper';
-import { StudyDestinations } from '@/components/abroad/StudyDestinations';
 import { TrustNote } from '@/components/abroad/TrustNote';
 import { useBilingual } from '@/components/abroad/useBilingual';
 import { getCountry } from '@/lib/content/countries';
@@ -17,9 +16,8 @@ import { journeyPhases } from '@/lib/abroad/phases';
 import { daysUntil } from '@/lib/abroad/status';
 
 /**
- * Study Abroad landing: a compact "my current journey" card (computed from the
- * profile, never guessed), then the Study Destinations, then a few planning
- * tools. Phase details live on the phase pages.
+ * The student's journey: a compact card computed from the profile (never
+ * guessed). Phase details live on the phase pages.
  */
 export function JourneyHome() {
   const { t } = useLocale();
@@ -54,17 +52,10 @@ export function JourneyHome() {
     }
   };
 
-  // One primary action: pick a country from the destinations below, otherwise the current phase's own page.
+  // One primary action: pick a country, otherwise the current phase's own page.
   const primary = choosingCountry
-    ? { href: '#destinations', label: t('sa.phase.setupCountryCta') }
+    ? { href: '/abroad', label: t('sa.phase.setupCountryCta') }
     : { href: current.href, label: t(`sa.phase.${current.id}.cta`) };
-
-  const tools = [
-    { href: '/abroad/country-match', icon: Compass, label: t('sa.landing.tools.match') },
-    { href: '/abroad/universities', icon: GraduationCap, label: t('sa.landing.tools.universities') },
-    { href: '/abroad/compare', icon: ListChecks, label: t('sa.landing.tools.compare') },
-    { href: '/abroad/cost', icon: Wallet, label: t('sa.landing.tools.cost') },
-  ];
 
   return (
     <div className="space-y-8 sm:space-y-10">
@@ -164,24 +155,6 @@ export function JourneyHome() {
           )}
         </Panel>
       )}
-
-      {/* 2. Study destinations */}
-      <StudyDestinations />
-
-      {/* Secondary: planning tools */}
-      <section className="space-y-3" aria-labelledby="tools-title" data-testid="abroad-tools">
-        <h2 id="tools-title" className="px-1 text-sm font-semibold">{t('sa.landing.toolsTitle')}</h2>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {tools.map(({ href, icon: Icon, label }) => (
-            <Link key={href} href={href} className="flex min-h-14 items-center gap-3 rounded-2xl border bg-card p-3.5 text-sm font-medium shadow-sm transition-shadow hover:shadow-md">
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand">
-                <Icon className="size-4.5" aria-hidden />
-              </span>
-              <span className="min-w-0">{label}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
 
       <TrustNote />
     </div>

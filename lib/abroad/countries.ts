@@ -25,4 +25,5 @@ export function countryIndicators(country: Country): CountryIndicators {
 }
 
 /** Canonical country URL (lower-case code). */
-export const countryHref = (code: string, tab?: string) => `/abroad/countries/${code.toLowerCase()}${tab ? `?tab=${tab}` : ''}`;
+/** A country's page; with a tab, the country hub on that tab (the hub also lives at /hub for countries with a guide). */
+export const countryHref = (code: string, tab?: string) => `/abroad/countries/${code.toLowerCase()}${tab ? `/hub?tab=${tab}` : ''}`;

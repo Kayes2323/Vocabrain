@@ -275,10 +275,16 @@ async function main() {
     }
 
     await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.getByTestId('priority-countries').waitFor({ timeout: 60_000 });
+    check('landing: country cards first, no journey or roadmap on the front page', (await p.getByTestId('abroad-journey').count()) === 0 && (await p.getByTestId('abroad-start').count()) === 0 && (await p.locator('[data-phase]').count()) === 0 && (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0);
+    check('landing: every card titled "Study in …"', (await p.getByTestId('study-in').count()) === 21 && (await p.locator('[data-country="KR"]').getByTestId('study-in').innerText()) === 'Study in South Korea' && (await p.locator('[data-country="IE"]').getByTestId('study-in').innerText()) === 'Study in Ireland');
+    check('landing: no ranking score shown', !/\d+\s*%|#\d|score/i.test(await p.getByTestId('study-destinations').innerText()));
+    check('landing desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-00-landing');
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-start').waitFor({ timeout: 60_000 });
     check('new student sees one clear start card', await p.getByRole('link', { name: /Set my goal/ }).isVisible());
     check('new student: no stage guessed (no phase shown before a goal)', (await p.locator('[data-phase]').count()) === 0);
-    check('landing: Study Destinations below the journey', (await p.getByTestId('study-destinations').count()) === 1 && (await p.getByRole('heading', { name: 'Study Destinations', exact: true }).count()) === 1);
     const hubs = p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link');
     check('hub bar: Home · Money · Apply · Visa & go', (await hubs.allInnerTexts()).join('|') === 'Home|Money|Apply|Visa & go', (await hubs.allInnerTexts()).join('|'));
     check('Home hub is marked current', (await hubs.first().getAttribute('aria-current')) === 'page');
@@ -288,10 +294,10 @@ async function main() {
     check('start card opens the goal setup', p.url().endsWith('/setup/abroad'));
 
     // A student with a goal and a shortlist (set as saved data once the app is idle, then the UI takes over).
-    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-start').waitFor({ timeout: 60_000 });
     await patchField(`users/${uid}`, 'app.abroad', { degreeLevel: 'masters', subject: 'Computer Science', targetIntake: { month: 10, year: 2027 }, preferredCountryCodes: ['DE', 'KR'] });
-    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     const journeyText = await p.getByTestId('abroad-journey').innerText();
     check('journey: goal set, country not chosen → "Choose your country" first (setup, not a phase)', (await p.getByTestId('abroad-journey').getAttribute('data-current-phase')) === 'setup-country' && /Choose your country/.test(journeyText), journeyText.slice(0, 160));
@@ -299,7 +305,7 @@ async function main() {
     check('six phases: English · Documents · University · Apply · Visa · Departure', (await p.locator('[data-phase]').allInnerTexts()).map((x) => x.trim()).join('|') === 'English|Documents|University|Apply|Visa|Departure', (await p.locator('[data-phase]').allInnerTexts()).join('|'));
     // English follows IELTS (this student set a target in onboarding → in progress); nothing is completed or ready from missing data.
     check('nothing is marked done from missing data', (await p.locator('[data-phase][data-status="completed"], [data-phase][data-status="ready"]').count()) === 0 && (await p.locator('[data-phase="english"]').getAttribute('data-status')) === 'in-progress' && (await p.locator('[data-phase][data-status="not-started"]').count()) === 5);
-    check('one primary action (choose a country → the destinations below)', (await p.getByTestId('abroad-continue').count()) === 1 && (await p.getByTestId('abroad-continue').getAttribute('href')) === '#destinations');
+    check('one primary action (choose a country → the destinations below)', (await p.getByTestId('abroad-continue').count()) === 1 && (await p.getByTestId('abroad-continue').getAttribute('href')) === '/abroad');
     await patchField(`users/${uid}`, 'app.abroad.dreamCountryCode', 'DE');
     await p.reload({ waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
@@ -311,10 +317,7 @@ async function main() {
     check('next: Documents Ready', /Next: Documents Ready/.test(await p.getByTestId('journey-next').innerText()));
     check('no long list of roadmap steps on Journey', (await p.locator('[data-step]').count()) === 0);
     check('journey goal line shows the dream country Germany', /Germany/.test(await p.getByTestId('journey-goal').innerText()));
-    check('dream badge on the Germany card', /Dream country/.test(await p.locator('[data-country="DE"]').innerText()));
-    check('no Mino prompts on the landing', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0);
-    check('landing: one "Study in" badge per card', (await p.getByTestId('study-in').count()) === 21 && (await p.locator('[data-country="IE"]').getByTestId('study-in').innerText()) === 'Study in Ireland');
-    check('landing: planning tools are secondary links', (await p.getByTestId('abroad-tools').getByRole('link').evaluateAll((els) => els.map((e) => e.getAttribute('href')).join(','))) === '/abroad/country-match,/abroad/universities,/abroad/compare,/abroad/cost');
+    check('no Mino prompts on the journey card', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0);
     // An earlier stage mark (saved data from the previous journey screen) still counts in the new phases.
     await patchField(`users/${uid}`, 'app.abroad.journey', { marks: { eligibility: { status: 'done', countryCode: 'DE', updatedAt: new Date().toISOString() } } });
     await p.reload({ waitUntil: 'load' });
@@ -333,8 +336,8 @@ async function main() {
     check('phase page desktop: no sideways scroll', await noHorizontalScroll(p));
     await p.waitForTimeout(500);
     await shot(p, 'sa-journey-02-phase-university');
-    await p.locator('main a[href="/abroad"]').first().click();
-    await p.waitForURL(/\/abroad$/);
+    await p.locator('main a[href="/abroad/journey"]').first().click();
+    await p.waitForURL(/\/abroad\/journey$/);
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('back to Journey from the phase page', true);
     check('desktop: no sideways scroll', await noHorizontalScroll(p));
@@ -380,7 +383,7 @@ async function main() {
     const kr = p.locator('[data-country="KR"]');
     check('South Korea card claims nothing unverified (no verified chip)', (await kr.getByTestId('card-verified').count()) === 0);
     check('Canada card shows its verified-facts count', (await p.locator('[data-country="CA"]').getByTestId('card-verified').innerText()) === '3 verified facts');
-    check('Explore links to the country hub', (await kr.getByRole('link', { name: 'Explore' }).getAttribute('href')) === '/abroad/countries/kr');
+    check('Explore links to the country page', (await kr.getByRole('link', { name: 'Explore' }).getAttribute('href')) === '/abroad/countries/kr');
     await p.getByRole('searchbox', { name: 'Search countries or capitals' }).fill('wellington');
     check('search by capital finds New Zealand', (await p.locator('[data-country]').count()) === 1 && (await p.locator('[data-country="NZ"]').count()) === 1);
     await p.getByRole('searchbox', { name: 'Search countries or capitals' }).fill('');
@@ -398,9 +401,68 @@ async function main() {
     await shot(p, 'sa-3b-01-explorer');
 
     // ============================================================ 3C · Country hub (one template)
-    console.log('\n[3C] Country hub');
+
+    // ============================================================ Country guide → degree guide (South Korea)
+    console.log('\n[Guide] South Korea guide');
     await kr.getByRole('link', { name: 'Explore' }).click();
     await p.waitForURL('**/abroad/countries/kr');
+    await p.getByTestId('country-guide').waitFor({ timeout: 60_000 });
+    check('guide: "Study in South Korea" heading', /Study in South Korea/.test(await p.getByRole('heading', { level: 1 }).innerText()));
+    check('guide: photo of South Korea on top', (await p.getByTestId('country-guide').locator('[data-country-photo="KR"]').count()) === 1);
+    check('guide: overview answers on the page (no accordion)', (await p.getByTestId('guide-overview').locator('[data-guide-q]').count()) >= 8 && (await p.getByTestId('country-guide').locator('button[aria-expanded]').count()) === 0);
+    check('guide: degree cards in order Bachelor’s, Master’s, PhD', (await p.getByTestId('guide-degrees').locator('[data-degree]').evaluateAll((els) => els.map((e) => e.getAttribute('data-degree')).join(','))) === 'bachelors,masters,phd');
+    const faq = p.getByTestId('guide-faq');
+    check('guide: most asked questions, bold headings with answers below', (await faq.locator('[data-faq]').count()) >= 14 && (await faq.locator('h3').first().evaluate((h) => Number(getComputedStyle(h).fontWeight))) >= 700);
+    check('guide: TOPIK and IELTS questions answered', /Do you need TOPIK\?/.test(await faq.innerText()) && /What IELTS score might you need\?/.test(await faq.innerText()));
+    check('guide: no journey, roadmap, next step or Mino on the country page', (await p.locator('main').getByRole('link', { name: /Mino/ }).count()) === 0 && !/My roadmap|Build my plan|Next step|Your Study Abroad journey/.test(await p.locator('main').innerText()));
+    check('guide: never "fully funded", never ranked', !/fully funded|ranking|top university|best university/i.test(await p.locator('main').innerText()));
+    check('guide: sources at the end, each a link', (await p.getByTestId('guide-sources').locator('a[href^="https://"]').count()) >= 6 && /Sources & Official References/.test(await p.getByTestId('guide-sources').innerText()));
+    check('guide: planning tools kept behind one quiet link', (await p.getByTestId('guide-more').getAttribute('href')) === '/abroad/countries/kr/hub');
+    check('guide desktop: no sideways scroll', await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-01-country');
+    const photoSrc = await p.locator('[data-country-photo="KR"] img').first().getAttribute('src');
+    await p.reload({ waitUntil: 'load' });
+    await p.getByTestId('country-guide').waitFor({ timeout: 60_000 });
+    check('guide: photo stays the same after reload', (await p.locator('[data-country-photo="KR"] img').first().getAttribute('src')) === photoSrc);
+
+    await p.getByTestId('guide-degrees').locator('[data-degree="bachelors"]').click();
+    await p.waitForURL('**/abroad/countries/kr/degree/bachelors');
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const ba = p.getByTestId('degree-guide');
+    check("bachelor's: heading", /Bachelor's in South Korea/.test(await p.getByRole('heading', { level: 1 }).innerText()));
+    check("bachelor's: sections in reading order", (await ba.locator('[data-guide-section]').evaluateAll((els) => els.map((e) => e.getAttribute('data-guide-section')).join(','))) === 'eligibility,language,costs,documents,apply,scholarships,universities,work,visa,after');
+    check("bachelor's: only bachelor's rules (D-2-2, no D-2-3 / D-2-4 / thesis)", /D-2-2/.test(await ba.innerText()) && !/D-2-3|D-2-4|thesis|dissertation/.test(await ba.innerText()));
+    const costs = ba.getByTestId('guide-costs');
+    check("bachelor's: costs split into Official / Estimate / Your own budget", (await costs.locator('[data-cost-group]').evaluateAll((els) => els.map((e) => e.getAttribute('data-cost-group')).join(','))) === 'official,estimate,mine');
+    check("bachelor's: official fee from the program's own page, estimate from the guidebook", /8,202,000/.test(await costs.locator('[data-cost-group="official"]').innerText()) && /5,000,000–7,000,000/.test(await costs.locator('[data-cost-group="estimate"]').innerText()));
+    check("bachelor's: no affordability verdict, nothing converted", !/you can afford|affordable|not enough|≈/i.test(await costs.innerText()) && /nothing is converted/.test(await costs.innerText()));
+    const uniNames = await ba.getByTestId('guide-universities').locator('[data-university] p.font-semibold').allInnerTexts();
+    check("bachelor's: universities listed alphabetically, never ranked", uniNames.length === 10 && uniNames.join('|') === [...uniNames].sort((x, y) => x.localeCompare(y)).join('|'), uniNames.join('|'));
+    check("bachelor's: verified programs linked under their university", (await ba.locator('[data-university="kr-yonsei"] [data-program="kr-yonsei-uic"]').count()) === 1 && (await ba.locator('[data-university="kr-woosong"] [data-program="kr-woosong-solbridge-bba"]').count()) === 1);
+    check("bachelor's: GKS undergraduate only", (await ba.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')).join(','))) === 'kr-gks-u-2027');
+    check("bachelor's: unverified points say so", (await ba.locator('[data-guide-status="not-verified"]').count()) >= 1);
+    check("bachelor's: sources at the end", (await ba.getByTestId('guide-sources').locator('a').count()) >= 10);
+    check("bachelor's desktop: no sideways scroll", await noHorizontalScroll(p));
+    await shot(p, 'sa-guide-02-bachelors');
+    await ba.getByRole('link', { name: "Master's in South Korea" }).click();
+    await p.waitForURL('**/abroad/countries/kr/degree/masters');
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    check("master's: D-2-3 only, GKS graduate, no bachelor's fee", /D-2-3/.test(await p.getByTestId('degree-guide').innerText()) && !/D-2-2|D-2-4|8,202,000|12 years of school/.test(await p.getByTestId('degree-guide').innerText()) && (await p.locator('[data-scholarship]').evaluateAll((els) => els.map((e) => e.getAttribute('data-scholarship')).join(','))) === 'kr-gks-g');
+    check("master's: no verified master's program claimed", (await p.getByTestId('guide-universities').locator('[data-program]').count()) === 0);
+    await p.goto(`${BASE}/abroad/countries/kr/degree/phd`, { waitUntil: 'load' });
+    await p.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    const phdText = await p.getByTestId('degree-guide').innerText();
+    check('PhD: research proposal and supervisor questions, marked not verified', /Do you need a research proposal\?/.test(phdText) && /Do you need a supervisor before applying\?/.test(phdText) && (await p.locator('[data-guide-q="proposal"] [data-guide-status="not-verified"]').count()) === 1);
+    check('PhD: D-2-4 only, stay limit needs re-check', /D-2-4/.test(phdText) && !/D-2-2|D-2-3/.test(phdText) && (await p.locator('[data-guide-q="visa"] [data-guide-status="needs-review"]').count()) === 1);
+    await shot(p, 'sa-guide-03-phd');
+    await p.goto(`${BASE}/abroad/countries/kr/degree/diploma`, { waitUntil: 'load' });
+    await p.getByTestId('degree-not-found').waitFor({ timeout: 60_000 });
+    check('unknown degree → clear message + way back', (await p.getByRole('link', { name: 'Study in South Korea' }).count()) === 1);
+    await p.goto(`${BASE}/abroad/countries/ca`, { waitUntil: 'load' });
+    await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
+    check('a country without a guide keeps its existing page (nothing borrowed from South Korea)', (await p.getByTestId('country-guide').count()) === 0);
+    await p.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
+    console.log('\n[3C] Country hub');
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
     check('hub: South Korea heading', (await p.getByRole('heading', { level: 1 }).innerText()) === 'South Korea');
     const tabs = p.getByRole('tablist').getByRole('tab');
@@ -460,7 +522,7 @@ async function main() {
     await p.waitForURL('**/abroad/countries/us/study/general');
     await guideEl.waitFor({ timeout: 60_000 });
     check('US general guide: nothing invented — unverified parts say so, no Korean data', (await p.locator('[data-guide-section][data-verified="false"]').count()) >= 10 && !/D-2|D-4|Korea/.test(await guideEl.innerText()));
-    await p.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await p.getByTestId('hub-sections').waitFor({ timeout: 60_000 });
 
     await p.goto(`${BASE}/abroad/countries/de?tab=money`, { waitUntil: 'load' });
@@ -537,7 +599,7 @@ async function main() {
     check('after reload: date still needs attention', (await p.locator('[data-step="sop-cv"]').getAttribute('data-status')) === 'attention');
     check('roadmap desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-3e-01-roadmap');
-    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     await p.getByText('Needs attention').first().waitFor({ timeout: 15_000 }).catch(() => undefined);
     check('home: the step date is under "Needs attention"', /Needs attention/i.test(await p.locator('main').innerText()) && /Write your SOP and CV/.test(await p.locator('main').innerText()), (await p.locator('main').innerText()).slice(0, 400));
@@ -660,7 +722,7 @@ async function main() {
     check('Ask Mino carries country and part', (await p.locator('[data-section="portal"]').getByRole('link', { name: /Ask Mino about/ }).getAttribute('href')) === '/mino?ask=abroad-visa&country=gb&part=portal');
     check('visa desktop: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'sa-3j-01-visa-gb');
-    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('home tools: centres no longer "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0, String(await p.locator('main').getByText('Soon', { exact: true }).count()));
 
@@ -711,7 +773,7 @@ async function main() {
     console.log('\n[KR-B2] Pathways, visa categories, work check, Apply ↔ Roadmap');
     type PB = Record<string, unknown> & { pathwayByCountry?: Record<string, string>; journey?: { steps?: Record<string, Record<string, { status: string }>> } };
     const pb = async (ok: (x: PB) => boolean) => (await waitForAbroad(uid, (y) => ok(y as PB))) as PB;
-    await p.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
     check('KR hub asks "What are you planning to study?" with 2 pathways', (await p.getByTestId('pathway-picker').locator('[data-pathway]').count()) === 2);
     await p.locator('[data-pathway="language"]').click();
@@ -820,7 +882,7 @@ async function main() {
       universities?: { name: string; countryCode: string; program?: string; status: string }[];
     };
     const kb = async (ok: (x: SB) => boolean) => (await waitForAbroad(uid, (v) => ok(v as SB))) as SB;
-    await p.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await p.getByTestId('pathway-picker').waitFor({ timeout: 60_000 });
     await p.locator('[data-pathway="degree"]').click();
     await kb((v) => v.pathwayByCountry?.KR === 'degree');
@@ -957,7 +1019,7 @@ async function main() {
     await p.waitForURL('**/abroad/documents?open=transcript');
     await p.locator('[data-document="transcript"] button[aria-expanded="true"]').waitFor({ timeout: 30_000 });
     check('…and opens that document directly', true);
-    await p.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await p.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await p.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     check('home: actionable alert for the out-of-date passport', (await p.getByRole('link', { name: /Your Passport needs updating/ }).getAttribute('href')) === '/abroad/documents?open=passport');
 
@@ -973,7 +1035,7 @@ async function main() {
     watchErrors(q, 'BN', errors);
     await signUp(q, 'Rafi', `abroad-bn-${stamp}@test.dev`, 'bn');
     const uidBn = (await uidOf(q))!;
-    await q.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await q.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await q.getByTestId('abroad-start').waitFor({ timeout: 60_000 });
     await patchField(`users/${uidBn}`, 'app.abroad', { degreeLevel: 'bachelors', preferredCountryCodes: ['AU'], dreamCountryCode: 'AU' });
     await q.reload({ waitUntil: 'load' });
@@ -991,7 +1053,7 @@ async function main() {
     check('bn mobile phase page: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
     await q.waitForTimeout(500);
     await shot(q, 'sa-journey-03-phase-documents-mobile-bn', false);
-    await q.goto(`${BASE}/abroad`, { waitUntil: 'load' });
+    await q.goto(`${BASE}/abroad/journey`, { waitUntil: 'load' });
     await q.getByTestId('abroad-journey').waitFor({ timeout: 60_000 });
     await setDark(q, true);
     check('bn mobile dark: no sideways scroll', await noHorizontalScroll(q));
@@ -1003,6 +1065,18 @@ async function main() {
     check('bn explorer: shortlist button in Bangla', (await q.getByRole('button', { name: 'Shortlist-এ রাখুন' }).count()) >= 13);
     await shot(q, 'sa-3b-02-explorer-mobile', false);
     await q.goto(`${BASE}/abroad/countries/kr`, { waitUntil: 'load' });
+    await q.getByTestId('country-guide').waitFor({ timeout: 60_000 });
+    check('bn guide: heading and most asked questions in Bangla', /South Korea-এ পড়াশোনা/.test(await q.getByRole('heading', { level: 1 }).innerText()) && /সবচেয়ে বেশি জিজ্ঞেস করা প্রশ্ন/.test(await q.getByTestId('guide-faq').innerText()) && /TOPIK লাগবে কি\?/.test(await q.getByTestId('guide-faq').innerText()));
+    check('bn guide: respectful আপনি, never তুমি', !/তুমি|তোমার/.test(await q.locator('main').innerText()));
+    check('bn guide mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-guide-04-country-mobile-bn');
+    await q.getByTestId('guide-degrees').locator('[data-degree="masters"]').click();
+    await q.waitForURL('**/abroad/countries/kr/degree/masters');
+    await q.getByTestId('degree-guide').waitFor({ timeout: 60_000 });
+    check('bn degree: Master’s guide in Bangla, sources at the end', /অন্য subject থেকে আবেদন করা যায় কি\?/.test(await q.getByTestId('degree-guide').innerText()) && (await q.getByTestId('guide-sources').locator('a').count()) >= 8);
+    check('bn degree mobile: no sideways scroll', await noHorizontalScroll(q), await overflowers(q));
+    await shot(q, 'sa-guide-05-masters-mobile-bn');
+    await q.goto(`${BASE}/abroad/countries/kr/hub`, { waitUntil: 'load' });
     await q.getByTestId('study-options').waitFor({ timeout: 60_000 });
     check('bn: study options heading in Bangla', /একটা program বেছে নিন/.test(await q.getByTestId('study-options').innerText()));
     await q.locator('[data-study-option="degree-bachelors"]').click();

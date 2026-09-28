@@ -40,6 +40,10 @@ import { actionHref, appliesTo, countrySections, factNeedsReview, factStatus, gr
 import type { Country, SectionFact } from '../lib/models';
 import { deadlineBucket, scholarshipStatus } from '../lib/abroad/status';
 import { COUNTRY_SECTION_IDS, VISA_PART_IDS } from '../lib/models';
+import { degreeAnswers, GUIDE_DEGREES, guideSources, isAnswer, type GuideAnswer } from '../lib/abroad/guides';
+import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
+import { KR_ESTIMATES } from '../lib/content/kr-country';
+import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
 
 /**
  * Study Abroad product tests (journey, countries, hub, roadmap, centres…).
@@ -87,7 +91,7 @@ test('journey: dream country → "Choose a country" done; the next stage links t
   const j = abroadJourney(p, NOW);
   assert.equal(j.stages[1].status, 'done');
   assert.equal(j.current.id, 'eligibility');
-  assert.equal(j.current.href, '/abroad/countries/de?tab=apply');
+  assert.equal(j.current.href, '/abroad/countries/de/hub?tab=apply');
   assert.equal(j.current.manual, true);
   assert.deepEqual(p.abroad.preferredCountryCodes, ['DE'], 'the dream country joins the shortlist');
   assert.equal(j.percent, 20);
@@ -188,7 +192,7 @@ test('countries: 14 priority destinations in the approved order (New Zealand inc
     }
   }
   assert.equal(getCountry('nz')?.name, 'New Zealand');
-  assert.equal(countryHref('DE', 'apply'), '/abroad/countries/de?tab=apply');
+  assert.equal(countryHref('DE', 'apply'), '/abroad/countries/de/hub?tab=apply');
 });
 
 test('country cards only claim what is verified', () => {
@@ -1530,6 +1534,110 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
   assert.match(out.rule, /Bangladesh-specific requirement/);
   assert.match(out.rule, /Never assume the student's pathway, degree/);
   assert.equal(out.work.state, 'needsAnswers', 'no pathway → Mino asks');
+});
+
+
+// ---------------------------------------------------------------- Country & degree guides
+test('guides: one guide per country, no fallback to another country', () => {
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR']);
+  assert.equal(getCountryGuide('kr')?.code, 'KR');
+  for (const c of COUNTRIES.filter((x) => x.code !== 'KR')) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
+});
+
+test("guides: degrees in the order Bachelor's, Master's, PhD, each complete", () => {
+  assert.deepEqual([...GUIDE_DEGREES], ['bachelors', 'masters', 'phd']);
+  const kr = getCountryGuide('KR')!;
+  assert.deepEqual(Object.keys(kr.degrees), ['bachelors', 'masters', 'phd']);
+  for (const level of GUIDE_DEGREES) {
+    const d = kr.degrees[level];
+    assert.equal(d.level, level);
+    const embeds = d.sections.flatMap((s) => s.items.filter((i) => !isAnswer(i)).map((i) => (i as { embed: string }).embed)).sort();
+    assert.deepEqual(embeds, ['costs', 'scholarships', 'universities'], `${level}: costs, universities and scholarships once each`);
+    const ids = d.sections.map((s) => s.id);
+    assert.equal(new Set(ids).size, ids.length, `${level}: unique section ids`);
+    const qids = degreeAnswers(d).map((a) => a.id);
+    assert.equal(new Set(qids).size, qids.length, `${level}: unique question ids`);
+    for (const need of ['language', 'documents', 'apply', 'work', 'visa', 'after']) assert.ok(ids.includes(need), `${level} has a ${need} section`);
+  }
+  const pick = (level: 'bachelors' | 'masters' | 'phd') => degreeAnswers(kr.degrees[level]).map((a) => a.id);
+  for (const id of ['who', 'academic', 'subjects', 'age', 'english', 'korean', 'topik', 'ielts', 'duration', 'tuition', 'documents', 'process', 'when', 'work', 'visa', 'after']) assert.ok(pick('bachelors').includes(id), `bachelors: ${id}`);
+  for (const id of ['bachelor', 'related', 'gpa', 'structure', 'english', 'korean', 'topik', 'ielts', 'tuition', 'documents', 'when', 'work', 'visa', 'after']) assert.ok(pick('masters').includes(id), `masters: ${id}`);
+  for (const id of ['master', 'proposal', 'supervisor', 'background', 'research', 'english', 'korean', 'tuition', 'documents', 'when', 'work', 'visa', 'after']) assert.ok(pick('phd').includes(id), `phd: ${id}`);
+});
+
+const allGuideAnswers = (): [string, GuideAnswer][] => {
+  const kr = getCountryGuide('KR')!;
+  return [
+    ...kr.overview.map((a): [string, GuideAnswer] => ['overview', a]),
+    ...kr.faqs.map((a): [string, GuideAnswer] => ['faq', a]),
+    ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(kr.degrees[l]).map((a): [string, GuideAnswer] => [l, a])),
+  ];
+};
+
+test('guides: every answer is bilingual, sourced from official pages, and honest about status', () => {
+  const kr = getCountryGuide('KR')!;
+  assert.ok(kr.faqs.length >= 14, 'most asked questions');
+  for (const id of ['what-needed', 'tuition', 'bachelors', 'masters', 'phd', 'english', 'topik', 'ielts', 'cost', 'documents', 'scholarships', 'work', 'when', 'universities']) assert.ok(kr.faqs.some((f) => f.id === id), `faq ${id}`);
+  for (const [where, a] of allGuideAnswers()) {
+    const tag = `${where}/${a.id}`;
+    assert.ok(a.q.en && /[ঀ-৿]/.test(a.q.bn), `${tag}: question in English and Bangla`);
+    assert.ok(a.a.length > 0 && a.a.every((p) => p.en.trim() && /[ঀ-৿]/.test(p.bn)), `${tag}: answer in English and Bangla`);
+    assert.ok(a.sources.length > 0, `${tag}: has a source`);
+    for (const s of a.sources) {
+      assert.match(s.url ?? '', /^https:\/\//, `${tag}: ${s.name} links to its page`);
+      assert.match(s.sourceType, /^official-/, `${tag}: ${s.name} is official`);
+    }
+    const body = [a.q, ...a.a, ...(a.list ?? [])].flatMap((x) => [x.en, x.bn]).join(' ');
+    assert.doesNotMatch(body, /fully[- ]funded/i, `${tag}: never "fully funded"`);
+    assert.doesNotMatch(body, /\b(best|top|leading|prestigious)\b|ranking|ranked/i, `${tag}: no ranking or "best/top"`);
+    assert.doesNotMatch(body, /তুমি|তোমার|তোমাকে/, `${tag}: respectful আপনি`);
+    if (a.status === 'not-verified') assert.ok(/Not verified yet/.test(a.a[0].en) && /যাচাই হয়নি/.test(a.a[0].bn), `${tag}: says it is not verified`);
+  }
+});
+
+test('guides: one degree never carries another degree’s rules', () => {
+  const kr = getCountryGuide('KR')!;
+  const textOf = (l: 'bachelors' | 'masters' | 'phd') =>
+    JSON.stringify(kr.degrees[l].sections) + JSON.stringify(kr.degrees[l].intro);
+  assert.doesNotMatch(textOf('bachelors'), /D-2-3|D-2-4|thesis|dissertation|GKS graduate|research proposal/i);
+  assert.doesNotMatch(textOf('masters'), /D-2-2|D-2-4|dissertation|GKS undergraduate|12 years of school/i);
+  assert.doesNotMatch(textOf('phd'), /D-2-2|D-2-3|GKS undergraduate|12 years of school|24 credits/i);
+  assert.match(textOf('bachelors'), /D-2-2/);
+  assert.match(textOf('masters'), /D-2-3/);
+  assert.match(textOf('phd'), /D-2-4/);
+});
+
+test('guides: costs match the existing estimates, estimates are never official, nothing converted', () => {
+  const kr = getCountryGuide('KR')!;
+  const n = (s: string) => s.match(/[\d,]{7,}/g)!.map((x) => Number(x.replace(/,/g, '')));
+  for (const level of GUIDE_DEGREES) {
+    const c = kr.degrees[level].costs;
+    const tuition = c.estimates.find((e) => e.id === 'tuition')!;
+    const est = KR_ESTIMATES.find((e) => e.id === `kr-tuition-${level}`)!;
+    assert.deepEqual(n(tuition.value.en), [est.low, est.high], `${level} tuition range = existing estimate`);
+    const living = c.estimates.find((e) => e.id === 'living')!;
+    const liv = KR_ESTIMATES.find((e) => e.id === 'kr-living-month')!;
+    assert.deepEqual(n(living.value.en), [liv.low, liv.high], `${level} living range = existing estimate`);
+    assert.ok(c.estimates.every((e) => e.source === KR_NIIED_GUIDEBOOK), `${level}: estimates come from the guidebook`);
+    assert.ok(c.official.every((e) => e.source !== KR_NIIED_GUIDEBOOK), `${level}: guidebook ranges never shown as official`);
+    for (const x of [...c.official, ...c.estimates]) assert.doesNotMatch(x.value.en, /BDT.*≈|≈|approx\. BDT|in taka/i, `${level}/${x.id}: not converted`);
+  }
+  const uic = kr.degrees.bachelors.costs.official.find((x) => x.id === 'uic-tuition')!;
+  assert.match(uic.value.en, /8,202,000/);
+  assert.equal(PROGRAMS.find((p) => p.id === 'kr-yonsei-uic')!.tuition!.value.amount, 8_202_000);
+  assert.equal(kr.degrees.masters.costs.official.some((x) => x.id === 'uic-tuition'), false, "a bachelor's fee is not on the master's page");
+});
+
+test('guides: sources collected once each, degree scholarships from the registry', () => {
+  const kr = getCountryGuide('KR')!;
+  const src = guideSources([...kr.overview, ...kr.faqs]);
+  assert.equal(new Set(src.map((s) => `${s.name}|${s.url}`)).size, src.length);
+  const forLevel = (l: string) => SCHOLARSHIPS.filter((s) => s.countryCode === 'KR' && s.degreeLevels.includes(l as never)).map((s) => s.id);
+  assert.deepEqual(forLevel('bachelors'), ['kr-gks-u-2027']);
+  assert.deepEqual(forLevel('masters'), ['kr-gks-g']);
+  assert.deepEqual(forLevel('phd'), ['kr-gks-g']);
+  assert.ok(SCHOLARSHIPS.every((s) => !/fully[- ]funded/i.test(JSON.stringify(s))));
 });
 
 console.log(`\n${passed} passed`);

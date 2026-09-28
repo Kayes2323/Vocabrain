@@ -92,9 +92,6 @@ export function CountryCard({ country, shortlisted, dream, onToggleShortlist }: 
     >
       <div className="relative">
         <CountryImage country={country} className="aspect-[16/10]" />
-        <span className="absolute top-3 left-3 inline-flex h-7 items-center rounded-full bg-white/90 px-3 text-xs font-semibold text-slate-900 shadow-sm backdrop-blur-sm" data-testid="study-in">
-          {t('sa.landing.studyIn', { country: country.name })}
-        </span>
         {dream && (
           <span className="absolute top-3 right-3 inline-flex h-7 items-center gap-1 rounded-full bg-brand px-2.5 text-xs font-semibold text-brand-foreground shadow-sm">
             <Star className="size-3.5" aria-hidden /> {t('sa.card.dream')}
@@ -105,7 +102,7 @@ export function CountryCard({ country, shortlisted, dream, onToggleShortlist }: 
         <div className="min-w-0">
           <h3 className="text-lg font-semibold tracking-tight">
             <Link href={href} className="after:absolute after:inset-0 after:rounded-3xl focus-visible:outline-none">
-              <span aria-hidden>{country.flag}</span> {country.name}
+              <span aria-hidden>{country.flag}</span> <span data-testid="study-in">{t('sa.landing.studyIn', { country: country.name })}</span>
             </Link>
           </h3>
           {country.capital && <p className="text-sm text-muted-foreground">{country.capital}</p>}

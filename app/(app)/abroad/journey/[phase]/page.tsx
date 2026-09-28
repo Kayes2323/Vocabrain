@@ -58,7 +58,7 @@ export default function JourneyPhasePage() {
     <div className="space-y-6" data-testid="journey-phase" data-phase={phase.id} data-status={phase.status}>
       <PageHeader
         title={t(`sa.phase.${phase.id}.title`)}
-        backHref="/abroad"
+        backHref="/abroad/journey"
         backLabel={t('sa.phase.back')}
         subtitle={
           <span className="flex flex-wrap items-center gap-2">
