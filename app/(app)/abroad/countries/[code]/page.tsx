@@ -85,7 +85,7 @@ function CountryHub() {
   return (
     <div className="space-y-5">
       <div className="relative -mx-4 -mt-4 overflow-hidden sm:mx-0 sm:mt-0 sm:rounded-3xl">
-        <CountryImage country={country} priority className="h-56 sm:h-72" />
+        <CountryImage country={country} priority sizes="(min-width: 1024px) 900px, 100vw" className="h-56 sm:h-72" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" aria-hidden />
         <Link
           href="/abroad/countries"

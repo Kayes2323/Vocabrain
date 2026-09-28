@@ -358,7 +358,21 @@ async function main() {
     check('more destinations listed separately', (await p.getByTestId('other-countries').locator('[data-country]').count()) === 6);
     check('Explore hub is marked current', (await p.getByRole('navigation', { name: 'Study Abroad sections' }).getByRole('link', { name: 'Explore' }).getAttribute('aria-current')) === 'page');
     const broken = await p.evaluate(() => [...document.images].filter((i) => i.complete && i.naturalWidth === 0).length);
-    check('no broken images (placeholders until licensed photos exist)', broken === 0 && (await p.locator('[data-placeholder]').count()) === 20, `${broken} broken`);
+    // Photos are lazy-loaded: bring each card into view once so they all load.
+    for (const el of await p.locator('[data-country-photo]').all()) await el.scrollIntoViewIfNeeded();
+    await p.evaluate(() => window.scrollTo(0, 0));
+    await p.waitForFunction(() => [...document.querySelectorAll('[data-country-photo] img')].every((i) => (i as HTMLImageElement).complete), null, { timeout: 30_000 }).catch(() => undefined);
+    const photos = await p.locator('[data-country]').evaluateAll((cards) =>
+      cards.map((c) => ({ card: c.getAttribute('data-country'), photo: c.querySelector('[data-country-photo]')?.getAttribute('data-country-photo') ?? null, w: (c.querySelector('[data-country-photo] img') as HTMLImageElement | null)?.naturalWidth ?? 0 })),
+    );
+    const withPhoto = photos.filter((x) => x.photo);
+    check('no broken images', broken === 0, `${broken} broken`);
+    check('11 country cards show their photo, 9 keep the flag placeholder', withPhoto.length === 11 && (await p.locator('[data-placeholder]').count()) === 9, withPhoto.map((x) => x.card).join(','));
+    check('every photo sits in its own country\'s card', withPhoto.every((x) => x.photo === x.card), JSON.stringify(withPhoto));
+    check('photos actually load', withPhoto.every((x) => x.w > 0), JSON.stringify(withPhoto.filter((x) => !x.w)));
+    const fit = await p.locator('[data-country-photo] img').first().evaluate((i) => getComputedStyle(i).objectFit);
+    check('photos cover the frame without stretching', fit === 'cover', fit);
+    await shot(p, 'abroad-country-photos');
     const kr = p.locator('[data-country="KR"]');
     check('South Korea card claims nothing unverified', /Profile coming/.test(await kr.innerText()));
     check('Canada card shows only verified topics', /Work while studying/.test(await p.locator('[data-country="CA"]').innerText()) && /Verified facts: 3/.test(await p.locator('[data-country="CA"]').innerText()));

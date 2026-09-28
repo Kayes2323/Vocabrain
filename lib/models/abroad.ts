@@ -189,8 +189,15 @@ export interface LicensedImage {
   /** e.g. "Wikimedia Commons", "Unsplash". */
   source: string;
   sourceUrl: string;
-  /** e.g. "CC BY-SA 4.0", "Unsplash License". */
+  /** e.g. "CC BY-SA 4.0", "Unsplash License". Empty when the image was supplied by the Mino team. */
   license: string;
+  /** Intrinsic size of the largest file, so the browser reserves the space (no layout shift). */
+  width?: number;
+  height?: number;
+  /** Responsive files, smallest first; the browser picks the sharpest one it needs. */
+  srcSet?: { src: string; width: number }[];
+  /** CSS object-position that keeps the landmark in view when the card crops the photo. */
+  position?: string;
 }
 
 export interface CountryData {

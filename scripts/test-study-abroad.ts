@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { COUNTRY_PHOTOS } from '../lib/content/country-photos';
 import assert from 'node:assert/strict';
 import { emptyProfile, type UserProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
@@ -152,6 +155,25 @@ test('persistence: old profiles load unchanged; journey marks survive a save/loa
 });
 
 // ---------------------------------------------------------------- 3B countries
+test('country photos: each belongs to a real country, files exist, sizes and focal points set, never enlarged', () => {
+  const codes = Object.keys(COUNTRY_PHOTOS);
+  assert.deepEqual(codes.sort(), ['AU', 'CA', 'DE', 'DK', 'FR', 'GB', 'IT', 'KR', 'NZ', 'SE', 'US']);
+  for (const code of codes) {
+    const photo = COUNTRY_PHOTOS[code]!;
+    const country = getCountry(code)!;
+    assert.ok(country, `${code} is a country in the app`);
+    assert.equal(country.hero, photo, `${code} card uses its own photo`);
+    assert.match(photo.src, new RegExp(`^/abroad/countries/${code.toLowerCase()}-\\d+\\.(jpg|webp)$`), `${code} file is named for its country`);
+    assert.ok(photo.width && photo.height && photo.position, `${code} size and focal point`);
+    assert.ok(photo.alt.en && /[\u0980-\u09FF]/.test(photo.alt.bn), `${code} alt text in English and Bangla`);
+    const widths = photo.srcSet!.map((s) => s.width);
+    assert.deepEqual(widths, [...widths].sort((a, b) => a - b), `${code} srcSet smallest first`);
+    assert.equal(widths[widths.length - 1], photo.width, `${code} largest file is the original size (not enlarged)`);
+    for (const s of photo.srcSet!) assert.ok(fs.existsSync(path.join(process.cwd(), 'public', s.src)), `${s.src} exists`);
+  }
+  assert.equal(getCountry('IE')?.hero, undefined, 'Ireland keeps its placeholder (no photo of Ireland supplied)');
+});
+
 test('countries: 14 priority destinations in the approved order (New Zealand included), others after', () => {
   assert.deepEqual(PRIORITY_COUNTRIES.map((c) => c.code), ['KR', 'DE', 'AU', 'GB', 'CA', 'US', 'JP', 'IT', 'FR', 'NL', 'SE', 'FI', 'IE', 'NZ']);
   assert.equal(OTHER_COUNTRIES.length + PRIORITY_COUNTRIES.length, COUNTRIES.length);
@@ -159,7 +181,11 @@ test('countries: 14 priority destinations in the approved order (New Zealand inc
   for (const c of COUNTRIES) {
     assert.match(c.code, /^[A-Z]{2}$/);
     assert.ok(c.capital, `${c.code} has a capital`);
-    if (c.hero) for (const k of ['src', 'credit', 'source', 'sourceUrl', 'license'] as const) assert.ok(c.hero[k], `${c.code} image ${k}`);
+    if (c.hero) {
+      for (const k of ['src', 'credit', 'source'] as const) assert.ok(c.hero[k], `${c.code} image ${k}`);
+      // A licensed third-party photo needs its link and licence; only photos supplied by the Mino team may leave them empty.
+      if (c.hero.source !== 'Mino team') for (const k of ['sourceUrl', 'license'] as const) assert.ok(c.hero[k], `${c.code} image ${k}`);
+    }
   }
   assert.equal(getCountry('nz')?.name, 'New Zealand');
   assert.equal(countryHref('DE', 'apply'), '/abroad/countries/de?tab=apply');

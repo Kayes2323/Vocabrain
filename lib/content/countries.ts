@@ -1,4 +1,5 @@
 import type { Country, CountryData, SourceRef } from '@/lib/models';
+import { COUNTRY_PHOTOS } from './country-photos';
 import { KR_KIS_NAVIGATOR, KR_SIK_VISA } from './kr-sources';
 import { KR_SHARED_DOCUMENTS } from './kr-shared';
 import { KR_ESTIMATES, KR_LANGUAGE_LANGUAGE, KR_SECTIONS } from './kr-country';
@@ -166,6 +167,12 @@ export const COUNTRIES: Country[] = [
   { code: 'MY', name: 'Malaysia', region: 'Asia', flag: '🇲🇾', capital: 'Kuala Lumpur', data: {} },
   { code: 'TR', name: 'Turkey', region: 'Europe', flag: '🇹🇷', capital: 'Ankara', data: {} },
 ];
+
+// Attach the supplied photos (a country's own `hero` always wins).
+for (const c of COUNTRIES) {
+  const photo = COUNTRY_PHOTOS[c.code];
+  if (photo && !c.hero) c.hero = photo;
+}
 
 export function getCountry(code: string): Country | undefined {
   const c = code.toUpperCase();
