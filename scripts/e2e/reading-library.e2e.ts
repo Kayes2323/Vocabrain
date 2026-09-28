@@ -31,6 +31,23 @@ async function answerAll(p: Page, qs: FlatQuestion[], wrong: Set<string> = new S
   }
 }
 
+/** The passage's position in the document (not the viewport), to prove the text never moves. */
+const docBox = (p: Page) =>
+  p.getByTestId('library-passage').evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    return JSON.stringify([Math.round(r.left), Math.round(r.top + window.scrollY), Math.round(r.width), Math.round(r.height)]);
+  });
+
+/** The tapped word is not hidden behind the card. */
+async function wordVisible(p: Page, word: import('playwright-core').Locator) {
+  await sleep(900);
+  const w = (await word.boundingBox())!;
+  const c = await p.locator('[data-reading-card] > div').boundingBox();
+  if (!c) return false;
+  const overlap = w.x < c.x + c.width && w.x + w.width > c.x && w.y < c.y + c.height && w.y + w.height > c.y;
+  return !overlap && w.y >= 0;
+}
+
 async function inViewport(p: Page, testId: string) {
   const box = await p.getByTestId(testId).locator('> div').boundingBox();
   const vp = p.viewportSize()!;
@@ -100,10 +117,11 @@ async function main() {
     const wordCalls: string[] = [];
     m.on('request', (r) => r.url().includes('/api/mino/word-meaning') && wordCalls.push(r.postData() ?? ''));
     const article = m.getByTestId('library-passage');
-    const before = await article.boundingBox();
+    const before = await docBox(m);
     const url = m.url();
     const plainWord = (w: string, i = 0) => article.locator('button:not([data-testid="vocab-word"])', { hasText: new RegExp(`^${w}$`) }).nth(i);
-    await plainWord('female').click();
+    const femaleBtn = plainWord('female');
+    await femaleBtn.click();
     check('word: Mino loading animation shows', await m.getByTestId('mino-word-loading').waitFor({ timeout: 3000 }).then(() => true, () => false));
     await m.getByTestId('meaning-bn').waitFor({ timeout: 30_000 });
     check('word: stays on the reading page (no dictionary / Mino page)', m.url() === url);
@@ -112,7 +130,8 @@ async function main() {
     check('word: part of speech', (await m.getByTestId('meaning-pos').innerText()).trim() === 'adjective');
     check('word: context meaning in Bangla (bn)', /এই বাক্যে/.test(await m.getByTestId('meaning-context').innerText()));
     check('word: card inside the phone screen', await inViewport(m, 'meaning-card'));
-    check('word: no layout shift', JSON.stringify(await article.boundingBox()) === JSON.stringify(before));
+    check('word: no layout shift', (await docBox(m)) === before, `${before} → ${await docBox(m)}`);
+    check('word: tapped word stays visible above the card', await wordVisible(m, femaleBtn));
     check('word: no horizontal scroll', await noHorizontalScroll(m));
     await sleep(300);
     await shot(m, 'rl-word-bn-mobile', false);
@@ -199,13 +218,14 @@ async function main() {
     check('en popup: inside the screen', await inViewport(d, 'vocab-card'));
     await d.keyboard.press('Escape');
     const art17 = d.getByTestId('library-passage');
-    const artBox = (await art17.boundingBox())!;
-    await art17.locator('button:not([data-testid="vocab-word"])', { hasText: /^material$/ }).first().click();
+    const artBox = await docBox(d);
+    const materialBtn = art17.locator('button:not([data-testid="vocab-word"])', { hasText: /^material$/ }).first();
+    await materialBtn.click();
     await d.getByTestId('meaning-en').waitFor({ timeout: 30_000 });
     check('en word: English context meaning', /Here "material"/.test(await d.getByTestId('meaning-context').innerText()));
-    const cardBox = (await d.getByTestId('meaning-card').locator('> div').boundingBox())!;
-    check('en word: card sits beside the passage, not over it', cardBox.x >= artBox.x + artBox.width, `${cardBox.x} vs ${artBox.x + artBox.width}`);
-    check('en word: no layout shift', JSON.stringify(await art17.boundingBox()) === JSON.stringify(artBox));
+    check('en word: the tapped word is not covered by the card', await wordVisible(d, materialBtn));
+    check('en word: no layout shift', (await docBox(d)) === artBox);
+    check('en word: card inside the screen', await inViewport(d, 'meaning-card'));
     await shot(d, 'rl-word-en-desktop', false);
     await d.keyboard.press('Escape');
     await answerAll(d, flatten(p17));

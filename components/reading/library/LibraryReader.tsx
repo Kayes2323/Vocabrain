@@ -17,6 +17,7 @@ import {
 import { markActivityDone, wordId } from '@/lib/engine';
 import type { WordSource } from '@/lib/models';
 import { cn } from '@/lib/utils';
+import { keepWordVisible } from '../CardFrame';
 import { sentenceAt, tokenize } from '../tokenize';
 import { MeaningCard } from '../MeaningCard';
 import { meaningWordInfo, resultLemma, useMeaningLookup } from '../word-meaning';
@@ -188,7 +189,7 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
   const next = nextPassage(LIBRARY, { ...(profile?.study.readingLibrary ?? {}), [passage.id]: { answers, checked: true, updatedAt: '' } });
 
   return (
-    <div className="pb-40">
+    <div className={cn('pb-40', selection && 'pb-[60dvh]')}>
       <PageHeader
         title={passage.title}
         subtitle={
@@ -226,7 +227,7 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
                       type="button"
                       data-testid="vocab-word"
                       data-lemma={v.lemma}
-                      onClick={() => pickVocab(key, v, seg.text, sentenceAt(paragraph, seg.start))}
+                      onClick={(e) => { keepWordVisible(e.currentTarget); pickVocab(key, v, seg.text, sentenceAt(paragraph, seg.start)); }}
                       className={cn(
                         'rounded-[3px] px-[1px] text-left underline decoration-brand/50 decoration-dotted decoration-2 underline-offset-4 transition-colors hover:bg-brand-soft focus-visible:bg-brand-soft focus-visible:outline-none',
                         saved && 'decoration-brand decoration-solid',
@@ -245,7 +246,7 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
                     <button
                       key={key}
                       type="button"
-                      onClick={() => pickWord(key, tok.text, sentenceAt(paragraph, seg.start + tok.start))}
+                      onClick={(e) => { keepWordVisible(e.currentTarget); pickWord(key, tok.text, sentenceAt(paragraph, seg.start + tok.start)); }}
                       className={cn(
                         'rounded-[3px] px-[1px] text-left transition-colors hover:bg-muted focus-visible:bg-muted focus-visible:outline-none',
                         active && 'bg-brand-soft text-brand',

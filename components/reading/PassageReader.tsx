@@ -13,6 +13,7 @@ import type { Passage } from '@/lib/content/passages';
 import { lemmaCandidates } from '@/lib/content/dictionary';
 import { wordId } from '@/lib/engine';
 import { cn } from '@/lib/utils';
+import { keepWordVisible } from './CardFrame';
 import { sentenceAt, tokenize } from './tokenize';
 import { MeaningCard } from './MeaningCard';
 import { meaningWordInfo, resultLemma, useMeaningLookup } from './word-meaning';
@@ -73,7 +74,7 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
     : undefined;
 
   return (
-    <div className="pb-40">
+    <div className={cn('pb-40', selection && 'pb-[60dvh]')}>
       <Callout tone="brand" icon={Sparkles} className="mb-6">
         {t('reading.hint')}
       </Callout>
@@ -90,7 +91,7 @@ export function PassageReader({ passage, onFinish }: { passage: Passage; onFinis
                 <button
                   key={ti}
                   type="button"
-                  onClick={() => select(key, tok.text, sentenceAt(paragraph, tok.start))}
+                  onClick={(e) => { keepWordVisible(e.currentTarget); select(key, tok.text, sentenceAt(paragraph, tok.start)); }}
                   className={cn(
                     'rounded-[3px] px-[1px] text-left transition-colors hover:bg-brand-soft focus-visible:bg-brand-soft focus-visible:outline-none',
                     saved && 'underline decoration-brand decoration-2 underline-offset-4',
