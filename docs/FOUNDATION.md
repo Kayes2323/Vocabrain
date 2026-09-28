@@ -66,14 +66,15 @@ Articles (9 lessons + the Articles Final Mastery Challenge), Subject–Verb
 Agreement, Prepositions, Connectors, Complex Sentences, Punctuation, Common
 Errors and Vocabulary Foundation (9 lessons + a Final Mastery Challenge each;
 Vocabulary also links to the daily word missions).
-LEVEL 2 — IELTS Basics: What is IELTS?, Understanding IELTS Listening and
-Understanding IELTS Reading (9 lessons + a Final Mastery Challenge each);
-Writing/Speaking show "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
+LEVEL 2 — IELTS Basics: What is IELTS?, Understanding IELTS Listening,
+Understanding IELTS Reading and Understanding IELTS Writing (9 lessons + a Final
+Mastery Challenge each); Speaking shows "Soon". See `docs/TENSES_CURRICULUM.md`, `docs/ARTICLES_CURRICULUM.md`,
 `docs/AGREEMENT_CURRICULUM.md`, `docs/PREPOSITIONS_CURRICULUM.md`,
 `docs/CONNECTORS_CURRICULUM.md`, `docs/COMPLEX_CURRICULUM.md`,
 `docs/PUNCTUATION_CURRICULUM.md`, `docs/COMMON_ERRORS_CURRICULUM.md`,
 `docs/VOCABULARY_CURRICULUM.md`, `docs/IELTS_INTRO_CURRICULUM.md`,
-`docs/LISTENING_CURRICULUM.md` and `docs/READING_CURRICULUM.md`.
+`docs/LISTENING_CURRICULUM.md`, `docs/READING_CURRICULUM.md` and
+`docs/WRITING_CURRICULUM.md`.
 
 ## Tests
 
@@ -403,6 +404,20 @@ targeted fixes at `/ielts/foundation/fix/<expected>><chosen>`.
   only the passage in the task; labels, headings and paraphrases the student writes are
   checked against that passage.
 - **E2E.** `scripts/e2e/reading.e2e.ts`.
+
+## Phase M: LEVEL 2 — Understanding IELTS Writing
+
+- **Module** `writing-foundation` (`writing.ts` wr-1…wr-6, `writing-apply.ts`
+  wr-7…wr-9), new tag `writing`, concepts `wr-format`, `wr-task1`, `wr-data`, `wr-task2`,
+  `wr-paragraph`, `wr-cohesion`. Task 1 tables use invented numbers. See
+  `docs/WRITING_CURRICULUM.md`.
+- **Patterns.** `wr-format-fact`, `wr-overview`, `wr-data-language`, `wr-task-response`,
+  `wr-paragraph-unit`, `wr-cohesion-word` (+ fix guides). **Challenge** `writing-foundation`.
+- **Mino.** Writing tasks are judged task first (using only the data or question in the
+  task; every number checked against the table), then the language that matters for the
+  target. Mino never gives a band score here; estimated bands stay in the Writing
+  practice test.
+- **E2E.** `scripts/e2e/writing.e2e.ts`.
 
 ## Known issue: `pnpm lint`
 

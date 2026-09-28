@@ -282,6 +282,27 @@ http
             practice: { sentence: 'A heading should match the main ___ of the paragraph.', answers: ['idea'] },
           }) }]);
         }
+        const writingRules = /IELTS Writing feedback \(target: /.test(system);
+        if (writingRules && /40 minutes on Task 1/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: true,
+            corrected: student.replace('40 minutes on Task 1 and 20 minutes on Task 2', 'about 20 minutes on Task 1 and about 40 minutes on Task 2'),
+            feedback: bn ? 'ভালো চেষ্টা! সময়টা উল্টো হয়ে গেছে।' : 'Good try! The times are the wrong way round.',
+            fixes: [{ quote: '40 minutes on Task 1 and 20 minutes on Task 2', fix: 'about 20 minutes on Task 1 and about 40 minutes on Task 2', why: bn ? 'Task 2 counts for more — এতে প্রায় ৪০ মিনিট দিন।' : 'Task 2 counts for more, so give it about 40 minutes.' }],
+            practice: { sentence: 'Spend about ___ minutes on Task 2.', answers: ['40', 'forty'] },
+          }) }]);
+        }
+        if (writingRules && /University fees are too high/.test(student)) {
+          return reply([{ text: JSON.stringify({
+            verdict: 'needs-work',
+            usesTarget: false,
+            corrected: 'Some people think universities should teach only job-related subjects, while others prefer a wide range. In my opinion, universities should offer a wide range of subjects.',
+            feedback: bn ? 'ভালো চেষ্টা! প্রশ্নটা fee নিয়ে নয়, university কী পড়াবে তা নিয়ে।' : 'Good try! The question is about what universities should teach, not fees.',
+            fixes: [{ quote: 'University fees are too high for many families', fix: 'Some people think universities should teach only job-related subjects', why: bn ? 'প্রশ্নের বাইরে — দুই view আর আপনার মতামত দিন।' : 'Off-topic: give both views and your opinion.' }],
+            practice: { sentence: 'Discuss ___ views and give your own opinion.', answers: ['both'] },
+          }) }]);
+        }
         const bad = /\b(go|am learning)\b/.test(student);
         return reply([{ text: JSON.stringify({
           verdict: bad ? 'needs-work' : 'correct',

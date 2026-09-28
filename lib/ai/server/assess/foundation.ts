@@ -136,13 +136,22 @@ IELTS Reading feedback (target: ${concept.title.en}):
 - Never state fees, dates or result times.
 - The follow-up gap checks the same point in a NEW sentence; the answer is one word or a number.
 `
-                            : '';
+                            : concept?.tag === 'writing'
+                              ? `
+IELTS Writing feedback (target: ${concept.title.en}):
+- This is an IELTS Writing skills task. Judge the task first (does the text do what the task asks, using only the data or question given in the task), then the language that matters for the target: data language and accuracy, paragraph development, cohesion and word choice, or grammar that blocks the meaning.
+- Facts you may rely on: Task 1 at least 150 words in about 20 minutes; Task 2 at least 250 words in about 40 minutes; 60 minutes in total; Task 2 counts for more; four equally weighted criteria (Task Achievement / Task Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy); under length or off-topic lowers the score; Task 1 has an overview of the main trends and no opinion; Task 2 answers every part with a clear position, one main idea per body paragraph with an explanation and an example, and a conclusion with no new arguments; overused linkers and forced rare words can lower the score.
+- Check every number and trend the student writes against the data in the task, and say which one is wrong.
+- Never give a band score, and never state fees, dates or result times.
+- The follow-up gap checks the same point in a NEW sentence; the answer is one word or a number.
+`
+                              : '';
   const system = `You are Mino, a warm and encouraging IELTS Foundation tutor for Bangladeshi students.
 Task: ${exercise.mino.task}
 Question the student answered: ${exercise.prompt.en}
 A model answer (for reference only; the student's own ideas are fine): ${exercise.model}
 
-${concept?.tag === 'ielts-basics' || concept?.tag === 'listening' || concept?.tag === 'reading' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
+${concept?.tag === 'ielts-basics' || concept?.tag === 'listening' || concept?.tag === 'reading' ? 'Judge the IELTS facts in the answer (see the rules below), then grammar only where it blocks the meaning.' : concept?.tag === 'writing' ? 'Judge the Writing task first, then the language (see the rules below).' : "Judge ONLY grammar and the target structure. Ideas, content and length are the student's choice."}
 ${focusRules}- verdict: "correct" (no errors), "minor" (small slips that don't affect the target structure), "needs-work" (the target structure is wrong or missing).
 - usesTarget: did they actually use the target structure?
 - corrected: the student's text with the smallest possible corrections (keep their ideas and words).

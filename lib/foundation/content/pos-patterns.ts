@@ -88,6 +88,12 @@ export const POS_NAMED_PATTERNS: Record<string, { title: L; modules: string[]; u
   'rd-main-idea': { title: l('Main ideas and headings', 'মূল idea আর heading'), modules: ['reading-foundation'] },
   'rd-option-elimination': { title: l('Eliminating options', 'Option বাদ দেওয়া'), modules: ['reading-foundation'] },
   'rd-word-limit': { title: l('Completion word limits', 'Completion-এর word-এর সীমা'), modules: ['reading-foundation'] },
+  'wr-format-fact': { title: l('Writing timing, length and criteria', 'Writing-এর সময়, দৈর্ঘ্য আর criteria'), modules: ['writing-foundation'] },
+  'wr-overview': { title: l('Task 1 introduction and overview', 'Task 1-এর introduction আর overview'), modules: ['writing-foundation'] },
+  'wr-data-language': { title: l('Describing and comparing data', 'Data বর্ণনা আর তুলনা'), modules: ['writing-foundation'] },
+  'wr-task-response': { title: l('Answering the exact Task 2 question', 'Task 2-এর ঠিক প্রশ্নের উত্তর'), modules: ['writing-foundation'] },
+  'wr-paragraph-unit': { title: l('Developed paragraphs', 'বিকশিত paragraph'), modules: ['writing-foundation'] },
+  'wr-cohesion-word': { title: l('Cohesion and natural word choice', 'Cohesion আর স্বাভাবিক word বাছাই'), modules: ['writing-foundation'] },
 };
 
 /** Which module page a pattern's fix belongs to ("expected>chosen" pairs are Parts of Speech). */
@@ -708,6 +714,42 @@ export const POS_FIX_GUIDE: Record<string, FixGuide> = {
     why: l('Answers are written in the student’s own words or with an extra "the".', 'উত্তর নিজের word-এ বা বাড়তি "the"-সহ লেখা হয়।'),
     recognise: l('Count the words and reread the full sentence with your answer.', 'Word গুনুন আর আপনার উত্তরসহ পুরো sentence আবার পড়ুন।'),
     avoid: l('Read the instruction before every question group.', 'প্রতিটা প্রশ্ন-দলের আগে নির্দেশ পড়ুন।'),
+  },
+  'wr-format-fact': {
+    rule: l('Task 1: at least 150 words in about 20 minutes. Task 2: at least 250 words in about 40 minutes. 60 minutes in total; Task 2 counts for more. Each task is marked on four equally weighted criteria: Task Achievement / Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy.', 'Task 1: প্রায় ২০ মিনিটে অন্তত ১৫০ word। Task 2: প্রায় ৪০ মিনিটে অন্তত ২৫০ word। মোট ৬০ মিনিট; Task 2-এর গুরুত্ব বেশি। প্রতিটা task চারটা সমান criteria-য় মার্ক হয়: Task Achievement / Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy।'),
+    why: l('Too much time goes on Task 1, and Task 2 ends under 250 words; or grammar is treated as the only criterion.', 'Task 1-এ বেশি সময় যায়, আর Task 2 ২৫০ word-এর কমে শেষ হয়; বা grammar-কেই একমাত্র criteria ভাবা হয়।'),
+    recognise: l('Check the clock at 20 minutes: have you finished Task 1?', '২০ মিনিটে ঘড়ি দেখুন: Task 1 শেষ হয়েছে?'),
+    avoid: l('Plan the hour before you start, and protect Task 2’s 40 minutes.', 'শুরুর আগে ঘণ্টাটা ভাগ করুন, আর Task 2-এর ৪০ মিনিট রক্ষা করুন।'),
+  },
+  'wr-overview': {
+    rule: l('Task 1: paraphrase what the chart shows, then give an overview of the main trends ("Overall, …") without detailed numbers. Report only the data: no opinion, no reasons that are not in the chart.', 'Task 1: chart কী দেখায় তা paraphrase করুন, তারপর খুঁটিনাটি সংখ্যা ছাড়া মূল trend-এর overview দিন ("Overall, …")। শুধু data: মতামত নয়, chart-এ নেই এমন কারণ নয়।'),
+    why: l('Every number is listed with no overview, the question is copied, or an opinion is added.', 'Overview ছাড়া প্রতিটা সংখ্যা লেখা হয়, প্রশ্ন হুবহু তোলা হয়, বা মতামত যোগ হয়।'),
+    recognise: l('Ask: could a reader find the two or three main trends in one sentence?', 'জিজ্ঞেস করুন: পাঠক কি এক sentence-এ দুই-তিনটা মূল trend পাবেন?'),
+    avoid: l('Before writing, note the biggest rise, the biggest fall and anything stable.', 'লেখার আগে সবচেয়ে বড় বৃদ্ধি, সবচেয়ে বড় পতন আর স্থির কিছু থাকলে লিখে রাখুন।'),
+  },
+  'wr-data-language': {
+    rule: l('Trend verbs rise / increase / grow, fall / decrease / decline, remain stable take no object and no passive ("increased", not "were increased"; "rose", not "raised"). from … to = levels, by = the size of the change. Group and compare the key data; every number must match.', 'Trend verb rise / increase / grow, fall / decrease / decline, remain stable-এর object বা passive লাগে না ("increased", "were increased" নয়; "rose", "raised" নয়)। from … to = মাত্রা, by = পরিবর্তনের পরিমাণ। মূল data ভাগ করে তুলনা করুন; প্রতিটা সংখ্যা মিলতে হবে।'),
+    why: l('Bangla has no separate form for this, so the passive or "raise" slips in; numbers are copied without checking.', 'বাংলায় এর আলাদা রূপ নেই, তাই passive বা "raise" ঢুকে পড়ে; সংখ্যা যাচাই না করে তোলা হয়।'),
+    recognise: l('Find every trend verb: is it "was / were + verb"? Is it "raise"?', 'প্রতিটা trend verb খুঁজুন: "was / were + verb" কি? "raise" কি?'),
+    avoid: l('Check each sentence against the chart: direction, number, year.', 'প্রতিটা sentence chart-এর সাথে মেলান: দিক, সংখ্যা, বছর।'),
+  },
+  'wr-task-response': {
+    rule: l('Find the topic, the focus and the instruction. Answer every part (both views, both questions, advantages and disadvantages), state a clear position where asked and keep it to the end. Same topic but a different question is off-topic.', 'বিষয়, focus আর নির্দেশ খুঁজুন। প্রতিটা অংশের উত্তর দিন (দুই view, দুই প্রশ্ন, সুবিধা আর অসুবিধা), যেখানে চাওয়া হয়েছে পরিষ্কার অবস্থান নিন আর শেষ পর্যন্ত রাখুন। একই বিষয় কিন্তু আলাদা প্রশ্ন মানে প্রশ্নের বাইরে।'),
+    why: l('A memorised essay on a similar topic is used, or one part of the question is skipped.', 'একই রকম বিষয়ের মুখস্থ essay ব্যবহার হয়, বা প্রশ্নের একটা অংশ বাদ পড়ে।'),
+    recognise: l('Tick each part of the question in your plan before you write.', 'লেখার আগে plan-এ প্রশ্নের প্রতিটা অংশে টিক দিন।'),
+    avoid: l('Spend 3–5 minutes planning: position, one idea per paragraph, examples.', 'Plan-এ ৩–৫ মিনিট দিন: অবস্থান, প্রতি paragraph-এ একটা idea, উদাহরণ।'),
+  },
+  'wr-paragraph-unit': {
+    rule: l('One main idea per body paragraph in a topic sentence, then an explanation (why / how) and a relevant example. The conclusion sums up your position with no new arguments.', 'প্রতিটা body paragraph-এ topic sentence-এ একটা মূল idea, তারপর ব্যাখ্যা (কেন / কীভাবে) আর প্রাসঙ্গিক উদাহরণ। Conclusion নতুন যুক্তি ছাড়া আপনার অবস্থান সংক্ষেপে বলে।'),
+    why: l('Many short ideas are listed to look complete, but none is explained.', 'সম্পূর্ণ দেখাতে অনেক ছোট idea তালিকা করা হয়, কিন্তু কোনোটারই ব্যাখ্যা নেই।'),
+    recognise: l('Underline the topic sentence: does every other sentence support it?', 'Topic sentence দাগ দিন: বাকি প্রতিটা sentence কি এটাকে সমর্থন করে?'),
+    avoid: l('Plan idea → why → example for each body paragraph.', 'প্রতিটা body paragraph-এর জন্য idea → কেন → উদাহরণ plan করুন।'),
+  },
+  'wr-cohesion-word': {
+    rule: l('Cohesion = logical order + referencing (this, these, such, they) + a few linkers that match the logic. Lexical Resource rewards precise, natural words and collocations, not rare ones; forced vocabulary with errors lowers the score.', 'Cohesion = যৌক্তিক ক্রম + referencing (this, these, such, they) + logic অনুযায়ী কয়েকটা linker। Lexical Resource নির্ভুল, স্বাভাবিক word আর collocation-কে পুরস্কৃত করে, বিরল word নয়; ভুলসহ জোর করা vocabulary score কমায়।'),
+    why: l('More linkers and rarer words are thought to mean a higher band.', 'বেশি linker আর বিরল word মানে বেশি band — এমন ধারণা।'),
+    recognise: l('Look at the start of each sentence: is it "Moreover" again? Is a noun repeated?', 'প্রতিটা sentence-এর শুরু দেখুন: আবার "Moreover"? কোনো noun-এর পুনরাবৃত্তি?'),
+    avoid: l('Learn words with their partners (play a role, make an effort, have an effect).', 'Word-কে সঙ্গীসহ শিখুন (play a role, make an effort, have an effect)।'),
   },
 };
 

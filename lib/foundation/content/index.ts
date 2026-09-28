@@ -32,6 +32,8 @@ import { LISTENING_CONCEPTS, lsFormat, lsPart1, lsPart2, lsPart3, lsPart4, lsRul
 import { lsReview, lsStrategy, lsTraps } from './listening-apply';
 import { READING_CONCEPTS, rdChoice, rdCompletion, rdHeadings, rdParaphrase, rdSkim, rdTfng } from './reading';
 import { rdReview, rdStrategy, rdTraps } from './reading-apply';
+import { WRITING_CONCEPTS, wrCohesion, wrData, wrFormat, wrOverview, wrParagraphs, wrQuestion } from './writing';
+import { wrPlan, wrReview, wrTraps } from './writing-apply';
 
 export const LEVELS: Level[] = [
   {
@@ -244,12 +246,11 @@ export const MODULES: Module[] = [
     number: 4,
     title: t('Understanding IELTS Writing', 'IELTS Writing বুঝি'),
     short: t('Writing', 'Writing'),
-    description: t('Task 1 and Task 2: analysing, planning, paragraphs.', 'Task 1 আর Task 2: প্রশ্ন বোঝা, planning, paragraph।'),
+    description: t('Criteria, Task 1 overviews and data, Task 2 questions, paragraphs and cohesion.', 'Criteria, Task 1-এর overview আর data, Task 2-এর প্রশ্ন, paragraph আর cohesion।'),
     ieltsLink: t('Understand the task instead of memorising templates.', 'Template মুখস্থ না করে task-টা বুঝুন।'),
     skill: 'writing',
-    tags: [],
-    lessons: [],
-    planned: [t('How Writing is marked', 'Writing কীভাবে মার্ক হয়'), t('Task 1: trends, comparisons, overview', 'Task 1: trend, তুলনা, overview'), t('Task 2: question types and planning', 'Task 2: question type আর planning'), t('Paragraphs and Coherence & Cohesion', 'Paragraph আর Coherence & Cohesion')],
+    tags: ['writing'],
+    lessons: [wrFormat, wrOverview, wrData, wrQuestion, wrParagraphs, wrCohesion, wrTraps, wrPlan, wrReview],
   },
   {
     id: 'speaking-foundation',
@@ -267,7 +268,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 
