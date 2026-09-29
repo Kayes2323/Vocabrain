@@ -51,6 +51,7 @@ import { AU_GUIDE } from '../lib/content/au-guide';
 import { US_GUIDE } from '../lib/content/us-guide';
 import { NZ_GUIDE } from '../lib/content/nz-guide';
 import { CN_GUIDE } from '../lib/content/cn-guide';
+import { CA_GUIDE } from '../lib/content/ca-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1583,14 +1584,14 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
   assert.equal(getCountryGuide('kr')?.code, 'KR');
   assert.equal(getCountryGuide('de')?.code, 'DE');
   assert.equal(getCountryGuide('jp')?.code, 'JP');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1791,7 +1792,7 @@ test('Mino: guide knowledge is labelled and never leaks unverified answers', () 
   assert.match(m.rule, /ESTIMATE = a planning range/);
   const facts = countryFactsForMino(getCountry('DE')!, { degreeLevel: 'phd', now: NOW }) as { guide?: ReturnType<typeof guideForMino> };
   assert.deepEqual(Object.keys(facts.guide!.degrees), ['phd']);
-  assert.ok(!('guide' in countryFactsForMino(getCountry('CA')!, { now: NOW })), 'no guide for a country without one');
+  assert.ok(!('guide' in countryFactsForMino(getCountry('FR')!, { now: NOW })), 'no guide for a country without one');
   assert.ok(!JSON.stringify(guideForMino(DE_GUIDE)).includes('"answer":"Not verified yet'), 'not-verified text is withheld');
 });
 
@@ -2343,6 +2344,82 @@ test('China: registries, CSC per degree, Mino knowledge', () => {
   const m = guideForMino(CN_GUIDE, 'bachelors');
   assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
   assert.equal(CN_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 2500);
+});
+
+// ---------------------------------------------------------------- Canada guide
+const caPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(CA_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(CA_GUIDE.degrees[l].intro);
+test('Canada: its own research from current Canadian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(CA_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Universitaly|Chevening|UCAS|CRICOS|OSHC|SEVIS|I-20|NZD|Manaaki|JW20[12]|HSK|£|AUD |USD|EUR |JPY|KRW|\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE]), /PGWP|PAL\/TAL|IRCC|CAQ|CAD \d/);
+  const hosts = new Set(guideSources([...CA_GUIDE.overview, ...CA_GUIDE.faqs, ...(CA_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(CA_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /(^|\.)canada\.ca$|^ircc\.canada\.ca$|\.gc\.ca$|quebec\.ca$|educanada\.ca$|utoronto\.ca$|ualberta\.ca$|uwaterloo\.ca$/, `${h} is an official Canadian source`);
+  assert.ok(hosts.has('www.canada.ca') && hosts.has('www150.statcan.gc.ca'));
+});
+
+test('Canada: most asked first, current IRCC figures, discrepancies flagged, nothing invented', () => {
+  const faq = (id: string) => CA_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(CA_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('funds').a[0].en, /1 September 2026.*CAD 23,448.*CAD 22,895.*CAD 24,617/);
+  assert.ok(faq('funds').discrepancy, 'old vs new funds amount flagged');
+  assert.match(faq('work').a[0].en, /24 hours a week.*unlimited/);
+  assert.match(faq('after').a[0].en, /CLB 7.*180 days.*CAD 255/);
+  assert.match(faq('after').a[0].en, /does not promise permanent residence/);
+  assert.match(faq('pal').a[0].en, /1 January 2026.*public designated learning institution.*CAQ/);
+  assert.match(faq('scholarships').a[0].en, /Vanier no longer accepts applications/);
+  assert.ok(faq('cost').discrepancy, 'EduCanada vs Statistics Canada tuition flagged');
+  assert.match(faq('bangladesh').a[0].en, /not verified yet/);
+  const all = GUIDE_DEGREES.flatMap((l) => degreeAnswers(CA_GUIDE.degrees[l]));
+  assert.equal(all.find((a) => a.id === 'health')!.status, 'needs-review', 'Bangladesh medical-exam row not confirmed');
+  assert.equal(all.find((a) => a.id === 'processing')!.status, 'not-verified', 'no invented processing time');
+  for (const l of GUIDE_DEGREES) {
+    const c = CA_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'CAD', `${l}/${x.id} in Canadian dollars`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|USD/, `${l}/${x.id} not converted`);
+    }
+    assert.deepEqual(c.official.map((x) => x.amount!.value), [150, 85, 23448, 24617, 255]);
+    assert.ok(c.estimates.filter((x) => x.id !== 'tuition').every((x) => x.status === 'not-verified' && !x.amount), `${l}: unverified costs have no figure`);
+  }
+  const tuition = (l: 'bachelors' | 'masters' | 'phd') => CA_GUIDE.degrees[l].costs.estimates.find((x) => x.id === 'tuition')!.amount!.value;
+  assert.deepEqual([tuition('bachelors'), tuition('masters'), tuition('phd')], [42062, 24693, 24693], 'undergraduate vs graduate averages, never mixed');
+});
+
+test('Canada: degree isolation (PAL/TAL, PGWP length, spouse rules) and documents', () => {
+  assert.match(caPage('bachelors'), /Higher Secondary Certificate/);
+  assert.match(caPage('bachelors'), /6\.5 overall with no band below 6\.0/);
+  assert.match(caPage('bachelors'), /Bachelor of Engineering/);
+  assert.doesNotMatch(caPage('bachelors'), /16 months|CGRS|7\.0 with at least 6\.5|15 February 2024|public designated learning institution do not need/);
+  assert.match(caPage('masters'), /16 months or longer/);
+  assert.match(caPage('masters'), /15 February 2024/);
+  assert.match(caPage('masters'), /7\.0 with at least 6\.5/);
+  assert.match(caPage('phd'), /CGRS D.*CAD 40,000/);
+  assert.match(caPage('phd'), /doctoral degree program may be eligible for an open work permit/);
+  assert.doesNotMatch(caPage('masters') + caPage('phd'), /Higher Secondary Certificate|Bachelor of Engineering|42,062/);
+  assert.doesNotMatch(caPage('masters'), /CGRS/);
+  assert.ok(guideDocumentsFor(CA_GUIDE, 'phd').some((d) => d.id === 'research'));
+  assert.ok(!guideDocumentsFor(CA_GUIDE, 'bachelors').some((d) => d.id === 'research'));
+  const docs = CA_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  for (const id of ['loa', 'pal', 'finance', 'biometrics', 'medical']) assert.ok(docs.find((d) => d.id === id)!.groups.includes('visa'), `${id} is a study permit document`);
+  assert.equal(docs.find((d) => d.id === 'medical')!.status, 'needs-review');
+  assert.doesNotMatch(JSON.stringify(docs.filter((d) => !d.degrees)), /16 months|15 February 2024|Higher Secondary|7\.0 with|6\.5 overall/, 'documents shown on every degree carry no degree-specific rule');
+});
+
+test('Canada: registries, CGRS D only for PhD, Mino knowledge', () => {
+  const ca = UNIVERSITIES.filter((u) => u.countryCode === 'CA' && u.id.startsWith('ca-'));
+  assert.deepEqual(ca.map((u) => u.id), ['ca-dal', 'ca-mcgill', 'ca-ualberta', 'ca-ubc', 'ca-utoronto', 'ca-uwaterloo']);
+  assert.ok(ca.every((u) => u.officialUrl.startsWith('https://')));
+  const ca_s = SCHOLARSHIPS.filter((s) => s.countryCode === 'CA');
+  assert.deepEqual(ca_s.map((s) => s.id), ['ca-cgrs-d'], 'Vanier closed and exchange scholarships are not degree funding');
+  assert.deepEqual(ca_s[0].degreeLevels, ['phd']);
+  assert.ok(!ca_s[0].funding && !/fully[- ]funded/i.test(JSON.stringify(ca_s[0])));
+  const m = guideForMino(CA_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 23448);
+  assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 24);
+  assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value!.min, 150);
 });
 
 console.log(`\n${passed} passed`);
