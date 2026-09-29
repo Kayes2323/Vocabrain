@@ -8,6 +8,7 @@ import { US_UNIVERSITIES } from './us-registry';
 import { NZ_UNIVERSITIES } from './nz-registry';
 import { CN_UNIVERSITIES } from './cn-registry';
 import { CA_UNIVERSITIES } from './ca-registry';
+import { NO_UNIVERSITIES } from './no-registry';
 import { IT_UNIVERSITIES } from './it-registry';
 import { JP_UNIVERSITIES } from './jp-registry';
 import { TR_UNIVERSITIES } from './tr-registry';
@@ -19,7 +20,7 @@ import { TR_UNIVERSITIES } from './tr-registry';
  * the Universities centre shows the student's own list and says so plainly.
  * Shape is API/CMS-ready: the same objects can later come from a server.
  */
-export const UNIVERSITIES: University[] = [...KR_UNIVERSITIES, ...DE_UNIVERSITIES, ...JP_UNIVERSITIES, ...IT_UNIVERSITIES, ...TR_UNIVERSITIES, ...GB_UNIVERSITIES, ...AU_UNIVERSITIES, ...US_UNIVERSITIES, ...NZ_UNIVERSITIES, ...CN_UNIVERSITIES, ...CA_UNIVERSITIES];
+export const UNIVERSITIES: University[] = [...KR_UNIVERSITIES, ...DE_UNIVERSITIES, ...JP_UNIVERSITIES, ...IT_UNIVERSITIES, ...TR_UNIVERSITIES, ...GB_UNIVERSITIES, ...AU_UNIVERSITIES, ...US_UNIVERSITIES, ...NZ_UNIVERSITIES, ...CN_UNIVERSITIES, ...CA_UNIVERSITIES, ...NO_UNIVERSITIES];
 export const PROGRAMS: Program[] = [...KR_PROGRAMS];
 
 export const universitiesIn = (code: string | undefined) => (code ? UNIVERSITIES.filter((u) => u.countryCode === code.toUpperCase()) : UNIVERSITIES);

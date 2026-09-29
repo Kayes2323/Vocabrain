@@ -52,6 +52,7 @@ import { US_GUIDE } from '../lib/content/us-guide';
 import { NZ_GUIDE } from '../lib/content/nz-guide';
 import { CN_GUIDE } from '../lib/content/cn-guide';
 import { CA_GUIDE } from '../lib/content/ca-guide';
+import { NO_GUIDE } from '../lib/content/no-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1584,14 +1585,14 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
   assert.equal(getCountryGuide('kr')?.code, 'KR');
   assert.equal(getCountryGuide('de')?.code, 'DE');
   assert.equal(getCountryGuide('jp')?.code, 'JP');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -2420,6 +2421,70 @@ test('Canada: registries, CGRS D only for PhD, Mino knowledge', () => {
   assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 23448);
   assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 24);
   assert.equal(CA_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value!.min, 150);
+});
+
+// ---------------------------------------------------------------- Norway guide
+const noPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(NO_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(NO_GUIDE.degrees[l].intro);
+test('Norway: its own research from Norwegian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(NO_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|£|AUD |USD|CAD |EUR |JPY|KRW|\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE]), /NOK \d|UDI|GSU|HK-dir|Jobbnorge/);
+  const hosts = new Set(guideSources([...NO_GUIDE.overview, ...NO_GUIDE.faqs, ...(NO_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(NO_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /(^|\.)(studyinnorway|hkdir|regjeringen|stortinget|norway|uio|ntnu)\.(no|edu)$/, `${h} is an official Norwegian source`);
+  assert.ok(hosts.has('studyinnorway.no') && hosts.has('www.norway.no'));
+});
+
+test('Norway: not tuition-free, key official figures, law change flagged, nothing invented', () => {
+  const faq = (id: string) => NO_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(NO_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('tuition-free').a[0].en, /^No, not for students from outside the EU\/EEA\/Switzerland/);
+  assert.ok(faq('tuition-free').discrepancy && faq('cost').discrepancy, 'tuition law change flagged');
+  assert.match(faq('funds').a[0].en, /NOK 170,368.*NOK 15,488/);
+  assert.match(faq('work').a[0].en, /20 hours a week/);
+  assert.match(faq('after').a[0].en, /one year.*does not promise permanent residence/);
+  assert.equal(faq('hsc').status, 'not-verified', 'Bangladesh GSU row not invented');
+  assert.match(faq('bangladesh').a[0].en, /VFS Global.*not verified yet/);
+  for (const l of GUIDE_DEGREES) {
+    const c = NO_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'NOK', `${l}/${x.id} in Norwegian kroner`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|EUR/, `${l}/${x.id} not converted`);
+    }
+    assert.deepEqual(c.official.map((x) => x.amount!.value), [170368, 1000]);
+    assert.ok(['visa-fee', 'rent', 'insurance'].every((id) => c.estimates.find((x) => x.id === id)!.status === 'not-verified' && !c.estimates.find((x) => x.id === id)!.amount));
+  }
+  assert.equal(NO_GUIDE.degrees.phd.costs.estimates.find((x) => x.id === 'tuition')!.amount, undefined, 'PhD: no tuition figure');
+  assert.ok(!NO_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value, 'permit fee not invented');
+});
+
+test('Norway: degree isolation and documents', () => {
+  assert.match(noPage('bachelors'), /GSU/);
+  assert.match(noPage('bachelors'), /IELTS Academic with a minimum score of 5\.0/);
+  assert.doesNotMatch(noPage('bachelors'), /6\.5 on each part|204,000|Jobbnorge/);
+  assert.match(noPage('masters'), /1 December/);
+  assert.match(noPage('masters'), /6\.5 on each part/);
+  assert.match(noPage('masters'), /204,000/);
+  assert.doesNotMatch(noPage('masters'), /GSU education requirement|Jobbnorge/);
+  assert.match(noPage('phd'), /employees/);
+  assert.doesNotMatch(noPage('phd'), /204,000|176,300|6\.5 on each part/);
+  assert.ok(guideDocumentsFor(NO_GUIDE, 'phd').some((d) => d.id === 'research'));
+  assert.ok(!guideDocumentsFor(NO_GUIDE, 'masters').some((d) => d.id === 'research'));
+  const docs = NO_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  for (const id of ['admission', 'fees-paid', 'finance', 'vfs']) assert.ok(docs.find((d) => d.id === id)!.groups.includes('visa'), `${id} is a permit document`);
+  assert.doesNotMatch(JSON.stringify(docs.filter((d) => !d.degrees)), /6\.5 on each part|1 December|GSU education/, 'documents shown on every degree carry no degree-specific rule');
+});
+
+test('Norway: registries, no scholarship invented, Mino knowledge', () => {
+  const no = UNIVERSITIES.filter((u) => u.countryCode === 'NO' && u.id.startsWith('no-'));
+  assert.deepEqual(no.map((u) => u.id), ['no-nmbu', 'no-ntnu', 'no-uit', 'no-uib', 'no-uio']);
+  assert.ok(no.every((u) => u.officialUrl.startsWith('https://')));
+  assert.equal(SCHOLARSHIPS.filter((s) => s.countryCode === 'NO').length, 0);
+  const m = guideForMino(NO_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(NO_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 170368);
+  assert.equal(NO_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 20);
 });
 
 console.log(`\n${passed} passed`);
