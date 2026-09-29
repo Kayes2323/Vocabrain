@@ -8,6 +8,7 @@ import { NZ_SCHOLARSHIPS } from './nz-registry';
 import { CN_SCHOLARSHIPS } from './cn-registry';
 import { CA_SCHOLARSHIPS } from './ca-registry';
 import { NO_SCHOLARSHIPS } from './no-registry';
+import { SE_SCHOLARSHIPS } from './se-registry';
 import { IT_SCHOLARSHIPS } from './it-registry';
 import { JP_SCHOLARSHIPS } from './jp-registry';
 import { TR_SCHOLARSHIPS } from './tr-registry';
@@ -18,6 +19,6 @@ import { TR_SCHOLARSHIPS } from './tr-registry';
  * SourcedValues). Status (open / opening soon / closed / passed) is always
  * computed from those dates — see lib/abroad/status.ts.
  */
-export const SCHOLARSHIPS: Scholarship[] = [...KR_SCHOLARSHIPS, ...DE_SCHOLARSHIPS, ...JP_SCHOLARSHIPS, ...IT_SCHOLARSHIPS, ...TR_SCHOLARSHIPS, ...GB_SCHOLARSHIPS, ...AU_SCHOLARSHIPS, ...US_SCHOLARSHIPS, ...NZ_SCHOLARSHIPS, ...CN_SCHOLARSHIPS, ...CA_SCHOLARSHIPS, ...NO_SCHOLARSHIPS];
+export const SCHOLARSHIPS: Scholarship[] = [...KR_SCHOLARSHIPS, ...DE_SCHOLARSHIPS, ...JP_SCHOLARSHIPS, ...IT_SCHOLARSHIPS, ...TR_SCHOLARSHIPS, ...GB_SCHOLARSHIPS, ...AU_SCHOLARSHIPS, ...US_SCHOLARSHIPS, ...NZ_SCHOLARSHIPS, ...CN_SCHOLARSHIPS, ...CA_SCHOLARSHIPS, ...NO_SCHOLARSHIPS, ...SE_SCHOLARSHIPS];
 
 export const scholarshipsFor = (code: string | undefined) => (code ? SCHOLARSHIPS.filter((s) => !s.countryCode || s.countryCode === code.toUpperCase()) : SCHOLARSHIPS);
