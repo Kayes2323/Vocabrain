@@ -37,10 +37,12 @@ interface ModuleCardProps {
   /** The recommended next card gets a soft brand outline. */
   highlight?: boolean;
   className?: string;
+  /** Let a longer subtitle wrap to two lines instead of cutting it off. */
+  wrapSubtitle?: boolean;
 }
 
 /** A compact, tappable card for a module, skill or section. */
-export function ModuleCard({ title, subtitle, icon: Icon, tint = 'lavender', progress, href, onClick, trailing, highlight, className }: ModuleCardProps) {
+export function ModuleCard({ title, subtitle, icon: Icon, tint = 'lavender', progress, href, onClick, trailing, highlight, className, wrapSubtitle }: ModuleCardProps) {
   const content = (
     <>
       <span aria-hidden className={cn('flex size-10 shrink-0 items-center justify-center rounded-xl [&_svg]:size-5', TINT_ICON[tint])}>
@@ -48,7 +50,7 @@ export function ModuleCard({ title, subtitle, icon: Icon, tint = 'lavender', pro
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate font-medium leading-snug">{title}</span>
-        {subtitle && <span className="mt-0.5 block truncate text-sm text-muted-foreground">{subtitle}</span>}
+        {subtitle && <span className={cn('mt-0.5 block text-sm text-muted-foreground', wrapSubtitle ? 'line-clamp-2' : 'truncate')}>{subtitle}</span>}
         {progress !== undefined && (
           <span className="mt-2 flex items-center gap-2">
             <span

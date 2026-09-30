@@ -5,14 +5,15 @@ interface SectionProps {
   description?: string;
   action?: React.ReactNode;
   className?: string;
+  id?: string;
   /** "label": a small uppercase heading for grouped navigation (LEARN, PRACTICE…). */
   variant?: 'default' | 'label';
   children: React.ReactNode;
 }
 
-export function Section({ title, description, action, className, variant = 'default', children }: SectionProps) {
+export function Section({ title, description, action, className, id, variant = 'default', children }: SectionProps) {
   return (
-    <section className={cn('space-y-3', className)}>
+    <section id={id} className={cn('space-y-3', className)}>
       {(title || action) && (
         <div className="flex items-end justify-between gap-4 px-1">
           <div>

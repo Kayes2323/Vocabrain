@@ -11,23 +11,33 @@ const TOPICS = [
   'sentence-basics', 'parts-of-speech', 'noun', 'pronoun', 'verb-helping-verbs', 'simple-compound-sentences', 'articles', 'tenses', 'agreement', 'adjectives-adverbs',
   'prepositions', 'connectors', 'complex-sentences', 'punctuation', 'common-errors', 'foundation-review', 'vocabulary-foundation',
 ];
-const STAGES = ['start-here', 'english-foundation', 'ielts-basics', 'skill-building', 'practice', 'mock-tests', 'target-ready'];
 const TEXT = {
   bn: { start: 'এখান থেকে শুরু', foundationTitle: 'এবার আপনার দরকারি English foundation তৈরি করা যাক', check: 'আপনার English level যাচাই করুন' },
   en: { start: 'Start Here', foundationTitle: "Now let's build the English foundation you need", check: 'Check your English level' },
 };
 
-async function ielts(p: Page) {
-  await p.goto(BASE + '/ielts', { waitUntil: 'load' });
-  await p.getByTestId('continue-learning').waitFor({ timeout: 60_000 });
+// The next step on the path is shown on Home ("Continue learning").
+async function home(p: Page) {
+  await p.goto(BASE + '/', { waitUntil: 'load' });
+  await p.getByTestId('home-continue').waitFor({ timeout: 60_000 });
 }
-const cont = async (p: Page) => ({
-  kind: await p.getByTestId('continue-learning').getAttribute('data-kind'),
-  title: (await p.getByTestId('continue-title').innerText()).trim(),
-  href: await p.getByTestId('continue-cta').getAttribute('href'),
-});
-const stageState = (p: Page, id: string) => p.locator(`[data-stage="${id}"]`).getAttribute('data-state');
-const openStages = (p: Page) => p.locator('[data-testid^="stage-steps-"]').evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')!.replace('stage-steps-', '')));
+const cont = async (p: Page) => {
+  const link = p.getByTestId('home-continue');
+  return {
+    kind: await link.getAttribute('data-kind'),
+    title: (await link.locator('span > span').nth(1).innerText()).trim(),
+    href: await link.getAttribute('href'),
+  };
+};
+async function hub(p: Page) {
+  await p.goto(BASE + '/ielts', { waitUntil: 'load' });
+  await p.getByTestId('ielts-hub').waitFor({ timeout: 60_000 });
+}
+async function progress(p: Page) {
+  await p.goto(BASE + '/ielts/progress', { waitUntil: 'load' });
+  await p.getByTestId('stat-lessons').waitFor({ timeout: 60_000 });
+  return (await p.getByTestId('stat-lessons').innerText()).trim();
+}
 const lessonRec = () => ({ completedAt: new Date().toISOString(), score: 90, best: 90, attempts: 1 });
 
 async function run(p: Page, lang: Lang, tag: string) {
@@ -36,58 +46,57 @@ async function run(p: Page, lang: Lang, tag: string) {
   const setLessons = (ids: string[]) => patchField(`users/${uid}`, 'app.foundation.lessons', Object.fromEntries(ids.map((id) => [id, lessonRec()])));
 
   // ---------------------------------------------------------------- new student
-  await ielts(p);
+  await home(p);
   let c = await cont(p);
   check(`${tag}: new student → Continue opens Start Here's first lesson`, c.kind === 'lesson' && c.href === '/ielts/foundation/lesson/ib-1', JSON.stringify(c));
-  const y = async (sel: string) => (await p.locator(sel).first().boundingBox())!.y;
-  check(`${tag}: Continue Learning is the first thing on the IELTS page`, (await y('[data-testid="continue-learning"]')) < (await y('[data-testid="learning-path"]')));
-  const ids = await p.locator('[data-stage]').evaluateAll((els) => els.map((e) => e.getAttribute('data-stage')));
-  check(`${tag}: seven stages in order`, ids.join(',') === STAGES.join(','), ids.join(','));
-  check(`${tag}: ● Start Here current, ○ the rest upcoming`, (await stageState(p, 'start-here')) === 'current' && (await stageState(p, 'english-foundation')) === 'upcoming');
-  check(`${tag}: only the current stage is expanded`, (await openStages(p)).join(',') === 'start-here');
-  check(`${tag}: stage titles in the student's language`, (await p.locator('[data-stage="start-here"]').innerText()).includes(T.start));
-  check(`${tag}: honest stats start at zero`, /^(0|০)\//.test((await p.getByTestId('stat-lessons').innerText()).trim()));
-  // Progressive disclosure: a later stage opens and closes on tap.
-  await p.getByTestId('stage-toggle-english-foundation').click();
-  check(`${tag}: tapping English Foundation shows its topic cards`, (await p.getByTestId('stage-steps-english-foundation').isVisible()) && (await p.locator('[data-testid="stage-steps-english-foundation"] [data-topic]').count()) === 17);
-  await p.getByTestId('stage-toggle-english-foundation').click();
-  check(`${tag}: and hides them again`, (await p.getByTestId('stage-steps-english-foundation').count()) === 0);
-  check(`${tag}: IELTS page has no sideways scroll`, await noHorizontalScroll(p));
-  await shot(p, `curriculum-new-${tag}`);
 
-  // Home and Today point to the same next step.
-  await p.goto(BASE + '/', { waitUntil: 'load' });
-  await p.getByTestId('home-continue').waitFor({ timeout: 60_000 });
-  check(`${tag}: Home shows the same next step`, (await p.getByTestId('home-continue').getAttribute('href')) === c.href);
+  // ---------------------------------------------------------------- IELTS page: a short list of places to go
+  await hub(p);
+  check(`${tag}: IELTS page — no learning-path timeline, no progress block`, (await p.getByTestId('learning-path').count()) === 0 && (await p.getByTestId('learning-stats').count()) === 0 && (await p.getByTestId('continue-learning').count()) === 0 && !(await p.locator('main').innerText()).includes(lang === 'bn' ? 'আপনার শেখার পথ' : 'Your learning path'));
+  const secY = await Promise.all(['plan', 'learn', 'practice', 'test', 'tools'].map(async (id) => (await p.locator(`#hub-${id}`).boundingBox())!.y));
+  check(`${tag}: sections in order — My IELTS Plan, Learn, Practice, Test, Tools`, secY.every((v, i) => i === 0 || v > secY[i - 1]), secY.join(','));
+  const hrefs = await p.locator('main a').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
+  check(`${tag}: My IELTS Plan first, then Progress, Foundation, 4 skills, Practice Tests, Band calculator`, JSON.stringify(hrefs.slice(0, 3)) === JSON.stringify(['/ielts/plan', '/ielts/progress', '/ielts/foundation']) && hrefs.includes('/ielts/tests') && hrefs.includes('/ielts/band-calculator') && hrefs.includes('/ielts/reading'), hrefs.join(' '));
+  const tall = await p.locator('main a').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height > 96).length);
+  check(`${tag}: compact cards (none taller than 96 px)`, tall === 0);
+  check(`${tag}: IELTS page has no sideways scroll`, await noHorizontalScroll(p));
+  await shot(p, `ielts-hub-${tag}`);
+  await p.locator('main a[href="/ielts/progress"]').click();
+  await p.waitForURL('**/ielts/progress', { timeout: 30_000 });
+  await p.getByTestId('stat-lessons').waitFor({ timeout: 60_000 });
+  check(`${tag}: Progress opens its own page, stats start at zero`, /^(0|০)\//.test((await p.getByTestId('stat-lessons').innerText()).trim()));
+  await hub(p);
+  await p.locator('main a[href="/ielts/plan"]').click();
+  await p.waitForURL('**/ielts/plan', { timeout: 30_000 });
+  check(`${tag}: My IELTS Plan opens the existing plan page`, new URL(p.url()).pathname === '/ielts/plan');
+
+  // Today points to the same next step.
   await p.goto(BASE + '/today', { waitUntil: 'load' });
   await p.getByTestId('today-card').waitFor({ timeout: 60_000 });
   check(`${tag}: Today's Learning starts with that lesson`, (await p.locator('[data-task]').first().getAttribute('href')) === c.href);
 
   // ---------------------------------------------------------------- play the first lesson from Continue
   if (lang === 'en') {
-    await ielts(p);
-    await p.getByTestId('continue-cta').click();
+    await home(p);
+    await p.getByTestId('home-continue').click();
     await p.waitForURL('**/ielts/foundation/lesson/ib-1', { timeout: 30_000 });
     await playLesson(p, lang);
     await p.waitForTimeout(1500);
-    await ielts(p);
+    await home(p);
     c = await cont(p);
     check(`${tag}: after the lesson, Continue moves to the next one`, c.href === '/ielts/foundation/lesson/ib-2', JSON.stringify(c));
-    check(`${tag}: 1 lesson completed is counted`, (await p.getByTestId('stat-lessons').innerText()).trim().startsWith('1/'));
-    check(`${tag}: the finished step is ticked`, (await p.locator('[data-step="what-is-ielts"]').getAttribute('data-state')) === 'done');
+    check(`${tag}: 1 lesson completed is counted on Progress`, (await progress(p)).startsWith('1/'));
   }
 
   // ---------------------------------------------------------------- end of Start Here → the check (optional)
   await setLessons(['ib-1', 'ib-2', 'ib-3', 'ib-4']);
-  await ielts(p);
+  await home(p);
   c = await cont(p);
   check(`${tag}: Start Here done → "Check your English level"`, c.kind === 'check' && c.title === T.check && c.href === '/ielts/foundation/diagnostic', JSON.stringify(c));
-  check(`${tag}: the check can be skipped`, (await p.getByTestId('continue-skip').getAttribute('href')) === '/ielts/foundation/lesson/sb-1');
-  check(`${tag}: ✓ Start Here, ● English Foundation (now expanded)`, (await stageState(p, 'start-here')) === 'done' && (await stageState(p, 'english-foundation')) === 'current' && (await openStages(p)).join(',') === 'english-foundation');
 
   // Took the check → "Now let's build the English foundation you need".
   await patchField(`users/${uid}`, 'app.foundation.diagnostic', JSON.parse(JSON.stringify(scoreDiagnostic({}))));
-  await ielts(p);
+  await home(p);
   c = await cont(p);
   check(`${tag}: after the check → Start English Foundation`, c.kind === 'foundation-start' && c.title === T.foundationTitle && c.href === '/ielts/foundation/lesson/sb-1', JSON.stringify(c));
   await shot(p, `curriculum-foundation-${tag}`);
@@ -95,11 +104,11 @@ async function run(p: Page, lang: Lang, tag: string) {
   // Deep in English Foundation: the path, not module order (articles come before the tenses).
   const ef = ['sb-1', 'sb-2', 'sb-3', 'sb-4', 'sb-5', 'po-1', 'pn-1', 'pn-2', 'pn-3', 'pn-4', 'ppr-1', 'ppr-2', 'ppr-3', 'pvb-1', 'pvb-2', 'pvb-3', 'pvb-4', 'pvb-5', 'sb-6', 'sb-7'];
   await setLessons(['ib-1', 'ib-2', 'ib-3', 'ib-4', ...ef]);
-  await ielts(p);
+  await home(p);
   c = await cont(p);
   check(`${tag}: after verbs and sentence patterns → Articles`, c.href === '/ielts/foundation/lesson/ar-1', JSON.stringify(c));
-  check(`${tag}: IELTS page — the same cards: Simple & Compound done, Articles current`, (await p.locator('[data-topic="simple-compound-sentences"]').getAttribute('data-state')) === 'done' && (await p.locator('[data-topic="articles"]').getAttribute('data-state')) === 'current');
-  check(`${tag}: stats count only completed lessons`, (await p.getByTestId('stat-lessons').innerText()).trim().startsWith(lang === 'bn' ? '২৪/' : '24/'), await p.getByTestId('stat-lessons').innerText());
+  const stat = await progress(p);
+  check(`${tag}: Progress counts only completed lessons`, stat.startsWith(lang === 'bn' ? '২৪/' : '24/'), stat);
   const f = (await getDoc(`users/${uid}`)).app.foundation;
   check(`${tag}: no data was changed by viewing`, Object.keys(f.lessons).length === 24);
   await p.goto(BASE + '/', { waitUntil: 'load' });
@@ -108,7 +117,7 @@ async function run(p: Page, lang: Lang, tag: string) {
 
   // ---------------------------------------------------------------- CARD → PAGE → CARD → PAGE (the acceptance flow)
   await setLessons(['ib-1', 'ib-2', 'ib-3', 'ib-4', 'sb-1', 'sb-2']);
-  await ielts(p);
+  await hub(p);
   await p.locator('main a[href="/ielts/foundation"]').first().click();
   await p.waitForURL('**/ielts/foundation', { timeout: 30_000 });
   await p.getByTestId('topic-cards').waitFor({ timeout: 60_000 });

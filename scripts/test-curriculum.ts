@@ -172,8 +172,7 @@ test('labels exist in English and Bangla; Bangla uses আপনি only', () => 
 
 test('one path everywhere: IELTS page, Home, Today and Mino read the same engine', () => {
   const read = (f: string) => readFileSync(f, 'utf8');
-  assert.match(read('app/(app)/ielts/page.tsx'), /ContinueCard/);
-  assert.match(read('app/(app)/ielts/page.tsx'), /LearningPath/);
+  assert.match(read('app/(app)/ielts/progress/page.tsx'), /learningStats/);
   assert.match(read('components/home/JourneyCard.tsx'), /useContinue/);
   assert.match(read('lib/engine/daily-plan.ts'), /nextLesson/);
   assert.match(read('lib/ai/server/mino/snapshot.ts'), /continueLearning/);
@@ -205,6 +204,14 @@ test('Foundation UI: navigation cards, no accordion', () => {
   const view = readFileSync('components/foundation/TopicView.tsx', 'utf8');
   assert.match(view, /href=\{lessonHref\(id\)\}/, 'lesson cards link to the lesson page');
   assert.doesNotMatch(view, /aria-expanded|intercept\(/, 'no expanding, no modal before a lesson');
+});
+
+test('IELTS hub: plan, progress, learn, practice, test, tools — no learning path or stats block', () => {
+  const hub = readFileSync('app/(app)/ielts/page.tsx', 'utf8');
+  assert.doesNotMatch(hub, /LearningPath|ContinueCard|learningStats|ielts\.path\./, 'the journey timeline and progress block are gone from the page');
+  const order = ['hub-plan', 'hub-learn', 'hub-practice', 'hub-test', 'hub-tools'].map((id) => hub.indexOf(`id="${id}"`));
+  assert.ok(order.every((i, k) => i > 0 && (k === 0 || i > order[k - 1])), `sections in order: ${order}`);
+  assert.ok(hub.indexOf('/ielts/plan') < hub.indexOf('/ielts/progress'), 'My IELTS Plan first, then Progress');
 });
 
 console.log(`\n${passed} passed`);
