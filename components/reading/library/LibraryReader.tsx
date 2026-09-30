@@ -79,6 +79,14 @@ export function LibraryReader({ passage }: { passage: LibraryPassage }) {
     [passage, updateProfile],
   );
 
+  // Opening a passage counts as starting it: its words then appear in Reading Vocabulary.
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current || !profile || stored) return;
+    opened.current = true;
+    persist({}, false);
+  }, [profile, stored, persist]);
+
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pending = useRef<Record<string, string> | null>(null);
   const flush = useCallback(() => {

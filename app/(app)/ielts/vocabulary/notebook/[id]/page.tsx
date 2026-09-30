@@ -100,13 +100,25 @@ export default function WordDetailPage() {
           <p className="text-sm text-muted-foreground">{t('brain.noMeaning')}</p>
         )}
         {word.originalSentence && (
-          <div className="space-y-1 rounded-xl bg-muted/60 px-4 py-3">
-            <p className="text-xs text-muted-foreground">{t('brain.foundIn', { source: word.source.title })}</p>
+          <div className="space-y-1 rounded-xl bg-muted/60 px-4 py-3" data-testid="word-source">
+            <p className="text-xs text-muted-foreground">
+              {word.source.type === 'reading-passage' && word.source.passageId ? (
+                <Link href={`/ielts/reading/${word.source.passageId}`} className="underline-offset-4 hover:text-brand hover:underline">
+                  {t('brain.foundIn', { source: word.source.title })}
+                </Link>
+              ) : (
+                t('brain.foundIn', { source: word.source.title })
+              )}
+            </p>
             <p className="text-[15px]" lang="en">
               “{word.originalSentence}”
             </p>
           </div>
         )}
+        <p className="text-xs text-muted-foreground" data-testid="word-saved">
+          {t('brain.page.savedOn', { date: new Date(word.createdAt).toLocaleDateString(locale === 'bn' ? 'bn-BD' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) })}
+          {!word.originalSentence && ` · ${word.source.type === 'reading-passage' ? word.source.title : t(`brain.page.source.${word.source.type}`)}`}
+        </p>
         <Chips label={t('brain.collocations')} items={word.collocations} />
         <Chips label={t('vocabulary.bank.similar')} items={word.synonyms} />
         <Chips label={t('vocabulary.bank.opposites')} items={word.antonyms} />

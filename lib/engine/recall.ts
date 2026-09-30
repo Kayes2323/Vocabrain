@@ -67,8 +67,20 @@ export function evaluateRecall(word: BrainWord, exercise: RecallExercise, answer
   const trimmed = answer.trim();
   if (!trimmed) return 'wrong';
 
-  if (exercise === 'context' || exercise === 'completion') {
-    return matchesWord(trimmed, word.word);
+  if (exercise === 'context' || exercise === 'completion' || exercise === 'recall-en') {
+    const v = matchesWord(trimmed, word.word);
+    return v === 'wrong' && word.lemma !== word.word.toLowerCase() ? matchesWord(trimmed, word.lemma) : v;
+  }
+
+  // Multiple choice: the answer is the option text; the right one is the word's own meaning.
+  if (exercise === 'choice') {
+    const own = [word.meaningBn, word.meaning].filter(Boolean).map((m) => normalize(m!));
+    return own.includes(normalize(trimmed)) ? 'correct' : 'wrong';
+  }
+
+  // Own sentence: it must use the word and be a real sentence; the student then compares with an example.
+  if (exercise === 'sentence') {
+    return containsWord(trimmed, word.lemma) && normalize(trimmed).split(' ').length >= 5 ? 'check' : 'wrong';
   }
 
   if (exercise === 'synonym') {
@@ -90,6 +102,33 @@ export function evaluateRecall(word: BrainWord, exercise: RecallExercise, answer
     if (bnParts.some((p) => answerRaw.includes(normalize(p)))) return 'correct';
   }
   return 'check';
+}
+
+/**
+ * Four meanings for a "choose the meaning" question: the word's own and three
+ * from other saved words, in a stable order per word. Undefined when there are
+ * not enough different meanings to choose from.
+ */
+export function choiceOptions(word: BrainWord, others: BrainWord[], locale: 'en' | 'bn'): string[] | undefined {
+  const pick = (w: BrainWord) => (locale === 'bn' ? w.meaningBn || w.meaning : w.meaning || w.meaningBn) || '';
+  const own = pick(word);
+  if (!own) return undefined;
+  const seen = new Set([normalize(own)]);
+  const distractors: string[] = [];
+  for (const o of [...others].sort((a, b) => a.id.localeCompare(b.id))) {
+    const m = pick(o);
+    if (o.id === word.id || !m || seen.has(normalize(m))) continue;
+    seen.add(normalize(m));
+    distractors.push(m);
+  }
+  if (distractors.length < 3) return undefined;
+  // Distractors nearest to the word alphabetically vary between words; position of the answer from the word id.
+  const start = [...word.id].reduce((n, c) => n + c.charCodeAt(0), 0);
+  const three = [0, 1, 2].map((i) => distractors[(start + i * 7) % distractors.length]).filter((m, i, a) => a.indexOf(m) === i);
+  while (three.length < 3) three.push(distractors.find((d) => !three.includes(d))!);
+  const options = [...three];
+  options.splice(start % 4, 0, own);
+  return options;
 }
 
 /** Sentence with the target word blanked out, for context and completion recall. */

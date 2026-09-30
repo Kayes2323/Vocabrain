@@ -3,6 +3,8 @@
 // under `sections.<id>` in lib/i18n/locales.
 import {
   BookOpen,
+  BookOpenText,
+  BrainCircuit,
   BookText,
   Building2,
   Calculator,
@@ -55,7 +57,7 @@ export const PRIMARY_NAV: PrimaryNavItem[] = [
  * (never every section); every href is an existing page.
  */
 export interface QuickAccessItem {
-  id: 'today' | 'foundation' | 'tests' | 'speaking' | 'abroad';
+  id: 'today' | 'foundation' | 'brain' | 'readingVocab' | 'abroad';
   href: string;
   icon: LucideIcon;
   /** Accent from the design system's tints, one per item. */
@@ -65,8 +67,8 @@ export interface QuickAccessItem {
 export const HOME_QUICK_ACCESS: QuickAccessItem[] = [
   { id: 'today', href: '/today', icon: CalendarCheck, tint: 'bg-brand-soft text-brand' },
   { id: 'foundation', href: '/ielts/foundation', icon: Layers, tint: 'bg-tint-lavender text-tint-lavender-fg' },
-  { id: 'tests', href: '/ielts/tests', icon: Timer, tint: 'bg-tint-blue text-tint-blue-fg' },
-  { id: 'speaking', href: '/ielts/tests/vb-practice-1/speaking', icon: Mic, tint: 'bg-tint-green text-tint-green-fg' },
+  { id: 'brain', href: '/ielts/vocabulary/notebook', icon: BrainCircuit, tint: 'bg-tint-blue text-tint-blue-fg' },
+  { id: 'readingVocab', href: '/ielts/vocabulary/reading', icon: BookOpenText, tint: 'bg-tint-green text-tint-green-fg' },
   { id: 'abroad', href: '/abroad', icon: Plane, tint: 'bg-tint-yellow text-tint-yellow-fg' },
 ];
 

@@ -1,4 +1,4 @@
-import type { BrainWord, RecallExercise, UsageAttempt, WordInfo, WordSource, WordStatus } from '@/lib/models';
+import type { BrainWord, RecallExercise, RecallRating, UsageAttempt, WordInfo, WordSource, WordStatus } from '@/lib/models';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -96,28 +96,37 @@ export function dueWords(words: BrainWord[], now = new Date()): BrainWord[] {
 
 /**
  * Adaptive spacing. Correct: next interval (1, 3, 7, 14, 30, 60 days), and 1.5×
- * longer when the last three recalls were all right. Wrong: back to stage 0 and
- * tomorrow — or in 4 hours when it is the second failure in a row.
+ * longer when the last three recalls were all right or the student rated it
+ * Easy; half the interval when it felt Hard. Wrong (or Again): back to stage 0
+ * and tomorrow — or in 4 hours when it is the second failure in a row.
  */
-export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutiveFailures'>, stage: number, correct: boolean, now: Date): Date {
+export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutiveFailures'>, stage: number, correct: boolean, now: Date, rating?: RecallRating): Date {
   if (!correct) return w.consecutiveFailures + 1 >= 2 ? new Date(now.getTime() + 4 * 3_600_000) : addDays(now, 1);
-  const base = REVIEW_INTERVAL_DAYS[Math.min(stage, MAX_STAGE) - 1];
+  const base = REVIEW_INTERVAL_DAYS[Math.min(Math.max(stage, 1), MAX_STAGE) - 1];
+  if (rating === 'hard') return addDays(now, Math.max(1, Math.round(base / 2)));
   const streak = w.recallHistory.slice(-2).filter((r) => r.correct).length === 2;
-  return addDays(now, stage >= 3 && streak ? Math.round(base * 1.5) : base);
+  const good = stage >= 3 && streak ? base * 1.5 : base;
+  return addDays(now, Math.round(rating === 'easy' ? good * 1.5 : good));
 }
 
-export function applyRecall(w: BrainWord, exercise: RecallExercise, correct: boolean, answer: string | undefined, now = new Date()): BrainWord {
-  const stage = correct ? Math.min(w.stage + 1, MAX_STAGE) : 0;
+/**
+ * One recall. The answer's correctness is the main signal; a rating (when the
+ * student gives one) only tunes the spacing: Again counts as not recalled,
+ * Hard keeps the word at its current step, Easy stretches the next interval.
+ */
+export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswer: boolean, answer: string | undefined, now = new Date(), rating?: RecallRating): BrainWord {
+  const correct = correctAnswer && rating !== 'again';
+  const stage = !correct ? 0 : rating === 'hard' ? Math.max(w.stage, 1) : Math.min(w.stage + 1, MAX_STAGE);
   return withStatus({
     ...w,
     stage,
-    nextReviewAt: nextReviewDate(w, stage, correct, now).toISOString(),
+    nextReviewAt: nextReviewDate(w, stage, correct, now, rating).toISOString(),
     lastReviewedAt: now.toISOString(),
     updatedAt: now.toISOString(),
     recallCount: w.recallCount + 1,
     successfulRecallCount: w.successfulRecallCount + (correct ? 1 : 0),
     consecutiveFailures: correct ? 0 : w.consecutiveFailures + 1,
-    recallHistory: [...w.recallHistory, { at: now.toISOString(), exercise, correct, answer: answer?.slice(0, 200) }].slice(-HISTORY_LIMIT),
+    recallHistory: [...w.recallHistory, { at: now.toISOString(), exercise, correct, answer: answer?.slice(0, 200), ...(rating ? { rating } : {}) }].slice(-HISTORY_LIMIT),
   });
 }
 
@@ -131,21 +140,56 @@ export function applyUsage(w: BrainWord, attempt: Omit<UsageAttempt, 'at'>, now 
   });
 }
 
-/** Which free-recall exercise to use next, varied by stage and what the word has. */
-export function nextExercise(w: BrainWord, problem?: string): RecallExercise {
+/**
+ * Recall formats for each memory stage: first recognise the meaning, then
+ * recall the English word from Bangla, then find it in a sentence, then
+ * connect it to synonyms, and only once it is well known, use it yourself.
+ */
+export const STAGE_FORMATS: RecallExercise[][] = [
+  ['choice', 'meaning'],
+  ['recall-en', 'meaning'],
+  ['context', 'completion', 'recall-en'],
+  ['synonym', 'completion', 'recall-en'],
+  ['sentence', 'context', 'synonym', 'recall-en'],
+];
+
+/** Whether a word has what a format needs (a sentence to blank, a Bangla meaning, synonyms…). */
+export function canUseFormat(w: BrainWord, ex: RecallExercise, distractors = 3): boolean {
+  switch (ex) {
+    case 'choice':
+      return distractors >= 3 && Boolean(w.meaningBn || w.meaning);
+    case 'recall-en':
+      return Boolean(w.meaningBn);
+    case 'context':
+      return Boolean(w.originalSentence);
+    case 'completion':
+      return Boolean(w.exampleSentence);
+    case 'synonym':
+      return w.synonyms.length > 0;
+    case 'meaning':
+      return Boolean(w.meaning || w.meaningBn);
+    case 'sentence':
+      return true;
+  }
+}
+
+/**
+ * Which recall format to use next: by memory stage (rotating inside the stage
+ * so the same word is not asked the same way twice in a row), unless the word
+ * has a known problem to work on.
+ */
+export function nextExercise(w: BrainWord, problem?: string, distractors = 3): RecallExercise {
   if (problem === 'meaning') return 'meaning';
   if (problem === 'context' && w.originalSentence) return 'context';
-  if (problem === 'recall') return w.exampleSentence ? 'completion' : 'meaning';
-  const cycle: RecallExercise[] = ['meaning', 'context', 'synonym', 'completion'];
-  for (let i = 0; i < cycle.length; i++) {
-    const candidate = cycle[(w.stage + i) % cycle.length];
-    if (candidate === 'context' && !w.originalSentence) continue;
-    if (candidate === 'synonym' && w.synonyms.length === 0) continue;
-    if (candidate === 'completion' && !w.exampleSentence) continue;
-    return candidate;
-  }
-  return 'meaning';
+  if (problem === 'recall') return w.exampleSentence ? 'completion' : w.meaningBn ? 'recall-en' : 'meaning';
+  const formats = STAGE_FORMATS[Math.min(w.stage, STAGE_FORMATS.length - 1)].filter((ex) => canUseFormat(w, ex, distractors));
+  if (formats.length === 0) return 'meaning';
+  return formats[w.recallCount % formats.length];
 }
+
+/** Notebook groups: New (never recalled) · Learning · Mastered. */
+export type BrainGroup = 'new' | 'learning' | 'mastered';
+export const brainGroup = (w: Pick<BrainWord, 'status'>): BrainGroup => (w.status === 'new' ? 'new' : w.status === 'mastered' ? 'mastered' : 'learning');
 
 /** Words that have been recalled but not yet used by the student: ready for practice. */
 export function wordsReadyToUse(words: BrainWord[], mode: 'writing' | 'speaking'): BrainWord[] {
@@ -160,11 +204,25 @@ export interface BrainSummary {
   due: number;
   failedLastTime: number;
   byStatus: Record<WordStatus, number>;
+  /** Started but not yet mastered. */
+  learning: number;
+  mastered: number;
+  /** When the next word becomes due, if none is due now. */
+  nextDueAt?: string;
 }
 
 export function brainSummary(words: BrainWord[], now = new Date()): BrainSummary {
   const byStatus = { new: 0, learning: 0, recalling: 0, active: 0, strong: 0, mastered: 0 } as Record<WordStatus, number>;
   words.forEach((w) => (byStatus[w.status] += 1));
   const due = dueWords(words, now);
-  return { total: words.length, due: due.length, failedLastTime: due.filter((w) => w.consecutiveFailures > 0).length, byStatus };
+  const upcoming = words.filter((w) => !isDue(w, now)).map((w) => w.nextReviewAt).sort()[0];
+  return {
+    total: words.length,
+    due: due.length,
+    failedLastTime: due.filter((w) => w.consecutiveFailures > 0).length,
+    byStatus,
+    learning: words.filter((w) => brainGroup(w) === 'learning').length,
+    mastered: byStatus.mastered,
+    ...(due.length === 0 && upcoming ? { nextDueAt: upcoming } : {}),
+  };
 }

@@ -10,8 +10,16 @@ import type { ID, ISODate, LicenseStatus } from './common';
 export const WORD_STATUSES = ['new', 'learning', 'recalling', 'active', 'strong', 'mastered'] as const;
 export type WordStatus = (typeof WORD_STATUSES)[number];
 
-/** Free-recall exercise types. Never multiple choice. */
-export type RecallExercise = 'meaning' | 'synonym' | 'context' | 'completion';
+/**
+ * Recall formats, from recognising a word to producing it:
+ * choice (pick the meaning) → recall-en (Bangla → type the English word) →
+ * context / completion (the word in a sentence) → synonym → sentence (use it yourself).
+ * `meaning` (type what it means) is the general fallback.
+ */
+export type RecallExercise = 'choice' | 'meaning' | 'recall-en' | 'context' | 'completion' | 'synonym' | 'sentence';
+
+/** How the recall felt, when the student rates it (Again = not recalled). */
+export type RecallRating = 'again' | 'hard' | 'good' | 'easy';
 
 /** What is going wrong when a word keeps failing. */
 export type WordProblem = 'meaning' | 'context' | 'recall' | 'collocation' | 'usage' | 'pronunciation';
@@ -30,6 +38,7 @@ export interface RecallAttempt {
   exercise: RecallExercise;
   correct: boolean;
   answer?: string;
+  rating?: RecallRating;
 }
 
 export interface UsageAttempt {

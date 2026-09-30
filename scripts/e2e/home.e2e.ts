@@ -39,7 +39,7 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   check(`${tag}: order — greeting, goal & progress, Quick access`, (await y('h1')) < (await y('[data-testid="progress-card"]')) && (await y('[data-testid="progress-card"]')) < (await y('[data-testid="quick-access"]')));
   if (mobile && (await p.getByTestId('mino-card').count())) check(`${tag}: Mino comes after Quick access`, (await y('[data-testid="quick-access"]')) < (await y('[data-testid="mino-card"]')));
   const ids = await p.locator('[data-quick]').evaluateAll((els) => els.map((e) => e.getAttribute('data-quick')));
-  check(`${tag}: Quick access has exactly the 5 destinations`, ids.join(',') === 'today,foundation,tests,speaking,abroad', ids.join(','));
+  check(`${tag}: Quick access has exactly the 5 destinations`, ids.join(',') === 'today,foundation,brain,readingVocab,abroad', ids.join(','));
   check(`${tag}: no separate today's-learning section on Home`, (await p.getByTestId('today-card').count()) === 0 && (await p.getByTestId('today-cta').count()) === 0);
   check(`${tag}: today tile shows today's progress`, /0\/[24]|০\/[২৪]/.test(await p.getByTestId('quick-today-status').innerText()), await p.getByTestId('quick-today-status').innerText());
   const small = await p.locator('[data-quick]').evaluateAll((els) => els.filter((e) => { const r = e.getBoundingClientRect(); return r.height < 44 || r.width < 44; }).length);
@@ -48,7 +48,7 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   await shot(p, `home-${tag}`, false);
 
   // ---------------------------------------------------------------- Quick access destinations
-  for (const [id, url] of [['foundation', '/ielts/foundation'], ['tests', '/ielts/tests'], ['speaking', '/ielts/tests/vb-practice-1/speaking'], ['abroad', '/abroad'], ['today', '/today']] as const) {
+  for (const [id, url] of [['foundation', '/ielts/foundation'], ['brain', '/ielts/vocabulary/notebook'], ['readingVocab', '/ielts/vocabulary/reading'], ['abroad', '/abroad'], ['today', '/today']] as const) {
     await home(p);
     await p.locator(`[data-quick="${id}"]`).click();
     await p.waitForURL(`**${url}`, { timeout: 30_000 });

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { ProgressBar } from '@/components/ds';
 import { useBrainContext } from '@/components/brain/useBrainContext';
+import { useBrain } from '@/components/providers/BrainProvider';
+import { readingVocabulary } from '@/lib/content/reading-library/vocab-list';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { buildDailyPlan, dailyPlanState } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
@@ -17,7 +19,14 @@ import { cn } from '@/lib/utils';
 export function QuickAccess({ profile }: { profile: UserProfile }) {
   const { t, n } = useLocale();
   const brain = useBrainContext();
+  const { words } = useBrain();
   const plan = buildDailyPlan(profile, brain);
+  // Small live counts, only when there is something real to count.
+  const fresh = readingVocabulary(profile.study.readingLibrary, words).fresh.length;
+  const counts: Partial<Record<string, string>> = {
+    brain: brain.due > 0 ? t('home.quick.brain.due', { n: n(brain.due) }) : brain.total > 0 ? t('home.quick.brain.words', { n: n(brain.total) }) : undefined,
+    readingVocab: fresh > 0 ? t('home.quick.readingVocab.fresh', { n: n(fresh) }) : undefined,
+  };
   const done = plan.tasks.filter((task) => task.done).length;
   const completed = dailyPlanState(plan, profile) === 'completed';
   const [today, ...rest] = HOME_QUICK_ACCESS;
@@ -64,6 +73,11 @@ export function QuickAccess({ profile }: { profile: UserProfile }) {
               <span className="min-w-0">
                 <span className="block text-[15px] leading-tight font-semibold">{t(`home.quick.${id}.title`)}</span>
                 <span className="mt-0.5 block text-xs text-muted-foreground">{t(`home.quick.${id}.body`)}</span>
+                {counts[id] && (
+                  <span className="mt-1.5 inline-block text-xs font-medium text-brand tabular-nums" data-quick-count={id}>
+                    {counts[id]}
+                  </span>
+                )}
               </span>
             </Link>
           </li>

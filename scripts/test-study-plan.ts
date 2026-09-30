@@ -118,9 +118,14 @@ test('home CTA texts: Bangla and English, no "Continue learning" on the home car
 });
 
 test('home Quick access: one hub with exactly 5 destinations, all existing pages; Mino stands out in the nav', () => {
-  assert.deepEqual(HOME_QUICK_ACCESS.map((q) => q.id), ['today', 'foundation', 'tests', 'speaking', 'abroad']);
+  assert.deepEqual(HOME_QUICK_ACCESS.map((q) => q.id), ['today', 'foundation', 'brain', 'readingVocab', 'abroad']);
   const ielts = new Set(IELTS_SECTIONS.map((x) => x.href));
-  for (const q of HOME_QUICK_ACCESS.filter((x) => ['foundation', 'tests', 'speaking'].includes(x.id))) assert.ok(ielts.has(q.href), `${q.id} opens its IELTS page`);
+  assert.ok(ielts.has(HOME_QUICK_ACCESS.find((q) => q.id === 'foundation')!.href), 'foundation opens its IELTS page');
+  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'brain')!.href, '/ielts/vocabulary/notebook');
+  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'readingVocab')!.href, '/ielts/vocabulary/reading');
+  for (const page of ['app/(app)/ielts/vocabulary/notebook/page.tsx', 'app/(app)/ielts/vocabulary/reading/page.tsx']) assert.ok(existsSync(join(process.cwd(), page)), page);
+  // Practice Test and Speaking Test left Home but stay in the IELTS section.
+  assert.ok(ielts.has('/ielts/tests') && ielts.has('/ielts/tests/vb-practice-1/speaking'), 'tests and speaking are still reachable from IELTS');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'today')!.href, '/today');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'abroad')!.href, '/abroad');
   for (const q of HOME_QUICK_ACCESS) assert.ok(tr(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title` && getTranslator('bn').t(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title`, q.id);

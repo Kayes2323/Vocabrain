@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { applyRecall, applyUsage, createBrainWord, wordId } from '@/lib/engine';
 import { getWordBankInfo } from '@/lib/content/dictionary';
-import type { BrainWord, RecallExercise, UsageAttempt, WordInfo, WordSource } from '@/lib/models';
+import type { BrainWord, RecallExercise, RecallRating, UsageAttempt, WordInfo, WordSource } from '@/lib/models';
 import type { BrainRepository } from '@/lib/services/brain-repository';
 import { useProfile } from './ProfileProvider';
 
@@ -15,7 +15,7 @@ interface BrainState {
   has: (lemma: string) => boolean;
   /** Save to Brain. Returns the saved (or already existing) word. */
   save: (info: WordInfo, source: WordSource, originalSentence?: string) => Promise<BrainWord>;
-  recordRecall: (id: string, exercise: RecallExercise, correct: boolean, answer?: string) => Promise<void>;
+  recordRecall: (id: string, exercise: RecallExercise, correct: boolean, answer?: string, rating?: RecallRating) => Promise<void>;
   recordUsage: (id: string, attempt: Omit<UsageAttempt, 'at'>) => Promise<void>;
   remove: (id: string) => Promise<void>;
 }
@@ -101,7 +101,7 @@ export function BrainProvider({
       get: find,
       has: (lemma) => Boolean(find(wordId(lemma))),
       save,
-      recordRecall: (id, exercise, correct, answer) => update(id, (w) => applyRecall(w, exercise, correct, answer)),
+      recordRecall: (id, exercise, correct, answer, rating) => update(id, (w) => applyRecall(w, exercise, correct, answer, new Date(), rating)),
       recordUsage: (id, attempt) => update(id, (w) => applyUsage(w, attempt)),
       remove: async (id) => {
         setWords((prev) => (prev ?? []).filter((w) => w.id !== id));
