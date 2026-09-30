@@ -8,3 +8,4 @@ export * from './validate';
 export { FINAL_PARTS, type FinalItem, type FinalPart } from './content/pos-final';
 export { CHALLENGES, challengeForModule, getChallenge, type ChallengeDef } from './content/challenges';
 export * from './flow';
+export * from './curriculum';

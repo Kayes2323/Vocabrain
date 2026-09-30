@@ -4,6 +4,7 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
+import { getStage, PARALLEL_LESSONS, PATH_LESSONS, stageLessons } from './curriculum';
 import { CHALLENGES } from './content/challenges';
 import { CONCEPT_PATTERN, patternModules, POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { expectedAnswer, posPairs } from './grade';
@@ -116,8 +117,19 @@ export function recommendedModule(fp: FoundationProgress): Module | undefined {
 }
 
 /**
- * The next lesson: an unfinished lesson in progress, else the first open lesson
- * not yet done in the recommended module, then the course in order.
+ * Lessons the path steps over: skipped after the check, and — for a strong
+ * check — the rest of English Foundation (still open for review).
+ */
+function pathSkips(fp: FoundationProgress): Set<string> {
+  const skip = skippedSet(fp);
+  if (testedOutOfFoundation(fp)) for (const id of stageLessons(getStage('english-foundation'))) skip.add(id);
+  return skip;
+}
+
+/**
+ * The next lesson: an unfinished lesson in progress, else the first lesson on
+ * the curriculum path (Start Here → English Foundation → IELTS Basics → Skill
+ * Building) not done yet, then the parallel Vocabulary track.
  */
 export function nextLesson(fp: FoundationProgress): { module: Module; lesson: Lesson } | undefined {
   if (fp.inProgress) {
@@ -125,13 +137,22 @@ export function nextLesson(fp: FoundationProgress): { module: Module; lesson: Le
     const lesson = m?.lessons.find((l) => l.id === fp.inProgress!.lessonId);
     if (m && lesson) return { module: m, lesson };
   }
-  const rec = recommendedModule(fp);
-  const ordered = [...(rec ? [rec] : []), ...MODULES.filter((m) => m !== rec)];
-  for (const module of ordered) {
-    const lesson = module.lessons.find((l) => lessonState(module, l, fp) === 'available');
-    if (lesson) return { module, lesson };
+  const skip = pathSkips(fp);
+  for (const id of [...PATH_LESSONS, ...PARALLEL_LESSONS]) {
+    if (fp.lessons[id] || skip.has(id)) continue;
+    const found = findLesson(id);
+    if (found) return { module: found.module, lesson: found.lesson };
   }
   return undefined;
+}
+
+/** The next `n` lessons on the path (after the one in progress, if any). */
+export function upcomingLessons(fp: FoundationProgress, n: number): Lesson[] {
+  const skip = pathSkips(fp);
+  return [...PATH_LESSONS, ...PARALLEL_LESSONS]
+    .filter((id) => !fp.lessons[id] && !skip.has(id))
+    .slice(0, n)
+    .map((id) => findLesson(id)!.lesson);
 }
 
 // ---------------------------------------------------------------- guidance
@@ -146,7 +167,10 @@ export function stepBeforeModule(target: Module, fp: FoundationProgress): { modu
   if (isComingSoon(target)) return undefined;
   const next = nextLesson(fp);
   if (!next || next.module.id === target.id) return undefined;
-  return MODULES.indexOf(target) > MODULES.indexOf(next.module) ? next : undefined;
+  // Where the module's first unfinished lesson sits on the path, compared with the next step.
+  const order = [...PATH_LESSONS, ...PARALLEL_LESSONS];
+  const first = target.lessons.find((l) => !fp.lessons[l.id]);
+  return first && order.indexOf(first.id) > order.indexOf(next.lesson.id) ? next : undefined;
 }
 
 /** The recommended lesson to do before `lesson`, when its prerequisites are not done yet. */
@@ -480,58 +504,6 @@ export function adaptiveStart(record: Pick<FoundationDiagnosticRecord, 'level' |
   return { skippedLessons: skipped, startLessonId: start.id };
 }
 
-// ---------------------------------------------------------------- journey
-
-export const FOUNDATION_JOURNEY = ['check', 'grammar', 'vocabulary', 'ielts-basics', 'listening', 'reading', 'writing', 'speaking', 'practice', 'mock'] as const;
-export type FoundationStageId = (typeof FOUNDATION_JOURNEY)[number];
-export interface FoundationStage {
-  id: FoundationStageId;
-  state: 'done' | 'current' | 'locked';
-  /** 0–100 for stages with lessons, else undefined. */
-  progress?: number;
-  /** No lessons written for this stage yet. */
-  soon?: boolean;
-}
-
-/** The guided path: each stage opens only when the one before is done. */
-export function foundationJourney(fp: FoundationProgress): FoundationStage[] {
-  const skipped = skippedSet(fp);
-  const grammarLessons = MODULES.filter((m) => m.level === 1 && m.skill === 'grammar').flatMap((m) => m.lessons);
-  const grammarDone = grammarLessons.filter((l) => fp.lessons[l.id] || skipped.has(l.id)).length;
-  const stageModules: Partial<Record<FoundationStageId, string>> = {
-    vocabulary: 'vocabulary-foundation',
-    'ielts-basics': 'ielts-intro',
-    listening: 'listening-foundation',
-    reading: 'reading-foundation',
-    writing: 'writing-foundation',
-    speaking: 'speaking-foundation',
-  };
-  const complete: Record<FoundationStageId, { done: boolean; progress?: number; soon?: boolean }> = {
-    check: { done: Boolean(fp.diagnostic) },
-    grammar: { done: grammarLessons.length > 0 && grammarDone === grammarLessons.length, progress: grammarLessons.length ? Math.round((grammarDone / grammarLessons.length) * 100) : 0 },
-    vocabulary: { done: false },
-    'ielts-basics': { done: false },
-    listening: { done: false },
-    reading: { done: false },
-    writing: { done: false },
-    speaking: { done: false },
-    practice: { done: false },
-    mock: { done: false },
-  };
-  for (const [stage, id] of Object.entries(stageModules) as [FoundationStageId, string][]) {
-    const m = MODULES.find((x) => x.id === id);
-    if (!m) continue;
-    complete[stage] = { done: m.lessons.length > 0 && lessonsDone(m, fp) === m.lessons.length && !m.planned?.length, progress: moduleProgress(m, fp), soon: isComingSoon(m) };
-  }
-  let open = true;
-  return FOUNDATION_JOURNEY.map((id) => {
-    const c = complete[id];
-    const state: FoundationStage['state'] = c.done && open ? 'done' : open ? 'current' : 'locked';
-    if (!c.done) open = false;
-    return { id, state, ...(c.progress !== undefined ? { progress: c.progress } : {}), ...(c.soon ? { soon: true } : {}) };
-  });
-}
-
 // ---------------------------------------------------------------- daily goal & plan
 
 export interface DailyGoal {
@@ -610,9 +582,21 @@ export type NextAction =
   | { kind: 'quiz'; moduleId: string }
   | { kind: 'done' };
 
+/**
+ * The English check comes at the end of Start Here: suggested once the Start
+ * Here lessons are done, until the student takes it or starts English
+ * Foundation without it.
+ */
+export function checkIsNext(fp: FoundationProgress): boolean {
+  if (fp.diagnostic || fp.inProgress) return false;
+  const start = stageLessons(getStage('start-here'));
+  const doneElsewhere = Object.keys(fp.lessons).some((id) => !start.includes(id));
+  return !doneElsewhere && start.every((id) => fp.lessons[id]);
+}
+
 /** The one obvious thing to do now. */
 export function nextAction(fp: FoundationProgress, now = new Date()): NextAction {
-  if (!fp.diagnostic && Object.keys(fp.lessons).length === 0 && fp.mistakes.length === 0 && !fp.inProgress) return { kind: 'check' };
+  if (checkIsNext(fp)) return { kind: 'check' };
   if (fp.inProgress && nextLesson(fp)) return { kind: 'resume', lessonId: fp.inProgress.lessonId };
   const due = dueReviews(fp, now)[0];
   if (due) return { kind: 'review', concept: due.concept, count: due.reason === 'mistakes' ? due.count : 0, reason: due.reason };

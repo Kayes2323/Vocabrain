@@ -1,13 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Panel, ProgressBar } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { formatBand, ieltsJourney } from '@/lib/engine';
 import type { UserProfile } from '@/lib/models';
+import { useContinue } from '@/components/ielts/ContinueCard';
 import { JourneyStages } from './JourneyStages';
 
 /** "Where am I going?" and "Where am I now?" */
@@ -29,7 +30,13 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
     );
   }
 
+  return <GoalJourney profile={profile} target={target} />;
+}
+
+function GoalJourney({ profile, target }: { profile: UserProfile; target: number }) {
+  const { t } = useLocale();
   const journey = ieltsJourney(profile);
+  const next = useContinue(profile, journey);
 
   return (
     <Panel className="space-y-4" data-testid="progress-card">
@@ -44,6 +51,14 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
         </div>
       </div>
       <ProgressBar value={journey.percent} label={t('journey.preparation')} />
+      {/* The same next step as the IELTS page's Continue Learning. */}
+      <Link href={next.href} className="-mx-2 flex items-center gap-3 rounded-xl px-2 py-2 hover:bg-muted/60" data-testid="home-continue">
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs text-muted-foreground">{t('ielts.continue.label')}</span>
+          <span className="block truncate text-[15px] font-medium">{next.title}</span>
+        </span>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
       <Collapsible>
         <CollapsibleTrigger className="group flex w-full items-center justify-between gap-3 text-left text-[15px]">
           <span>{t('home.currentStage', { stage: t(`journey.stages.${journey.current}`) })}</span>

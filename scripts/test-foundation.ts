@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   STAGE_DAYS, conceptMastery, dueReviews, recordApplication,
   CONCEPTS, DIAGNOSTIC_ITEMS, MODULES, getConcept, adaptiveStart, completeLesson, dailyGoal, diagnosticAreas, findLesson, foundationDailyPlan,
-  foundationJourney, foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
+  foundationSummaryLines, gradeExercise, lessonOutcome, lessonState, levelProgress, moduleProgress, nextAction,
   nextLesson, quizQuestions, recordAnswer, recordReview, reviewDue, reviewQuestions, saveInProgress, scoreDiagnostic, shuffledWords,
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
   canonicalAnswer, canUnitCheck, CHALLENGES, finalRecord, getChallenge, patternsFor, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
@@ -151,7 +151,10 @@ test('resume: in-progress lesson is the next action and survives a reload shape'
 test('old profiles (before v2) load with defaults', () => {
   const old = withProfileDefaults('u', { foundation: { lessons: { 'sb-1': { completedAt: 'x', score: 80, best: 80, attempts: 1 } }, errors: {} } } as never);
   assert.deepEqual([old.foundation.mistakes, old.foundation.concepts, old.foundation.days], [[], {}, {}]);
-  assert.equal(nextLesson(old.foundation)?.lesson.id, 'sb-2');
+  assert.equal(nextLesson(old.foundation)?.lesson.id, 'ib-1', 'the path starts with Start Here');
+  const started = ['ib-1', 'ib-2', 'ib-3', 'ib-4'].reduce((fp, id) => completeLesson(fp, id, 90, NOW), old.foundation);
+  assert.equal(nextLesson(started)?.lesson.id, 'sb-2', 'then continues where the student left off');
+  assert.notEqual(nextAction(started, NOW).kind, 'check', 'no check once English Foundation has started');
 });
 
 test('progress numbers come from real data', () => {
@@ -163,15 +166,6 @@ test('progress numbers come from real data', () => {
   assert.ok(levelProgress(1, fp) > 0);
   assert.equal(skillProgress(fp).find((s) => s.skill === 'grammar')!.done, 2);
   assert.equal(lessonOutcome(75), 'good');
-});
-
-test('journey: check → grammar current, later stages locked', () => {
-  const fp = { ...empty(), diagnostic: scoreDiagnostic({}) };
-  const j = foundationJourney(fp);
-  assert.equal(j[0].state, 'done');
-  assert.equal(j[1].state, 'current');
-  assert.ok(j.slice(2).every((s) => s.state === 'locked'));
-  assert.equal(foundationJourney(empty())[0].state, 'current');
 });
 
 test('daily goal and plan: achievable, from real data', () => {
@@ -254,10 +248,15 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const basics = MODULES.find((m) => m.id === 'sentence-basics')!;
   const vocab = MODULES.find((m) => m.id === 'vocabulary-foundation')!;
   const writingBasics = { ...MODULES.find((m) => m.id === 'speaking-foundation')!, lessons: [] };
-  assert.equal(stepBeforeModule(basics, fp), undefined);
-  assert.equal(stepBeforeModule(vocab, fp)?.lesson.id, basics.lessons[0].id);
+  const intro = MODULES.find((m) => m.id === 'ielts-intro')!;
+  assert.equal(stepBeforeModule(intro, fp), undefined, 'Start Here is the first step');
+  assert.equal(stepBeforeModule(basics, fp)?.lesson.id, 'ib-1');
   assert.equal(stepBeforeModule(writingBasics, fp), undefined);
-  assert.equal(stepBeforeModule(tenses, fp)?.module.id, 'sentence-basics');
+  const afterStart = ['ib-1', 'ib-2', 'ib-3', 'ib-4'].reduce((x, id) => completeLesson(x, id, 90, NOW), fp);
+  assert.equal(stepBeforeModule(basics, afterStart), undefined);
+  assert.equal(stepBeforeModule(vocab, afterStart)?.lesson.id, basics.lessons[0].id);
+  assert.equal(stepBeforeModule(tenses, afterStart)?.module.id, 'sentence-basics');
+  assert.equal(stepBeforeModule(intro, afterStart)?.lesson.id, 'sb-1', 'the rest of the module (IELTS Basics) comes after English Foundation');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
 });
@@ -1093,8 +1092,6 @@ test('What is IELTS? Final Mastery Challenge: 6 parts × 4 items at levels 1–3
   for (const c of ch.concepts) assert.ok(ch.parts.some((x) => x.items.some((i) => i.concept === c)), `${c} is tested`);
   const fp = recordFinal(empty(), { score: 90, level: 3, parts: {} }, NOW, 'ielts-intro');
   assert.match(foundationSummaryLines(fp, NOW).join('\n'), /What is IELTS\? Final Mastery Challenge: last 90%/);
-  const stage = foundationJourney(empty()).find((s) => s.id === 'ielts-basics')!;
-  assert.equal(stage.soon, undefined, 'IELTS Basics is no longer "Soon"');
 });
 
 // ---------------------------------------------------------------- listening (level 2)

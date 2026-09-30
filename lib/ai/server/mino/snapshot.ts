@@ -2,11 +2,12 @@
 // the student's own Firestore data (read with their ID token, so rules apply).
 // Browser-sent context is never trusted for facts.
 import { IELTS_SKILLS } from '@/lib/constants';
-import { brainSummary, buildDailyPlan, daysUntil, formatBand, ieltsJourney, overallBand } from '@/lib/engine';
+import { brainSummary, buildDailyPlan, continueLearning, daysUntil, formatBand, ieltsJourney, learningStats, overallBand } from '@/lib/engine';
 import { getTranslator } from '@/lib/i18n';
 import { analyseTests, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
 import { foundationSummaryLines } from '@/lib/foundation/progress';
+import { findLesson } from '@/lib/foundation/content';
 import { vocabSummaryLines } from '@/lib/vocab-foundation/mission';
 import type { BrainWord } from '@/lib/models';
 import { withProfileDefaults } from '@/lib/services/profile-repository';
@@ -61,6 +62,18 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
   lines.push(`- Test date: ${ielts.testDate ? `${ielts.testDate.slice(0, 10)} (${testIn} days left)` : ielts.testDateUnknown ? 'not booked yet' : 'not given'}. Study time: ${ielts.weeklyStudyHours !== undefined ? `${ielts.weeklyStudyHours} h/week` : 'not given'}.`);
   const journey = ieltsJourney(profile);
   lines.push(`- IELTS journey stage: ${t(`journey.stages.${journey.current}`)} (${journey.percent}% of the journey).`);
+  // The learning path (the same next step the app shows as Continue Learning).
+  const next = continueLearning(profile, journey);
+  const nextText =
+    next.kind === 'resume' || next.kind === 'lesson' || next.kind === 'foundation-start'
+      ? `lesson "${findLesson(next.lessonId)?.lesson.title.en}"${next.kind === 'resume' ? ' (in progress)' : ''}`
+      : next.kind === 'check'
+        ? 'the English level check (end of Start Here, optional)'
+        : next.kind === 'step'
+          ? `${next.step.title.en} (${next.step.href})`
+          : 'nothing left on the path';
+  const stats = learningStats(profile);
+  lines.push(`- Learning path next step: ${nextText}. Lessons completed ${stats.lessonsDone}/${stats.lessonsTotal}; practice sessions ${stats.practiceSessions}; grammar topics mastered ${stats.topicsMastered}.`);
 
   // IELTS Foundation course (every number computed from stored answers)
   lines.push(...foundationSummaryLines(profile.foundation, now));

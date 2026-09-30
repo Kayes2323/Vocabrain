@@ -11,11 +11,10 @@ import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
   dailyGoal, findLesson, foundationDailyPlan, getConcept, getModule, isComingSoon, lessonsDone, lessonTotal, levelProgress, modulesForLevel,
-  moduleProgress, nextAction, nextLesson, skillProgress, stepBeforeModule, topicSummary,
+  moduleProgress, nextAction, nextLesson, PARALLEL_LESSONS, PATH_LESSONS, skillProgress, stepBeforeModule, topicSummary,
   type Module, type NextAction, type PlanItem,
 } from '@/lib/foundation';
 import type { FoundationProgress, UserProfile } from '@/lib/models';
-import { FOUNDATION_WORDS } from '@/lib/vocab-foundation/words';
 import { cn } from '@/lib/utils';
 import { useFoundation, useText } from './useFoundation';
 
@@ -126,16 +125,18 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
   const plan = foundationDailyPlan(profile, brain);
   const topics = topicSummary(fp).filter((x) => x.status !== 'learning');
   const next = nextLesson(fp);
-  const wordsFound = Object.keys(profile.vocabFoundation?.discovered ?? {}).length;
-  const vocabPct = Math.round((wordsFound / FOUNDATION_WORDS.length) * 100);
-
-  const grammar = modulesForLevel(1).filter((m) => m.skill === 'grammar');
+  // Modules in the order the learning path first reaches them.
+  const order = [...PATH_LESSONS, ...PARALLEL_LESSONS];
+  const firstOnPath = (m: Module) => Math.min(...m.lessons.map((l) => order.indexOf(l.id)).filter((i) => i >= 0), order.length);
+  const grammar = modulesForLevel(1)
+    .filter((m) => m.skill === 'grammar')
+    .sort((a, b) => firstOnPath(a) - firstOnPath(b));
   const vocabulary = modulesForLevel(1).filter((m) => m.skill === 'vocabulary');
   const basics = modulesForLevel(2);
 
   const card = (m: Module, tint: Tint) => {
     const soon = isComingSoon(m);
-    const pct = m.href ? vocabPct : moduleProgress(m, fp);
+    const pct = moduleProgress(m, fp);
     const before = stepBeforeModule(m, fp);
     const href = m.href ?? `/ielts/foundation/${m.id}`;
     return (
@@ -147,9 +148,7 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
         subtitle={
           soon
             ? t('foundation.soon')
-            : m.href
-              ? t('foundation.wordsCount', { done: wordsFound, total: FOUNDATION_WORDS.length })
-              : pct > 0
+            : pct > 0
                 ? t('foundation.lessonsCount', { done: lessonsDone(m, fp), total: lessonTotal(m) })
                 : t('foundation.lessonsN', { n: lessonTotal(m) })
         }
@@ -161,7 +160,8 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
     );
   };
 
-  const skills = skillProgress(fp).map((s) => (s.skill === 'vocabulary' ? { ...s, percent: vocabPct } : s));
+  // Lesson completion per skill — never "words opened" or "pages visited".
+  const skills = skillProgress(fp);
 
   return (
     <div className="space-y-8">

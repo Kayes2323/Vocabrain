@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, ScreenSkeleton, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  DIAGNOSTIC_AREAS, DIAGNOSTIC_ITEMS, DIAGNOSTIC_READING, diagnosticAreas, findLesson, getModule, gradeExercise, recordAnswer, scoreDiagnostic,
+  DIAGNOSTIC_AREAS, DIAGNOSTIC_ITEMS, DIAGNOSTIC_READING, diagnosticAreas, findLesson, getModule, gradeExercise, recordAnswer, scoreDiagnostic, upcomingLessons,
 } from '@/lib/foundation';
 import type { FoundationDiagnosticRecord, FoundationProgress } from '@/lib/models';
 import { ExerciseView } from './ExerciseView';
@@ -144,11 +144,9 @@ export function FoundationDiagnostic() {
   const record = result!;
   const { strong, weak } = diagnosticAreas(record);
   const skipped = new Set(record.skippedLessons ?? []);
-  const start = record.startLessonId ? findLesson(record.startLessonId) : undefined;
-  // The first lessons on the adaptive path.
-  const path = start
-    ? [...start.module.lessons.slice(start.index), ...(getModule('tenses')!.id !== start.module.id ? getModule('tenses')!.lessons : [])].filter((l) => !skipped.has(l.id)).slice(0, 3)
-    : [];
+  // The first lessons on the learning path, after the lessons this check skipped.
+  const path = upcomingLessons({ ...fp, inProgress: undefined, diagnostic: record }, 3);
+  const start = path[0] ? findLesson(path[0].id) : undefined;
   const focus = record.focusModules.map(getModule).filter((m) => m && m.level === 1 && m.lessons.length > 0).slice(0, 2);
   const weakNames = [...focus.map((m) => text(m!.title)), ...weak.map((a) => t(`foundation.areas.${a}`))].slice(0, 3);
   const strongNames = strong.map((a) => t(`foundation.areas.${a}`)).slice(0, 2);

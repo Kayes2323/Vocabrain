@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildStudyPlan } from '../lib/engine/study-plan';
 import { buildDailyPlan, dailyPlanState, markActivityDone } from '../lib/engine/daily-plan';
+import { completeLesson, PARALLEL_LESSONS, PATH_LESSONS } from '../lib/foundation';
 import { HOME_QUICK_ACCESS, IELTS_SECTIONS, PRIMARY_NAV } from '../lib/navigation';
 import { getTranslator } from '../lib/i18n';
 import { emptyProfile, type UserProfile } from '../lib/models';
@@ -92,13 +93,14 @@ test('missing data becomes stated assumptions, not guesses', () => {
 
 // ---------------------------------------------------------------- Home: today's learning CTA
 test('home CTA state comes from today’s plan (no separate progress store): start → continue → finish → completed', () => {
-  const brain = { total: 5, due: 3 }; // 4 tasks: vocabulary, reading, writing, speaking
+  const brain = { total: 5, due: 3 }; // 5 tasks: lesson, vocabulary, reading, writing, speaking
   let p = emptyProfile('u1');
   const state = () => dailyPlanState(buildDailyPlan(p, brain, NOW), p);
   assert.equal(state(), 'not-started', 'new student');
   p = markActivityDone(p, 'reading', NOW);
   assert.equal(state(), 'in-progress', 'started, several tasks open');
   p = markActivityDone(markActivityDone(p, 'vocabulary', NOW), 'writing', NOW);
+  p = { ...p, foundation: completeLesson(p.foundation, 'ib-1', 90, NOW) };
   assert.equal(state(), 'finishing', 'only the last task of the daily goal is open');
   p = markActivityDone(p, 'speaking', NOW);
   assert.equal(state(), 'completed');
@@ -107,6 +109,28 @@ test('home CTA state comes from today’s plan (no separate progress store): sta
   // A task the plan marks done by itself (nothing due to review) is not "starting".
   const q = emptyProfile('u2');
   assert.equal(dailyPlanState(buildDailyPlan(q, { total: 5, due: 0 }, NOW), q), 'not-started');
+});
+
+test('Today’s Learning starts with the next lesson of the current curriculum stage', () => {
+  const brain = { total: 5, due: 3 };
+  let p = emptyProfile('u1');
+  let plan = buildDailyPlan(p, brain, NOW);
+  assert.deepEqual(plan.tasks.map((x) => x.kind), ['lesson', 'vocabulary', 'reading', 'writing', 'speaking']);
+  assert.equal(plan.tasks[0].lessonId, 'ib-1', 'a new student starts with Start Here');
+  assert.equal(plan.tasks[0].href, '/ielts/foundation/lesson/ib-1');
+  assert.equal(plan.tasks[0].done, false);
+  p = { ...p, foundation: completeLesson(p.foundation, 'ib-1', 90, NOW) };
+  plan = buildDailyPlan(p, brain, NOW);
+  assert.equal(plan.tasks[0].done, true, 'one lesson a day completes the task');
+  assert.equal(plan.tasks[0].lessonId, 'ib-2', 'and it points to the next lesson for tomorrow');
+  assert.equal(tr(plan.tasks[0].detailKey, plan.tasks[0].detailVars), 'Lesson done today — well done');
+  assert.equal(buildDailyPlan(p, brain, new Date('2026-09-27T09:00:00')).tasks[0].done, false, 'a new day, a new lesson');
+  // Short days keep the lesson; with every lesson done, the plan is practice only.
+  const minimum = { ...p, study: { ...p.study, days: { '2026-09-27': { mode: 'minimum' as const, done: [] } } } };
+  assert.deepEqual(buildDailyPlan(minimum, brain, new Date('2026-09-27T09:00:00')).tasks.map((x) => x.kind), ['lesson', 'vocabulary', 'speaking']);
+  const all = [...PATH_LESSONS, ...PARALLEL_LESSONS].reduce((fp, id) => completeLesson(fp, id, 90, NOW), p.foundation);
+  const finished = { ...p, foundation: { ...all, days: {} } };
+  assert.deepEqual(buildDailyPlan(finished, brain, new Date('2026-09-27T09:00:00')).tasks.map((x) => x.kind), ['vocabulary', 'reading', 'writing', 'speaking']);
 });
 
 test('home CTA texts: Bangla and English, no "Continue learning" on the home card', () => {

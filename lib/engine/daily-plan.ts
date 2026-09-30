@@ -1,12 +1,14 @@
 import type { PlanMode, PlanTaskKind, UserProfile } from '@/lib/models';
+import { nextLesson } from '@/lib/foundation/progress';
 import { daysSince, localDateKey } from './dates';
 
 /**
- * Today's Learning. Vocabulary-first: review what's due, read one passage
- * (and save new words), then use a word in Writing and in Speaking. Tasks
- * complete automatically when the student finishes the real activity.
+ * Today's Learning. The next lesson of the student's current curriculum stage
+ * comes first, then vocabulary: review what's due, read one passage (and save
+ * new words), then use a word in Writing and in Speaking. Tasks complete
+ * automatically when the student finishes the real activity.
  */
-export type DailyTaskKind = 'vocabulary' | 'reading' | 'writing' | 'speaking';
+export type DailyTaskKind = 'lesson' | 'vocabulary' | 'reading' | 'writing' | 'speaking';
 
 export interface PlanTask {
   kind: DailyTaskKind;
@@ -18,6 +20,8 @@ export interface PlanTask {
   minutes: number;
   href: string;
   done: boolean;
+  /** The curriculum lesson (lesson tasks only). */
+  lessonId?: string;
 }
 
 export interface DailyPlan {
@@ -88,16 +92,33 @@ export function buildDailyPlan(profile: UserProfile, brain: BrainContext, now = 
     done: done.has('speaking'),
   };
 
+  // The current stage's next lesson (none once every lesson on the path is done).
+  const fp = profile.foundation;
+  const next = fp ? nextLesson(fp) : undefined;
+  const lessonsToday = fp?.days[date]?.lessons ?? 0;
+  const lesson: PlanTask | undefined = next && {
+    kind: 'lesson',
+    titleKey: 'plan.task.lesson',
+    detailKey: lessonsToday > 0 ? 'plan.detail.lessonDone' : 'plan.detail.lesson',
+    detailVars: { lesson: next.lesson.title.en, n: lessonsToday },
+    minutes: next.lesson.minutes,
+    href: `/ielts/foundation/lesson/${next.lesson.id}`,
+    done: lessonsToday > 0,
+    lessonId: next.lesson.id,
+  };
+
   // Practice needs at least one recalled word; before that, reading comes first.
   const canPractise = brain.total > 0;
-  const tasks =
+  const rest =
     mode === 'minimum'
-      ? [vocabulary, reading, speaking]
+      ? [vocabulary, speaking]
       : mode === 'catch-up'
-        ? [vocabulary, reading]
+        ? [vocabulary]
         : canPractise
           ? [vocabulary, reading, writing, speaking]
           : [reading, vocabulary];
+  // Without a lesson to do, the short days keep their reading task.
+  const tasks = lesson ? [lesson, ...rest] : mode === 'normal' ? rest : [rest[0], reading, ...rest.slice(1)];
 
   return { date, mode, tasks };
 }
@@ -144,7 +165,7 @@ export type DailyPlanState = 'not-started' | 'in-progress' | 'finishing' | 'comp
 export function dailyPlanState(plan: DailyPlan, profile: UserProfile): DailyPlanState {
   const open = plan.tasks.filter((task) => !task.done).length;
   if (open === 0) return 'completed';
-  const started = (profile.study.days[plan.date]?.done.length ?? 0) > 0;
+  const started = (profile.study.days[plan.date]?.done.length ?? 0) > 0 || (profile.foundation?.days[plan.date]?.lessons ?? 0) > 0;
   if (!started) return 'not-started';
   return open === 1 ? 'finishing' : 'in-progress';
 }

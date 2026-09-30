@@ -41,7 +41,7 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   const ids = await p.locator('[data-quick]').evaluateAll((els) => els.map((e) => e.getAttribute('data-quick')));
   check(`${tag}: Quick access has exactly the 5 destinations`, ids.join(',') === 'today,foundation,brain,readingVocab,abroad', ids.join(','));
   check(`${tag}: no separate today's-learning section on Home`, (await p.getByTestId('today-card').count()) === 0 && (await p.getByTestId('today-cta').count()) === 0);
-  check(`${tag}: today tile shows today's progress`, /0\/[24]|০\/[২৪]/.test(await p.getByTestId('quick-today-status').innerText()), await p.getByTestId('quick-today-status').innerText());
+  check(`${tag}: today tile shows today's progress`, /0\/[2-5]|০\/[২-৫]/.test(await p.getByTestId('quick-today-status').innerText()), await p.getByTestId('quick-today-status').innerText());
   const small = await p.locator('[data-quick]').evaluateAll((els) => els.filter((e) => { const r = e.getBoundingClientRect(); return r.height < 44 || r.width < 44; }).length);
   check(`${tag}: every shortcut is comfortably tappable (≥ 44 px)`, small === 0);
   check(`${tag}: home has no sideways scroll`, await noHorizontalScroll(p));
@@ -55,8 +55,8 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
     check(`${tag}: "${id}" opens ${url}`, new URL(p.url()).pathname === url);
   }
   await p.getByTestId('today-card').waitFor({ timeout: 30_000 });
-  // A new student with no saved words has reading + vocabulary; the full plan (4 tasks) is checked below.
-  check(`${tag}: today's page — tasks, time and progress`, (await p.locator('[data-task]').count()) === 2 && /\d|[০-৯]/.test(await p.getByTestId('today-time').innerText()) && (await p.getByTestId('today-progress').count()) === 1);
+  // A new student with no saved words: today's lesson + reading + vocabulary; the full plan (5 tasks) is checked below.
+  check(`${tag}: today's page — tasks, time and progress`, (await p.locator('[data-task]').count()) === 3 && /\d|[০-৯]/.test(await p.getByTestId('today-time').innerText()) && (await p.getByTestId('today-progress').count()) === 1);
   const activeNav = mobile ? '[data-testid="bottom-nav"] a[aria-current="page"]' : 'aside a[aria-current="page"]';
   check(`${tag}: today's page keeps Home as the active tab`, (await p.locator(activeNav).getAttribute('href')) === '/');
   check(`${tag}: today's page has no sideways scroll`, await noHorizontalScroll(p));
@@ -65,8 +65,12 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   // ---------------------------------------------------------------- CTA follows today's plan (existing state)
   let c = await cta(p);
   check(`${tag}: new student → "${T.start}"`, c.text === T.start && c.state === 'not-started', JSON.stringify(c));
+  check(`${tag}: today's lesson comes first — the next lesson of the current stage (Start Here)`, (await p.locator('[data-task]').first().getAttribute('data-task')) === 'lesson' && (await p.locator('[data-task="lesson"]').getAttribute('href')) === '/ielts/foundation/lesson/ib-1');
+  check(`${tag}: the CTA starts with today's lesson`, c.href === '/ielts/foundation/lesson/ib-1', c.href);
+  await patchField(`users/${uid}`, 'app.foundation.days', { [today]: { lessons: 1, questions: 0, correct: 0 } });
   await days(['reading']);
   c = await cta(p);
+  check(`${tag}: a lesson finished today ticks the lesson task`, (await p.locator('[data-task="lesson"]').getAttribute('data-done')) === 'true');
   check(`${tag}: daily goal one step from done → "${T.finish}"`, c.text === T.finish && c.state === 'finishing', JSON.stringify(c));
   const word = createBrainWord(
     { word: 'resilient', lemma: 'resilient', meaning: 'able to recover quickly', synonyms: [], antonyms: [], collocations: [], dictionarySource: 'none' },
@@ -76,7 +80,7 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   await putDoc(`users/${uid}/vocabulary/${word.id}`, word);
   c = await cta(p);
   check(`${tag}: started but not finished → "${T.cont}"`, c.text === T.cont && c.state === 'in-progress', JSON.stringify(c));
-  check(`${tag}: full plan shows all 4 tasks (Vocabulary Review, Reading, Writing, Speaking)`, (await p.locator('[data-task]').evaluateAll((els) => els.map((e) => e.getAttribute('data-task')))).join(',') === 'vocabulary,reading,writing,speaking');
+  check(`${tag}: full plan shows all 5 tasks (Lesson, Vocabulary Review, Reading, Writing, Speaking)`, (await p.locator('[data-task]').evaluateAll((els) => els.map((e) => e.getAttribute('data-task')))).join(',') === 'lesson,vocabulary,reading,writing,speaking');
   check(`${tag}: the CTA opens the next task of the existing flow`, c.href === '/review', c.href);
   await days(['reading', 'vocabulary', 'writing', 'speaking']);
   c = await cta(p);

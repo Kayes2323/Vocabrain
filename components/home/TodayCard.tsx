@@ -1,17 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, BookText, BrainCircuit, Check, Clock, Mic, PenLine } from 'lucide-react';
+import { ArrowRight, BookText, BrainCircuit, Check, Clock, GraduationCap, Mic, PenLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { buildDailyPlan, dailyPlanState, setPlanMode, type DailyPlanState, type DailyTaskKind } from '@/lib/engine';
+import { buildDailyPlan, dailyPlanState, setPlanMode, type DailyPlanState, type DailyTaskKind, type PlanTask } from '@/lib/engine';
+import { findLesson } from '@/lib/foundation';
 import type { UserProfile } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
 const ICONS: Record<DailyTaskKind, typeof BookText> = {
+  lesson: GraduationCap,
   vocabulary: BrainCircuit,
   reading: BookText,
   writing: PenLine,
@@ -26,8 +28,13 @@ const CTA: Record<Exclude<DailyPlanState, 'completed'>, string> = {
 
 /** Today's learning (its own page, opened from Quick access). Tasks tick themselves off as the student completes them. */
 export function TodayCard({ profile }: { profile: UserProfile }) {
-  const { t, n } = useLocale();
+  const { t, n, locale } = useLocale();
   const { updateProfile } = useProfile();
+  // Lesson tasks name the lesson in the student's language.
+  const detail = (task: PlanTask) => {
+    const title = task.lessonId ? findLesson(task.lessonId)?.lesson.title : undefined;
+    return t(task.detailKey, title ? { ...task.detailVars, lesson: title[locale === 'bn' ? 'bn' : 'en'] } : task.detailVars);
+  };
   const brain = useBrainContext();
   const plan = buildDailyPlan(profile, brain);
   const doneCount = plan.tasks.filter((task) => task.done).length;
@@ -93,7 +100,7 @@ export function TodayCard({ profile }: { profile: UserProfile }) {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className={cn('block font-medium', task.done && 'text-muted-foreground line-through')}>{t(task.titleKey)}</span>
-                    <span className="block text-sm text-muted-foreground">{t(task.detailKey, task.detailVars)}</span>
+                    <span className="block text-sm text-muted-foreground">{detail(task)}</span>
                   </span>
                   <span className="inline-flex shrink-0 items-center gap-1 text-sm text-muted-foreground tabular-nums">
                     <Clock className="size-3.5" aria-hidden />
