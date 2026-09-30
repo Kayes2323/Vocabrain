@@ -118,7 +118,7 @@ function StageRow({ stage, profile, last }: { stage: JourneyStageStatus; profile
           <p className="text-sm text-foreground/80">{text(def.goal)}</p>
           {stage.testedOut && <p className="text-sm font-medium text-success">{t('ielts.path.testedOut')}</p>}
           {cards ? (
-            <TopicCards stage={stage} fp={profile.foundation} className="pt-1" />
+            <TopicCards stage={stage} className="pt-1" />
           ) : (
             <>
               <ol className="-mx-3 space-y-0.5">

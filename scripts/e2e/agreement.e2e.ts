@@ -36,7 +36,7 @@ async function main() {
     const articlesCard = p.locator('main [data-topic-modules~="articles"]').first();
     check('Articles is still available on the dashboard', (await articlesCard.isVisible()) && !(await articlesCard.innerText()).includes('Soon'));
     await p.goto(`${BASE}/ielts/foundation/agreement`, { waitUntil: 'load' });
-    const lessonLinks = p.locator('main a[href^="/ielts/foundation/lesson/sva-"]');
+    const lessonLinks = p.locator('main [data-lesson-card^="sva-"]');
     await lessonLinks.first().waitFor({ timeout: 30_000 });
     check('Agreement module opens with 9 lessons', (await lessonLinks.count()) === 9, await lessonLinks.count());
     check('no Agreement lesson is marked "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0);
@@ -166,7 +166,7 @@ async function main() {
     await p2.goto(`${BASE}/ielts/foundation/agreement`, { waitUntil: 'load' });
     await p2.locator('main a[href="/ielts/foundation/challenge/agreement"]').waitFor({ timeout: 60_000 });
     check('module page shows the best challenge score after sign-in', await p2.locator('main a[href="/ielts/foundation/challenge/agreement"]').getByText(/^Best \d+%$/).isVisible());
-    check('module page shows the finished lessons', (await p2.locator('main a[href="/ielts/foundation/lesson/sva-2"], main a[href="/ielts/foundation/lesson/sva-4"]').filter({ hasText: /Done|%|Practise/ }).count()) === 2);
+    check('module page shows the finished lessons', (await p2.locator('main [data-lesson-card="sva-2"][data-state="done"], main [data-lesson-card="sva-4"][data-state="done"]').count()) === 2);
     await ctx2.close();
 
     // ============================================================ Bangla, mobile
@@ -177,8 +177,8 @@ async function main() {
     await signUp(q, 'Nusrat', `agreement-bn-${stamp}@test.dev`, 'bn');
     const uidBn = (await uidOf(q))!;
     await q.goto(`${BASE}/ielts/foundation/agreement`, { waitUntil: 'load' });
-    await q.locator('main a[href^="/ielts/foundation/lesson/sva-"]').first().waitFor({ timeout: 60_000 });
-    check('bn Agreement module: 9 lessons, no sideways scroll', (await q.locator('main a[href^="/ielts/foundation/lesson/sva-"]').count()) === 9 && (await noHorizontalScroll(q)));
+    await q.locator('main [data-lesson-card^="sva-"]').first().waitFor({ timeout: 60_000 });
+    check('bn Agreement module: 9 lessons, no sideways scroll', (await q.locator('main [data-lesson-card^="sva-"]').count()) === 9 && (await noHorizontalScroll(q)));
     const bnModule = await q.locator('main').innerText();
     check('bn module page renders Bangla text', /[ঀ-৿]/.test(bnModule));
     check('bn: respectful Bangla (no তুমি / তোমার / তুই)', !/তুমি|তোমার|তুই/.test(bnModule));

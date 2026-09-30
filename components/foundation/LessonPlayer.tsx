@@ -2,13 +2,14 @@
 
 import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, BookOpen, Clock, Headphones, Mic, PenLine, RotateCcw, Sparkles, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BookOpen, Clock, Headphones, Mic, PenLine, RotateCcw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
   completeLesson, conceptMastery, expectedAnswer, getConcept, lessonOutcome, lessonPages, lessonPhases, nextAction, PASS_SCORE, recordAnswer, recordApplication, saveInProgress,
   type Exercise, type Lesson, type Module,
+  topicHref, topicOfLesson,
 } from '@/lib/foundation';
 import { HookStep, IdentifyStep, MistakeLab } from './LessonSteps';
 import { ExampleBlock, LessonIntro, LessonSummary, PhaseBar, RuleBlock, TeacherTip } from './Teach';
@@ -32,6 +33,9 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
   const { t } = useLocale();
   const text = useText();
   const { fp, update } = useFoundation();
+  // Back goes to the lesson's topic page (English Foundation), else its module page.
+  const topic = topicOfLesson(lesson.id);
+  const back = topic ? { href: topicHref(topic), label: text(topic.title) } : { href: `/ielts/foundation/${module.id}`, label: text(module.short ?? module.title) };
   // Teaching order (rule → examples → try → practice → review), whatever order the steps were written in.
   const pages = useMemo(() => lessonPages(lesson), [lesson]);
   const phases = useMemo(() => lessonPhases(pages), [pages]);
@@ -166,7 +170,7 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
             </Link>
           </Button>
           <Button asChild variant="ghost">
-            <Link href={`/ielts/foundation/${module.id}`}>{t('foundation.lesson.exit')}</Link>
+            <Link href={back.href}>{t('foundation.topicPage.backTo', { topic: back.label })}</Link>
           </Button>
         </div>
       </div>
@@ -179,9 +183,9 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
       {/* Header: where am I in this lesson */}
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">
-          <Button asChild variant="ghost" size="icon" aria-label={t('foundation.lesson.exit')}>
-            <Link href={`/ielts/foundation/${module.id}`}>
-              <X />
+          <Button asChild variant="ghost" className="-ml-2 h-10 min-w-0 gap-1 px-2 text-muted-foreground" data-testid="lesson-back">
+            <Link href={back.href} aria-label={t('foundation.topicPage.backTo', { topic: back.label })}>
+              <ArrowLeft className="shrink-0" /> <span className="max-w-[8.5rem] truncate">{back.label}</span>
             </Link>
           </Button>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -33,7 +33,7 @@ async function main() {
     const card = p.locator('main [data-topic-modules~="articles"]').first();
     check('dashboard links to Articles, and the card is no longer "Soon"', (await card.isVisible()) && !(await card.innerText()).includes('Soon'), await card.innerText());
     await p.goto(`${BASE}/ielts/foundation/articles`, { waitUntil: 'load' });
-    const lessonLinks = p.locator('main a[href^="/ielts/foundation/lesson/ar-"]');
+    const lessonLinks = p.locator('main [data-lesson-card^="ar-"]');
     await lessonLinks.first().waitFor({ timeout: 30_000 });
     check('Articles module opens with 9 lessons', (await lessonLinks.count()) === 9, await lessonLinks.count());
     check('no Articles lesson is marked "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0);
@@ -125,7 +125,7 @@ async function main() {
     await p2.goto(`${BASE}/ielts/foundation/articles`, { waitUntil: 'load' });
     await p2.locator('main a[href="/ielts/foundation/challenge/articles"]').waitFor({ timeout: 60_000 });
     check('module page shows the best challenge score after sign-in', await p2.locator('main a[href="/ielts/foundation/challenge/articles"]').getByText(/^Best \d+%$/).isVisible());
-    check('module page shows the finished lessons', (await p2.locator('main a[href="/ielts/foundation/lesson/ar-2"], main a[href="/ielts/foundation/lesson/ar-3"]').filter({ hasText: /Done|%|Practise/ }).count()) === 2);
+    check('module page shows the finished lessons', (await p2.locator('main [data-lesson-card="ar-2"][data-state="done"], main [data-lesson-card="ar-3"][data-state="done"]').count()) === 2);
     await ctx2.close();
 
     // ============================================================ Bangla, mobile
@@ -136,8 +136,8 @@ async function main() {
     await signUp(q, 'Mitu', `articles-bn-${stamp}@test.dev`, 'bn');
     const uidBn = (await uidOf(q))!;
     await q.goto(`${BASE}/ielts/foundation/articles`, { waitUntil: 'load' });
-    await q.locator('main a[href^="/ielts/foundation/lesson/ar-"]').first().waitFor({ timeout: 60_000 });
-    check('bn Articles module: 9 lessons, no sideways scroll', (await q.locator('main a[href^="/ielts/foundation/lesson/ar-"]').count()) === 9 && (await noHorizontalScroll(q)));
+    await q.locator('main [data-lesson-card^="ar-"]').first().waitFor({ timeout: 60_000 });
+    check('bn Articles module: 9 lessons, no sideways scroll', (await q.locator('main [data-lesson-card^="ar-"]').count()) === 9 && (await noHorizontalScroll(q)));
     await shot(q, 'ar-bn-01-module');
     await q.goto(`${BASE}/ielts/foundation/lesson/ar-1`, { waitUntil: 'load' });
     await q.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });

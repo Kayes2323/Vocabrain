@@ -76,12 +76,12 @@ export const CURRICULUM: CurriculumStage[] = [
     title: l('English Foundation', 'English Foundation'),
     goal: l('The grammar every IELTS answer is built on, from a simple sentence to error-free writing.', 'প্রতিটি IELTS উত্তরের ভিত্তি যে grammar — সহজ sentence থেকে ভুলহীন লেখা পর্যন্ত।'),
     steps: [
-      { id: 'sentences', title: l('Sentence Basics', 'Sentence Basics'), why: l('How a sentence is built — start here.', 'বাক্য কীভাবে তৈরি হয়, এখান থেকে শুরু।'), lessons: range('sb', 1, 5) },
+      { id: 'sentence-basics', title: l('Sentence Basics', 'Sentence Basics'), why: l('How a sentence is built — start here.', 'বাক্য কীভাবে তৈরি হয়, এখান থেকে শুরু।'), lessons: range('sb', 1, 5) },
       { id: 'parts-of-speech', title: l('Parts of Speech', 'Parts of Speech'), why: l('The job each word does.', 'প্রতিটি শব্দ কী কাজ করে।'), lessons: ['po-1'] },
-      { id: 'nouns', title: l('Noun', 'Noun'), why: l('Names of people, things, places and ideas.', 'মানুষ, বস্তু, জায়গা আর ধারণার নাম।'), lessons: range('pn', 1, 4) },
-      { id: 'pronouns', title: l('Pronoun', 'Pronoun'), why: l('Replace a noun instead of repeating it.', 'Noun বারবার না বলে তার জায়গায় বসে।'), lessons: range('ppr', 1, 3) },
-      { id: 'verbs', title: l('Verb & Helping Verbs', 'Verb ও Helping Verb'), why: l('Actions, states, questions and negatives.', 'কাজ, অবস্থা, প্রশ্ন আর negative।'), lessons: range('pvb', 1, 5) },
-      { id: 'sentence-patterns', title: l('Simple & Compound Sentences', 'Simple ও Compound Sentence'), why: l('Join two ideas correctly.', 'দুটি idea ঠিকভাবে যুক্ত করুন।'), lessons: ['sb-6', 'sb-7'] },
+      { id: 'noun', title: l('Noun', 'Noun'), why: l('Names of people, things, places and ideas.', 'মানুষ, বস্তু, জায়গা আর ধারণার নাম।'), lessons: range('pn', 1, 4) },
+      { id: 'pronoun', title: l('Pronoun', 'Pronoun'), why: l('Replace a noun instead of repeating it.', 'Noun বারবার না বলে তার জায়গায় বসে।'), lessons: range('ppr', 1, 3) },
+      { id: 'verb-helping-verbs', title: l('Verb & Helping Verbs', 'Verb ও Helping Verb'), why: l('Actions, states, questions and negatives.', 'কাজ, অবস্থা, প্রশ্ন আর negative।'), lessons: range('pvb', 1, 5) },
+      { id: 'simple-compound-sentences', title: l('Simple & Compound Sentences', 'Simple ও Compound Sentence'), why: l('Join two ideas correctly.', 'দুটি idea ঠিকভাবে যুক্ত করুন।'), lessons: ['sb-6', 'sb-7'] },
       { id: 'articles', title: l('Articles', 'Articles'), why: l('a, an, the — which one and when.', 'a, an, the — কখন কোনটা।'), lessons: range('ar', 1, 9) },
       {
         id: 'tenses',
@@ -212,4 +212,37 @@ export function validateCurriculum(allLessonIds: string[]): string[] {
   }
   for (const id of allLessonIds) if (!seen.has(id)) errors.push(`curriculum: lesson ${id} is not placed`);
   return errors;
+}
+
+// ---------------------------------------------------------------- Foundation topics (routes)
+// Each English Foundation step is a topic page: /ielts/foundation/<topic>,
+// and each of its lessons has a page: /ielts/foundation/<topic>/<lesson-slug>.
+
+export const FOUNDATION_TOPICS: CurriculumStep[] = CURRICULUM.find((s) => s.id === 'english-foundation')!.steps;
+
+export const getTopic = (slug: string) => FOUNDATION_TOPICS.find((t) => t.id === slug);
+
+/** The English Foundation topic a lesson belongs to. */
+export const topicOfLesson = (lessonId: string) => FOUNDATION_TOPICS.find((t) => t.lessons?.includes(lessonId));
+
+/** A readable URL part from the lesson's English title ("The verb" → "verb"). */
+export function lessonSlug(lessonId: string): string {
+  const title = findLesson(lessonId)?.lesson.title.en ?? lessonId;
+  const slug = title
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  const trimmed = slug.replace(/^the-(?=.)/, '');
+  return trimmed || lessonId;
+}
+
+export const lessonBySlug = (topic: CurriculumStep, slug: string) => topic.lessons?.find((id) => lessonSlug(id) === slug);
+
+export const topicHref = (topic: CurriculumStep) => `/ielts/foundation/${topic.id}`;
+
+/** A lesson's page inside its topic, or the plain lesson page for lessons outside English Foundation. */
+export function lessonHref(lessonId: string): string {
+  const topic = topicOfLesson(lessonId);
+  return topic ? `${topicHref(topic)}/${lessonSlug(lessonId)}` : `/ielts/foundation/lesson/${lessonId}`;
 }

@@ -86,7 +86,8 @@ function UnitCard({ module, unit, fp, patterns }: { module: Module; unit: Unit; 
 }
 
 /** A module organised in units (Parts of Speech): next step, then unit cards by group. */
-export function UnitsDashboard({ module }: { module: Module }) {
+/** `embedded`: shown inside the Parts of Speech topic page (no page header). */
+export function UnitsDashboard({ module, embedded = false }: { module: Module; embedded?: boolean }) {
   const { t } = useLocale();
   const text = useText();
   const { fp } = useFoundation();
@@ -106,9 +107,9 @@ export function UnitsDashboard({ module }: { module: Module }) {
 
   return (
     <div className="space-y-8">
-      <PageHeader title={text(module.title)} subtitle={text(module.description)} backHref="/ielts/foundation" backLabel={t('foundation.title')} />
+      {!embedded && <PageHeader title={text(module.title)} subtitle={text(module.description)} backHref="/ielts/foundation" backLabel={t('foundation.title')} />}
 
-      <div className="-mt-2 space-y-2">
+      <div className={cn('space-y-2', !embedded && '-mt-2')}>
         <ProgressBar value={moduleProgress(module, fp)} label={text(module.title)} size="sm" />
         <p className="text-sm text-muted-foreground tabular-nums">{t('foundation.units.progress', { started, total: units.length, mastered })}</p>
       </div>

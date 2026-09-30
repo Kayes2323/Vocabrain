@@ -21,13 +21,9 @@ function LessonsView({ module }: { module: Module }) {
   const text = useText();
   const { fp } = useFoundation();
   const { intercept, dialog } = useGuideReminder();
-  const patternLabel = usePatternLabel();
   if (!fp) return <ScreenSkeleton />;
 
   const pct = moduleProgress(module, fp);
-  const pattern = patternsFor(fp, module.id)[0];
-  const challenge = challengeForModule(module.id);
-  const final = challenge ? finalRecord(fp, challenge.id) : undefined;
   const next = nextLesson(fp);
   const nextHere = next?.module.id === module.id ? next.lesson.id : module.lessons.find((l) => lessonState(module, l, fp) === 'available')?.id;
 
@@ -43,24 +39,7 @@ function LessonsView({ module }: { module: Module }) {
         <ProgressBar value={pct} label={text(module.title)} />
       </div>
 
-      {pattern && (
-        <Panel className="flex flex-col gap-4 border-warning/30 bg-warning-soft sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 space-y-1">
-            <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-warning uppercase">
-              <Sparkles className="size-3.5" aria-hidden /> {t('foundation.patternTitle')}
-            </p>
-            <p className="font-semibold">{patternLabel(pattern)}</p>
-            <p className="text-sm text-muted-foreground" lang="en">
-              {pattern.latest.prompt} · <span className="line-through decoration-destructive/60">{pattern.latest.answer}</span> → <span className="font-medium text-foreground">{pattern.latest.correctAnswer}</span>
-            </p>
-          </div>
-          <Button asChild size="lg" className="h-12 shrink-0">
-            <Link href={`/ielts/foundation/fix/${pattern.pair}`}>
-              {t('foundation.units.fixCta')} <ArrowRight />
-            </Link>
-          </Button>
-        </Panel>
-      )}
+      <ModuleExtras module={module} part="pattern" />
 
       <Callout tone="brand" title={t('foundation.module.ieltsLink')}>
         {text(module.ieltsLink)}
@@ -120,7 +99,49 @@ function LessonsView({ module }: { module: Module }) {
         </RowGroup>
       </Section>
 
-      {challenge && (
+      <ModuleExtras module={module} part="more" />
+
+      {module.lessons.length === 0 && <Callout>{t('foundation.module.comingSoon')}</Callout>}
+      {dialog}
+    </div>
+  );
+}
+
+/**
+ * A module's extra practice: the open mistake pattern, the Final Mastery
+ * Challenge and the module's practice link. Shown on module and topic pages.
+ */
+export function ModuleExtras({ module, part = 'all' }: { module: Module; part?: 'pattern' | 'more' | 'all' }) {
+  const { t } = useLocale();
+  const text = useText();
+  const { fp } = useFoundation();
+  const patternLabel = usePatternLabel();
+  if (!fp) return null;
+  const pattern = patternsFor(fp, module.id)[0];
+  const challenge = challengeForModule(module.id);
+  const final = challenge ? finalRecord(fp, challenge.id) : undefined;
+  return (
+    <>
+      {part !== 'more' && pattern && (
+        <Panel className="flex flex-col gap-4 border-warning/30 bg-warning-soft sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 space-y-1">
+            <p className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-warning uppercase">
+              <Sparkles className="size-3.5" aria-hidden /> {t('foundation.patternTitle')}
+            </p>
+            <p className="font-semibold">{patternLabel(pattern)}</p>
+            <p className="text-sm text-muted-foreground" lang="en">
+              {pattern.latest.prompt} · <span className="line-through decoration-destructive/60">{pattern.latest.answer}</span> → <span className="font-medium text-foreground">{pattern.latest.correctAnswer}</span>
+            </p>
+          </div>
+          <Button asChild size="lg" className="h-12 shrink-0">
+            <Link href={`/ielts/foundation/fix/${pattern.pair}`}>
+              {t('foundation.units.fixCta')} <ArrowRight />
+            </Link>
+          </Button>
+        </Panel>
+      )}
+
+      {part !== 'pattern' && challenge && (
         <RowGroup>
           <ListRow
             href={`/ielts/foundation/challenge/${challenge.id}`}
@@ -133,14 +154,11 @@ function LessonsView({ module }: { module: Module }) {
         </RowGroup>
       )}
 
-      {module.practice && (
+      {part !== 'pattern' && module.practice && (
         <RowGroup>
           <ListRow href={module.practice.href} icon={BookOpen} iconTone="brand" title={text(module.practice.title)} description={text(module.practice.description)} />
         </RowGroup>
       )}
-
-      {module.lessons.length === 0 && <Callout>{t('foundation.module.comingSoon')}</Callout>}
-      {dialog}
-    </div>
+    </>
   );
 }

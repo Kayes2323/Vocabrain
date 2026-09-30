@@ -50,7 +50,7 @@ async function main() {
     check('dashboard links to the Tenses module', await p.locator('main [data-topic-modules~="tenses"]').first().isVisible());
     // (Clicking it first offers Sentence Basics — "guide, don't block" — so open the module directly.)
     await p.goto(`${BASE}/ielts/foundation/tenses`, { waitUntil: 'load' });
-    const lessonLinks = p.locator('main a[href^="/ielts/foundation/lesson/t-"]');
+    const lessonLinks = p.locator('main [data-lesson-card^="t-"]');
     await lessonLinks.first().waitFor({ timeout: 30_000 });
     check('Tenses module opens with 15 lessons', (await lessonLinks.count()) === 15, await lessonLinks.count());
     check('no lesson in Tenses is marked "Soon"', (await p.locator('main').getByText('Soon', { exact: true }).count()) === 0);
@@ -205,10 +205,7 @@ async function main() {
     );
     check(
       'module page shows the finished lessons',
-      (await p2
-        .locator('main a[href="/ielts/foundation/lesson/t-4"], main a[href="/ielts/foundation/lesson/t-6"]')
-        .filter({ hasText: /Done|%/ })
-        .count()) === 2,
+      (await p2.locator('main [data-lesson-card="t-4"][data-state="done"], main [data-lesson-card="t-6"][data-state="done"]').count()) === 2,
     );
     await ctx2.close();
 
@@ -228,10 +225,10 @@ async function main() {
     await q.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
     check('bn dashboard: levels shown, no sideways scroll', (await q.getByText('Level 2 — IELTS Basics').isVisible()) && (await noHorizontalScroll(q)));
     await q.goto(`${BASE}/ielts/foundation/tenses`, { waitUntil: 'load' });
-    await q.locator('main a[href^="/ielts/foundation/lesson/t-"]').first().waitFor({ timeout: 60_000 });
+    await q.locator('main [data-lesson-card^="t-"]').first().waitFor({ timeout: 60_000 });
     check(
       'bn Tenses module: 15 lessons, no sideways scroll',
-      (await q.locator('main a[href^="/ielts/foundation/lesson/t-"]').count()) === 15 && (await noHorizontalScroll(q)),
+      (await q.locator('main [data-lesson-card^="t-"]').count()) === 15 && (await noHorizontalScroll(q)),
     );
     await shot(q, 'bn-01-tenses-module');
     await q.goto(`${BASE}/ielts/foundation/lesson/t-13`, { waitUntil: 'load' });

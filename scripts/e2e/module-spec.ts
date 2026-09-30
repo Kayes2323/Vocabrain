@@ -51,7 +51,8 @@ export async function runModuleSpec(s: ModuleSpec) {
   const errors: string[] = [];
   const stamp = Date.now();
   const browser = await launch();
-  const lessonSel = `main a[href^="/ielts/foundation/lesson/${s.lessonPrefix}"]`;
+  // Topic pages show lesson cards; the other module pages show lesson rows.
+  const lessonSel = `main a[href^="/ielts/foundation/lesson/${s.lessonPrefix}"], main [data-lesson-card^="${s.lessonPrefix}"]`;
   const challengeSel = `main a[href="/ielts/foundation/challenge/${s.moduleId}"]`;
   try {
     // ============================================================ English, desktop
@@ -201,7 +202,7 @@ export async function runModuleSpec(s: ModuleSpec) {
     await p2.goto(`${BASE}/ielts/foundation/${s.moduleId}`, { waitUntil: 'load' });
     await p2.locator(challengeSel).waitFor({ timeout: 60_000 });
     check('module page shows the best challenge score after sign-in', await p2.locator(challengeSel).getByText(/^Best \d+%$/).isVisible());
-    check('module page shows the finished lessons', (await p2.locator(`main a[href="/ielts/foundation/lesson/${s.mino.lesson}"], main a[href="/ielts/foundation/lesson/${s.mastery.lesson}"]`).filter({ hasText: /Done|%|Practise/ }).count()) === 2);
+    check('module page shows the finished lessons', (await p2.locator(`main a[href="/ielts/foundation/lesson/${s.mino.lesson}"], main a[href="/ielts/foundation/lesson/${s.mastery.lesson}"]`).filter({ hasText: /Done|%|Practise/ }).count()) + (await p2.locator(`main [data-lesson-card="${s.mino.lesson}"][data-state="done"], main [data-lesson-card="${s.mastery.lesson}"][data-state="done"]`).count()) === 2);
     await ctx2.close();
 
     // ============================================================ Bangla, mobile

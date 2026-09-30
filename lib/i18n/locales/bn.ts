@@ -142,6 +142,14 @@ export const bn: LocaleDictionary = {
     continue: 'আমি এখানেই যেতে চাই',
   },
   foundation: {
+    topicPage: {
+      back: 'Foundation',
+      after: 'আগে "{lesson}" শেষ করুন',
+      more: 'আরও practice',
+      unit: '{unit}: unit check ও practice',
+      allUnits: 'Parts of Speech-এর সব unit',
+      backTo: '{topic}-এ ফিরুন',
+    },
     topicCards: {
       title: 'English Foundation',
       intro: 'IELTS-এর জন্য প্রয়োজনীয় English grammar ধাপে ধাপে শিখুন।',

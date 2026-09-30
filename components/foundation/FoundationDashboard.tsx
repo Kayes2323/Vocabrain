@@ -211,7 +211,7 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
           </Panel>
         )}
 
-        <TopicCards stage={foundation} fp={fp} />
+        <TopicCards stage={foundation} />
       </section>
 
       <Section title={t('foundation.groups.basics')} variant="label">

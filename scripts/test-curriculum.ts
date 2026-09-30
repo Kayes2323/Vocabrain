@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   completeLesson, CURRICULUM, DIAGNOSTIC_ITEMS, findLesson, lessonPlace, lessonState, MODULES, nextAction, nextLesson, PARALLEL_LESSONS, PATH_LESSONS,
-  saveInProgress, scoreDiagnostic, stageLessons, getStage, validateCurriculum,
+  saveInProgress, scoreDiagnostic, stageLessons, getStage, validateCurriculum, FOUNDATION_TOPICS, getTopic, lessonBySlug, lessonHref, lessonSlug,
 } from '../lib/foundation';
 import { continueLearning, ieltsJourney, learningStats } from '../lib/engine/journey';
 import { en } from '../lib/i18n/locales/en';
@@ -177,6 +177,34 @@ test('one path everywhere: IELTS page, Home, Today and Mino read the same engine
   assert.match(read('components/home/JourneyCard.tsx'), /useContinue/);
   assert.match(read('lib/engine/daily-plan.ts'), /nextLesson/);
   assert.match(read('lib/ai/server/mino/snapshot.ts'), /continueLearning/);
+});
+
+test('routes: /ielts/foundation/<topic> and /ielts/foundation/<topic>/<lesson>, unique and clash-free', () => {
+  const ids = FOUNDATION_TOPICS.map((t) => t.id);
+  assert.deepEqual(ids.slice(0, 6), ['sentence-basics', 'parts-of-speech', 'noun', 'pronoun', 'verb-helping-verbs', 'simple-compound-sentences']);
+  const reserved = ['lesson', 'diagnostic', 'challenge', 'fix', 'quiz', 'review'];
+  assert.ok(ids.every((id) => /^[a-z-]+$/.test(id) && !reserved.includes(id)), 'topic slugs never hit a fixed route');
+  for (const topic of FOUNDATION_TOPICS) {
+    const slugs = (topic.lessons ?? []).map(lessonSlug);
+    assert.equal(new Set(slugs).size, slugs.length, `${topic.id}: lesson slugs are unique`);
+    for (const id of topic.lessons ?? []) assert.equal(lessonBySlug(topic, lessonSlug(id)), id);
+    // A topic that shares its URL with a unit-based module must not shadow a unit page.
+    const units = MODULES.find((m) => m.id === topic.id)?.units?.map((u) => u.id) ?? [];
+    assert.ok(slugs.every((sl) => !units.includes(sl)), `${topic.id}: no lesson slug equals a unit id`);
+  }
+  assert.equal(lessonHref('sb-3'), '/ielts/foundation/sentence-basics/verb');
+  assert.equal(lessonHref('t-2'), '/ielts/foundation/tenses/present-simple');
+  assert.equal(lessonHref('ib-1'), '/ielts/foundation/lesson/ib-1', 'lessons outside English Foundation keep their page');
+  assert.equal(getTopic('sentence-basics')!.lessons!.length, 5);
+});
+
+test('Foundation UI: navigation cards, no accordion', () => {
+  const cards = readFileSync('components/foundation/TopicCards.tsx', 'utf8');
+  assert.doesNotMatch(cards, /aria-expanded|useState|gridTemplateRows|onToggle/, 'topic cards do not expand');
+  assert.match(cards, /<Link[\s\S]*href=\{topicHref\(s\.step\)\}/, 'the whole card is a link to the topic page');
+  const view = readFileSync('components/foundation/TopicView.tsx', 'utf8');
+  assert.match(view, /href=\{lessonHref\(id\)\}/, 'lesson cards link to the lesson page');
+  assert.doesNotMatch(view, /aria-expanded|intercept\(/, 'no expanding, no modal before a lesson');
 });
 
 console.log(`\n${passed} passed`);

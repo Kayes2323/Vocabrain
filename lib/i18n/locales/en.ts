@@ -140,6 +140,14 @@ export const en = {
     continue: 'I want to go here',
   },
   foundation: {
+    topicPage: {
+      back: 'Foundation',
+      after: 'Complete "{lesson}" first',
+      more: 'More practice',
+      unit: '{unit}: unit check & practice',
+      allUnits: 'All Parts of Speech units',
+      backTo: 'Back to {topic}',
+    },
     topicCards: {
       title: 'English Foundation',
       intro: 'The English grammar you need for IELTS, one step at a time.',
