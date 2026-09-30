@@ -172,7 +172,7 @@ test('labels exist in English and Bangla; Bangla uses আপনি only', () => 
 
 test('one path everywhere: IELTS page, Home, Today and Mino read the same engine', () => {
   const read = (f: string) => readFileSync(f, 'utf8');
-  assert.match(read('app/(app)/ielts/progress/page.tsx'), /learningStats/);
+  assert.match(read('components/progress/ProgressDashboard.tsx'), /learningStats/);
   assert.match(read('components/home/JourneyCard.tsx'), /useContinue/);
   assert.match(read('lib/engine/daily-plan.ts'), /nextLesson/);
   assert.match(read('lib/ai/server/mino/snapshot.ts'), /continueLearning/);
