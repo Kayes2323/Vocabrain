@@ -85,7 +85,7 @@ async function main() {
     check('Practice Test and Speaking Test are not on Home', (await p.locator('[data-quick="tests"], [data-quick="speaking"]').count()) === 0);
     await p.goto(`${BASE}/ielts`, { waitUntil: 'load' });
     await p.locator('main a[href="/ielts/tests"]').first().waitFor({ timeout: 30_000 });
-    check('Practice Test and Speaking are still reachable from IELTS', (await p.locator('main a[href="/ielts/tests"]').count()) > 0 && (await p.locator('main a[href="/ielts/tests/vb-practice-1/speaking"]').count()) > 0);
+    check('Practice Test and Speaking are still reachable from IELTS', (await p.locator('main a[href="/ielts/tests"]').count()) > 0 && (await p.locator('main a[href="/ielts/practice/speaking"]').count()) > 0);
 
     console.log('\n[2] Empty My Brain and Reading Vocabulary');
     await p.goto(`${BASE}/ielts/vocabulary/notebook`, { waitUntil: 'load' });

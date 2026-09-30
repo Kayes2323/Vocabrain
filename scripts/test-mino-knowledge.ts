@@ -51,7 +51,7 @@ test('app map labels planned IELTS sections as PLANNED, never AVAILABLE', () => 
     const label = s.status === 'available' ? 'AVAILABLE' : 'PLANNED';
     assert.match(map, new RegExp(`\\[${label}\\]`), s.id);
   }
-  assert.match(map, /Listening \[PLANNED\]/);
+  assert.match(map, /Listening \[AVAILABLE\] \/ielts\/practice\/listening/);
   assert.match(map, /Reading \[AVAILABLE\] \/ielts\/reading/);
   assert.match(map, /Practice Test 1 \(reading\)/);
 });

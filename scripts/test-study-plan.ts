@@ -119,7 +119,7 @@ test('Today’s Learning starts with the next lesson of the current curriculum s
   assert.equal(plan.tasks[0].lessonId, 'ib-10', 'a new student starts with Start Here: What is IELTS?');
   assert.equal(plan.tasks[0].href, '/ielts/foundation/lesson/ib-10');
   assert.equal(plan.tasks[0].done, false);
-  p = { ...p, foundation: completeLesson(p.foundation, 'ib-1', 90, NOW) };
+  p = { ...p, foundation: completeLesson(p.foundation, 'ib-10', 90, NOW) };
   plan = buildDailyPlan(p, brain, NOW);
   assert.equal(plan.tasks[0].done, true, 'one lesson a day completes the task');
   assert.equal(plan.tasks[0].lessonId, 'ib-11', 'and it points to the next lesson for tomorrow');
@@ -149,7 +149,7 @@ test('home Quick access: one hub with exactly 5 destinations, all existing pages
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'readingVocab')!.href, '/ielts/vocabulary/reading');
   for (const page of ['app/(app)/ielts/vocabulary/notebook/page.tsx', 'app/(app)/ielts/vocabulary/reading/page.tsx']) assert.ok(existsSync(join(process.cwd(), page)), page);
   // Practice Test and Speaking Test left Home but stay in the IELTS section.
-  assert.ok(ielts.has('/ielts/tests') && ielts.has('/ielts/tests/vb-practice-1/speaking'), 'tests and speaking are still reachable from IELTS');
+  assert.ok(ielts.has('/ielts/tests') && ielts.has('/ielts/practice/speaking'), 'tests and speaking are still reachable from IELTS');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'today')!.href, '/today');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'abroad')!.href, '/abroad');
   for (const q of HOME_QUICK_ACCESS) assert.ok(tr(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title` && getTranslator('bn').t(`home.quick.${q.id}.title`) !== `home.quick.${q.id}.title`, q.id);

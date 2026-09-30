@@ -1,11 +1,11 @@
 'use client';
 
-import { TrendingUp } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { CardGrid, ModuleCard, PageHeader, ScreenSkeleton, Section, StatusChip, type Tint } from '@/components/ds';
 import { IELTS_SKILLS, type IELTSSkill } from '@/lib/constants';
-import { formatBand, weeksUntilTest } from '@/lib/engine';
+import { formatBand } from '@/lib/engine';
+import { PlanHubCard } from '@/components/plan/PlanHubCard';
 import { IELTS_SECTIONS, IELTS_TOOLS, sectionKey, type SectionDef } from '@/lib/navigation';
 import type { UserProfile } from '@/lib/models';
 
@@ -36,21 +36,14 @@ function SectionCard({ section, profile, tint }: { section: SectionDef; profile:
 }
 
 /**
- * The IELTS hub: a short list of places to go, in order — plan and progress,
- * learn, practice, test, tools. Each card opens its own page.
+ * The IELTS hub, in order: My IELTS Plan (with a link to Progress), IELTS
+ * Foundation, IELTS Practice (the four skills), Practice Tests, Band Score
+ * Calculator. Every card is one tap to its own page.
  */
 export default function IELTSPage() {
-  const { t, n } = useLocale();
+  const { t } = useLocale();
   const { profile } = useProfile();
   if (!profile) return <ScreenSkeleton />;
-
-  const { ielts } = profile;
-  const weeks = weeksUntilTest(ielts);
-  // A one-line plan summary from data the student already gave (target, test date).
-  const planSummary =
-    ielts.targetBand !== undefined
-      ? [t('ielts.planTarget', { band: formatBand(ielts.targetBand) }), weeks !== undefined ? t('ielts.planWeeks', { n: n(weeks) }) : undefined].filter(Boolean).join(' · ')
-      : t('ielts.cards.plan');
 
   const card = (id: string, tint: Tint) => <SectionCard key={id} section={byId(id)} profile={profile} tint={tint} />;
 
@@ -58,12 +51,9 @@ export default function IELTSPage() {
     <div className="space-y-7" data-testid="ielts-hub">
       <PageHeader title="IELTS" subtitle={t('ielts.subtitle')} />
 
-      <Section title={t('ielts.groups.plan')} variant="label" id="hub-plan">
-        <CardGrid>
-          <ModuleCard href="/ielts/plan" icon={byId('plan').icon} tint="green" title={t(sectionKey('plan', 'title'))} subtitle={planSummary} wrapSubtitle />
-          <ModuleCard href="/ielts/progress" icon={TrendingUp} tint="green" title={t('ielts.progressCard.title')} subtitle={t('ielts.progressCard.subtitle')} wrapSubtitle />
-        </CardGrid>
-      </Section>
+      <section id="hub-plan" aria-label={t('ielts.groups.plan')}>
+        <PlanHubCard profile={profile} />
+      </section>
 
       <Section title={t('ielts.groups.learn')} variant="label" id="hub-learn">
         <CardGrid>{card('foundation', 'lavender')}</CardGrid>

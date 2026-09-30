@@ -99,10 +99,10 @@ export const sectionKey = (id: string, field: 'title' | 'description' | 'highlig
 export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'foundation', icon: Layers, href: '/ielts/foundation', status: 'available', phase: 2 },
   { id: 'plan', icon: Target, href: '/ielts/plan', status: 'available', phase: 4 },
-  { id: 'listening', icon: Headphones, href: '/ielts/listening', status: 'planned', phase: 2 },
+  { id: 'listening', icon: Headphones, href: '/ielts/practice/listening', status: 'available', phase: 2 },
   { id: 'reading', icon: BookText, href: '/ielts/reading', status: 'available', phase: 3 },
-  { id: 'writing', icon: PenLine, href: '/ielts/tests/vb-practice-1/writing', status: 'available', phase: 4 },
-  { id: 'speaking', icon: Mic, href: '/ielts/tests/vb-practice-1/speaking', status: 'available', phase: 4 },
+  { id: 'writing', icon: PenLine, href: '/ielts/practice/writing', status: 'available', phase: 4 },
+  { id: 'speaking', icon: Mic, href: '/ielts/practice/speaking', status: 'available', phase: 4 },
   { id: 'vocabulary', icon: BookOpen, href: '/ielts/vocabulary', status: 'available', phase: 1 },
   { id: 'mock-tests', icon: Timer, href: '/ielts/tests', status: 'available', phase: 4 },
 ];

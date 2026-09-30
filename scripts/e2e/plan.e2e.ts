@@ -149,7 +149,8 @@ async function run(p: Page, lang: Lang, tag: string) {
   check(`${tag}: progress still untouched after the edit`, Boolean(edited.foundation?.lessons?.['sb-1']));
   await p.goto(BASE + '/ielts', { waitUntil: 'load' });
   await p.getByTestId('ielts-hub').waitFor({ timeout: 60_000 });
-  check(`${tag}: IELTS page still opens; its plan card shows the target`, /8\.0/.test(await p.locator('main a[href="/ielts/plan"]').innerText()));
+  await p.getByTestId('hub-plan-target').waitFor({ timeout: 60_000 });
+  check(`${tag}: IELTS page still opens; its plan card shows the target`, /8\.0/.test(await p.getByTestId('hub-plan-target').innerText()));
 }
 
 async function main() {

@@ -259,7 +259,9 @@ test('IELTS hub: plan, progress, learn, practice, test, tools — no learning pa
   assert.doesNotMatch(hub, /LearningPath|ContinueCard|learningStats|ielts\.path\./, 'the journey timeline and progress block are gone from the page');
   const order = ['hub-plan', 'hub-learn', 'hub-practice', 'hub-test', 'hub-tools'].map((id) => hub.indexOf(`id="${id}"`));
   assert.ok(order.every((i, k) => i > 0 && (k === 0 || i > order[k - 1])), `sections in order: ${order}`);
-  assert.ok(hub.indexOf('/ielts/plan') < hub.indexOf('/ielts/progress'), 'My IELTS Plan first, then Progress');
+  assert.match(hub, /<PlanHubCard/, 'My IELTS Plan comes first');
+  const card = readFileSync('components/plan/PlanHubCard.tsx', 'utf8');
+  assert.ok(card.includes('href="/ielts/plan"') && card.includes('href="/ielts/progress"'), 'the plan card opens the plan and links Progress separately');
 });
 
 console.log(`\n${passed} passed`);
