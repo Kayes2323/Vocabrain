@@ -158,7 +158,7 @@ test('editing the plan changes future days only; past days and completed work st
 
 test('tasks open the real place in the app', () => {
   const p = withPlan();
-  assert.equal(taskHref({ kind: 'foundation', minutes: 20, count: 1 }, p), '/ielts/foundation/lesson/ib-1', 'the next lesson on the path');
+  assert.equal(taskHref({ kind: 'foundation', minutes: 20, count: 1 }, p), '/ielts/foundation/what-is-ielts/what-is-ielts', 'the next lesson on the path (its topic page)');
   assert.equal(taskHref({ kind: 'reading', minutes: 30, count: 1 }, p), '/ielts/reading');
   assert.equal(taskHref({ kind: 'vocabulary', minutes: 15, count: 1 }, p), '/review');
   assert.equal(taskHref({ kind: 'mock', minutes: 120, count: 1, full: true }, p), '/ielts/tests');

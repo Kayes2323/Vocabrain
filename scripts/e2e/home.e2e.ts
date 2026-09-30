@@ -65,8 +65,8 @@ async function run(p: Page, lang: 'bn' | 'en', tag: string) {
   // ---------------------------------------------------------------- CTA follows today's plan (existing state)
   let c = await cta(p);
   check(`${tag}: new student → "${T.start}"`, c.text === T.start && c.state === 'not-started', JSON.stringify(c));
-  check(`${tag}: today's lesson comes first — the next lesson of the current stage (Start Here)`, (await p.locator('[data-task]').first().getAttribute('data-task')) === 'lesson' && (await p.locator('[data-task="lesson"]').getAttribute('href')) === '/ielts/foundation/lesson/ib-1');
-  check(`${tag}: the CTA starts with today's lesson`, c.href === '/ielts/foundation/lesson/ib-1', c.href);
+  check(`${tag}: today's lesson comes first — the next lesson of the current stage (Start Here)`, (await p.locator('[data-task]').first().getAttribute('data-task')) === 'lesson' && (await p.locator('[data-task="lesson"]').getAttribute('href')) === '/ielts/foundation/lesson/ib-10');
+  check(`${tag}: the CTA starts with today's lesson`, c.href === '/ielts/foundation/lesson/ib-10', c.href);
   await patchField(`users/${uid}`, 'app.foundation.days', { [today]: { lessons: 1, questions: 0, correct: 0 } });
   await days(['reading']);
   c = await cta(p);

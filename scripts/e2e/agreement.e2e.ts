@@ -30,7 +30,7 @@ async function main() {
 
     console.log('\n[1] Foundation dashboard and the Agreement module');
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
-    await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
+    await p.getByText('Level 1 — English Foundation').waitFor({ timeout: 60_000 });
     const card = p.locator('main [data-topic-modules~="agreement"]').first();
     check('dashboard links to Subject–Verb Agreement, and the card is no longer "Soon"', (await card.isVisible()) && !(await card.innerText()).includes('Soon'), await card.innerText());
     const articlesCard = p.locator('main [data-topic-modules~="articles"]').first();

@@ -7,14 +7,14 @@ import { choice, correct, gap, l, order, spot, write } from './pos-kit';
  * already uses (lib/ai/server/mino/knowledge/ielts.ts). Fees, dates, result
  * times and institution requirements change and differ by test centre, so the
  * lessons always send students to the official source for those.
- * ib-1 Academic or General Training · ib-2 the four skills and timing ·
+ * ib-1 IELTS Academic · ib-2 the four skills and timing ·
  * ib-3 computer-delivered and paper-based · ib-4 the band scale and the overall
  * score · ib-5 how each skill is marked · ib-6 planning: targets and official
  * requirements. Original Mino content.
  */
 
 export const IELTS_INTRO_CONCEPTS: Concept[] = [
-  { id: 'ib-versions', title: l('IELTS Academic and General Training', 'IELTS Academic আর General Training'), lessonId: 'ib-1', tag: 'ielts-basics' },
+  { id: 'ib-versions', title: l('IELTS Academic', 'IELTS Academic'), lessonId: 'ib-1', tag: 'ielts-basics' },
   { id: 'ib-format', title: l('The four skills and test timing', 'চার skill আর test-এর সময়'), lessonId: 'ib-2', tag: 'ielts-basics' },
   { id: 'ib-delivery', title: l('Computer-delivered and paper-based', 'Computer-delivered আর paper-based'), lessonId: 'ib-3', tag: 'ielts-basics' },
   { id: 'ib-bands', title: l('Band Scores and the overall score', 'Band Score আর overall score'), lessonId: 'ib-4', tag: 'ielts-basics' },
@@ -29,8 +29,8 @@ export const ibVersions: Lesson = {
   id: 'ib-1',
   format: 'v2',
   concept: 'ib-versions',
-  title: l('IELTS Academic and General Training', 'IELTS Academic আর General Training'),
-  why: l('There are two versions of IELTS. Booking the wrong one can mean taking the test again, so the first step is knowing which one your university, employer or visa asks for.', 'IELTS-এর দুটো version। ভুলটা book করলে আবার test দিতে হতে পারে, তাই প্রথম কাজ হলো জানা আপনার university, employer বা visa কোনটা চায়।'),
+  title: l('Academic IELTS: the test for university study', 'Academic IELTS: university-তে পড়ার test'),
+  why: l('Universities ask for IELTS Academic. Knowing what makes it "Academic" — long academic passages and a data-description task — tells you exactly what to prepare for.', 'University IELTS Academic চায়। কী কারণে এটা "Academic" — লম্বা academic passage আর data বর্ণনার task — সেটা জানলে বুঝবেন ঠিক কীসের প্রস্তুতি নিতে হবে।'),
   minutes: 8,
   difficulty: 'easy',
   skill: 'reading',
@@ -38,76 +38,75 @@ export const ibVersions: Lesson = {
     {
       kind: 'hook',
       title: l('Booking the test', 'Test book করা'),
-      situation: l('Nadia wants to study for a master’s degree in Australia. Her cousin says: "Just take General Training — it’s the same test."', 'Nadia Australia-য় master’s পড়তে চান। তাঁর cousin বললেন: "General Training দিয়ে দিন — একই test।"'),
+      situation: l('Nadia wants to study for a master’s degree in Australia. A friend says: "Book any IELTS — it’s all the same."', 'Nadia Australia-য় master’s পড়তে চান। এক বন্ধু বললেন: "যেকোনো IELTS book করুন — সবই এক।"'),
       question: l('What should Nadia do?', 'Nadia-র কী করা উচিত?'),
-      options: ['Check what the university asks for — usually Academic for university study', 'Take General Training, as her cousin says', 'Take either — universities accept both'],
-      answer: 'Check what the university asks for — usually Academic for university study',
+      options: ['Check what the university asks for — usually IELTS Academic', 'Book any IELTS test', 'Wait until after she applies'],
+      answer: 'Check what the university asks for — usually IELTS Academic',
       diagnose: {
-        'Check what the university asks for — usually Academic for university study': l('Right. University study usually needs IELTS Academic, but the official requirement of the university decides. The versions differ in Reading and Writing.', 'ঠিক। University-তে পড়তে সাধারণত IELTS Academic লাগে, কিন্তু সিদ্ধান্ত university-র official requirement-এর। দুই version-এর Reading আর Writing আলাদা।'),
-        'Take General Training, as her cousin says': l('The two versions are not the same: Reading and Writing differ. Always follow the official requirement, not advice from friends.', 'দুটো version এক না: Reading আর Writing আলাদা। বন্ধুর পরামর্শ না, সবসময় official requirement মানুন।'),
-        'Take either — universities accept both': l('Many universities accept only Academic for degree study. Check the university’s own website.', 'অনেক university degree-র জন্য শুধু Academic নেয়। University-র নিজের website দেখুন।'),
+        'Check what the university asks for — usually IELTS Academic': l('Right. University study usually needs IELTS Academic, and the university’s official requirement decides.', 'ঠিক। University-তে পড়তে সাধারণত IELTS Academic লাগে, আর সিদ্ধান্ত university-র official requirement-এর।'),
+        'Book any IELTS test': l('Not every IELTS test is accepted for degree study. Check the official requirement first.', 'Degree-র জন্য সব IELTS test গ্রহণ করা হয় না। আগে official requirement দেখুন।'),
+        'Wait until after she applies': l('Many universities need the result when you apply, so plan early.', 'অনেক university apply করার সময়েই result চায়, তাই আগে থেকে পরিকল্পনা করুন।'),
       },
     },
     {
       kind: 'discover',
-      title: l('What is shared, what is different', 'কী একই, কী আলাদা'),
+      title: l('What makes it Academic', 'কী কারণে এটা Academic'),
       items: [
-        { en: 'Listening and Speaking: the same in both versions', note: l('same test, same marking', 'একই test, একই নম্বর দেওয়া') },
-        { en: 'Reading and Writing: different in Academic and General Training', note: l('Academic uses long academic passages and a data or diagram task', 'Academic-এ লম্বা academic passage আর data বা diagram-এর task') },
-        { en: 'Academic: usually for university study', note: l('check the course requirement', 'course-এর requirement দেখুন') },
-        { en: 'General Training: often for work, training or migration', note: l('check the visa or employer requirement', 'visa বা employer-এর requirement দেখুন') },
+        { en: 'Academic Reading: three long passages from books, journals and magazines', note: l('academic topics, 60 minutes', 'academic বিষয়, ৬০ মিনিট') },
+        { en: 'Academic Writing Task 1: describe a graph, table, chart or diagram', note: l('report the data, at least 150 words', 'data বর্ণনা, অন্তত ১৫০ word') },
+        { en: 'Writing Task 2: an essay on a general academic topic', note: l('at least 250 words', 'অন্তত ২৫০ word') },
+        { en: 'Listening and Speaking: everyday and academic situations', note: l('the same skills you will use as a student', 'ছাত্র হিসেবে যে skill লাগবে') },
       ],
-      question: l('Which parts differ between the two versions?', 'দুই version-এ কোন অংশ আলাদা?'),
+      question: l('Which task is special to IELTS Academic?', 'কোন task IELTS Academic-এর বিশেষত্ব?'),
       options: [
-        l('Reading and Writing', 'Reading আর Writing'),
-        l('Listening and Speaking', 'Listening আর Speaking'),
-        l('All four skills', 'চারটা skill-ই'),
+        l('Describing a graph, table or diagram in Writing Task 1', 'Writing Task 1-এ graph, table বা diagram বর্ণনা'),
+        l('Writing a letter to a friend', 'বন্ধুকে letter লেখা'),
+        l('A spoken presentation to a class', 'Class-এ মৌখিক presentation'),
       ],
       answer: 0,
-      pattern: l('Same Listening and Speaking; different Reading and Writing. The organisation you apply to decides which version you need.', 'Listening আর Speaking একই; Reading আর Writing আলাদা। আপনি যেখানে apply করবেন তারাই ঠিক করে কোন version লাগবে।'),
+      pattern: l('IELTS Academic = academic Reading passages + Writing Task 1 on visual data + a Task 2 essay. The university’s official requirement tells you the version and the band.', 'IELTS Academic = academic Reading passage + visual data নিয়ে Writing Task 1 + Task 2 essay। University-র official requirement বলে দেয় কোন version আর কত band।'),
     },
     {
       kind: 'concept',
-      title: l('Choosing your version', 'আপনার version বাছাই'),
+      title: l('IELTS Academic', 'IELTS Academic'),
       body: l(
-        'IELTS has two versions that share half of the test. Your purpose — and the official requirement of the organisation — decides which one you take.',
-        'IELTS-এর দুটো version, যাদের অর্ধেক test একই। আপনার উদ্দেশ্য — আর প্রতিষ্ঠানের official requirement — ঠিক করে কোনটা দেবেন।',
+        'IELTS Academic is the version for undergraduate and postgraduate study. It measures whether your English is ready for university: reading academic texts, describing data and writing essays.',
+        'IELTS Academic হলো undergraduate আর postgraduate পড়ার version। আপনার English university-র জন্য তৈরি কিনা, এটা তা মাপে: academic text পড়া, data বর্ণনা আর essay লেখা।',
       ),
       points: [
-        l('Four skills in both: Listening, Reading, Writing, Speaking. Listening and Speaking are the same; Reading and Writing differ.', 'দুটোতেই চার skill: Listening, Reading, Writing, Speaking। Listening আর Speaking একই; Reading আর Writing আলাদা।'),
-        l('IELTS Academic: usually for undergraduate or postgraduate study. Reading has long academic passages; Writing Task 1 describes visual information such as a graph, table or diagram.', 'IELTS Academic: সাধারণত undergraduate বা postgraduate পড়ার জন্য। Reading-এ লম্বা academic passage; Writing Task 1-এ graph, table বা diagram-এর মতো visual তথ্য বর্ণনা।'),
-        l('IELTS General Training: often for work, training or migration. Reading uses everyday and workplace texts; Writing Task 1 is a letter.', 'IELTS General Training: প্রায়ই কাজ, training বা migration-এর জন্য। Reading-এ দৈনন্দিন আর কর্মক্ষেত্রের text; Writing Task 1 একটা letter।'),
-        l('The organisation decides. Always read the official requirement of your university, employer or visa authority before booking — some visas also ask for a specific kind of test.', 'প্রতিষ্ঠানই ঠিক করে। Book করার আগে সবসময় আপনার university, employer বা visa কর্তৃপক্ষের official requirement পড়ুন — কিছু visa নির্দিষ্ট ধরনের test চায়।'),
-        l('Common mix-up: students take advice from friends or agents ("GT is easier", "any IELTS is fine") instead of the official page. The official requirement is the only reliable answer.', 'সাধারণ ভুল: শিক্ষার্থীরা official page না দেখে বন্ধু বা agent-এর কথা শোনেন ("GT সহজ", "যেকোনো IELTS চলবে")। Official requirement-ই একমাত্র নির্ভরযোগ্য উত্তর।'),
+        l('Four skills: Listening, Reading, Writing, Speaking — each gets its own band.', 'চারটা skill: Listening, Reading, Writing, Speaking — প্রতিটার আলাদা band।'),
+        l('Reading has three long academic passages. Writing Task 1 describes visual information such as a graph, table or diagram; Task 2 is an essay.', 'Reading-এ তিনটা লম্বা academic passage। Writing Task 1-এ graph, table বা diagram-এর মতো visual তথ্য বর্ণনা; Task 2 একটা essay।'),
+        l('The organisation decides. Read the official requirement of your university before booking — it names the version and the band.', 'প্রতিষ্ঠানই ঠিক করে। Book করার আগে আপনার university-র official requirement পড়ুন — সেখানে version আর band লেখা থাকে।'),
+        l('Mino prepares you for IELTS Academic. There is another version for some work and migration purposes; if your requirement names it, check the official IELTS website.', 'Mino আপনাকে IELTS Academic-এর জন্য প্রস্তুত করে। কিছু কাজ আর migration-এর জন্য আরেকটা version আছে; আপনার requirement-এ সেটা থাকলে official IELTS website দেখুন।'),
+        l('Common mix-up: booking "any IELTS" because a friend or agent said so. The university’s official page is the only reliable answer.', 'সাধারণ ভুল: বন্ধু বা agent বলেছে বলে "যেকোনো IELTS" book করা। University-র official page-ই একমাত্র নির্ভরযোগ্য উত্তর।'),
       ],
     },
     {
       kind: 'examples',
-      title: l('Who takes which?', 'কে কোনটা দেন?'),
+      title: l('Who takes IELTS Academic?', 'কারা IELTS Academic দেন?'),
       items: [
-        { en: 'A BSc graduate applying for an MSc in the UK → usually Academic', note: l('university study', 'university-তে পড়া') },
-        { en: 'A nurse applying for work registration abroad → check the regulator: often Academic', note: l('professional bodies set their own rules', 'পেশাজীবী সংস্থা নিজেদের নিয়ম ঠিক করে') },
-        { en: 'A family applying for migration → often General Training, per the visa rules', note: l('check the visa authority', 'visa কর্তৃপক্ষ দেখুন') },
-        { en: 'A student going to a vocational course → check the course: it may accept General Training', note: l('course-specific', 'course অনুযায়ী') },
+        { en: 'A BSc graduate applying for an MSc in the UK → IELTS Academic', note: l('postgraduate study', 'postgraduate পড়া') },
+        { en: 'An HSC student applying for a bachelor’s degree in Canada → IELTS Academic', note: l('undergraduate study', 'undergraduate পড়া') },
+        { en: 'A doctor or nurse registering to work abroad → often IELTS Academic; check the regulator', note: l('professional bodies set their own rules', 'পেশাজীবী সংস্থা নিজেদের নিয়ম ঠিক করে') },
       ],
     },
     {
       kind: 'ielts',
       title: l('Where this matters in IELTS', 'IELTS-এ কোথায় কাজে লাগে'),
       uses: [
-        { skill: 'reading', example: 'Academic Reading: three long passages from books, journals and magazines.', note: l('Different texts in each version — practise the right one.', 'দুই version-এ text আলাদা — ঠিকটার practice করুন।') },
-        { skill: 'writing', example: 'Academic Task 1: "The graph shows …" · General Training Task 1: "Dear Sir or Madam, …"', note: l('Task 1 is a report or a letter depending on the version.', 'Version অনুযায়ী Task 1 একটা report বা letter।') },
-        { skill: 'listening', example: 'The same four Listening parts in both versions.', note: l('Listening practice works for everyone.', 'Listening practice সবার কাজে লাগে।') },
-        { skill: 'speaking', example: 'The same three Speaking parts in both versions.', note: l('Speaking practice works for everyone.', 'Speaking practice সবার কাজে লাগে।') },
+        { skill: 'reading', example: 'Academic Reading: three long passages from books, journals and magazines.', note: l('Mino’s Reading practice uses academic passages.', 'Mino-র Reading practice-এ academic passage।') },
+        { skill: 'writing', example: 'Task 1: "The graph shows the number of students …"', note: l('Academic Task 1 is a report on data, not a letter.', 'Academic Task 1 হলো data-র report, letter না।') },
+        { skill: 'listening', example: 'Part 4: a lecture on an academic subject.', note: l('University-style listening.', 'University-র মতো listening।') },
+        { skill: 'speaking', example: 'Part 3: discuss ideas and give reasons.', note: l('The skills of a seminar discussion.', 'Seminar আলোচনার skill।') },
       ],
     },
     {
       kind: 'mistakes',
       title: l('Common Mistake Lab', 'Common Mistake Lab'),
       items: [
-        { wrong: '"Academic and General Training are the same test."', right: 'Listening and Speaking are the same; Reading and Writing differ.', why: l('Half the test is different.', 'Test-এর অর্ধেক আলাদা।') },
-        { wrong: '"My friend took GT for his visa, so I will take GT for university."', right: 'Check your own university’s requirement — usually Academic.', why: l('Your purpose decides, not your friend’s.', 'আপনার উদ্দেশ্য ঠিক করে, বন্ধুর না।') },
-        { wrong: '"General Training Writing Task 1 is a graph."', right: 'General Training Task 1 is a letter; Academic Task 1 is a graph, table or diagram.', why: l('Task 1 differs by version.', 'Version অনুযায়ী Task 1 আলাদা।') },
+        { wrong: '"Any IELTS test is fine for university."', right: 'Universities usually ask for IELTS Academic — check the official requirement.', why: l('The requirement names the version.', 'Requirement-এ version লেখা থাকে।') },
+        { wrong: '"Academic Writing Task 1 is a letter."', right: 'Academic Writing Task 1 describes a graph, table, chart or diagram.', why: l('It is a data report.', 'এটা data-র report।') },
+        { wrong: '"My friend’s requirement is the same as mine."', right: 'Check your own university’s official page.', why: l('Each university and course sets its own requirement.', 'প্রতিটা university আর course নিজের requirement ঠিক করে।') },
       ],
     },
     {
@@ -115,11 +114,11 @@ export const ibVersions: Lesson = {
       mode: 'practice',
       title: l('Practice: easy → harder', 'Practice: সহজ → কঠিন'),
       exercises: [
-        choice('ib-1-p1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which skills are the same in both versions?', 'কোন skill দুই version-এ একই?'), options: ['Listening and Speaking', 'Reading and Writing', 'Writing and Speaking'], answer: 'Listening and Speaking', explanation: l('Listening and Speaking are shared.', 'Listening আর Speaking একই।'), why: { 'Reading and Writing': l('These are the two that differ.', 'এই দুটোই আলাদা।'), 'Writing and Speaking': l('Writing differs; only Speaking is shared here.', 'Writing আলাদা; এখানে শুধু Speaking একই।') } }),
-        choice('ib-1-p2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which version do most universities ask for?', 'বেশিরভাগ university কোন version চায়?'), options: ['Academic', 'General Training', 'Either, always'], answer: 'Academic', explanation: l('Degree study usually needs Academic — but check the official requirement.', 'Degree-র জন্য সাধারণত Academic — তবে official requirement দেখুন।'), why: { 'General Training': l('General Training is usually for work, training or migration.', 'General Training সাধারণত কাজ, training বা migration-এর জন্য।'), 'Either, always': l('Many universities accept only Academic for degrees.', 'অনেক university degree-র জন্য শুধু Academic নেয়।') } }),
-        choice('ib-1-p3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('What is General Training Writing Task 1?', 'General Training Writing Task 1 কী?'), options: ['A letter', 'A graph description', 'An essay'], answer: 'A letter', explanation: l('GT Task 1 = a letter.', 'GT Task 1 = letter।'), why: { 'A graph description': l('That is Academic Task 1.', 'এটা Academic Task 1।'), 'An essay': l('Task 2 is the essay in both versions.', 'দুই version-এই Task 2 হলো essay।') } }),
-        choice('ib-1-p4', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Who decides which version you need?', 'কোন version লাগবে কে ঠিক করে?'), options: ['The organisation you apply to', 'Your coaching centre', 'Whichever is cheaper'], answer: 'The organisation you apply to', explanation: l('Follow the official requirement.', 'Official requirement মানুন।'), why: { 'Your coaching centre': l('A coaching centre can advise, but only the organisation’s official requirement counts.', 'Coaching centre পরামর্শ দিতে পারে, কিন্তু গোনা হয় শুধু প্রতিষ্ঠানের official requirement।'), 'Whichever is cheaper': l('The wrong version may not be accepted at all.', 'ভুল version একদমই গ্রহণ না-ও হতে পারে।') } }),
-        choice('ib-1-p5', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Rafi will apply for a skilled-worker visa. What should he do first?', 'Rafi skilled-worker visa-র জন্য apply করবেন। প্রথমে কী করবেন?'), options: ['Read the visa authority’s official English-test requirement', 'Book Academic because it sounds harder', 'Ask a friend which version they took'], answer: 'Read the visa authority’s official English-test requirement', explanation: l('Visas can require a specific version or type of test.', 'Visa নির্দিষ্ট version বা ধরনের test চাইতে পারে।'), why: { 'Book Academic because it sounds harder': l('"Harder" is not the rule; the requirement is.', '"কঠিন" নিয়ম না; requirement-ই নিয়ম।'), 'Ask a friend which version they took': l('Their purpose may be different from yours.', 'তাঁদের উদ্দেশ্য আপনার থেকে আলাদা হতে পারে।') } }),
+        choice('ib-1-p1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('What does Academic Writing Task 1 ask you to do?', 'Academic Writing Task 1-এ কী করতে হয়?'), options: ['Describe a graph, table or diagram', 'Write a letter', 'Tell a story'], answer: 'Describe a graph, table or diagram', explanation: l('Academic Task 1 reports visual information.', 'Academic Task 1-এ visual তথ্যের report।'), why: { 'Write a letter': l('Academic Task 1 is a data report, not a letter.', 'Academic Task 1 data-র report, letter না।'), 'Tell a story': l('Task 1 reports the main features of the data.', 'Task 1-এ data-র মূল বিষয়গুলোর report।') } }),
+        choice('ib-1-p2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which version do most universities ask for?', 'বেশিরভাগ university কোন version চায়?'), options: ['IELTS Academic', 'Any IELTS test', 'None — only school results'], answer: 'IELTS Academic', explanation: l('Degree study usually needs Academic — but check the official requirement.', 'Degree-র জন্য সাধারণত Academic — তবে official requirement দেখুন।'), why: { 'Any IELTS test': l('The requirement names a version; for degrees it is usually Academic.', 'Requirement-এ version লেখা থাকে; degree-র জন্য সাধারণত Academic।'), 'None — only school results': l('Most universities abroad ask for an English test such as IELTS Academic.', 'বিদেশের বেশিরভাগ university IELTS Academic-এর মতো English test চায়।') } }),
+        choice('ib-1-p3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('How many passages are in Academic Reading?', 'Academic Reading-এ কয়টা passage?'), options: ['Three', 'One', 'Five'], answer: 'Three', explanation: l('Three long academic passages.', 'তিনটা লম্বা academic passage।'), why: { One: l('Academic Reading has three passages, each long.', 'Academic Reading-এ তিনটা passage, প্রতিটাই লম্বা।'), Five: l('There are three passages and 40 questions in 60 minutes.', '৬০ মিনিটে তিনটা passage আর ৪০টা প্রশ্ন।') } }),
+        choice('ib-1-p4', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Who decides which version and band you need?', 'কোন version আর কত band লাগবে কে ঠিক করে?'), options: ['The organisation you apply to', 'Your coaching centre', 'Whichever is easier'], answer: 'The organisation you apply to', explanation: l('Follow the official requirement.', 'Official requirement মানুন।'), why: { 'Your coaching centre': l('A coaching centre can advise, but only the organisation’s official requirement counts.', 'Coaching centre পরামর্শ দিতে পারে, কিন্তু গোনা হয় শুধু প্রতিষ্ঠানের official requirement।'), 'Whichever is easier': l('The wrong test may not be accepted at all.', 'ভুল test একদমই গ্রহণ না-ও হতে পারে।') } }),
+        choice('ib-1-p5', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Rafi will register as a nurse abroad. What should he do first?', 'Rafi বিদেশে nurse হিসেবে registration করবেন। প্রথমে কী করবেন?'), options: ['Read the regulator’s official English-test requirement', 'Book the first test date he finds', 'Ask a friend which test they took'], answer: 'Read the regulator’s official English-test requirement', explanation: l('Professional bodies set their own version and band.', 'পেশাজীবী সংস্থা নিজেদের version আর band ঠিক করে।'), why: { 'Book the first test date he finds': l('Check the requirement before booking.', 'Book করার আগে requirement দেখুন।'), 'Ask a friend which test they took': l('Their purpose may be different from his.', 'তাঁদের উদ্দেশ্য তাঁর থেকে আলাদা হতে পারে।') } }),
       ],
     },
     {
@@ -129,8 +128,8 @@ export const ibVersions: Lesson = {
       exercises: [
         gap('ib-1-r1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Write the version (one word).', 'Version লিখুন (একটা word)।'), sentence: 'For a master’s degree, universities usually ask for IELTS ___.', accepted: ['Academic'], explanation: l('Academic.', 'Academic।') }),
         gap('ib-1-r2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Write the missing number (one word or digit).', 'বাদ পড়া সংখ্যা লিখুন (একটা word বা অঙ্ক)।'), sentence: 'IELTS tests ___ skills: Listening, Reading, Writing and Speaking.', accepted: ['four', '4'], explanation: l('Four skills.', 'চার skill।') }),
-        correct('ib-1-r3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Correct the false statement.', 'ভুল বাক্যটা ঠিক করুন।'), sentence: 'Academic and General Training have different Listening tests.', accepted: ['Academic and General Training have the same Listening tests.', 'Academic and General Training have the same Listening test.', 'Academic and General Training have different Reading tests.', 'Academic and General Training have different Writing tests.'], explanation: l('Listening is the same; Reading and Writing differ.', 'Listening একই; Reading আর Writing আলাদা।') }),
-        spot('ib-1-r4', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('One word makes this false. Tap it and fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'In General Training, Writing Task 1 is a graph.', wrong: 'graph', accepted: ['letter'], explanation: l('GT Task 1 is a letter.', 'GT Task 1 একটা letter।') }),
+        correct('ib-1-r3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Correct the false statement.', 'ভুল বাক্যটা ঠিক করুন।'), sentence: 'Academic Reading has one short passage.', accepted: ['Academic Reading has three long passages.', 'Academic Reading has three passages.'], explanation: l('Three long passages.', 'তিনটা লম্বা passage।') }),
+        spot('ib-1-r4', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('One word makes this false. Tap it and fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'In IELTS Academic, Writing Task 1 is a letter.', wrong: 'letter', accepted: ['graph', 'report', 'diagram', 'chart', 'table'], explanation: l('Academic Task 1 describes a graph, table, chart or diagram.', 'Academic Task 1-এ graph, table, chart বা diagram বর্ণনা।') }),
       ],
     },
     {
@@ -138,23 +137,23 @@ export const ibVersions: Lesson = {
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
         choice('ib-1-c1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which is the most reliable source for your requirement?', 'আপনার requirement-এর সবচেয়ে নির্ভরযোগ্য source কোনটা?'), options: ['The university’s official admission page', 'A social media group', 'Last year’s notes from a friend'], answer: 'The university’s official admission page', explanation: l('Requirements change; use the official page.', 'Requirement বদলায়; official page দেখুন।') }),
-        spot('ib-1-c2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('One word makes this false. Tap it, then fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'Both versions have the same Reading test.', wrong: 'Reading', accepted: ['Listening', 'Speaking'], fixOptions: ['Listening', 'Writing', 'Readings'], explanation: l('Listening and Speaking are shared.', 'Listening আর Speaking একই।') }),
+        spot('ib-1-c2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('One word makes this false. Tap it, then fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'Academic Writing Task 2 is a letter.', wrong: 'letter', accepted: ['essay'], fixOptions: ['essay', 'graph', 'story'], explanation: l('Task 2 is an essay.', 'Task 2 একটা essay।') }),
         order('ib-1-c3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Build the sentence.', 'Sentence-টা সাজান।'), answer: 'Most universities ask for IELTS Academic.', explanation: l('Academic for university study.', 'University-র জন্য Academic।') }),
       ],
     },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: your version', 'এবার আপনার পালা: আপনার version'),
+      title: l('Your turn: your requirement', 'এবার আপনার পালা: আপনার requirement'),
       exercises: [
         write('ib-1-y1', 'ib-versions', {
           ...P,
-          prompt: l('Write 3 sentences: why you are taking IELTS, which version you think you need, and where you will check the official requirement.', '৩টা sentence লিখুন: কেন IELTS দিচ্ছেন, কোন version লাগবে বলে মনে করেন, আর official requirement কোথায় দেখবেন।'),
-          model: 'I am taking IELTS because I want to study for a master’s degree in Canada. I think I need IELTS Academic, because it is for university study. I will check the English requirement on the university’s official admission page.',
-          checklist: [l('your purpose (study, work, migration)', 'আপনার উদ্দেশ্য (পড়া, কাজ, migration)'), l('the version and a reason', 'version আর একটা কারণ'), l('an official source to check', 'যাচাইয়ের জন্য একটা official source')],
-          explanation: l('Purpose → version → official check.', 'উদ্দেশ্য → version → official যাচাই।'),
-          task: 'The student explains in 3 sentences why they are taking IELTS, which version they need and where they will check. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts: Academic is usually for university study; General Training is often for work, training or migration; the organisation’s official requirement decides; Listening and Speaking are the same in both versions and Reading and Writing differ; Academic Writing Task 1 describes visual information, General Training Task 1 is a letter. Correct any wrong fact gently, and praise checking an official source. Never state fees, dates or specific institution requirements.',
-          target: l('Choosing the right version', 'ঠিক version বাছাই'),
+          prompt: l('Write 3 sentences: why you are taking IELTS, which version you need, and where you will check the official requirement.', '৩টা sentence লিখুন: কেন IELTS দিচ্ছেন, কোন version লাগবে, আর official requirement কোথায় দেখবেন।'),
+          model: 'I am taking IELTS because I want to study for a master’s degree in Canada. I need IELTS Academic, because it is for university study. I will check the English requirement on the university’s official admission page.',
+          checklist: [l('your purpose (which course or degree)', 'আপনার উদ্দেশ্য (কোন course বা degree)'), l('the version and a reason', 'version আর একটা কারণ'), l('an official source to check', 'যাচাইয়ের জন্য একটা official source')],
+          explanation: l('Purpose → IELTS Academic → official check.', 'উদ্দেশ্য → IELTS Academic → official যাচাই।'),
+          task: 'The student explains in 3 sentences why they are taking IELTS, which version they need and where they will check. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts: IELTS Academic is the version universities usually ask for; Academic Reading has three long academic passages; Academic Writing Task 1 describes visual information such as a graph, table or diagram, Task 2 is an essay; the organisation’s official requirement decides the version and band. If the student names another version for university study, gently correct it to IELTS Academic. Praise checking an official source. Never state fees, dates or specific institution requirements.',
+          target: l('IELTS Academic', 'IELTS Academic'),
         }),
       ],
     },
@@ -162,9 +161,9 @@ export const ibVersions: Lesson = {
       kind: 'recall',
       title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Two versions: Academic (usually university) and General Training (often work or migration).', 'দুটো version: Academic (সাধারণত university) আর General Training (প্রায়ই কাজ বা migration)।'),
-        l('Listening and Speaking are the same; Reading and Writing differ.', 'Listening আর Speaking একই; Reading আর Writing আলাদা।'),
-        l('The official requirement decides — check it before you book.', 'Official requirement ঠিক করে — book করার আগে দেখুন।'),
+        l('IELTS Academic is the version for university study — Mino prepares you for it.', 'IELTS Academic হলো university-তে পড়ার version — Mino আপনাকে এর জন্যই প্রস্তুত করে।'),
+        l('Academic Reading: three long passages. Writing Task 1: describe data; Task 2: an essay.', 'Academic Reading: তিনটা লম্বা passage। Writing Task 1: data বর্ণনা; Task 2: essay।'),
+        l('The official requirement decides the version and the band — check it before you book.', 'Official requirement ঠিক করে version আর band — book করার আগে দেখুন।'),
       ],
     },
   ],
@@ -782,7 +781,7 @@ export const ibPlan: Lesson = {
       kind: 'discover',
       title: l('Parts of a requirement', 'Requirement-এর অংশ'),
       items: [
-        { en: 'The version: IELTS Academic (or General Training, or a specific kind of test for some visas)', note: l('book the right one', 'ঠিকটা book করুন') },
+        { en: 'The version: IELTS Academic for university study (some visas ask for a specific kind of test)', note: l('book the right one', 'ঠিকটা book করুন') },
         { en: 'The overall band: e.g. 6.5 overall', note: l('the average of four', 'চারটার গড়') },
         { en: 'The minimum per skill: e.g. no band below 6.0, or Writing 6.5', note: l('every skill must meet it', 'প্রতিটা skill-কে পূরণ করতে হবে') },
         { en: 'How recent the result must be: many organisations accept results for about two years', note: l('check your organisation', 'আপনার প্রতিষ্ঠান দেখুন') },

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   completeLesson, CURRICULUM, DIAGNOSTIC_ITEMS, findLesson, lessonPlace, lessonState, MODULES, nextAction, nextLesson, PARALLEL_LESSONS, PATH_LESSONS,
-  saveInProgress, scoreDiagnostic, stageLessons, getStage, validateCurriculum, FOUNDATION_TOPICS, getTopic, lessonBySlug, lessonHref, lessonSlug,
+  saveInProgress, scoreDiagnostic, stageLessons, getStage, validateCurriculum, FOUNDATION_TOPICS, getTopic, lessonBySlug, lessonHref, lessonSlug, LEGACY_TOPICS, lessonBySlugAnywhere,
 } from '../lib/foundation';
 import { continueLearning, ieltsJourney, learningStats } from '../lib/engine/journey';
 import { en } from '../lib/i18n/locales/en';
@@ -36,28 +36,67 @@ test('every existing lesson is placed exactly once; nothing new, nothing lost', 
   assert.deepEqual(CURRICULUM.map((s) => s.level), [0, 1, 2, 3, 4, 5, 6]);
 });
 
-test('English Foundation: 16 topic cards in the agreed order, then the review', () => {
+test('Start Here: the seven IELTS basics in order, Academic-first', () => {
+  const sh = getStage('start-here').steps.filter((s) => s.lessons?.length);
+  assert.deepEqual(
+    sh.map((s) => s.title.en),
+    ['What is IELTS?', 'Why do you need IELTS?', 'What is Academic IELTS?', 'The four skills', 'IELTS test structure', 'How Band Scores work', 'How to prepare for IELTS'],
+  );
+  assert.deepEqual(START, ['ib-10', 'ib-11', 'ib-1', 'ib-2', 'ib-3', 'ib-4', 'ib-5', 'ib-6', 'ib-7', 'ib-8', 'ib-9']);
+  // Mino prepares students for IELTS Academic: General Training is not taught as a path.
+  const text = JSON.stringify(MODULES.flatMap((m) => m.lessons));
+  assert.doesNotMatch(text, /General Training|\bGT\b/);
+});
+
+test('English Foundation: 24 topics in a usable-English order, then the review', () => {
   const ef = getStage('english-foundation').steps;
   assert.deepEqual(
     ef.filter((s) => !s.parallel).map((s) => s.title.en),
     [
-      'Sentence Basics', 'Parts of Speech', 'Noun', 'Pronoun', 'Verb & Helping Verbs', 'Simple & Compound Sentences', 'Articles', 'Tenses',
-      'Subject–Verb Agreement', 'Adjectives & Adverbs', 'Prepositions', 'Connectors', 'Complex Sentences', 'Punctuation & Capitalisation', 'Common Errors', 'Foundation Review',
+      'How English Sentences Work', 'Parts of Speech', 'Nouns', 'Pronouns', 'Verbs', 'Helping Verbs', 'Subject + Verb + Object', 'Statements, Negatives & Questions',
+      'Articles', 'Present Simple', 'Present Continuous', 'Past Simple', 'Future Basics', 'Subject–Verb Agreement', 'Adjectives', 'Adverbs', 'Prepositions',
+      'Connectors', 'Compound Sentences', 'Complex Sentences', 'More Tenses & Tense Review', 'Punctuation & Capitalisation', 'Common Errors', 'Foundation Review',
     ],
   );
   assert.equal(ef.at(-1)!.parallel, true, 'Vocabulary Foundation runs alongside');
   const before = (a: string, b: string) => assert.ok(at(a) < at(b), `${a} before ${b}`);
-  before('ib-4', 'sb-1'); // Start Here first
-  before('t-5', 't-8'); // inside Tenses: simple forms first…
-  before('t-8', 't-6'); // …then the perfect forms
-  before('t-12', 'sva-1'); // Tenses (with its review test) before agreement
+  before('ib-9', 'sb-1'); // Start Here first
+  before('sb-5', 'po-1'); // sentences before word classes
+  before('pvb-1', 'pvb-2'); // verbs before helping verbs
+  before('pvb-2', 'sb-10'); // helping verbs before negatives and questions
+  before('sb-6', 'sb-10'); // simple sentences before negatives and questions
+  before('sb-10', 'ar-1');
+  before('t-2', 't-3'); // A1 tenses: present simple → continuous → past → future…
+  before('t-3', 't-4');
+  before('t-4', 't-8');
+  before('t-8', 'sva-1'); // …before agreement and the rest
+  before('pa-1', 'pv-1'); // adjectives before adverbs
+  before('sb-7', 'sb-8'); // compound before complex
+  before('cx-9', 't-6'); // perfect tenses (A2/B1) after the sentence work
+  before('t-5', 't-7'); // past continuous before past perfect
+  before('t-12', 'pu-1');
   const lessons = stageLessons(getStage('english-foundation'));
+  assert.equal(lessons[0], 'sb-1');
   assert.equal(lessons.at(-1), 'pl-8', 'English Foundation ends with the review labs');
-  before('ce-9', 'ib-5'); // IELTS Basics after English Foundation
-  before('sp-1', 'ls-2'); // Skill Building after IELTS Basics
+  before('pl-8', 'ls-1'); // IELTS skills after English Foundation
+  before('sp-1', 'ls-2'); // Skill Building after the skill basics
   assert.ok(PARALLEL_LESSONS.every((id) => id.startsWith('vc-')), 'Vocabulary Foundation runs alongside');
   assert.equal(lessonPlace('ib-1')!.stage.id, 'start-here');
   assert.equal(lessonPlace('ls-3')!.stage.id, 'skill-building');
+});
+
+test('prerequisites follow the curriculum: the lesson before, inside the same topic', () => {
+  const fp: FoundationProgress = { lessons: {}, errors: {}, concepts: {}, mistakes: [], days: {} };
+  const state = (id: string) => {
+    const f = findLesson(id)!;
+    return lessonState(f.module, f.lesson, fp);
+  };
+  for (const topic of FOUNDATION_TOPICS) assert.equal(state(topic.lessons![0]), 'available', `${topic.id} opens with an open lesson`);
+  assert.equal(state('t-3'), 'available', 'Present Continuous does not wait for the module order');
+  assert.equal(state('t-2'), 'locked', 'Present Simple comes after "Understanding Time"');
+  assert.equal(state('sb-10'), 'available', 'the new lesson opens where the path reaches it');
+  const after = completeLesson(fp, 't-1', 90, NOW);
+  assert.equal(lessonState(findLesson('t-2')!.module, findLesson('t-2')!.lesson, after), 'available');
 });
 
 test('the path respects every lesson’s prerequisites: walking it, the next lesson is always open', () => {
@@ -78,8 +117,8 @@ test('new student: Start Here is current; Continue opens "What IELTS is"', () =>
   assert.deepEqual(j.stages.map((s) => s.state), ['current', 'upcoming', 'upcoming', 'upcoming', 'upcoming', 'upcoming', 'upcoming']);
   assert.equal(j.percent, 0);
   assert.equal(j.stages[0].steps[0].state, 'current');
-  assert.deepEqual(continueLearning(p), { kind: 'lesson', lessonId: 'ib-1', stage: 'start-here' });
-  assert.deepEqual(nextAction(p.foundation, NOW), { kind: 'lesson', lessonId: 'ib-1' });
+  assert.deepEqual(continueLearning(p), { kind: 'lesson', lessonId: 'ib-10', stage: 'start-here' });
+  assert.deepEqual(nextAction(p.foundation, NOW), { kind: 'lesson', lessonId: 'ib-10' });
 });
 
 test('end of Start Here: the English check (optional), then "Start English Foundation"', () => {
@@ -112,7 +151,7 @@ test('a strong check counts English Foundation as done; its lessons stay open', 
   assert.equal(ef.testedOut, true);
   assert.ok(ef.lessonsDone < ef.lessonsTotal, 'lessons are not reported as completed');
   assert.equal(j.current, 'ielts-basics');
-  assert.equal(nextLesson(fp)!.lesson.id, 'ib-5');
+  assert.equal(nextLesson(fp)!.lesson.id, 'ls-1');
   const { module, lesson } = findLesson('ar-1')!;
   assert.equal(lessonState(module, lesson, fp), 'available', 'still open for review');
 });
@@ -180,7 +219,10 @@ test('one path everywhere: IELTS page, Home, Today and Mino read the same engine
 
 test('routes: /ielts/foundation/<topic> and /ielts/foundation/<topic>/<lesson>, unique and clash-free', () => {
   const ids = FOUNDATION_TOPICS.map((t) => t.id);
-  assert.deepEqual(ids.slice(0, 6), ['sentence-basics', 'parts-of-speech', 'noun', 'pronoun', 'verb-helping-verbs', 'simple-compound-sentences']);
+  assert.deepEqual(ids.slice(0, 7), ['what-is-ielts', 'why-ielts', 'academic-ielts', 'four-skills', 'test-structure', 'band-scores', 'how-to-prepare']);
+  assert.deepEqual(ids.slice(7, 15), ['sentence-basics', 'parts-of-speech', 'noun', 'pronoun', 'verbs', 'helping-verbs', 'subject-verb-object', 'statements-negatives-questions']);
+  const modules = MODULES.map((m) => m.id);
+  assert.ok(ids.filter((id) => modules.includes(id)).every((id) => getTopic(id)), 'a topic that shares a module id is the topic page');
   const reserved = ['lesson', 'diagnostic', 'challenge', 'fix', 'quiz', 'review'];
   assert.ok(ids.every((id) => /^[a-z-]+$/.test(id) && !reserved.includes(id)), 'topic slugs never hit a fixed route');
   for (const topic of FOUNDATION_TOPICS) {
@@ -192,8 +234,14 @@ test('routes: /ielts/foundation/<topic> and /ielts/foundation/<topic>/<lesson>, 
     assert.ok(slugs.every((sl) => !units.includes(sl)), `${topic.id}: no lesson slug equals a unit id`);
   }
   assert.equal(lessonHref('sb-3'), '/ielts/foundation/sentence-basics/verb');
-  assert.equal(lessonHref('t-2'), '/ielts/foundation/tenses/present-simple');
-  assert.equal(lessonHref('ib-1'), '/ielts/foundation/lesson/ib-1', 'lessons outside English Foundation keep their page');
+  assert.equal(lessonHref('t-2'), '/ielts/foundation/present-simple/present-simple');
+  assert.equal(lessonHref('t-6'), '/ielts/foundation/tenses/present-perfect', 'More Tenses keeps the old tenses URL');
+  assert.equal(lessonHref('ib-1'), '/ielts/foundation/academic-ielts/academic-ielts-the-test-for-university-study');
+  assert.equal(lessonHref('ls-1'), '/ielts/foundation/lesson/ls-1', 'lessons outside the topic stages keep their page');
+  // Links saved before the new order still find their lesson.
+  assert.deepEqual(Object.keys(LEGACY_TOPICS).map((k) => getTopic(LEGACY_TOPICS[k])?.id), ['verbs', 'subject-verb-object', 'adjectives']);
+  assert.equal(lessonBySlugAnywhere(lessonSlug('pvb-2')), 'pvb-2');
+  assert.equal(lessonBySlugAnywhere('present-simple'), 't-2');
   assert.equal(getTopic('sentence-basics')!.lessons!.length, 5);
 });
 

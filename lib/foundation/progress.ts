@@ -4,7 +4,7 @@
 import { localDateKey } from '@/lib/engine/dates';
 import type { FoundationDiagnosticRecord, FoundationMistake, FoundationProgress, UserProfile } from '@/lib/models';
 import { CONCEPTS, findLesson, LEVELS, MODULES } from './content';
-import { getStage, PARALLEL_LESSONS, PATH_LESSONS, stageLessons } from './curriculum';
+import { getStage, PARALLEL_LESSONS, PATH_LESSONS, stageLessons, topicOfLesson } from './curriculum';
 import { CHALLENGES } from './content/challenges';
 import { CONCEPT_PATTERN, patternModules, POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { expectedAnswer, posPairs } from './grade';
@@ -93,7 +93,17 @@ export type LessonState = 'done' | 'skipped' | 'available' | 'locked';
  * lessons always stay open for review.
  */
 /** The previous lesson in the module, or in the same unit when the module has units. */
+/**
+ * The lesson recommended before this one: the previous lesson in its curriculum
+ * topic (Start Here and English Foundation follow the curriculum order, not the
+ * module's), else the previous lesson in its module or unit.
+ */
 function defaultPrereqs(module: Module, lesson: Lesson): string[] {
+  const topic = topicOfLesson(lesson.id);
+  if (topic?.lessons) {
+    const i = topic.lessons.indexOf(lesson.id);
+    return i > 0 ? [topic.lessons[i - 1]] : [];
+  }
   const pool = lesson.unit ? module.lessons.filter((l) => l.unit === lesson.unit) : module.lessons;
   const index = pool.indexOf(lesson);
   return index > 0 ? [pool[index - 1].id] : [];
@@ -177,10 +187,12 @@ export function stepBeforeModule(target: Module, fp: FoundationProgress): { modu
 export function stepBeforeLesson(module: Module, lesson: Lesson, fp: FoundationProgress): Lesson | undefined {
   if (lessonState(module, lesson, fp) !== 'locked') return undefined;
   const skipped = skippedSet(fp);
-  const index = module.lessons.indexOf(lesson);
-  const prereqs = lesson.prerequisites ?? (index > 0 ? [module.lessons[index - 1].id] : []);
+  const prereqs = lesson.prerequisites ?? defaultPrereqs(module, lesson);
   const missing = prereqs.find((id) => !fp.lessons[id] && !skipped.has(id));
-  const first = module.lessons.find((l) => (!lesson.unit || l.unit === lesson.unit) && lessonState(module, l, fp) === 'available');
+  // The first open lesson of the same topic (curriculum order), else of the same module or unit.
+  const topic = topicOfLesson(lesson.id);
+  const pool = topic?.lessons ? topic.lessons.map((id) => findLesson(id)!) : module.lessons.filter((l) => !lesson.unit || l.unit === lesson.unit).map((l) => ({ module, lesson: l }));
+  const first = pool.find((x) => lessonState(x.module, x.lesson, fp) === 'available')?.lesson;
   return first ?? (missing ? findLesson(missing)?.lesson : undefined);
 }
 

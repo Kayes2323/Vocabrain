@@ -1161,8 +1161,6 @@ export const futureFormsV2: Lesson = {
   id: 't-8',
   format: 'v2',
   concept: 'future',
-  // Taught with the core tenses (after past continuous), before the perfect forms.
-  prerequisites: ['t-5'],
   title: l('Future forms', 'Future forms'),
   why: l('Predictions in Task 1 (projected data), plans in Speaking Part 1, and ideas about the future in Part 3.', 'Task 1-এ ভবিষ্যদ্বাণী (projected data), Speaking Part 1-এ পরিকল্পনা আর Part 3-এ ভবিষ্যৎ নিয়ে ভাবনা।'),
   minutes: 12,

@@ -390,7 +390,7 @@ export const lsPart2: Lesson = {
         { skill: 'listening', example: 'Label the plan: A–H', note: l('Part 2 map tasks.', 'Part 2 map task।') },
         { skill: 'writing', example: 'Academic Task 1 maps: "A car park was built behind the school."', note: l('The same position language.', 'অবস্থানের একই ভাষা।') },
         { skill: 'speaking', example: 'Part 2: "My favourite café is opposite the park."', note: l('Describing places.', 'জায়গার বর্ণনা।') },
-        { skill: 'reading', example: 'GT Reading: directions in notices and guides', note: l('Everyday texts.', 'দৈনন্দিন text।') },
+        { skill: 'reading', example: 'Academic Reading: following a process described in a passage', note: l('The same sequence words help.', 'একই ক্রমের word কাজে লাগে।') },
       ],
     },
     {

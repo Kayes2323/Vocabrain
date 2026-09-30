@@ -28,6 +28,8 @@ import { VOCABULARY_CONCEPTS, vcContext, vcKnowWord, vcParaphrase, vcPrecise, vc
 import { vcHabits, vcInIelts, vcReview } from './vocabulary-apply';
 import { IELTS_INTRO_CONCEPTS, ibBands, ibDelivery, ibFormat, ibMarking, ibPlan, ibVersions } from './ielts-intro';
 import { ibMyths, ibReview, ibYourPlan } from './ielts-intro-apply';
+import { IELTS_START_CONCEPTS, ibWhat, ibWhy } from './ielts-start';
+import { SENTENCE_QUESTION_CONCEPTS, sbQuestions } from './sentence-questions';
 import { LISTENING_CONCEPTS, lsFormat, lsPart1, lsPart2, lsPart3, lsPart4, lsRules } from './listening';
 import { lsReview, lsStrategy, lsTraps } from './listening-apply';
 import { READING_CONCEPTS, rdChoice, rdCompletion, rdHeadings, rdParaphrase, rdSkim, rdTfng } from './reading';
@@ -80,7 +82,7 @@ export const MODULES: Module[] = [
     ieltsLink: t('Every Writing and Speaking answer is built from sentences; Reading gets easier when you can find the main subject and verb.', 'Writing আর Speaking-এর প্রতিটা answer sentence দিয়েই তৈরি; main subject আর verb খুঁজতে পারলে Reading সহজ হয়।'),
     skill: 'grammar',
     tags: ['sentence-structure', 'subject', 'verb', 'object'],
-    lessons: sentenceBasicsLessons,
+    lessons: [...sentenceBasicsLessons, sbQuestions],
   },
   {
     id: 'tenses',
@@ -212,11 +214,11 @@ export const MODULES: Module[] = [
     level: 2,
     number: 1,
     title: t('What is IELTS?', 'IELTS কী?'),
-    description: t('Academic vs General Training, the four skills, timing, computer or paper, Band Scores, marking and requirements.', 'Academic আর General Training, চার skill, সময়, computer না paper, Band Score, marking আর requirement।'),
+    description: t('What IELTS is, why you need it, IELTS Academic, the four skills, test structure, Band Scores and how to prepare.', 'IELTS কী, কেন লাগে, IELTS Academic, চার skill, test-এর গঠন, Band Score আর কীভাবে প্রস্তুতি নেবেন।'),
     ieltsLink: t('Know the test before you train for it.', 'Training-এর আগে test-টা চিনে নিন।'),
     skill: 'reading',
     tags: ['ielts-basics'],
-    lessons: [ibVersions, ibFormat, ibDelivery, ibBands, ibMarking, ibPlan, ibMyths, ibYourPlan, ibReview],
+    lessons: [ibWhat, ibWhy, ibVersions, ibFormat, ibDelivery, ibBands, ibMarking, ibPlan, ibMyths, ibYourPlan, ibReview],
   },
   {
     id: 'listening-foundation',
@@ -269,7 +271,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS, ...SPEAKING_CONCEPTS];
+export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_START_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...SENTENCE_QUESTION_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS, ...SPEAKING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

@@ -7,7 +7,7 @@ void runModuleSpec({
   moduleId: 'ielts-intro',
   name: 'What is IELTS?',
   lessonPrefix: 'ib-',
-  lessonCount: 9,
+  lessonCount: 11,
   shotPrefix: 'ib',
   mino: {
     lesson: 'ib-1',
@@ -20,7 +20,7 @@ void runModuleSpec({
     mistakePattern: 'ib-version-fact',
   },
   feedback: { lesson: 'ib-2', exercise: 'ib-2-p1', wrongOption: '30', expect: /Listening lasts about 30 minutes, but has 40 questions/ },
-  fix: { pattern: 'ib-version-fact', title: 'Academic or General Training', rule: /Listening and Speaking are the same in both versions/ },
+  fix: { pattern: 'ib-version-fact', title: 'IELTS Academic facts', rule: /IELTS Academic is the version universities usually ask for/ },
   mastery: { lesson: 'ib-4', concept: 'ib-bands', write: 'My target is 6.5 overall with no band below 6.0. I am aiming for Listening 7.0, Reading 6.5, Writing 6.0 and Speaking 6.5. These add up to 26, and 26 divided by 4 is 6.5.' },
   bn: {
     lesson: 'ib-3',

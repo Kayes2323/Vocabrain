@@ -150,7 +150,7 @@ export const en = {
     },
     topicCards: {
       title: 'English Foundation',
-      intro: 'The English grammar you need for IELTS, one step at a time.',
+      intro: 'Usable English in a logical order: sentences first, then the grammar that builds on them.',
       progress: 'Foundation progress',
       count: '{done}/{total} topics',
       lessons: '{done}/{total} lessons',
@@ -166,7 +166,8 @@ export const en = {
     },
     title: 'IELTS Foundation',
     subtitle: 'Build your IELTS foundation.',
-    groups: { grammar: 'Level 1 — Foundation Grammar', vocabulary: 'Vocabulary', basics: 'Level 2 — IELTS Basics', progress: 'Your progress', today: 'Today' },
+    groups: { start: 'Level 0 — Start Here', grammar: 'Level 1 — English Foundation', vocabulary: 'Vocabulary', basics: 'Level 2 — IELTS Skills Explained', progress: 'Your progress', today: 'Today' },
+    level0: { title: 'IELTS Basics', intro: 'Know the test before you prepare: what IELTS is, IELTS Academic, the skills and the Band Scores.', progress: 'Start Here progress' },
     nextLabel: 'Next step',
     lessonsN: '{n} lessons',
     wordsCount: '{done}/{total} words',
@@ -1108,9 +1109,9 @@ export const en = {
     howCalculated:
       'Progress counts what you have finished: lessons completed, practice sessions, Mock Tests and your bands. Opening a page never counts.',
     stages: {
-      'start-here': 'Start Here',
+      'start-here': 'IELTS Basics: Start Here',
       'english-foundation': 'English Foundation',
-      'ielts-basics': 'IELTS Basics',
+      'ielts-basics': 'IELTS Skills Explained',
       'skill-building': 'Skill Building',
       practice: 'Practice',
       'mock-tests': 'Mock Tests',

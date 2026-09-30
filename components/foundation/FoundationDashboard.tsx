@@ -122,7 +122,11 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
   const action = nextAction(fp);
   const step = useNextStep(fp, action);
   // English Foundation topics, from the one curriculum (progress = lessons completed).
-  const foundation = ieltsJourney(profile).stages.find((x) => x.id === 'english-foundation')!;
+  const journey = ieltsJourney(profile);
+  const foundation = journey.stages.find((x) => x.id === 'english-foundation')!;
+  const startHere = journey.stages.find((x) => x.id === 'start-here')!;
+  const startTopics = startHere.steps.filter((x) => x.step.lessons?.length);
+  const startDone = startTopics.filter((x) => x.state === 'done').length;
   const topicCards = foundation.steps.filter((x) => !x.step.parallel);
   const topicsDone = topicCards.filter((x) => x.state === 'done').length;
   const topicsTotal = topicCards.length;
@@ -131,7 +135,8 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
   const plan = foundationDailyPlan(profile, brain);
   const topics = topicSummary(fp).filter((x) => x.status !== 'learning');
   const next = nextLesson(fp);
-  const basics = modulesForLevel(2);
+  // Level 2 skill modules; "What is IELTS?" is taught as Level 0 above.
+  const basics = modulesForLevel(2).filter((m) => m.id !== 'ielts-intro');
 
   const card = (m: Module, tint: Tint) => {
     const soon = isComingSoon(m);
@@ -171,6 +176,23 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
         backLabel="IELTS"
         action={fp.diagnostic ? <StatusChip tone={fp.diagnostic.level === 'strong' ? 'success' : 'brand'}>{t(`foundation.level.${fp.diagnostic.level}`)}</StatusChip> : undefined}
       />
+
+      {/* Level 0: the test itself, before the English. */}
+      <section className="space-y-3" aria-labelledby="level0-title" data-testid="foundation-level0">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.groups.start')}</p>
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 id="level0-title" className="text-xl font-semibold tracking-tight">
+              {t('foundation.level0.title')}
+            </h2>
+            <span className="shrink-0 text-sm text-muted-foreground tabular-nums" data-testid="level0-done">
+              {t('foundation.topicCards.count', { done: n(startDone), total: n(startTopics.length) })}
+            </span>
+          </div>
+          <p className="text-[15px] text-muted-foreground">{t('foundation.level0.intro')}</p>
+        </div>
+        <TopicCards stage={startHere} testId="topic-cards-level0" />
+      </section>
 
       {/* Level 1: where the student is, then the topics in order. */}
       <section className="space-y-4" aria-labelledby="level1-title" data-testid="foundation-level1">

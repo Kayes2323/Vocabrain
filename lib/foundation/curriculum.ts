@@ -4,11 +4,18 @@
 // is duplicated. Continue Learning, the IELTS page, Home's journey card,
 // Today's Learning and Mino all read this one path.
 //
-// English Foundation is 16 topics, in order: sentence basics → word classes
-// (noun, pronoun, verb) → simple/compound sentences → articles → tenses →
-// agreement → describing words → prepositions → connectors → complex
-// sentences → punctuation → common errors → review. Inside Tenses, the simple
-// tenses come before the perfect forms (the usual A1 → B1 progression).
+// Level 0 (Start Here) teaches the test before the English: what IELTS is,
+// why you need it, IELTS Academic (Mino prepares students for Academic only),
+// the four skills, the test structure, Band Scores and how to prepare.
+//
+// English Foundation is 24 topics in a usable-English order, checked against
+// the CEFR-based British Council–EAQUALS Core Inventory: sentences → word
+// classes → verbs and helping verbs → simple sentences → negatives and
+// questions → articles → the A1 tenses (present simple, present continuous,
+// past simple, future) → agreement → adjectives, adverbs, prepositions →
+// connectors → compound and complex sentences → the A2/B1 tenses (past
+// continuous, perfect forms) and tense review → punctuation → common errors →
+// review. Grammar detail comes after students have met it in use.
 import { findLesson } from './content';
 import type { L } from './model';
 
@@ -51,15 +58,19 @@ export const CURRICULUM: CurriculumStage[] = [
   {
     id: 'start-here',
     level: 0,
-    title: l('Start Here', 'এখান থেকে শুরু'),
+    title: l('IELTS Basics: Start Here', 'IELTS Basics: এখান থেকে শুরু'),
     goal: l(
-      'What IELTS is, why it matters, which version you need, how the test works and how Band Scores are given.',
-      'IELTS কী, কেন দরকার, আপনার কোন version লাগবে, test কীভাবে হয় আর Band Score কীভাবে দেওয়া হয়।',
+      'What IELTS is, why you need it, what IELTS Academic is, the four skills, how the test is built, how Band Scores work and how to prepare.',
+      'IELTS কী, কেন লাগে, IELTS Academic কী, চারটি skill, test কীভাবে সাজানো, Band Score কীভাবে কাজ করে আর কীভাবে প্রস্তুতি নেবেন।',
     ),
     steps: [
-      { id: 'what-is-ielts', title: l('What IELTS is: Academic and General Training', 'IELTS কী: Academic আর General Training'), why: l('Know which test you are preparing for.', 'কোন test-এর জন্য প্রস্তুতি নিচ্ছেন, আগে সেটা জানুন।'), lessons: ['ib-1'] },
-      { id: 'test-format', title: l('The four skills and the test format', 'চারটি skill আর test-এর format'), why: l('Listening, Reading, Writing, Speaking — timing and order.', 'Listening, Reading, Writing, Speaking — সময় আর ক্রম।'), lessons: ['ib-2', 'ib-3'] },
-      { id: 'band-scores', title: l('How Band Scores work', 'Band Score কীভাবে কাজ করে'), why: l('So your target means something concrete.', 'যাতে আপনার target একটা স্পষ্ট লক্ষ্য হয়।'), lessons: ['ib-4'] },
+      { id: 'what-is-ielts', title: l('What is IELTS?', 'IELTS কী?'), why: l('An English test of four skills, scored in bands.', 'চারটি skill-এর English test, band-এ নম্বর।'), lessons: ['ib-10'] },
+      { id: 'why-ielts', title: l('Why do you need IELTS?', 'IELTS কেন লাগে?'), why: l('Proof of English for your university — and your target.', 'University-র জন্য English-এর প্রমাণ — আর আপনার target।'), lessons: ['ib-11'] },
+      { id: 'academic-ielts', title: l('What is Academic IELTS?', 'Academic IELTS কী?'), why: l('The version for university study.', 'University-তে পড়ার version।'), lessons: ['ib-1'] },
+      { id: 'four-skills', title: l('The four skills', 'IELTS-এর চারটি skill'), why: l('Listening, Reading, Writing, Speaking — parts and timing.', 'Listening, Reading, Writing, Speaking — part আর সময়।'), lessons: ['ib-2'] },
+      { id: 'test-structure', title: l('IELTS test structure', 'IELTS test-এর গঠন'), why: l('Test day on computer or paper.', 'Computer বা paper-এ test-এর দিন।'), lessons: ['ib-3'] },
+      { id: 'band-scores', title: l('How Band Scores work', 'Band Score কীভাবে কাজ করে'), why: l('Bands, the overall score and how each skill is marked.', 'Band, overall score আর প্রতিটি skill-এর নম্বর।'), lessons: ['ib-4', 'ib-5'] },
+      { id: 'how-to-prepare', title: l('How to prepare for IELTS', 'IELTS-এর প্রস্তুতি কীভাবে নেবেন'), why: l('Targets, myths and your plan.', 'Target, ভুল ধারণা আর আপনার plan।'), lessons: ['ib-6', 'ib-7', 'ib-8', 'ib-9'] },
       {
         id: 'english-check',
         title: l('Check your English level', 'আপনার English level যাচাই করুন'),
@@ -74,31 +85,37 @@ export const CURRICULUM: CurriculumStage[] = [
     id: 'english-foundation',
     level: 1,
     title: l('English Foundation', 'English Foundation'),
-    goal: l('The grammar every IELTS answer is built on, from a simple sentence to error-free writing.', 'প্রতিটি IELTS উত্তরের ভিত্তি যে grammar — সহজ sentence থেকে ভুলহীন লেখা পর্যন্ত।'),
+    goal: l(
+      'Usable English, step by step: how sentences work → words and verbs → questions and negatives → the everyday tenses → describing and linking ideas → longer sentences → accuracy.',
+      'ধাপে ধাপে ব্যবহারযোগ্য English: sentence কীভাবে কাজ করে → word আর verb → প্রশ্ন আর negative → প্রতিদিনের tense → বর্ণনা আর idea যুক্ত করা → লম্বা sentence → নির্ভুলতা।',
+    ),
     steps: [
-      { id: 'sentence-basics', title: l('Sentence Basics', 'Sentence Basics'), why: l('How a sentence is built — start here.', 'বাক্য কীভাবে তৈরি হয়, এখান থেকে শুরু।'), lessons: range('sb', 1, 5) },
-      { id: 'parts-of-speech', title: l('Parts of Speech', 'Parts of Speech'), why: l('The job each word does.', 'প্রতিটি শব্দ কী কাজ করে।'), lessons: ['po-1'] },
-      { id: 'noun', title: l('Noun', 'Noun'), why: l('Names of people, things, places and ideas.', 'মানুষ, বস্তু, জায়গা আর ধারণার নাম।'), lessons: range('pn', 1, 4) },
-      { id: 'pronoun', title: l('Pronoun', 'Pronoun'), why: l('Replace a noun instead of repeating it.', 'Noun বারবার না বলে তার জায়গায় বসে।'), lessons: range('ppr', 1, 3) },
-      { id: 'verb-helping-verbs', title: l('Verb & Helping Verbs', 'Verb ও Helping Verb'), why: l('Actions, states, questions and negatives.', 'কাজ, অবস্থা, প্রশ্ন আর negative।'), lessons: range('pvb', 1, 5) },
-      { id: 'simple-compound-sentences', title: l('Simple & Compound Sentences', 'Simple ও Compound Sentence'), why: l('Join two ideas correctly.', 'দুটি idea ঠিকভাবে যুক্ত করুন।'), lessons: ['sb-6', 'sb-7'] },
+      { id: 'sentence-basics', title: l('How English Sentences Work', 'English Sentence কীভাবে কাজ করে'), why: l('Sentence, subject, verb, object — start here.', 'Sentence, subject, verb, object — এখান থেকে শুরু।'), lessons: range('sb', 1, 5) },
+      { id: 'parts-of-speech', title: l('Parts of Speech', 'Parts of Speech'), why: l('The job each word does — a first look.', 'প্রতিটি শব্দ কী কাজ করে — প্রথম পরিচয়।'), lessons: ['po-1'] },
+      { id: 'noun', title: l('Nouns', 'Noun'), why: l('Names of people, things, places and ideas.', 'মানুষ, বস্তু, জায়গা আর ধারণার নাম।'), lessons: range('pn', 1, 4) },
+      { id: 'pronoun', title: l('Pronouns', 'Pronoun'), why: l('Replace a noun instead of repeating it.', 'Noun বারবার না বলে তার জায়গায় বসে।'), lessons: range('ppr', 1, 3) },
+      { id: 'verbs', title: l('Verbs', 'Verb'), why: l('Action and state words, and their forms.', 'কাজ আর অবস্থার শব্দ, আর তাদের form।'), lessons: ['pvb-1', 'pvb-3'] },
+      { id: 'helping-verbs', title: l('Helping Verbs', 'Helping Verb'), why: l('be, do, have and can — and verbs in IELTS.', 'be, do, have আর can — আর IELTS-এ verb।'), lessons: ['pvb-2', 'pvb-4', 'pvb-5'] },
+      { id: 'subject-verb-object', title: l('Subject + Verb + Object', 'Subject + Verb + Object'), why: l('Build complete simple sentences.', 'পূর্ণ simple sentence তৈরি করুন।'), lessons: ['sb-6'] },
+      { id: 'statements-negatives-questions', title: l('Statements, Negatives & Questions', 'Statement, Negative ও প্রশ্ন'), why: l('One sentence, three shapes.', 'একটা sentence, তিনটা রূপ।'), lessons: ['sb-10'] },
       { id: 'articles', title: l('Articles', 'Articles'), why: l('a, an, the — which one and when.', 'a, an, the — কখন কোনটা।'), lessons: range('ar', 1, 9) },
-      {
-        id: 'tenses',
-        title: l('Tenses', 'Tenses'),
-        why: l('Past, present and future — then tenses in IELTS.', 'অতীত, বর্তমান, ভবিষ্যৎ — তারপর IELTS-এ tense।'),
-        lessons: ['t-1', 't-2', 't-3', 't-4', 't-5', 't-8', 't-6', 't-13', 't-7', 't-14', 't-9', 't-10', 't-11', 't-15', 't-12'],
-      },
+      { id: 'present-simple', title: l('Present Simple', 'Present Simple'), why: l('Time in English, then habits and facts.', 'English-এ সময়, তারপর অভ্যাস আর সত্য।'), lessons: ['t-1', 't-2'] },
+      { id: 'present-continuous', title: l('Present Continuous', 'Present Continuous'), why: l('What is happening now.', 'এখন যা ঘটছে।'), lessons: ['t-3'] },
+      { id: 'past-simple', title: l('Past Simple', 'Past Simple'), why: l('Finished actions in the past.', 'অতীতে শেষ হওয়া কাজ।'), lessons: ['t-4'] },
+      { id: 'future-basics', title: l('Future Basics', 'Future Basics'), why: l('will, going to and plans.', 'will, going to আর পরিকল্পনা।'), lessons: ['t-8'] },
       { id: 'agreement', title: l('Subject–Verb Agreement', 'Subject–Verb Agreement'), why: l('He goes, they go — in every sentence.', 'He goes, they go — প্রতিটি sentence-এ।'), lessons: range('sva', 1, 9) },
-      {
-        id: 'adjectives-adverbs',
-        title: l('Adjectives & Adverbs', 'Adjective ও Adverb'),
-        why: l('Describing words and word forms.', 'বর্ণনার শব্দ আর word form।'),
-        lessons: [...range('pa', 1, 4), ...range('pv', 1, 4), ...range('pf', 1, 5)],
-      },
+      { id: 'adjectives', title: l('Adjectives', 'Adjective'), why: l('Describe and compare.', 'বর্ণনা আর তুলনা।'), lessons: range('pa', 1, 4) },
+      { id: 'adverbs', title: l('Adverbs', 'Adverb'), why: l('How, when and how often — then word forms.', 'কীভাবে, কখন, কতবার — তারপর word form।'), lessons: [...range('pv', 1, 4), ...range('pf', 1, 5)] },
       { id: 'prepositions', title: l('Prepositions', 'Prepositions'), why: l('Time, place and partners like "depend on".', 'সময়, জায়গা আর "depend on"-এর মতো জোড়া।'), lessons: [...range('ppp', 1, 3), ...range('pr', 1, 9)] },
       { id: 'connectors', title: l('Connectors', 'Connectors'), why: l('Words that link ideas.', 'Idea যুক্ত করার শব্দ।'), lessons: [...range('pcj', 1, 3), ...range('cn', 1, 9), 'pij-1'] },
+      { id: 'compound-sentences', title: l('Compound Sentences', 'Compound Sentence'), why: l('Join two ideas with and, but, so.', 'and, but, so দিয়ে দুটি idea যুক্ত করুন।'), lessons: ['sb-7'] },
       { id: 'complex-sentences', title: l('Complex Sentences', 'Complex Sentence'), why: l('because, although, which, if.', 'because, although, which, if।'), lessons: ['sb-8', ...range('cx', 1, 9), 'sb-9'] },
+      {
+        id: 'tenses',
+        title: l('More Tenses & Tense Review', 'আরও Tense ও Tense Review'),
+        why: l('Past continuous, the perfect tenses, then tenses in IELTS.', 'Past continuous, perfect tense, তারপর IELTS-এ tense।'),
+        lessons: ['t-5', 't-6', 't-13', 't-7', 't-14', 't-9', 't-10', 't-11', 't-15', 't-12'],
+      },
       { id: 'punctuation', title: l('Punctuation & Capitalisation', 'Punctuation ও Capitalisation'), why: l('Commas, full stops and capital letters.', 'Comma, full stop আর capital letter।'), lessons: range('pu', 1, 9) },
       { id: 'common-errors', title: l('Common Errors', 'Common Errors'), why: l('The mistakes Bangla speakers make most.', 'বাংলাভাষীদের সবচেয়ে সাধারণ ভুল।'), lessons: range('ce', 1, 9) },
       { id: 'foundation-review', title: l('Foundation Review', 'Foundation Review'), why: l('Find and fix mixed mistakes.', 'মিশ্র ভুল খুঁজে ঠিক করুন।'), lessons: range('pl', 1, 8) },
@@ -114,10 +131,9 @@ export const CURRICULUM: CurriculumStage[] = [
   {
     id: 'ielts-basics',
     level: 2,
-    title: l('IELTS Basics', 'IELTS Basics'),
-    goal: l('How each skill is tested and marked, the question types, and a realistic target.', 'প্রতিটি skill কীভাবে test আর মূল্যায়ন হয়, প্রশ্নের ধরন, আর বাস্তব target।'),
+    title: l('IELTS Skills Explained', 'IELTS Skill পরিচিতি'),
+    goal: l('How each skill is tested: the parts, the question types and a first band estimate.', 'প্রতিটি skill কীভাবে test হয়: part, প্রশ্নের ধরন আর প্রথম band আন্দাজ।'),
     steps: [
-      { id: 'marking', title: l('How each skill is marked', 'প্রতিটি skill কীভাবে নম্বর পায়'), why: l('Know what examiners reward.', 'Examiner কীসে নম্বর দেন, জানুন।'), lessons: ['ib-5'] },
       {
         id: 'band-estimate',
         title: l('Estimate your band per skill', 'প্রতিটি skill-এ আপনার band আন্দাজ করুন'),
@@ -126,7 +142,6 @@ export const CURRICULUM: CurriculumStage[] = [
         check: 'band-estimate',
         optional: true,
       },
-      { id: 'targets', title: l('Targets, myths and your plan', 'Target, ভুল ধারণা আর আপনার plan'), why: l('Set a target you can reach.', 'অর্জনযোগ্য target ঠিক করুন।'), lessons: ['ib-6', 'ib-7', 'ib-8', 'ib-9'] },
       { id: 'listening-basics', title: l('Listening basics', 'Listening basics'), why: l('How the Listening test works.', 'Listening test কীভাবে হয়।'), lessons: ['ls-1'] },
       { id: 'reading-basics', title: l('Reading basics', 'Reading basics'), why: l('Skimming, scanning and paraphrase.', 'Skimming, scanning আর paraphrase।'), lessons: ['rd-1', 'rd-2'] },
       { id: 'writing-basics', title: l('Writing basics', 'Writing basics'), why: l('Task 1, Task 2 and how they are marked.', 'Task 1, Task 2 আর কীভাবে নম্বর দেওয়া হয়।'), lessons: ['wr-1'] },
@@ -218,11 +233,20 @@ export function validateCurriculum(allLessonIds: string[]): string[] {
 // Each English Foundation step is a topic page: /ielts/foundation/<topic>,
 // and each of its lessons has a page: /ielts/foundation/<topic>/<lesson-slug>.
 
-export const FOUNDATION_TOPICS: CurriculumStep[] = CURRICULUM.find((s) => s.id === 'english-foundation')!.steps;
+/** Stages whose steps are topic pages: Start Here (Level 0) and English Foundation (Level 1). */
+export const TOPIC_STAGES: CurriculumStageId[] = ['start-here', 'english-foundation'];
+export const FOUNDATION_TOPICS: CurriculumStep[] = CURRICULUM.filter((s) => TOPIC_STAGES.includes(s.id)).flatMap((s) => s.steps.filter((st) => st.lessons?.length));
+
+/** Old topic ids (before the Phase 5 order) → the topic their first lessons moved to. */
+export const LEGACY_TOPICS: Record<string, string> = {
+  'verb-helping-verbs': 'verbs',
+  'simple-compound-sentences': 'subject-verb-object',
+  'adjectives-adverbs': 'adjectives',
+};
 
 export const getTopic = (slug: string) => FOUNDATION_TOPICS.find((t) => t.id === slug);
 
-/** The English Foundation topic a lesson belongs to. */
+/** The Start Here / English Foundation topic a lesson belongs to. */
 export const topicOfLesson = (lessonId: string) => FOUNDATION_TOPICS.find((t) => t.lessons?.includes(lessonId));
 
 /** A readable URL part from the lesson's English title ("The verb" → "verb"). */
@@ -238,6 +262,9 @@ export function lessonSlug(lessonId: string): string {
 }
 
 export const lessonBySlug = (topic: CurriculumStep, slug: string) => topic.lessons?.find((id) => lessonSlug(id) === slug);
+
+/** A lesson by its slug in any topic (for links saved before a lesson moved topic). */
+export const lessonBySlugAnywhere = (slug: string) => FOUNDATION_TOPICS.flatMap((t) => t.lessons ?? []).find((id) => lessonSlug(id) === slug);
 
 export const topicHref = (topic: CurriculumStep) => `/ielts/foundation/${topic.id}`;
 

@@ -95,7 +95,9 @@ async function main() {
     await signUp(p, 'Rafi', `teaching-en-${stamp}@test.dev`, 'en');
 
     const journeys: [string, string][] = [
-      ['Journey 1a · What is IELTS?', 'ib-1'],
+      ['Journey 0 · Start Here: What is IELTS?', 'ib-10'],
+      ['Journey 1a · Academic IELTS', 'ib-1'],
+      ['Journey 1c · Statements, negatives and questions', 'sb-10'],
       ['Journey 1b · Listening basics', 'ls-1'],
       ['Journey 2 · Noun', 'pn-1'],
       ['Journey 3 · Subject–verb agreement', 'sva-1'],

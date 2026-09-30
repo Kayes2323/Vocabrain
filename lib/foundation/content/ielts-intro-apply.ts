@@ -37,7 +37,7 @@ export const ibMyths: Lesson = {
       kind: 'discover',
       title: l('Myth → fact', 'ভুল ধারণা → সত্য'),
       items: [
-        { en: '"GT and Academic are the same." → Listening and Speaking are the same; Reading and Writing differ.', note: l('lesson 1', 'lesson ১') },
+        { en: '"Any IELTS test is fine for university." → Universities usually ask for IELTS Academic.', note: l('lesson 3', 'lesson ৩') },
         { en: '"Task 1 and Task 2 count equally." → Task 2 counts for more.', note: l('lessons 2 and 5', 'lesson ২ আর ৫') },
         { en: '"Computer IELTS is easier." → Same content and scoring.', note: l('lesson 3', 'lesson ৩') },
         { en: '"Overall = lowest band." → Average of four, rounded to the nearest half band.', note: l('lesson 4', 'lesson ৪') },
@@ -93,7 +93,7 @@ export const ibMyths: Lesson = {
       kind: 'mistakes',
       title: l('Common Mistake Lab', 'Common Mistake Lab'),
       items: [
-        { wrong: 'Booking GT for a master’s degree because a friend did', right: 'Check the university: usually Academic', why: l('fact 1', 'তথ্য ১') },
+        { wrong: 'Booking any IELTS test for a master’s degree because a friend did', right: 'Check the university: usually IELTS Academic', why: l('fact 1', 'তথ্য ১') },
         { wrong: 'Writing 180 words for Task 2', right: 'At least 250 words', why: l('fact 2', 'তথ্য ২') },
         { wrong: '"Overall 7.0, so I meet 7.0 with no band below 6.5."', right: 'Check each skill too', why: l('fact 6', 'তথ্য ৬') },
       ],
@@ -103,7 +103,7 @@ export const ibMyths: Lesson = {
       mode: 'practice',
       title: l('Practice: myth or fact?', 'Practice: ভুল ধারণা না সত্য?'),
       exercises: [
-        choice('ib-7-p1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('"Academic and General Training have the same Speaking test." Myth or fact?', '"Academic আর General Training-এর Speaking test একই।" ভুল ধারণা না সত্য?'), options: ['Fact', 'Myth'], answer: 'Fact', explanation: l('Listening and Speaking are shared.', 'Listening আর Speaking একই।'), why: { Myth: l('Speaking (and Listening) is the same in both versions.', 'দুই version-এ Speaking (আর Listening) একই।') } }),
+        choice('ib-7-p1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('"IELTS Academic Writing Task 1 asks you to describe a graph, table or diagram." Myth or fact?', '"IELTS Academic Writing Task 1-এ graph, table বা diagram বর্ণনা করতে হয়।" ভুল ধারণা না সত্য?'), options: ['Fact', 'Myth'], answer: 'Fact', explanation: l('Academic Task 1 is a data report.', 'Academic Task 1 হলো data-র report।'), why: { Myth: l('It is a fact: Academic Task 1 describes visual information.', 'এটা সত্য: Academic Task 1-এ visual তথ্য বর্ণনা করতে হয়।') } }),
         choice('ib-7-p2', 'ib-format', { ...P, pattern: 'ib-format-fact', prompt: l('"Reading has 40 questions in 60 minutes." Myth or fact?', '"Reading-এ ৬০ মিনিটে ৪০টা প্রশ্ন।" ভুল ধারণা না সত্য?'), options: ['Fact', 'Myth'], answer: 'Fact', explanation: l('40 questions, 60 minutes.', '৪০ প্রশ্ন, ৬০ মিনিট।'), why: { Myth: l('This is exactly the Reading format.', 'এটাই Reading-এর format।') } }),
         choice('ib-7-p3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('"The computer test is marked more generously." Myth or fact?', '"Computer test-এ বেশি উদারভাবে নম্বর দেওয়া হয়।" ভুল ধারণা না সত্য?'), options: ['Myth', 'Fact'], answer: 'Myth', explanation: l('Same scoring.', 'একই scoring।'), why: { Fact: l('Both formats use the same scoring.', 'দুই format-এ একই scoring।') } }),
         choice('ib-7-p4', 'ib-bands', { ...P, pattern: 'ib-band-calc', prompt: l('"An average of 6.25 is reported as 6.5." Myth or fact?', '"6.25 গড় 6.5 হিসেবে দেওয়া হয়।" ভুল ধারণা না সত্য?'), options: ['Fact', 'Myth'], answer: 'Fact', explanation: l('.25 rounds up to .5.', '.25 বেড়ে .5।'), why: { Myth: l('An average ending in .25 rounds up to the half band.', '.25-এ শেষ হওয়া গড় বেড়ে half band হয়।') } }),
@@ -126,7 +126,7 @@ export const ibMyths: Lesson = {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('ib-7-c1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which claim is TRUE?', 'কোন দাবিটা সত্য?'), options: ['The organisation you apply to decides which version you need.', 'General Training is accepted for every degree.', 'Academic has no Speaking test.'], answer: 'The organisation you apply to decides which version you need.', explanation: l('Check the official requirement.', 'Official requirement দেখুন।') }),
+        choice('ib-7-c1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which claim is TRUE?', 'কোন দাবিটা সত্য?'), options: ['The organisation you apply to decides which version you need.', 'Every university needs the same band.', 'Academic has no Speaking test.'], answer: 'The organisation you apply to decides which version you need.', explanation: l('Check the official requirement.', 'Official requirement দেখুন।') }),
         spot('ib-7-c2', 'ib-format', { ...P, pattern: 'ib-format-fact', prompt: l('One number is wrong. Tap it, then fix it.', 'একটা সংখ্যা ভুল। Tap করে ঠিক করুন।'), sentence: 'IELTS Reading has 3 sections and 50 questions.', wrong: '50', accepted: ['40', 'forty'], fixOptions: ['40', '30', '60'], explanation: l('40 questions.', '৪০টা প্রশ্ন।') }),
         order('ib-7-c3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Build the sentence.', 'Sentence-টা সাজান।'), answer: 'Neither format is easier than the other.', explanation: l('Same content and scoring.', 'একই content আর scoring।') }),
       ],
@@ -186,7 +186,7 @@ export const ibYourPlan: Lesson = {
       kind: 'discover',
       title: l('A plan in five lines', 'পাঁচ লাইনে একটা plan'),
       items: [
-        { en: '1. Version: Academic or General Training (from the official requirement)', note: l('lesson 1', 'lesson ১') },
+        { en: '1. Version: IELTS Academic for university study (confirm it in the official requirement)', note: l('lesson 3', 'lesson ৩') },
         { en: '2. Format: computer or paper (how you work best)', note: l('lesson 3', 'lesson ৩') },
         { en: '3. Target: overall + each skill minimum', note: l('lessons 4 and 6', 'lesson ৪ আর ৬') },
         { en: '4. Focus: the skill furthest below its target, by its criteria', note: l('lesson 5', 'lesson ৫') },
@@ -255,7 +255,7 @@ export const ibYourPlan: Lesson = {
         choice('ib-8-p3', 'ib-format', { ...P, pattern: 'ib-format-fact', prompt: l('Which is a realistic Writing practice?', 'কোনটা বাস্তব Writing practice?'), options: ['Task 1 in 20 minutes, then Task 2 in 40 minutes', 'Task 2 in 20 minutes', 'Task 1 with no time limit'], answer: 'Task 1 in 20 minutes, then Task 2 in 40 minutes', explanation: l('The real timing.', 'আসল সময়।'), why: { 'Task 2 in 20 minutes': l('Task 2 needs about 40 minutes.', 'Task 2-এ প্রায় ৪০ মিনিট লাগে।'), 'Task 1 with no time limit': l('Untimed practice does not train exam speed.', 'সময় ছাড়া practice exam-এর গতি শেখায় না।') } }),
         choice('ib-8-p4', 'ib-marking', { ...P, pattern: 'ib-marking-fact', prompt: l('Your Writing feedback says your paragraphs are hard to follow. Which criterion should you focus on?', 'আপনার Writing feedback বলছে paragraph বোঝা কঠিন। কোন criteria-য় মনোযোগ দেবেন?'), options: ['Coherence & Cohesion', 'Pronunciation', 'Lexical Resource only'], answer: 'Coherence & Cohesion', explanation: l('Organisation and linking.', 'গোছানো আর যোগসূত্র।'), why: { Pronunciation: l('Pronunciation is a Speaking criterion.', 'Pronunciation Speaking-এর criteria।'), 'Lexical Resource only': l('Hard-to-follow paragraphs are about organisation, not vocabulary.', 'বোঝা কঠিন paragraph গোছানোর সমস্যা, vocabulary-র না।') } }),
         choice('ib-8-p5', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('You write faster by hand and find screens tiring. Which format suits you?', 'আপনি হাতে দ্রুত লেখেন আর screen-এ ক্লান্ত হন। কোন format মানায়?'), options: ['Paper-based', 'Computer-delivered', 'It does not matter at all'], answer: 'Paper-based', explanation: l('Choose how you work best.', 'যেভাবে ভালো কাজ করেন।'), why: { 'Computer-delivered': l('Typing slowly and reading on screen would slow you down.', 'ধীরে type আর screen-এ পড়া আপনাকে ধীর করবে।'), 'It does not matter at all': l('Content is the same, but the answering method affects your speed.', 'Content একই, কিন্তু উত্তর দেওয়ার ধরন আপনার গতিতে প্রভাব ফেলে।') } }),
-        choice('ib-8-p6', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('You are not sure yet whether you will study or work abroad. What is the sensible step?', 'বিদেশে পড়বেন না কাজ করবেন এখনো নিশ্চিত না। যুক্তিসঙ্গত পদক্ষেপ কী?'), options: ['Decide the purpose, then check the official requirement before booking', 'Book both versions', 'Book General Training because it is shorter'], answer: 'Decide the purpose, then check the official requirement before booking', explanation: l('Purpose → requirement → version.', 'উদ্দেশ্য → requirement → version।'), why: { 'Book both versions': l('That costs twice; decide the purpose first.', 'এতে দ্বিগুণ খরচ; আগে উদ্দেশ্য ঠিক করুন।'), 'Book General Training because it is shorter': l('Both versions have the same timing; the requirement decides.', 'দুই version-এর সময় একই; requirement ঠিক করে।') } }),
+        choice('ib-8-p6', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('You have not chosen your university yet. What is the sensible step?', 'এখনো university ঠিক করেননি। যুক্তিসঙ্গত পদক্ষেপ কী?'), options: ['Shortlist universities, then check their official requirement before booking', 'Book two tests to be safe', 'Book a date first and check later'], answer: 'Shortlist universities, then check their official requirement before booking', explanation: l('Purpose → requirement → booking.', 'উদ্দেশ্য → requirement → booking।'), why: { 'Book two tests to be safe': l('That costs twice; check the requirement first.', 'এতে দ্বিগুণ খরচ; আগে requirement দেখুন।'), 'Book a date first and check later': l('The requirement may need a higher band or a specific date; check first.', 'Requirement-এ বেশি band বা নির্দিষ্ট সময় লাগতে পারে; আগে দেখুন।') } }),
       ],
     },
     {
@@ -289,7 +289,7 @@ export const ibYourPlan: Lesson = {
           model: 'I will take IELTS Academic because I want to study for a master’s degree. I will choose the paper-based test because I write quickly by hand. My target is 6.5 overall with no band below 6.0. I will focus on Writing, because my practice estimate is 5.5, and I will write one Task 2 essay in 40 minutes three times a week.',
           checklist: [l('version and format with reasons', 'কারণসহ version আর format'), l('overall target and skill minimums', 'overall target আর skill-এর সর্বনিম্ন'), l('focus skill and timed practice', 'focus skill আর সময় ধরে practice')],
           explanation: l('Version → format → target → focus → timed practice.', 'Version → format → target → focus → সময় ধরে practice।'),
-          task: 'The student writes a 3–5 sentence IELTS plan: version, format, target, focus skill and timed practice. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts: Academic is usually for university study and General Training often for work, training or migration, but the official requirement decides; computer and paper have the same content and scoring and Speaking is face to face in both; bands are 0–9 in half bands and the overall is the average of four rounded to the nearest half band; requirements often set a minimum per skill; Listening ~30 min/40 questions, Reading 60 min/40 questions, Writing 60 min (Task 1 150+ words ~20 min, Task 2 250+ words ~40 min, Task 2 counts more), Speaking 11–14 min; Mino scores are practice estimates. Praise a specific, realistic plan; correct wrong facts; never state fees, dates or a specific institution’s requirement.',
+          task: 'The student writes a 3–5 sentence IELTS plan: version, format, target, focus skill and timed practice. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts: IELTS Academic is the version universities usually ask for, and the official requirement decides; computer and paper have the same content and scoring and Speaking is face to face in both; bands are 0–9 in half bands and the overall is the average of four rounded to the nearest half band; requirements often set a minimum per skill; Listening ~30 min/40 questions, Reading 60 min/40 questions, Writing 60 min (Task 1 150+ words ~20 min, Task 2 250+ words ~40 min, Task 2 counts more), Speaking 11–14 min; Mino scores are practice estimates. Praise a specific, realistic plan; correct wrong facts; never state fees, dates or a specific institution’s requirement.',
           target: l('A complete IELTS plan', 'সম্পূর্ণ IELTS plan'),
         }),
       ],
@@ -328,7 +328,7 @@ export const ibReview: Lesson = {
       kind: 'practice',
       title: l('Part 1: choose', 'Part 1: বেছে নিন'),
       exercises: [
-        choice('ib-9-e1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which skills differ between Academic and General Training?', 'Academic আর General Training-এ কোন skill আলাদা?'), options: ['Reading and Writing', 'Listening and Speaking', 'None'], answer: 'Reading and Writing', explanation: l('Reading and Writing differ.', 'Reading আর Writing আলাদা।') }),
+        choice('ib-9-e1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('What makes IELTS Academic "academic"?', 'কী কারণে IELTS Academic "academic"?'), options: ['Academic Reading passages and a data-description Writing Task 1', 'It has no Speaking test', 'It is only on paper'], answer: 'Academic Reading passages and a data-description Writing Task 1', explanation: l('Academic Reading and Writing Task 1 on visual data.', 'Academic Reading আর visual data নিয়ে Writing Task 1।') }),
         choice('ib-9-e2', 'ib-format', { ...P, pattern: 'ib-format-fact', prompt: l('How long is the Speaking test?', 'Speaking test কত সময়ের?'), options: ['11–14 minutes', '30 minutes', '60 minutes'], answer: '11–14 minutes', explanation: l('11–14 minutes.', '১১–১৪ মিনিট।') }),
         choice('ib-9-e3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Which is true about computer-delivered IELTS?', 'Computer-delivered IELTS নিয়ে কোনটা সত্য?'), options: ['Same content and scoring as paper', 'Easier questions', 'No Speaking test'], answer: 'Same content and scoring as paper', explanation: l('Same test.', 'একই test।') }),
         choice('ib-9-e4', 'ib-bands', { ...P, pattern: 'ib-band-calc', prompt: l('L 7.0 · R 7.0 · W 6.0 · S 6.5 → overall?', 'L 7.0 · R 7.0 · W 6.0 · S 6.5 → overall?'), options: ['6.5', '6.0', '7.0'], answer: '6.5', explanation: l('26.5 ÷ 4 = 6.625 → 6.5.', '26.5 ÷ 4 = 6.625 → 6.5।') }),
@@ -360,7 +360,7 @@ export const ibReview: Lesson = {
       kind: 'recall',
       title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Academic or General Training: the official requirement decides; Reading and Writing differ.', 'Academic না General Training: official requirement ঠিক করে; Reading আর Writing আলাদা।'),
+        l('IELTS Academic is for university study; the official requirement decides the version and band.', 'IELTS Academic university-তে পড়ার জন্য; official requirement ঠিক করে version আর band।'),
         l('Bands 0–9 in half bands; overall = average of four, rounded; check every skill minimum.', 'Band 0–9, half band-সহ; overall = চারটার গড়, round করা; প্রতিটা skill-এর সর্বনিম্ন দেখুন।'),
         l('Writing and Speaking: four equal criteria; practise at real timing.', 'Writing আর Speaking: চারটা সমান criteria; আসল সময়ে practice।'),
       ],

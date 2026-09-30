@@ -24,8 +24,8 @@ export function TopicView({ topic }: { topic: CurriculumStep }) {
   if (!profile || !fp) return <ScreenSkeleton />;
 
   const status = ieltsJourney(profile)
-    .stages.find((s) => s.id === 'english-foundation')!
-    .steps.find((s) => s.step.id === topic.id)!;
+    .stages.flatMap((s) => s.steps)
+    .find((s) => s.step.id === topic.id)!;
   const lessons = topic.lessons ?? [];
   const next = nextLesson(fp);
   const skipped = new Set(fp.diagnostic?.skippedLessons ?? []);

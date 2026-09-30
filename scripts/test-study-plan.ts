@@ -100,7 +100,7 @@ test('home CTA state comes from today’s plan (no separate progress store): sta
   p = markActivityDone(p, 'reading', NOW);
   assert.equal(state(), 'in-progress', 'started, several tasks open');
   p = markActivityDone(markActivityDone(p, 'vocabulary', NOW), 'writing', NOW);
-  p = { ...p, foundation: completeLesson(p.foundation, 'ib-1', 90, NOW) };
+  p = { ...p, foundation: completeLesson(p.foundation, 'ib-10', 90, NOW) };
   assert.equal(state(), 'finishing', 'only the last task of the daily goal is open');
   p = markActivityDone(p, 'speaking', NOW);
   assert.equal(state(), 'completed');
@@ -116,13 +116,13 @@ test('Today’s Learning starts with the next lesson of the current curriculum s
   let p = emptyProfile('u1');
   let plan = buildDailyPlan(p, brain, NOW);
   assert.deepEqual(plan.tasks.map((x) => x.kind), ['lesson', 'vocabulary', 'reading', 'writing', 'speaking']);
-  assert.equal(plan.tasks[0].lessonId, 'ib-1', 'a new student starts with Start Here');
-  assert.equal(plan.tasks[0].href, '/ielts/foundation/lesson/ib-1');
+  assert.equal(plan.tasks[0].lessonId, 'ib-10', 'a new student starts with Start Here: What is IELTS?');
+  assert.equal(plan.tasks[0].href, '/ielts/foundation/lesson/ib-10');
   assert.equal(plan.tasks[0].done, false);
   p = { ...p, foundation: completeLesson(p.foundation, 'ib-1', 90, NOW) };
   plan = buildDailyPlan(p, brain, NOW);
   assert.equal(plan.tasks[0].done, true, 'one lesson a day completes the task');
-  assert.equal(plan.tasks[0].lessonId, 'ib-2', 'and it points to the next lesson for tomorrow');
+  assert.equal(plan.tasks[0].lessonId, 'ib-11', 'and it points to the next lesson for tomorrow');
   assert.equal(tr(plan.tasks[0].detailKey, plan.tasks[0].detailVars), 'Lesson done today — well done');
   assert.equal(buildDailyPlan(p, brain, new Date('2026-09-27T09:00:00')).tasks[0].done, false, 'a new day, a new lesson');
   // Short days keep the lesson; with every lesson done, the plan is practice only.

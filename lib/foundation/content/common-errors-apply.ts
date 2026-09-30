@@ -188,7 +188,7 @@ export const ceInIelts: Lesson = {
       items: [
         { en: 'Task 1: rose / raised · the number of students · a ten-year period', note: l('word pairs and plurals', 'word-জোড়া আর plural') },
         { en: 'Task 2: I agree · research shows · have an impact on · discuss (no about)', note: l('translation, uncountable, collocation, repetition', 'অনুবাদ, uncountable, collocation, repetition') },
-        { en: 'Task 1 letter (GT): Could you lend me … · some information', note: l('word pairs and uncountable nouns', 'word-জোড়া আর uncountable noun') },
+        { en: 'An email to a university: Could you send me … · some information', note: l('word pairs and uncountable nouns', 'word-জোড়া আর uncountable noun') },
         { en: 'Speaking: I took the exam · my cousin · Could you repeat the question?', note: l('translation and repetition', 'অনুবাদ আর repetition') },
       ],
       question: l('Which error type is most common in Task 1 reports?', 'Task 1 report-এ কোন ভুল সবচেয়ে বেশি?'),
@@ -221,7 +221,7 @@ export const ceInIelts: Lesson = {
       items: [
         { en: 'The number of cars rose by 20% over the ten-year period.', note: l('Task 1: plural, rose, describer', 'Task 1: plural, rose, বর্ণনা') },
         { en: 'I agree that governments should invest more in research.', note: l('Task 2: agree, research', 'Task 2: agree, research') },
-        { en: 'Could you send me some information about the course fees?', note: l('GT letter: uncountable', 'GT letter: uncountable') },
+        { en: 'Could you send me some information about the course fees?', note: l('email to a university: uncountable', 'university-কে email: uncountable') },
         { en: 'My cousin taught me to swim when I was ten.', note: l('Speaking: cousin, teach', 'Speaking: cousin, teach') },
       ],
     },

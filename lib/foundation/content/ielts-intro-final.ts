@@ -12,11 +12,11 @@ const P = { tag: 'ielts-basics' as const };
 
 export const IELTS_INTRO_FINAL_PARTS: FinalPart[] = [
   {
-    id: 'A', title: l('Academic or General Training', 'Academic না General Training'), intro: l('Which version, and who decides.', 'কোন version, আর কে ঠিক করে।'),
+    id: 'A', title: l('IELTS Academic', 'IELTS Academic'), intro: l('The university version, and who decides.', 'University-র version, আর কে ঠিক করে।'),
     items: [
-      at(1, choice('ibfin-a1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Which part is the same in both versions?', 'দুই version-এ কোন অংশ একই?'), options: ['Listening', 'Reading', 'Writing'], answer: 'Listening', explanation: l('Listening and Speaking are shared.', 'Listening আর Speaking একই।') })),
+      at(1, choice('ibfin-a1', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('How many passages are in Academic Reading?', 'Academic Reading-এ কয়টা passage?'), options: ['Three', 'Two', 'Four'], answer: 'Three', explanation: l('Three long academic passages.', 'তিনটা লম্বা academic passage।') })),
       at(2, choice('ibfin-a2', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('What does Academic Writing Task 1 ask you to do?', 'Academic Writing Task 1-এ কী করতে হয়?'), options: ['Describe visual information such as a graph', 'Write a letter', 'Write an opinion essay'], answer: 'Describe visual information such as a graph', explanation: l('Graph, table, chart or diagram.', 'Graph, table, chart বা diagram।') })),
-      at(2, gap('ibfin-a3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Write the version (two words).', 'Version লিখুন (দুটো word)।'), sentence: 'Writing Task 1 is a letter in IELTS ___.', accepted: ['General Training'], explanation: l('General Training.', 'General Training।') })),
+      at(2, gap('ibfin-a3', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Write the version (one word).', 'Version লিখুন (একটা word)।'), sentence: 'Universities usually ask for IELTS ___.', accepted: ['Academic'], explanation: l('IELTS Academic.', 'IELTS Academic।') })),
       at(3, correct('ibfin-a4', 'ib-versions', { ...P, pattern: 'ib-version-fact', prompt: l('Correct the advice.', 'পরামর্শটা ঠিক করুন।'), sentence: 'Your friends decide which IELTS version you need.', accepted: ['Your university decides which IELTS version you need.', 'Your organisation decides which IELTS version you need.', 'Your organization decides which IELTS version you need.', 'Your employer decides which IELTS version you need.', 'Your requirement decides which IELTS version you need.'], explanation: l('The organisation’s official requirement decides.', 'প্রতিষ্ঠানের official requirement ঠিক করে।') })),
     ],
   },

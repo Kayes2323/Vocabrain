@@ -472,7 +472,7 @@ export const vcRegister: Lesson = {
   format: 'v2',
   concept: 'voc-register',
   title: l('Formal and informal words', 'Formal আর informal word'),
-  why: l('"Kids", "stuff" and "a lot of" are fine when you speak, but they make an academic essay sound like a text message. Task 2 and Academic Task 1 need a formal register; Speaking and GT informal letters do not.', '"Kids", "stuff" আর "a lot of" কথা বলায় ঠিক, কিন্তু academic essay-কে text message-এর মতো শোনায়। Task 2 আর Academic Task 1-এ formal register লাগে; Speaking আর GT informal letter-এ লাগে না।'),
+  why: l('"Kids", "stuff" and "a lot of" are fine when you speak, but they make an academic essay sound like a text message. Task 2 and Academic Task 1 need a formal register; Speaking does not.', '"Kids", "stuff" আর "a lot of" কথা বলায় ঠিক, কিন্তু academic essay-কে text message-এর মতো শোনায়। Task 2 আর Academic Task 1-এ formal register লাগে; Speaking-এ লাগে না।'),
   minutes: 10,
   difficulty: 'medium',
   skill: 'writing',
@@ -501,7 +501,7 @@ export const vcRegister: Lesson = {
       ],
       question: l('Where should you use the informal words?', 'Informal word কোথায় ব্যবহার করবেন?'),
       options: [
-        l('In Speaking and in informal GT letters to friends', 'Speaking-এ আর বন্ধুকে লেখা informal GT letter-এ'),
+        l('In Speaking and in messages to friends', 'Speaking-এ আর বন্ধুকে লেখা message-এ'),
         l('In Task 2 essays', 'Task 2 essay-তে'),
         l('Nowhere in IELTS', 'IELTS-এ কোথাও না'),
       ],
@@ -530,7 +530,7 @@ export const vcRegister: Lesson = {
         { en: 'Many children spend several hours a day online.', note: l('Task 2: formal', 'Task 2: formal') },
         { en: 'The number of visitors increased significantly.', note: l('Task 1: formal (not "went up a lot")', 'Task 1: formal ("went up a lot" না)') },
         { en: 'Yeah, I spend a lot of time on my phone, to be honest.', note: l('Speaking: natural informal', 'Speaking: স্বাভাবিক informal') },
-        { en: 'Hi Rafi, it’s great to hear from you!', note: l('GT informal letter', 'GT informal letter') },
+        { en: 'Hi Rafi, it’s great to hear from you!', note: l('a message to a friend', 'বন্ধুকে message') },
       ],
     },
     {

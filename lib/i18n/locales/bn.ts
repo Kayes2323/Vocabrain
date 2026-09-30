@@ -152,7 +152,7 @@ export const bn: LocaleDictionary = {
     },
     topicCards: {
       title: 'English Foundation',
-      intro: 'IELTS-এর জন্য প্রয়োজনীয় English grammar ধাপে ধাপে শিখুন।',
+      intro: 'যৌক্তিক ক্রমে ব্যবহারযোগ্য English: আগে sentence, তারপর তার ওপর grammar।',
       progress: 'Foundation progress',
       count: '{done}/{total} topic',
       lessons: '{done}/{total} lesson',
@@ -168,7 +168,8 @@ export const bn: LocaleDictionary = {
     },
     title: 'IELTS Foundation',
     subtitle: 'IELTS-এর জন্য দরকারি English গুছিয়ে নিন।',
-    groups: { grammar: 'Level 1 — Foundation Grammar', vocabulary: 'Vocabulary', basics: 'Level 2 — IELTS Basics', progress: 'আপনার progress', today: 'আজ' },
+    groups: { start: 'Level 0 — এখান থেকে শুরু', grammar: 'Level 1 — English Foundation', vocabulary: 'Vocabulary', basics: 'Level 2 — IELTS Skill পরিচিতি', progress: 'আপনার progress', today: 'আজ' },
+    level0: { title: 'IELTS Basics', intro: 'প্রস্তুতির আগে test-টা চিনে নিন: IELTS কী, IELTS Academic, skill আর Band Score।', progress: 'Start Here progress' },
     nextLabel: 'পরের ধাপ',
     lessonsN: '{n}টা lesson',
     wordsCount: '{done}/{total} শব্দ',
@@ -1110,9 +1111,9 @@ export const bn: LocaleDictionary = {
     howCalculated:
       'Progress হিসাব হয় আপনি যা শেষ করেছেন তা দিয়ে: শেষ করা lesson, practice session, Mock Test আর আপনার band। শুধু page খুললে তা গোনা হয় না।',
     stages: {
-      'start-here': 'এখান থেকে শুরু',
+      'start-here': 'IELTS Basics: এখান থেকে শুরু',
       'english-foundation': 'English Foundation',
-      'ielts-basics': 'IELTS Basics',
+      'ielts-basics': 'IELTS Skill পরিচিতি',
       'skill-building': 'Skill Building',
       practice: 'Practice',
       'mock-tests': 'Mock Test',

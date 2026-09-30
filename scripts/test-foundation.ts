@@ -8,7 +8,7 @@ import {
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
   canonicalAnswer, canUnitCheck, CHALLENGES, finalRecord, getChallenge, patternsFor, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
-import { fullSentence, lessonPages, lessonPhases, MODULES as ALL_MODULES, RULE_POINTS_PER_SCREEN, splitBody, teachingOrder } from '../lib/foundation';
+import { getStage, stageLessons, fullSentence, lessonPages, lessonPhases, MODULES as ALL_MODULES, RULE_POINTS_PER_SCREEN, splitBody, teachingOrder } from '../lib/foundation';
 import { en as EN_DICT } from '../lib/i18n/locales/en';
 import { bn as BN_DICT } from '../lib/i18n/locales/bn';
 import type { FoundationProgress, UserProfile } from '../lib/models';
@@ -35,7 +35,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 96);
+  assert.equal(CONCEPTS.length, 99);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -151,8 +151,8 @@ test('resume: in-progress lesson is the next action and survives a reload shape'
 test('old profiles (before v2) load with defaults', () => {
   const old = withProfileDefaults('u', { foundation: { lessons: { 'sb-1': { completedAt: 'x', score: 80, best: 80, attempts: 1 } }, errors: {} } } as never);
   assert.deepEqual([old.foundation.mistakes, old.foundation.concepts, old.foundation.days], [[], {}, {}]);
-  assert.equal(nextLesson(old.foundation)?.lesson.id, 'ib-1', 'the path starts with Start Here');
-  const started = ['ib-1', 'ib-2', 'ib-3', 'ib-4'].reduce((fp, id) => completeLesson(fp, id, 90, NOW), old.foundation);
+  assert.equal(nextLesson(old.foundation)?.lesson.id, 'ib-10', 'the path starts with Start Here');
+  const started = stageLessons(getStage('start-here')).reduce((fp, id) => completeLesson(fp, id, 90, NOW), old.foundation);
   assert.equal(nextLesson(started)?.lesson.id, 'sb-2', 'then continues where the student left off');
   assert.notEqual(nextAction(started, NOW).kind, 'check', 'no check once English Foundation has started');
 });
@@ -250,15 +250,16 @@ test('guide, don’t block: reminders only when jumping ahead, never for empty m
   const writingBasics = { ...MODULES.find((m) => m.id === 'speaking-foundation')!, lessons: [] };
   const intro = MODULES.find((m) => m.id === 'ielts-intro')!;
   assert.equal(stepBeforeModule(intro, fp), undefined, 'Start Here is the first step');
-  assert.equal(stepBeforeModule(basics, fp)?.lesson.id, 'ib-1');
+  assert.equal(stepBeforeModule(basics, fp)?.lesson.id, 'ib-10');
   assert.equal(stepBeforeModule(writingBasics, fp), undefined);
-  const afterStart = ['ib-1', 'ib-2', 'ib-3', 'ib-4'].reduce((x, id) => completeLesson(x, id, 90, NOW), fp);
+  const afterStart = stageLessons(getStage('start-here')).reduce((x, id) => completeLesson(x, id, 90, NOW), fp);
   assert.equal(stepBeforeModule(basics, afterStart), undefined);
   assert.equal(stepBeforeModule(vocab, afterStart)?.lesson.id, basics.lessons[0].id);
   assert.equal(stepBeforeModule(tenses, afterStart)?.module.id, 'sentence-basics');
-  assert.equal(stepBeforeModule(intro, afterStart)?.lesson.id, 'sb-1', 'the rest of the module (IELTS Basics) comes after English Foundation');
+  assert.equal(stepBeforeModule(intro, afterStart), undefined, 'the whole "What is IELTS?" module is Start Here, done before English Foundation');
   assert.equal(stepBeforeLesson(tenses, tenses.lessons[0], fp), undefined);
-  assert.equal(stepBeforeLesson(tenses, tenses.lessons[5], fp)?.id, tenses.lessons[0].id);
+  const perfect = tenses.lessons.find((l) => l.id === 't-6')!;
+  assert.equal(stepBeforeLesson(tenses, perfect, fp)?.id, 't-5', 'the first open lesson of its topic (More Tenses), in curriculum order');
 });
 
 // ---------------------------------------------------------------- parts of speech
@@ -1025,8 +1026,8 @@ test('Vocabulary Final Mastery Challenge: 6 parts × 4 items at levels 1–3, st
 });
 
 // ---------------------------------------------------------------- what is IELTS? (level 2)
-test('What is IELTS?: 8 taught v2 lessons + a review test, facts only, official sources for fees and dates', () => {
-  const ids = ['ib-1', 'ib-2', 'ib-3', 'ib-4', 'ib-5', 'ib-6', 'ib-7', 'ib-8', 'ib-9'];
+test('What is IELTS?: 10 taught v2 lessons + a review test, facts only, official sources for fees and dates', () => {
+  const ids = ['ib-10', 'ib-11', 'ib-1', 'ib-2', 'ib-3', 'ib-4', 'ib-5', 'ib-6', 'ib-7', 'ib-8', 'ib-9'];
   const { mod, taught } = checkV2Module('ielts-intro', ids, 'ielts-basics', 'ib-', ids);
   assert.equal(mod.level, 2);
   assert.equal(mod.number, 1);
@@ -1062,7 +1063,7 @@ test('What is IELTS?: band arithmetic in every item is right (average of four, n
 
 test('What is IELTS?: concepts are mastery-capable and reviewable; the pattern fix and summary line work', () => {
   const ids = CONCEPTS.filter((c) => c.tag === 'ielts-basics').map((c) => c.id);
-  assert.deepEqual(ids, ['ib-versions', 'ib-format', 'ib-delivery', 'ib-bands', 'ib-marking', 'ib-plan']);
+  assert.deepEqual(ids, ['ib-what', 'ib-why', 'ib-versions', 'ib-format', 'ib-delivery', 'ib-bands', 'ib-marking', 'ib-plan']);
   const exs = MODULES.find((m) => m.id === 'ielts-intro')!.lessons.flatMap((x) => x.steps.flatMap((st) => (st.kind === 'practice' ? st.exercises : [])));
   for (const c of ids) {
     assert.ok(exs.some((e) => e.type === 'write' && e.mino && e.concept === c), `${c} has a Mino-checked answer`);
@@ -1428,7 +1429,7 @@ asyncTests.push(['Mino IELTS-facts feedback: facts first, no fees or dates, esti
   let seen: AIRunRequest | undefined;
   const fake: AIProvider = { id: 'fake', run: async (req) => { seen = req; return { text: JSON.stringify({ verdict: 'needs-work', usesTarget: true, corrected: 'I need IELTS Academic for my master’s degree.', feedback: 'ভালো চেষ্টা!', fixes: [{ quote: 'General Training for my master’s', fix: 'Academic for my master’s', why: 'University study usually needs Academic.' }], practice: { sentence: 'Universities usually ask for IELTS ___.', answers: ['Academic'] } }), model: 'fake-1', toolCalls: [], truncated: false }; } };
   const fb = await assessFoundationSentence(fake, ex('ib-1-y1') as Extract<Exercise, { type: 'write' }>, 'I need General Training for my master’s degree.', 'bn');
-  assert.match(seen!.system!, /IELTS facts feedback \(target: IELTS Academic and General Training\)/);
+  assert.match(seen!.system!, /IELTS facts feedback \(target: IELTS Academic\)/);
   assert.match(seen!.system!, /Never state fees, test dates, result times/);
   assert.match(seen!.system!, /Judge the IELTS facts in the answer/);
   assert.doesNotMatch(seen!.system!, /Judge ONLY grammar and the target structure/);

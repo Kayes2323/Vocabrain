@@ -349,7 +349,7 @@ async function main() {
     await shot(p, 'sa-3a-03-journey-dark');
     await setDark(p, false);
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
-    await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
+    await p.getByText('Level 1 — English Foundation').waitFor({ timeout: 60_000 });
     check('Foundation still opens (regression)', true);
     const f = await waitForFoundation(uid, () => true);
     check('Foundation progress untouched by Study Abroad', f === null || typeof f === 'object');
