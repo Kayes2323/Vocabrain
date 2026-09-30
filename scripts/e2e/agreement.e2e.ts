@@ -45,7 +45,7 @@ async function main() {
 
     console.log('\n[2] Long subjects: deliberate mistakes, immediate feedback and Mino');
     await p.goto(`${BASE}/ielts/foundation/lesson/sva-4`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let minoText = '';
     let followUp = false;
     const answered = await playLesson(p, 'en', {
@@ -57,7 +57,7 @@ async function main() {
         await shot(pg, 'sva-en-02-mino-feedback', false);
         await pg.locator('form').getByRole('textbox').fill('has');
         await pg.locator('form').getByRole('button', { name: 'Check' }).click();
-        followUp = await pg.getByText('Right! You’ve got it.').isVisible();
+        followUp = (await pg.getByTestId('mino-practice-result').innerText()).trim() === 'Correct.';
       },
     });
     check('lesson sva-4 plays through every step (practice, recall, correction, write)', ['sva-4-p1', 'sva-4-r1', 'sva-4-c2', 'sva-4-y1'].every((id) => answered.includes(id)), answered.join(','));
@@ -74,7 +74,7 @@ async function main() {
 
     console.log('\n[3] Immediate feedback: why the wrong answer is wrong');
     await p.goto(`${BASE}/ielts/foundation/lesson/sva-1`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     for (let i = 0; i < 40 && !(await p.locator('[data-exercise-id="sva-1-p1"]').count()); i++) {
       const radios = p.locator('main [role=radiogroup] [role=radio]');
       if ((await radios.count()) && !(await p.locator('main [role=radio][aria-checked=true]').count())) await radios.first().click();
@@ -112,7 +112,7 @@ async function main() {
 
     console.log('\n[5] Two subjects answered right → mastery only after 2 due reviews');
     await p.goto(`${BASE}/ielts/foundation/lesson/sva-2`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     await playLesson(p, 'en', { write: 'My brother and I play football, and neither of us likes cricket.' });
     f = await waitForFoundation(uid, (x) => x.lessons?.['sva-2'] && (x.concepts?.['sva-compound']?.appliedCorrect ?? 0) >= 1);
     let m = conceptMastery(f, 'sva-compound');
@@ -186,7 +186,7 @@ async function main() {
 
     // Resume: answer a few questions, reload, and continue where the student left off.
     await q.goto(`${BASE}/ielts/foundation/lesson/sva-1`, { waitUntil: 'load' });
-    await q.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await q.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let bnLesson = '';
     for (let i = 0; i < 60 && !(await q.locator('[data-exercise-id="sva-1-p3"]').count()); i++) {
       bnLesson += `\n${await q.locator('main').innerText()}`;
@@ -221,7 +221,7 @@ async function main() {
       },
     });
     check('bn lesson sva-1 completes', Boolean((await waitForFoundation(uidBn, (x) => x.lessons?.['sva-1']))?.lessons?.['sva-1']));
-    check('bn Mino feedback is in Bangla and names the fix (works)', /ভালো চেষ্টা/.test(bnFeedback) && /works/.test(bnFeedback), bnFeedback.slice(0, 200));
+    check('bn Mino feedback is in Bangla and names the fix (works)', /একটা জিনিস ঠিক করতে হবে|প্রায় ঠিক/.test(bnFeedback) && /works/.test(bnFeedback), bnFeedback.slice(0, 200));
     check('bn Mino feedback: no sideways scroll', overflow === 0);
     await q.goto(`${BASE}/ielts/foundation/challenge/agreement`, { waitUntil: 'load' });
     await q.getByRole('button', { name: LABELS.bn.start }).waitFor({ timeout: 60_000 });

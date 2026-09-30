@@ -7,3 +7,4 @@ export { CONCEPT_PATTERN, patternModules, POS_FIX_GUIDE, POS_NAMED_PATTERNS, POS
 export * from './validate';
 export { FINAL_PARTS, type FinalItem, type FinalPart } from './content/pos-final';
 export { CHALLENGES, challengeForModule, getChallenge, type ChallengeDef } from './content/challenges';
+export * from './flow';

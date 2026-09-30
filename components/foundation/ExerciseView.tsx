@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { foundationFeedback } from '@/lib/ai/client';
 import type { FoundationFeedback } from '@/lib/ai/server/assess/foundation';
-import { expectedAnswer, formatTags, gradeExercise, normaliseAnswer, parseSpot, parseTags, shuffledWords, type Exercise, type L, type Pos } from '@/lib/foundation';
+import { expectedAnswer, formatTags, fullSentence, gradeExercise, normaliseAnswer, parseSpot, parseTags, shuffledWords, type Exercise, type L, type Pos } from '@/lib/foundation';
 import { TagBoard } from './TagBoard';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
@@ -104,7 +104,7 @@ export function ExerciseView({
 
   return (
     <div className="space-y-5" data-exercise-id={exercise.id}>
-      <p className="text-[15px] font-medium">{text(exercise.prompt)}</p>
+      <p className="text-base font-semibold" data-testid="question-prompt">{text(exercise.prompt)}</p>
       {exercise.sentence && exercise.type !== 'correct' && (
         <p className="rounded-xl bg-muted/60 px-4 py-3 text-lg leading-relaxed" lang="en">
           {exercise.sentence}
@@ -113,7 +113,7 @@ export function ExerciseView({
 
       {exercise.type === 'choice' && (
         <div role="radiogroup" className="grid gap-2">
-          {exercise.options.map((o) => {
+          {exercise.options.map((o, i) => {
             const selected = answer === o;
             const right = locked && o === exercise.answer;
             const wrong = locked && selected && o !== exercise.answer;
@@ -126,8 +126,9 @@ export function ExerciseView({
                 disabled={locked}
                 onClick={() => setAnswer(o)}
                 lang="en"
+                aria-label={o}
                 className={cn(
-                  'flex min-h-12 items-center justify-between gap-3 rounded-xl border bg-card px-4 py-2.5 text-left transition-colors',
+                  'flex min-h-12 items-center gap-3 rounded-xl border bg-card px-3 py-2.5 text-left transition-colors',
                   'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40',
                   selected && !locked && 'border-brand ring-1 ring-brand',
                   right && 'border-success bg-success/10',
@@ -135,7 +136,13 @@ export function ExerciseView({
                   !locked && !selected && 'hover:border-foreground/20',
                 )}
               >
-                <span>{o}</span>
+                <span
+                  className={cn('flex size-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold text-muted-foreground', selected && !locked && 'border-brand bg-brand text-brand-foreground')}
+                  aria-hidden
+                >
+                  {String.fromCharCode(65 + i)}
+                </span>
+                <span className="flex-1">{o}</span>
                 {right && <Check className="size-4 text-success" aria-hidden />}
                 {wrong && <X className="size-4 text-destructive" aria-hidden />}
               </button>
@@ -407,7 +414,15 @@ export function ExerciseView({
                   ✗ <span className="line-through decoration-destructive/60">{checked.answer}</span>
                 </p>
               )}
-              <p className="font-medium">✓ {expectedAnswer(exercise)}</p>
+              {!fullSentence(exercise) && <p className="font-medium">✓ {expectedAnswer(exercise)}</p>}
+              {fullSentence(exercise) && (
+                <p className="text-foreground/80" data-testid="correct-sentence">
+                  <span className="font-sans font-medium" lang={locale}>
+                    {t('foundation.teach.correctSentence')}:{' '}
+                  </span>
+                  {fullSentence(exercise)}
+                </p>
+              )}
               {exercise.type === 'spot' && parseSpot(checked.answer).index !== exercise.wrong && (
                 <p className="text-muted-foreground">{t('foundation.lesson.spotWrongWord', { word: exercise.words[exercise.wrong].replace(/[.,;:!?]+$/, '') })}</p>
               )}
@@ -464,7 +479,7 @@ function MinoPractice({ practice }: { practice: { sentence: string; answers: str
         </Button>
       </form>
       {result !== null && (
-        <p className={cn('flex items-center gap-1.5', result ? 'text-success' : 'text-foreground')}>
+        <p className={cn('flex items-center gap-1.5', result ? 'text-success' : 'text-foreground')} data-testid="mino-practice-result">
           {result ? <Check className="size-4" aria-hidden /> : <X className="size-4 text-destructive" aria-hidden />}
           {result ? t('foundation.lesson.minoPracticeRight') : t('foundation.lesson.minoPracticeAnswer', { answer: practice.answers[0] })}
         </p>

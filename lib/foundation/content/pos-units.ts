@@ -12,12 +12,14 @@ import { posInterjectionLessons } from './pos-interjection';
 import { posIeltsLessonsA } from './pos-ielts-a';
 import { posIeltsLessonsB } from './pos-ielts-b';
 import { posLabLessons } from './pos-lab';
+import { posOverviewLessons } from './pos-overview';
 
 /**
  * Parts of Speech: 12 units in the recommended order. Word jobs and word forms
  * teach; IELTS applies them; the Lab repairs; the Final challenge checks mastery.
  */
 export const POS_UNITS: Unit[] = [
+  { id: 'overview', mark: '8', group: 'jobs', concept: 'pos-overview', minutes: 6, title: l('What are Parts of Speech?', 'Parts of Speech কী?'), tagline: l('The eight jobs a word can do', 'একটা word যে আটটা কাজ করতে পারে') },
   { id: 'noun', mark: 'N', group: 'jobs', pos: 'noun', concept: 'pos-noun', minutes: 22, title: l('Noun', 'Noun'), tagline: l('Names people, places, things and ideas', 'মানুষ, জায়গা, জিনিস আর idea-র নাম') },
   {
     id: 'verb', mark: 'V', group: 'jobs', pos: 'verb', concept: 'pos-verb', minutes: 27, title: l('Verb', 'Verb'), tagline: l('Shows an action or a state', 'কাজ বা অবস্থা বোঝায়'),
@@ -55,6 +57,7 @@ export const POS_UNITS: Unit[] = [
 
 /** Lessons in the recommended order of the units that have them. */
 export const POS_LESSONS: Lesson[] = [
+  ...posOverviewLessons,
   ...posNounLessons,
   ...posVerbLessons,
   ...posAdjectiveLessons,
@@ -70,6 +73,7 @@ export const POS_LESSONS: Lesson[] = [
 ];
 
 export const POS_CONCEPTS: Concept[] = [
+  { id: 'pos-overview', title: l('The eight parts of speech', 'আটটা part of speech'), lessonId: 'po-1', tag: 'part-of-speech' },
   { id: 'pos-noun', title: l('Nouns', 'Noun'), lessonId: 'pn-1', tag: 'part-of-speech' },
   { id: 'pos-adjective', title: l('Adjectives', 'Adjective'), lessonId: 'pa-1', tag: 'part-of-speech' },
   { id: 'pos-adverb', title: l('Adverbs', 'Adverb'), lessonId: 'pv-1', tag: 'part-of-speech' },

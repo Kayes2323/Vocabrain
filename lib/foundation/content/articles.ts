@@ -477,7 +477,7 @@ export const zeroArticle: Lesson = {
       kind: 'hook',
       title: l('The first line of Task 2', 'Task 2-এর প্রথম লাইন'),
       situation: l('Task 2: "Some people think education is the key to a country’s development." You start your introduction.', 'Task 2: "Some people think education is the key to a country’s development." আপনি introduction শুরু করছেন।'),
-      question: l('Which sentence would you write?', 'কোন sentence-টা লিখবে?'),
+      question: l('Which sentence would you write?', 'কোন sentence-টা লিখবেন?'),
       options: ['The education plays a vital role in development.', 'Education plays a vital role in development.', 'An education plays the vital role in the development.'],
       answer: 'Education plays a vital role in development.',
       diagnose: {

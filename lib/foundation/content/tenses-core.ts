@@ -154,7 +154,7 @@ export const presentContinuousV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use am / is / are + verb-ing for actions happening now or around now, temporary situations, and trends that are changing.',
         'এখন বা এই সময়ে চলছে এমন কাজ, সাময়িক অবস্থা আর বদলাতে থাকা trend-এর জন্য am / is / are + verb-ing।',
@@ -337,7 +337,7 @@ export const pastSimpleV2: Lesson = {
       kind: 'hook',
       title: l('A Task 1 graph', 'একটা Task 1 graph'),
       situation: l('A graph shows car sales in Bangladesh: 20,000 in 2010 and 45,000 in 2015.', 'একটা graph-এ Bangladesh-এর গাড়ি বিক্রি: 2010-এ 20,000 আর 2015-এ 45,000।'),
-      question: l('Which sentence would you write?', 'কোন sentence-টা লিখবে?'),
+      question: l('Which sentence would you write?', 'কোন sentence-টা লিখবেন?'),
       options: ['Car sales increase from 20,000 in 2010 to 45,000 in 2015.', 'Car sales have increased from 20,000 in 2010 to 45,000 in 2015.', 'Car sales increased from 20,000 in 2010 to 45,000 in 2015.'],
       answer: 'Car sales increased from 20,000 in 2010 to 45,000 in 2015.',
       diagnose: {
@@ -369,7 +369,7 @@ export const pastSimpleV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use the past simple for actions and situations that finished in the past, especially with a finished time (in 2010, last year, when I was a child). Regular verbs add -ed; many common verbs are irregular.',
         'অতীতে শেষ হয়ে যাওয়া কাজ বা অবস্থার জন্য past simple, বিশেষ করে শেষ হয়ে যাওয়া সময়ের সাথে (in 2010, last year, when I was a child)। Regular verb-এ -ed যোগ হয়; অনেক common verb irregular।',
@@ -578,7 +578,7 @@ export const pastContinuousV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use was / were + verb-ing for an action that was in progress at a moment in the past, often interrupted by a shorter action in the past simple.',
         'অতীতের কোনো মুহূর্তে চলছিল এমন কাজের জন্য was / were + verb-ing, প্রায়ই past simple-এর একটা ছোট কাজ দিয়ে বাধা পায়।',
@@ -793,7 +793,7 @@ export const presentPerfectV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use have / has + past participle for (1) situations from the past until now (with since / for), (2) experiences at an unknown time ("I have visited Sylhet"), and (3) recent changes that matter now.',
         'have / has + past participle ব্যবহার হয় (১) অতীত থেকে এখন পর্যন্ত চলা অবস্থায় (since / for সহ), (২) অজানা সময়ের অভিজ্ঞতায় ("I have visited Sylhet"), আর (৩) সাম্প্রতিক পরিবর্তন যা এখন গুরুত্বপূর্ণ।',
@@ -1001,7 +1001,7 @@ export const pastPerfectV2: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use had + past participle for an action that happened before another past action or before a past time ("by 2010"). It is the "earlier past".',
         'অতীতের আরেকটা কাজের আগে বা অতীতের কোনো সময়ের আগে ("by 2010") ঘটে যাওয়া কাজের জন্য had + past participle। এটা "আরও আগের অতীত"।',

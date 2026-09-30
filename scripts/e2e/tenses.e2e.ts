@@ -59,7 +59,7 @@ async function main() {
 
     console.log('\n[2] Past Simple: a deliberate tense mistake and "have went … yesterday" for Mino');
     await p.goto(`${BASE}/ielts/foundation/lesson/t-4`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let minoWhy = '';
     let followUp = false;
     const answered = await playLesson(p, 'en', {
@@ -71,7 +71,7 @@ async function main() {
         await shot(pg, 'en-02-mino-tense-feedback', false);
         await pg.locator('form').getByRole('textbox').fill('visited');
         await pg.locator('form').getByRole('button', { name: 'Check' }).click();
-        followUp = await pg.getByText('Right! You’ve got it.').isVisible();
+        followUp = (await pg.getByTestId('mino-practice-result').innerText()).trim() === 'Correct.';
       },
     });
     check('lesson t-4 plays through every step (recall + write included)', answered.includes('t-4-r1') && answered.includes('t-4-e6'), answered.join(','));
@@ -91,7 +91,7 @@ async function main() {
 
     console.log('\n[3] Present Perfect answered right → mastery only after 2 due reviews');
     await p.goto(`${BASE}/ielts/foundation/lesson/t-6`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     await playLesson(p, 'en', {
       write: 'I have lived in Dhaka since 2015. The city has grown a lot.',
     });
@@ -235,7 +235,7 @@ async function main() {
     );
     await shot(q, 'bn-01-tenses-module');
     await q.goto(`${BASE}/ielts/foundation/lesson/t-13`, { waitUntil: 'load' });
-    await q.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await q.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let overflow = 0;
     let bnFeedback = '';
     await playLesson(q, 'bn', {
@@ -248,7 +248,7 @@ async function main() {
       },
     });
     check('bn new lesson (Present Perfect Continuous) completes', Boolean((await waitForFoundation(uidBn, (x) => x.lessons?.['t-13']))?.lessons?.['t-13']));
-    check('bn Mino feedback is in Bangla', /ভালো চেষ্টা/.test(bnFeedback), bnFeedback.slice(0, 120));
+    check('bn Mino feedback is in Bangla', /একটা জিনিস ঠিক করতে হবে|প্রায় ঠিক/.test(bnFeedback), bnFeedback.slice(0, 120));
     check('bn Mino feedback: no sideways scroll', overflow === 0);
     await q.goto(`${BASE}/ielts/foundation/challenge/tenses`, {
       waitUntil: 'load',

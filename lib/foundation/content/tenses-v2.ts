@@ -138,8 +138,8 @@ export const understandingTime: Lesson = {
           'ভালো চেষ্টা। "I learn" অভ্যাস আর সাধারণ সত্যের জন্য ("I learn five new words every day")। এটা বলে না যে শেখা দুই বছর আগে শুরু হয়ে এখনো চলছে।',
         ),
         'I have been learning English for two years.': l(
-          'Exactly! "have been learning" connects the past to now: it started two years ago and it is still happening. In this lesson you’ll see WHY — so you can do it every time.',
-          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে। এই lesson-এ দেখবেন কেন — যাতে প্রতিবার ঠিক বাছতে পারেন।',
+          'Exactly! "have been learning" connects the past to now: it started two years ago and it is still happening.',
+          'একদম ঠিক! "have been learning" অতীতকে এখনের সাথে জোড়ে: দুই বছর আগে শুরু, এখনো চলছে।',
         ),
       },
     },

@@ -8,6 +8,9 @@ import {
   skillProgress, stepBeforeLesson, stepBeforeModule, topicSummary, validateFoundation,
   canonicalAnswer, canUnitCheck, CHALLENGES, finalRecord, getChallenge, patternsFor, exercisePattern, FINAL_PARTS, finalStartLevel, fixQuestions, nextFinalLevel, ownMistakeQuestions, pickFinalItem, POS_FIX_GUIDE, POS_NAMED_PATTERNS, recordFinal, unitProgress, unitCheckQuestions, unitLessons, getModule, gradeExercise as grade2, posPairs, posPatterns, posSummaryLines, recordFix, unitStatus, MAX_MISTAKES, type Exercise,
 } from '../lib/foundation';
+import { fullSentence, lessonPages, lessonPhases, MODULES as ALL_MODULES, RULE_POINTS_PER_SCREEN, splitBody, teachingOrder } from '../lib/foundation';
+import { en as EN_DICT } from '../lib/i18n/locales/en';
+import { bn as BN_DICT } from '../lib/i18n/locales/bn';
 import type { FoundationProgress, UserProfile } from '../lib/models';
 import { emptyProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
@@ -32,7 +35,7 @@ test('all Foundation content validates (incl. 15 Tenses lessons)', () => {
   assert.equal(tenses.lessons.length, 15);
   assert.equal(tenses.planned, undefined, 'no Tenses lesson is still planned');
   assert.equal(tenses.lessons.at(-1)!.kind, 'test');
-  assert.equal(CONCEPTS.length, 95);
+  assert.equal(CONCEPTS.length, 96);
   assert.deepEqual(tenses.lessons.slice(0, 2).map((l) => [l.id, l.format]), [['t-1', 'v2'], ['t-2', 'v2']]);
 });
 
@@ -266,9 +269,11 @@ const allEx = pos.lessons.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'pra
 const exById = (id: string) => allEx.find((e) => e.id === id)!;
 const wrongAt = (fp: FoundationProgress, id: string, answer: string, at: string) => recordAnswer(fp, { source: 'x', exercise: exById(id), answer, correct: false, attempt: 1, now: new Date(at) });
 
-test('Parts of Speech: 12 units, 49 written lessons, every exercise grades its own answer', () => {
-  assert.equal(pos.units!.length, 12);
-  assert.equal(pos.lessons.length, 49);
+test('Parts of Speech: 13 units (opening overview first), 50 written lessons, every exercise grades its own answer', () => {
+  assert.equal(pos.units!.length, 13);
+  assert.equal(pos.units![0].id, 'overview');
+  assert.equal(pos.lessons[0].id, 'po-1');
+  assert.equal(pos.lessons.length, 50);
   assert.ok(pos.units!.every((u) => !u.planned?.length), 'no unit is still planned');
   for (const u of pos.units!.filter((x) => !x.challenge)) {
     assert.ok(unitLessons(pos, u).length > 0 && !u.planned?.length && u.concept, `${u.id} is fully written`);
@@ -1470,5 +1475,78 @@ void (async () => {
   for (const [name, fn] of asyncTests) {
     try { await fn(); passed++; console.log('PASS', name); } catch (e) { console.error('FAIL', name); console.error(e); process.exit(1); }
   }
-  console.log(`\n${passed} passed`);
+  // ---------------------------------------------------------------- teaching flow (theory before practice)
+const ALL_LESSONS = ALL_MODULES.flatMap((m) => m.lessons);
+
+test('teaching flow: every lesson teaches the rule before it asks anything, and ends with what was learned', () => {
+  for (const l of ALL_LESSONS) {
+    const pages = lessonPages(l);
+    if (l.kind === 'test') {
+      assert.notEqual(pages[0].phase, 'intro', `${l.id}: tests have no intro`);
+      assert.equal(pages[0].step.kind, 'rule', `${l.id}: a test opens with how it works`);
+      continue;
+    }
+    assert.equal(pages[0].phase, 'intro', `${l.id}: opens with what it covers`);
+    const firstAsk = pages.findIndex((p) => p.phase === 'try' || p.phase === 'practice');
+    const firstTeach = pages.findIndex((p) => p.phase === 'learn' || (l.format === 'lab' && p.step.kind === 'mistakes'));
+    assert.ok(firstTeach > 0 && firstTeach < firstAsk, `${l.id}: rule before the first question`);
+    assert.equal(pages.at(-1)!.phase, 'review', `${l.id}: ends with a summary`);
+    const phases = pages.map((p) => p.phase);
+    const order = ['intro', 'learn', 'examples', 'try', 'practice', 'review'];
+    assert.deepEqual([...phases].sort((a, b) => order.indexOf(a) - order.indexOf(b)), phases, `${l.id}: phases never go backwards`);
+  }
+});
+
+test('teaching flow: the old problem-first order (question first) is reordered, nothing is lost', () => {
+  const sva = ALL_LESSONS.find((l) => l.id === 'sva-1')!;
+  assert.equal(sva.steps[0].kind, 'hook', 'content still starts with the hook…');
+  assert.deepEqual(teachingOrder(sva).map((s) => s.kind), ['concept', 'discover', 'examples', 'mistakes', 'ielts', 'hook', 'practice', 'practice', 'practice', 'practice', 'recall']);
+  for (const l of ALL_LESSONS) {
+    const count = (k: string) => l.steps.filter((s) => s.kind === k).length;
+    assert.equal(teachingOrder(l).length, l.steps.length, `${l.id}: no step dropped`);
+    assert.equal(lessonPages(l).filter((p) => p.exercise).length, l.steps.filter((s) => s.kind === 'practice').reduce((n, s) => n + (s.kind === 'practice' ? s.exercises.length : 0), 0), `${l.id}: every question kept`);
+    assert.ok(count('concept') === 0 || lessonPages(l).some((p) => p.step.kind === 'rule'), `${l.id}: rule shown`);
+  }
+  assert.deepEqual(lessonPhases(lessonPages(sva)), ['learn', 'examples', 'try', 'practice', 'review']);
+});
+
+test('teaching flow: rule screens are short (no wall of text); bilingual splits stay aligned', () => {
+  for (const l of ALL_LESSONS) {
+    for (const p of lessonPages(l)) {
+      if (p.step.kind !== 'rule') continue;
+      const s = p.step;
+      assert.ok((s.points?.length ?? 0) <= RULE_POINTS_PER_SCREEN || s.parts === 1, `${l.id}: at most ${RULE_POINTS_PER_SCREEN} points per screen`);
+      const size = (s.body?.en.length ?? 0) + (s.points ?? []).reduce((n, x) => n + x.en.length, 0);
+      assert.ok(size <= 430, `${l.id} part ${s.part}: ${size} characters on one screen`);
+      if (s.body) assert.ok(s.body.en.trim() && s.body.bn.trim(), `${l.id}: split body keeps both languages`);
+    }
+  }
+  const b = splitBody({ en: 'One. '.repeat(70).trim(), bn: 'এক। '.repeat(70).trim() });
+  assert.ok(b.length > 1 && b.every((x) => x.en.split('.').length - 1 === x.bn.split('।').length - 1), 'sentence counts match on each screen');
+  const uneven = { en: `${'A long sentence here. '.repeat(15)}`.trim(), bn: 'একটাই লম্বা বাক্য।' };
+  assert.deepEqual(splitBody(uneven), [uneven], 'never split when the languages do not line up');
+});
+
+test('question feedback: the gapped sentence is shown complete with the right answer', () => {
+  const byId = (id: string) => ALL_LESSONS.flatMap((l) => l.steps.flatMap((s) => (s.kind === 'practice' ? s.exercises : []))).find((e) => e.id === id)!;
+  assert.equal(fullSentence(byId('sva-1-p1')), 'My uncle has a small shop in Sylhet.');
+  assert.equal(fullSentence(byId('sva-1-r2')), "My parents don't eat beef.", 'the bracket hint is dropped');
+  assert.equal(fullSentence(byId('ar-4-p1')), 'Technology has changed the way people work.', 'no article → the gap disappears');
+  assert.equal(fullSentence(byId('sva-1-r3')), undefined, 'rewrite tasks already show the sentence');
+});
+
+test('teacher voice: no cheerleading or AI-style phrases in lesson content or lesson UI', () => {
+  const bad = /\b(great job|great work|well done|fantastic|awesome|amazing work|you'?re doing (great|amazing)|you’ve got this|let’s dive|let's dive|delve|in this comprehensive|by mastering)\b|🎉|দারুণ!|দারুণ —/i;
+  const lessonText = JSON.stringify(ALL_LESSONS.map((l) => l.steps.filter((s) => s.kind !== 'practice')));
+  // "awesome" appears only as slang taught to avoid in essays (vc-4).
+  assert.doesNotMatch(lessonText.replace(/cool, awesome/g, ''), bad);
+  for (const dict of [EN_DICT, BN_DICT]) {
+    const f = dict.foundation as unknown as Record<string, unknown>;
+    assert.doesNotMatch(JSON.stringify({ lesson: f.lesson, teach: f.teach, review: f.review }), bad);
+  }
+  assert.doesNotMatch(JSON.stringify(BN_DICT.foundation), /তুমি|তোমার/);
+  assert.doesNotMatch(JSON.stringify(ALL_LESSONS.map((l) => [l.title.bn, l.why.bn, l.steps.map((s) => s.title.bn)])), /তুমি|তোমার/);
+});
+
+console.log(`\n${passed} passed`);
 })();

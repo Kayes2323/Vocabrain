@@ -14,7 +14,7 @@ const i1: Lesson = {
       kind: 'hook',
       title: l('A difficult question', 'একটা কঠিন প্রশ্ন'),
       situation: l('Examiner (Part 3): "Why do some people dislike modern architecture?" You need a second to think.', 'Examiner (Part 3): "Why do some people dislike modern architecture?" ভাবার জন্য এক সেকেন্ড দরকার।'),
-      question: l('What is the most natural way to start?', 'সবচেয়ে স্বাভাবিকভাবে কীভাবে শুরু করবে?'),
+      question: l('What is the most natural way to start?', 'সবচেয়ে স্বাভাবিকভাবে কীভাবে শুরু করবেন?'),
       options: ['"Well, that’s an interesting question…"', 'Stay silent for 10 seconds', '"Wow!!! Architecture!!!"'], answer: '"Well, that’s an interesting question…"',
       diagnose: {
         '"Well, that’s an interesting question…"': l('Right. "Well" gives you a moment to think and sounds natural.', 'ঠিক। "Well" ভাবার সময় দেয় আর স্বাভাবিক শোনায়।'),

@@ -13,8 +13,8 @@ export const SHOTS = process.env.E2E_SHOTS ?? path.join(process.cwd(), '.e2e-sho
 
 export type Lang = 'en' | 'bn';
 export const LABELS = {
-  en: { continue: 'Continue', complete: 'Complete lesson', start: 'Start the challenge', reviewStart: /^Start \d+ questions/ },
-  bn: { continue: 'এগিয়ে যান', complete: 'Lesson শেষ করুন', start: 'Challenge শুরু করুন', reviewStart: /প্রশ্ন শুরু|শুরু করুন/ },
+  en: { continue: /^(Continue|Start lesson)$/, complete: 'Complete lesson', start: 'Start the challenge', reviewStart: /^Start \d+ questions/ },
+  bn: { continue: /^(এগিয়ে যান|Lesson শুরু করুন)$/, complete: 'Lesson শেষ করুন', start: 'Challenge শুরু করুন', reviewStart: /প্রশ্ন শুরু|শুরু করুন/ },
 } as const;
 
 // ------------------------------------------------------------------ results
@@ -213,8 +213,18 @@ export async function answerCurrent(p: Page, opts: AnswerOptions = {}): Promise<
     case 'write':
       await box.getByRole('textbox').fill(opts.write ?? e.model);
       break;
+    case 'tag': {
+      // The board moves to the next marked word by itself; job buttons are in `choices` order.
+      const jobs = box.locator('div.grid.grid-cols-2 > button');
+      const marked = e.tokens.filter((tk) => tk.pos);
+      for (const [n, tk] of marked.entries()) {
+        const at = e.choices.indexOf(tk.pos!);
+        await jobs.nth(right || n > 0 ? at : (at + 1) % e.choices.length).click();
+      }
+      break;
+    }
     default:
-      throw new Error(`no driver for ${e.type}`);
+      throw new Error(`no driver for ${(e as Exercise).type}`);
   }
   await action.click(); // Check / Get Mino's feedback
   await action.waitFor();
@@ -224,6 +234,17 @@ export async function answerCurrent(p: Page, opts: AnswerOptions = {}): Promise<
   }
   await action.click(); // Next / Complete / See result
   return id;
+}
+
+/** On an "identify" screen, gives every marked word a job (the first choice) so the lesson can go on. */
+export async function tagAll(p: Page) {
+  if ((await p.locator('main [data-step-kind="identify"]').count()) === 0) return;
+  const jobs = p.locator('main [data-step-kind="identify"] div.grid.grid-cols-2 > button');
+  for (let i = 0; i < 12 && (await jobs.count()) && (await jobs.first().isEnabled()); i++) {
+    const open = await p.locator('main [data-step-kind="identify"] p[lang=en] > button:not([disabled])').count();
+    if (!open) break;
+    await jobs.first().click();
+  }
 }
 
 /**
@@ -248,6 +269,7 @@ export async function playLesson(p: Page, lang: Lang, opts: { wrong?: string[]; 
     }
     const radios = p.locator('main [role=radiogroup] [role=radio]');
     if ((await radios.count()) && !(await p.locator('main [role=radio][aria-checked=true]').count())) await radios.first().click();
+    await tagAll(p);
     const next = p.getByRole('button', { name: LABELS[lang].continue });
     if (await next.isEnabled({ timeout: 2000 }).catch(() => false)) await next.click();
     else await p.waitForTimeout(250);
@@ -268,7 +290,7 @@ export async function takeReview(p: Page, concept: string) {
   await p.goto(`${BASE}/ielts/foundation/review/${concept}`, { waitUntil: 'load' });
   await p.getByRole('button', { name: LABELS.en.reviewStart }).click({ timeout: 60_000 });
   for (let i = 0; i < 12 && (await p.locator('[data-exercise-id]').count()); i++) await answerCurrent(p);
-  await p.getByText('Well done — review complete!').waitFor({ timeout: 15_000 });
+  await p.getByText('Review complete.', { exact: true }).waitFor({ timeout: 15_000 });
 }
 
 /** Plays a whole Final Mastery Challenge; `wrong(i)` decides which answers are wrong on purpose. */

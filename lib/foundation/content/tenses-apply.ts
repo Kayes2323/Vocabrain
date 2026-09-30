@@ -340,7 +340,7 @@ export const tensesWritingV2: Lesson = {
         { en: 'First, the leaves are picked and then they are dried.', note: l('process → present passive', 'process → present passive') },
         { en: 'In recent years, many cities have introduced bike lanes.', note: l('Task 2 change → present perfect', 'Task 2 পরিবর্তন → present perfect') },
       ],
-      question: l('How do you choose the tense in Writing?', 'Writing-এ tense কীভাবে বাছবে?'),
+      question: l('How do you choose the tense in Writing?', 'Writing-এ tense কীভাবে বাছবেন?'),
       options: [
         l('From the time in the task: past years, future years, no time, or up to now', 'Task-এর সময় দেখে: অতীতের বছর, ভবিষ্যতের বছর, সময় নেই, নাকি এখন পর্যন্ত'),
         l('Always use the past simple to be safe', 'নিরাপদ থাকতে সবসময় past simple'),

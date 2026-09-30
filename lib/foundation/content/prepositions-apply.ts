@@ -317,8 +317,8 @@ export const prepReview: Lesson = {
       kind: 'concept',
       title: l('How this test works', 'এই test কীভাবে চলবে'),
       body: l(
-        '12 questions from every lesson in this module. You see the answer after each question. Score 80% or more to complete the module; if you score less, Mino will suggest short reviews for the prepositions you missed.',
-        'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। প্রতিটা প্রশ্নের পরে answer দেখবেন। ৮০% বা বেশি পেলে module শেষ; কম পেলে যে preposition-গুলো ভুল হয়েছে, Mino সেগুলোর ছোট review suggest করবে।',
+        '12 questions from every lesson in this module. Answers and explanations come at the end, not after each question. Score 80% or more to complete the module; if you score less, Mino will suggest short reviews for the prepositions you missed.',
+        'এই module-এর সব lesson থেকে ১২টা প্রশ্ন। Answer আর ব্যাখ্যা প্রতিটা প্রশ্নের পরে না, শেষে দেখবেন। ৮০% বা বেশি পেলে module শেষ; কম পেলে যে preposition-গুলো ভুল হয়েছে, Mino সেগুলোর ছোট review suggest করবে।',
       ),
     },
     {

@@ -7,28 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  completeLesson, conceptMastery, expectedAnswer, getConcept, lessonOutcome, nextAction, PASS_SCORE, recordAnswer, recordApplication, saveInProgress,
-  type Exercise, type Lesson, type LessonStep, type Module,
+  completeLesson, conceptMastery, expectedAnswer, getConcept, lessonOutcome, lessonPages, lessonPhases, nextAction, PASS_SCORE, recordAnswer, recordApplication, saveInProgress,
+  type Exercise, type Lesson, type Module,
 } from '@/lib/foundation';
-import { DiscoverStep, HookStep, IdentifyStep, MistakeLab, TimelineCards } from './LessonSteps';
+import { HookStep, IdentifyStep, MistakeLab } from './LessonSteps';
+import { ExampleBlock, LessonIntro, LessonSummary, PhaseBar, RuleBlock, TeacherTip } from './Teach';
 import type { FoundationInProgress } from '@/lib/models';
 import { cn } from '@/lib/utils';
 import { ExerciseView, type ExerciseResult } from './ExerciseView';
 import { useFoundation, useText } from './useFoundation';
 
-type Page = { step: LessonStep; exercise?: Exercise; exerciseIndex?: number; exerciseCount?: number };
 type Answers = FoundationInProgress['answers'];
 
 const SKILL_ICON = { listening: Headphones, reading: BookOpen, writing: PenLine, speaking: Mic } as const;
-
-/** Practice steps become one page per exercise; every other step is one page. */
-function pagesOf(lesson: Lesson): Page[] {
-  return lesson.steps.flatMap((step): Page[] =>
-    step.kind === 'practice'
-      ? step.exercises.map((exercise, i) => ({ step, exercise, exerciseIndex: i, exerciseCount: step.exercises.length }))
-      : [{ step }],
-  );
-}
 
 /** Score over auto-graded answers (writing is self-checked and not counted). */
 function scoreOf(exercises: Exercise[], answers: Answers) {
@@ -41,7 +32,9 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
   const { t } = useLocale();
   const text = useText();
   const { fp, update } = useFoundation();
-  const pages = useMemo(() => pagesOf(lesson), [lesson]);
+  // Teaching order (rule → examples → try → practice → review), whatever order the steps were written in.
+  const pages = useMemo(() => lessonPages(lesson), [lesson]);
+  const phases = useMemo(() => lessonPhases(pages), [pages]);
   const exercises = useMemo(() => pages.flatMap((p) => (p.exercise ? [p.exercise] : [])), [pages]);
 
   // Resume where the student left this lesson (on any device), else start a new attempt.
@@ -210,62 +203,43 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           </div>
           <ProgressBar value={((index + 1) / pages.length) * 100} label={text(lesson.title)} size="sm" />
         </div>
+        {!isTest && <PhaseBar phases={phases} current={page.phase} />}
       </div>
 
-      {index === 0 && (
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight">{text(lesson.title)}</h1>
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">{t('foundation.lesson.why')}: </span>
-            {text(lesson.why)}
-          </p>
-        </div>
-      )}
+      <section className="space-y-4" aria-live="polite" data-lesson-page={index} data-phase={page.phase} data-step-kind={step.kind}>
+        {step.kind === 'intro' ? (
+          <LessonIntro step={step} />
+        ) : (
+          <div className="space-y-1">
+            {page.phase === 'try' && <p className="text-sm font-semibold text-brand">{t('foundation.teach.nowYouTry')}</p>}
+            {isTest && page.exercise && <p className="text-sm font-semibold text-brand">{t('foundation.teach.testNoFeedback')}</p>}
+            <h2 className="text-xl font-semibold tracking-tight">
+              {step.kind === 'recall' ? t('foundation.teach.whatYouLearned') : text(step.title)}
+              {step.kind === 'rule' && step.parts > 1 && <span className="ml-2 text-sm font-normal text-muted-foreground tabular-nums">{step.part}/{step.parts}</span>}
+              {page.exercise && page.exerciseCount! > 1 && (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  {t('foundation.lesson.exerciseOf', { n: page.exerciseIndex! + 1, total: page.exerciseCount! })}
+                </span>
+              )}
+            </h2>
+          </div>
+        )}
 
-      <section className="space-y-4" aria-live="polite">
-        <h2 className="text-lg font-semibold">
-          {text(step.title)}
-          {page.exercise && page.exerciseCount! > 1 && (
-            <span className="ml-2 text-sm font-normal text-muted-foreground">
-              {t('foundation.lesson.exerciseOf', { n: page.exerciseIndex! + 1, total: page.exerciseCount! })}
-            </span>
-          )}
-        </h2>
-
+        {step.kind === 'rule' && <RuleBlock step={step} />}
         {step.kind === 'hook' && <HookStep step={step} picked={picks[index] as string | undefined} onPick={(o) => setPicks((p) => ({ ...p, [index]: o }))} />}
-        {step.kind === 'discover' && <DiscoverStep step={step} picked={picks[index] as number | undefined} onPick={(i) => setPicks((p) => ({ ...p, [index]: i }))} />}
+        {step.kind === 'discover' && (
+          <>
+            <ExampleBlock items={step.items} />
+            <TeacherTip label={t('foundation.lesson.pattern')}>{text(step.pattern)}</TeacherTip>
+          </>
+        )}
         {step.kind === 'identify' && <IdentifyStep step={step} done={picks[index] !== undefined} onDone={() => setPicks((p) => ({ ...p, [index]: 1 }))} />}
         {step.kind === 'mistakes' && <MistakeLab step={step} />}
-        {step.kind === 'practice' && step.mode && step.mode !== 'practice' && (
+        {step.kind === 'practice' && step.mode && step.mode !== 'practice' && page.exerciseIndex === 0 && (
           <p className="text-sm text-muted-foreground">{t(`foundation.lesson.mode.${step.mode}`)}</p>
         )}
 
-        {step.kind === 'concept' && (
-          <Panel className="space-y-3">
-            <p className="leading-7">{text(step.body)}</p>
-            {step.points && (
-              <ul className="space-y-1.5 text-[15px]">
-                {step.points.map((p, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-brand">•</span> {text(p)}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Panel>
-        )}
-        {step.kind === 'concept' && step.timeline && <TimelineCards items={step.timeline} />}
-
-        {step.kind === 'examples' && (
-          <div className="space-y-3">
-            {step.items.map((item, i) => (
-              <Panel key={i} className="space-y-1.5 p-4">
-                <p className="text-lg" lang="en">{item.en}</p>
-                <p className="text-sm text-muted-foreground">{text(item.note)}</p>
-              </Panel>
-            ))}
-          </div>
-        )}
+        {step.kind === 'examples' && <ExampleBlock items={step.items} />}
 
         {step.kind === 'ielts' && (
           <div className="space-y-3">
@@ -284,21 +258,14 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           </div>
         )}
 
-        {step.kind === 'recall' && (
-          <Panel variant="brand" className="space-y-2">
-            {step.points.map((p, i) => (
-              <p key={i} className="flex gap-2">
-                <span className="text-brand">✓</span> {text(p)}
-              </p>
-            ))}
-          </Panel>
-        )}
+        {step.kind === 'recall' && <LessonSummary points={step.points} />}
 
         {page.exercise && (
           <Panel>
             <ExerciseView
               key={`${page.exercise.id}-${attempt}`}
               exercise={page.exercise}
+              feedback={!isTest}
               initial={answers[page.exercise.id]}
               lessonId={lesson.id}
               onApplied={(fb, text) =>
@@ -321,14 +288,17 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
           )}
           <Button
             size="lg"
-            disabled={(step.kind === 'hook' || step.kind === 'discover' || step.kind === 'identify') && picks[index] === undefined}
+            className={cn(index > 0 && 'h-auto min-h-11 min-w-0 flex-1 py-2.5 whitespace-normal sm:flex-none')}
+            disabled={(step.kind === 'hook' || step.kind === 'identify') && picks[index] === undefined}
             onClick={() => (last ? finish() : goTo(index + 1))}
           >
-            {(step.kind === 'hook' || step.kind === 'discover' || step.kind === 'identify') && picks[index] === undefined
+            {(step.kind === 'hook' || step.kind === 'identify') && picks[index] === undefined
               ? t('foundation.lesson.pickFirst')
               : last
                 ? t('foundation.lesson.complete')
-                : t('foundation.lesson.continue')}{' '}
+                : step.kind === 'intro'
+                  ? t('foundation.teach.start')
+                  : t('foundation.lesson.continue')}{' '}
             <ArrowRight />
           </Button>
         </div>

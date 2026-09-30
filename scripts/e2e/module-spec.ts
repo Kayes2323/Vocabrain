@@ -87,7 +87,7 @@ export async function runModuleSpec(s: ModuleSpec) {
 
     console.log('\n[2] A lesson with deliberate mistakes and Mino');
     await p.goto(`${BASE}/ielts/foundation/lesson/${s.mino.lesson}`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let minoText = '';
     let followUp = false;
     const answered = await playLesson(p, 'en', {
@@ -99,7 +99,7 @@ export async function runModuleSpec(s: ModuleSpec) {
         await shot(pg, `${s.shotPrefix}-en-02-mino-feedback`, false);
         await pg.locator('form').getByRole('textbox').fill(s.mino.followUp);
         await pg.locator('form').getByRole('button', { name: 'Check' }).click();
-        followUp = await pg.getByText('Right! You’ve got it.').isVisible();
+        followUp = (await pg.getByTestId('mino-practice-result').innerText()).trim() === 'Correct.';
       },
     });
     check(`lesson ${s.mino.lesson} plays through every step (practice, recall, challenge, write)`, ['p1', 'r1', 'c2', 'y1'].every((k) => answered.includes(`${s.mino.lesson}-${k}`)), answered.join(','));
@@ -116,7 +116,7 @@ export async function runModuleSpec(s: ModuleSpec) {
 
     console.log('\n[3] Immediate feedback: why the wrong answer is wrong');
     await p.goto(`${BASE}/ielts/foundation/lesson/${s.feedback.lesson}`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     await skipTo(p, s.feedback.exercise, 'en', false);
     const box = p.locator(`[data-exercise-id="${s.feedback.exercise}"]`);
     await box.getByRole('radio', { name: s.feedback.wrongOption, exact: true }).click();
@@ -147,7 +147,7 @@ export async function runModuleSpec(s: ModuleSpec) {
 
     console.log('\n[5] A second lesson right → mastery only after 2 due reviews');
     await p.goto(`${BASE}/ielts/foundation/lesson/${s.mastery.lesson}`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     await playLesson(p, 'en', { write: s.mastery.write });
     const mc = s.mastery.concept;
     f = await waitForFoundation(uid, (x) => x.lessons?.[s.mastery.lesson] && (x.concepts?.[mc]?.appliedCorrect ?? 0) >= 1);
@@ -219,7 +219,7 @@ export async function runModuleSpec(s: ModuleSpec) {
     check('bn: respectful Bangla (no তুমি / তোমার / তুই)', !/তুমি|তোমার|তুই/.test(bnModule));
     await shot(q, `${s.shotPrefix}-bn-01-module`);
     await q.goto(`${BASE}/ielts/foundation/lesson/${s.bn.lesson}`, { waitUntil: 'load' });
-    await q.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await q.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let bnLesson = '';
     await skipTo(q, s.bn.stopAt, 'bn', true, (t) => (bnLesson += `\n${t}`));
     check('bn lesson: Bangla explanation with English examples', /[ঀ-৿]/.test(bnLesson) && s.bn.english.test(bnLesson), bnLesson.slice(0, 200));
@@ -243,7 +243,7 @@ export async function runModuleSpec(s: ModuleSpec) {
       },
     });
     check(`bn lesson ${s.bn.lesson} completes`, Boolean((await waitForFoundation(uidBn, (x) => x.lessons?.[s.bn.lesson]))?.lessons?.[s.bn.lesson]));
-    check('bn Mino feedback is in Bangla and names the fix', /ভালো চেষ্টা/.test(bnFeedback) && s.bn.expect.test(bnFeedback), bnFeedback.slice(0, 200));
+    check('bn Mino feedback is in Bangla and names the fix', /একটা জিনিস ঠিক করতে হবে|প্রায় ঠিক/.test(bnFeedback) && s.bn.expect.test(bnFeedback), bnFeedback.slice(0, 200));
     check('bn Mino feedback: no sideways scroll', overflow === 0);
     await q.goto(`${BASE}/ielts/foundation/challenge/${s.moduleId}`, { waitUntil: 'load' });
     await q.getByRole('button', { name: LABELS.bn.start }).waitFor({ timeout: 60_000 });

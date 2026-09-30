@@ -42,7 +42,7 @@ async function main() {
 
     console.log('\n[2] a / an: a deliberate mistake and "I am student at an university" for Mino');
     await p.goto(`${BASE}/ielts/foundation/lesson/ar-2`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let minoText = '';
     let followUp = false;
     const answered = await playLesson(p, 'en', {
@@ -54,7 +54,7 @@ async function main() {
         await shot(pg, 'ar-en-02-mino-feedback', false);
         await pg.locator('form').getByRole('textbox').fill('an');
         await pg.locator('form').getByRole('button', { name: 'Check' }).click();
-        followUp = await pg.getByText('Right! You’ve got it.').isVisible();
+        followUp = (await pg.getByTestId('mino-practice-result').innerText()).trim() === 'Correct.';
       },
     });
     check('lesson ar-2 plays through every step (recall + write included)', answered.includes('ar-2-r1') && answered.includes('ar-2-y1'), answered.join(','));
@@ -72,7 +72,7 @@ async function main() {
 
     console.log('\n[3] "the" answered right → mastery only after 2 due reviews');
     await p.goto(`${BASE}/ielts/foundation/lesson/ar-3`, { waitUntil: 'load' });
-    await p.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await p.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     await playLesson(p, 'en', { write: 'The most interesting place in my city is a museum. The museum shows the history of our country.' });
     f = await waitForFoundation(uid, (x) => x.lessons?.['ar-3'] && (x.concepts?.['article-the']?.appliedCorrect ?? 0) >= 1);
     let m = conceptMastery(f, 'article-the');
@@ -140,7 +140,7 @@ async function main() {
     check('bn Articles module: 9 lessons, no sideways scroll', (await q.locator('main a[href^="/ielts/foundation/lesson/ar-"]').count()) === 9 && (await noHorizontalScroll(q)));
     await shot(q, 'ar-bn-01-module');
     await q.goto(`${BASE}/ielts/foundation/lesson/ar-1`, { waitUntil: 'load' });
-    await q.locator('main [role=radio]').first().waitFor({ timeout: 60_000 });
+    await q.locator('main [data-lesson-page]').first().waitFor({ timeout: 60_000 });
     let overflow = 0;
     let bnFeedback = '';
     await playLesson(q, 'bn', {
@@ -153,7 +153,7 @@ async function main() {
       },
     });
     check('bn lesson ar-1 (a or an) completes', Boolean((await waitForFoundation(uidBn, (x) => x.lessons?.['ar-1']))?.lessons?.['ar-1']));
-    check('bn Mino feedback is in Bangla and names the sound', /ভালো চেষ্টা/.test(bnFeedback) && /sound/.test(bnFeedback), bnFeedback.slice(0, 160));
+    check('bn Mino feedback is in Bangla and names the sound', /একটা জিনিস ঠিক করতে হবে|প্রায় ঠিক/.test(bnFeedback) && /sound/.test(bnFeedback), bnFeedback.slice(0, 160));
     check('bn Mino feedback: no sideways scroll', overflow === 0);
     await q.goto(`${BASE}/ielts/foundation/challenge/articles`, { waitUntil: 'load' });
     await q.getByRole('button', { name: LABELS.bn.start }).waitFor({ timeout: 60_000 });

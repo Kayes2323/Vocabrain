@@ -240,7 +240,7 @@ const li: Lesson = {
       kind: 'hook',
       title: l('Reading time', 'প্রশ্ন পড়ার সময়'),
       situation: l('Form completion, before the recording: "The course will begin on ______."', 'Form completion, recording-এর আগে: "The course will begin on ______."'),
-      question: l('What will you listen for?', 'কী শোনার জন্য অপেক্ষা করবে?'),
+      question: l('What will you listen for?', 'কী শোনার জন্য অপেক্ষা করবেন?'),
       options: ['A day or a date', 'A place', 'An adjective'],
       answer: 'A day or a date',
       diagnose: {
@@ -312,8 +312,8 @@ const li: Lesson = {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('pie-3-c1', C, { prompt: l('"Meet at the ______ entrance." What will you listen for?', '"Meet at the ______ entrance." কী শোনার জন্য অপেক্ষা করবে?'), options: ['a describing word (north, main)', 'a time', 'a verb'], answer: 'a describing word (north, main)', explanation: l('the ___ entrance → a word describing the entrance.', 'the ___ entrance → entrance-কে describe করা word।') }),
-        choice('pie-3-c2', C, { prompt: l('Why write "N" or "#" next to the gaps?', 'Gap-এর পাশে "N" বা "#" কেন লিখবে?'), options: ['So you know what type of answer to catch', 'Because the examiner reads it', 'To save the answers'], answer: 'So you know what type of answer to catch', explanation: l('Prediction focuses your listening.', 'আন্দাজ শোনাকে কেন্দ্রীভূত করে।') }),
+        choice('pie-3-c1', C, { prompt: l('"Meet at the ______ entrance." What will you listen for?', '"Meet at the ______ entrance." কী শোনার জন্য অপেক্ষা করবেন?'), options: ['a describing word (north, main)', 'a time', 'a verb'], answer: 'a describing word (north, main)', explanation: l('the ___ entrance → a word describing the entrance.', 'the ___ entrance → entrance-কে describe করা word।') }),
+        choice('pie-3-c2', C, { prompt: l('Why write "N" or "#" next to the gaps?', 'Gap-এর পাশে "N" বা "#" কেন লিখবেন?'), options: ['So you know what type of answer to catch', 'Because the examiner reads it', 'To save the answers'], answer: 'So you know what type of answer to catch', explanation: l('Prediction focuses your listening.', 'আন্দাজ শোনাকে কেন্দ্রীভূত করে।') }),
         gap('pie-3-c3', C, { prompt: l('You hear: "The meeting point is the car park behind the library." Complete: "Meet at the ______ (TWO WORDS)."', 'আপনি শুনলে: "The meeting point is the car park behind the library." লিখুন: "Meet at the ______ (TWO WORDS)।"'), sentence: 'Meet at the ______.', accepted: ['car park'], explanation: l('at the ___ → a place noun; two words: car park.', 'at the ___ → জায়গার noun; দুই word: car park।') }),
       ],
     },

@@ -268,7 +268,7 @@ const forms = station({
   hook: {
     kind: 'hook', title: l('A Task 2 sentence', 'একটা Task 2 sentence'),
     situation: l('"The develop of technology has made communication more easy and more effectively."', '"The develop of technology has made communication more easy and more effectively."'),
-    question: l('What would you check first?', 'প্রথমে কী পরীক্ষা করবে?'),
+    question: l('What would you check first?', 'প্রথমে কী পরীক্ষা করবেন?'),
     options: ['Which job each word does after its neighbours', 'The spelling of "technology"', 'The length of the sentence'],
     answer: 'Which job each word does after its neighbours',
     diagnose: {

@@ -132,7 +132,7 @@ export const presentPerfectContinuous: Lesson = {
     },
     {
       kind: 'concept',
-      title: l('When to use it — and when not to', 'কখন ব্যবহার করবে — আর কখন না'),
+      title: l('When to use it — and when not to', 'কখন ব্যবহার করবেন — আর কখন না'),
       body: l(
         'Use have / has been + verb-ing for an activity that started in the past and is still continuing, or has just stopped with a result you can see. The focus is on the activity and how long it has lasted.',
         'অতীতে শুরু হয়ে এখনো চলছে, বা সবে থেমেছে আর ফল দেখা যাচ্ছে, এমন কাজের জন্য have / has been + verb-ing। জোর থাকে কাজটার উপর আর কতক্ষণ চলছে তার উপর।',
@@ -341,7 +341,7 @@ export const tenseComparisons: Lesson = {
         { en: 'I was reading when she called. / I read the letter when she called.', note: l('in progress / next event', 'চলছিল / পরের ঘটনা') },
         { en: 'I have read the book. / I have been reading the book.', note: l('result / activity', 'ফলাফল / কাজ') },
       ],
-      question: l('How do you choose between the two sentences in each pair?', 'প্রতিটা জোড়ায় দুটো sentence-এর মধ্যে কীভাবে বাছবে?'),
+      question: l('How do you choose between the two sentences in each pair?', 'প্রতিটা জোড়ায় দুটো sentence-এর মধ্যে কীভাবে বাছবেন?'),
       options: [
         l('By meaning: is it finished, still going, temporary, first or later?', 'অর্থ দেখে: শেষ, এখনো চলছে, সাময়িক, আগে নাকি পরে?'),
         l('By which one sounds more formal', 'কোনটা বেশি formal শোনায় তা দেখে'),

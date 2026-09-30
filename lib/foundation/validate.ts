@@ -3,6 +3,7 @@ import { CHALLENGES } from './content/challenges';
 import { POS_NAMED_PATTERNS } from './content/pos-patterns';
 import { DIAGNOSTIC_ITEMS } from './diagnostic';
 import { answerKey, canonicalAnswer, gradeExercise, normaliseAnswer, spotCorrected } from './grade';
+import { lessonPages } from './flow';
 import type { Exercise, L, Lesson } from './model';
 
 const filled = (l: L | undefined) => Boolean(l && l.en.trim() && l.bn.trim());
@@ -55,6 +56,7 @@ export function validateLesson(lesson: Lesson, errors: string[]) {
   if (lesson.concept && !CONCEPTS.some((c) => c.id === lesson.concept)) errors.push(`${lesson.id}: unknown concept ${lesson.concept}`);
   if (!filled(lesson.title) || !filled(lesson.why)) errors.push(`${lesson.id}: title/why need en and bn`);
   if (lesson.minutes < 3 || lesson.minutes > 15) errors.push(`${lesson.id}: lessons are 3–15 minutes`);
+  validateTeachingOrder(lesson, errors);
   if (lesson.format === 'v2') validateV2(lesson, errors);
   if (lesson.format === 'lab') validateLab(lesson, errors);
   for (const step of lesson.steps) {
@@ -67,10 +69,25 @@ export function validateLesson(lesson: Lesson, errors: string[]) {
   }
 }
 
+/**
+ * Theory before practice: as the student sees it, a taught lesson opens with
+ * what it covers, then the rule, and asks nothing before the rule is taught.
+ * Labs teach through their mistake lab (wrong → why → right) before repairs.
+ */
+function validateTeachingOrder(lesson: Lesson, errors: string[]) {
+  if (lesson.kind === 'test') return;
+  const pages = lessonPages(lesson);
+  const firstAsk = pages.findIndex((p) => p.phase === 'try' || p.phase === 'practice');
+  const firstTeach = pages.findIndex((p) => (lesson.format === 'lab' ? p.step.kind === 'mistakes' : p.phase === 'learn'));
+  if (pages[0]?.phase !== 'intro') errors.push(`${lesson.id}: must open with what the lesson covers`);
+  if (firstTeach < 0) errors.push(`${lesson.id}: nothing is taught before practice`);
+  else if (firstAsk >= 0 && firstAsk < firstTeach) errors.push(`${lesson.id}: asks a question before teaching the rule`);
+  if (pages.at(-1)?.phase !== 'review') errors.push(`${lesson.id}: must end with what the student learned`);
+}
+
 /** A repair station: spot-and-fix items each followed by a "why", then targeted practice without options. */
 function validateLab(lesson: Lesson, errors: string[]) {
   const at = (m: string) => errors.push(`${lesson.id} (lab): ${m}`);
-  if (lesson.steps[0]?.kind !== 'hook') at('must start with the hook');
   const practice = lesson.steps.filter((s): s is Extract<Lesson['steps'][number], { kind: 'practice' }> => s.kind === 'practice');
   const repair = practice.filter((s) => (s.mode ?? 'practice') === 'practice').flatMap((s) => s.exercises);
   const spots = repair.filter((e) => e.type === 'spot');
@@ -88,9 +105,8 @@ function validateLab(lesson: Lesson, errors: string[]) {
 function validateV2(lesson: Lesson, errors: string[]) {
   const at = (m: string) => errors.push(`${lesson.id} (v2): ${m}`);
   const kinds = lesson.steps.map((s) => s.kind);
-  for (const k of ['hook', 'concept', 'examples', 'ielts', 'mistakes', 'practice', 'recall'] as const) if (!kinds.includes(k)) at(`missing ${k}`);
-  if (!kinds.includes('discover') && !kinds.includes('identify')) at('missing discover (or identify)');
-  if (kinds[0] !== 'hook') at('must start with the hook (student answers first)');
+  for (const k of ['concept', 'examples', 'ielts', 'mistakes', 'practice', 'recall'] as const) if (!kinds.includes(k)) at(`missing ${k}`);
+  if (!kinds.includes('hook') && !kinds.includes('discover') && !kinds.includes('identify')) at('needs a guided try (hook, discover or identify)');
   for (const step of lesson.steps) {
     if (step.kind === 'hook') {
       if (!step.options.includes(step.answer)) at('hook answer is not an option');

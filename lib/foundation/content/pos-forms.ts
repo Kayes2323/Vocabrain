@@ -465,7 +465,7 @@ const f5: Lesson = {
       kind: 'hook',
       title: l('A summary completion', 'একটা summary completion'),
       situation: l('Passage: "Cities that invest in parks see residents become healthier." Summary: "Investment in parks improves the ______ of residents." (ONE WORD)', 'Passage: "Cities that invest in parks see residents become healthier." Summary: "Investment in parks improves the ______ of residents." (ONE WORD)'),
-      question: l('What do you write?', 'কী লিখবে?'),
+      question: l('What do you write?', 'কী লিখবেন?'),
       options: ['health', 'healthier', 'healthy'], answer: 'health',
       diagnose: {
         health: l('Right. "the … of" needs a noun: health. The passage used an adjective, so you change the form.', 'ঠিক। "the … of"-এর মাঝে noun লাগে: health। Passage-এ adjective ছিল, তাই form বদলাতে হবে।'),
@@ -536,7 +536,7 @@ const f5: Lesson = {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('pf-5-c1', C, { tag: 'word-form', prompt: l('The passage says "healthier" but the gap needs a noun. What do you do?', 'Passage-এ "healthier", কিন্তু gap-এ noun লাগবে। কী করবে?'), options: ['Look for the noun form elsewhere in the passage', 'Write "healthier" anyway', 'Leave it blank'], answer: 'Look for the noun form elsewhere in the passage', explanation: l('Copied answers must fit the grammar of the gap.', 'যে উত্তর নেবে তাকে gap-এর grammar-এ বসতে হবে।') }),
+        choice('pf-5-c1', C, { tag: 'word-form', prompt: l('The passage says "healthier" but the gap needs a noun. What do you do?', 'Passage-এ "healthier", কিন্তু gap-এ noun লাগবে। কী করবেন?'), options: ['Look for the noun form elsewhere in the passage', 'Write "healthier" anyway', 'Leave it blank'], answer: 'Look for the noun form elsewhere in the passage', explanation: l('Copied answers must fit the grammar of the gap.', 'যে উত্তর নেবে তাকে gap-এর grammar-এ বসতে হবে।') }),
         spot('pf-5-c2', C, { tag: 'word-form', sentence: 'The town experienced rapidly growth after 2010.', wrong: 'rapidly', accepted: ['rapid'], fixOptions: ['rapid', 'rapidity', 'rapids'], pos: 'adjective', wrongPos: { rapidity: 'noun' }, family: 'rapid', explanation: l('Before the noun "growth" → rapid.', 'Noun "growth"-এর আগে → rapid।') }),
         tagWords('pf-5-c3', C, { tag: 'word-form', sentence: 'Rapid/adjective development/noun changed/verb the city/noun dramatically/adverb.', choices: JOBS4, explanation: l('adjective + noun, verb + adverb: every word in its job.', 'adjective + noun, verb + adverb: প্রতিটা word নিজের কাজে।') }),
       ],

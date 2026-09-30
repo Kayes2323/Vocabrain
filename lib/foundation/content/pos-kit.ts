@@ -51,7 +51,7 @@ export function tokens(sentence: string): { w: string; pos?: Pos }[] {
 export const identify = (o: { sentence: string; choices: Pos[]; pattern: L }): LessonStep => ({
   kind: 'identify',
   title: l('What job is each word doing?', 'প্রতিটা word কী কাজ করছে?'),
-  question: l('Tap a marked word, then choose its job. No rules yet: just think.', 'চিহ্ন দেওয়া word-এ tap করুন, তারপর কাজটা বেছে নিন। এখনো কোনো নিয়ম না, শুধু ভাবুন।'),
+  question: l('Tap a marked word, then choose its job.', 'চিহ্ন দেওয়া word-এ tap করুন, তারপর কাজটা বেছে নিন।'),
   tokens: tokens(o.sentence),
   choices: o.choices,
   pattern: o.pattern,

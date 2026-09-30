@@ -135,3 +135,26 @@ export function expectedAnswer(ex: Exercise): string {
       return ex.model;
   }
 }
+
+/** The gapped sentence with the right answer filled in ("She ___ to school." → "She goes to school."). */
+export function fullSentence(exercise: Exercise): string | undefined {
+  if ((exercise.type !== 'choice' && exercise.type !== 'gap') || !exercise.sentence?.includes('___')) return undefined;
+  const answer = expectedAnswer(exercise);
+  const gaps = exercise.sentence.split('___').length - 1;
+  const parts = gaps > 1 ? answer.split(' · ') : [answer];
+  if (parts.length !== gaps) return undefined;
+  let i = 0;
+  // "(no article)" / "-" means the gap stays empty.
+  const filled = exercise.sentence
+    // A hint in brackets after the gap ("___ (study)") is dropped once the gap is filled.
+    .replace(/___(\s*\([^)]*\))?/g, () => {
+      const part = parts[i++].trim();
+      return /^(\(no article\)|-|—|–)$/.test(part) ? '' : part;
+    })
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .trim();
+  // Other hints or notes in brackets: the filled sentence would not read as one sentence.
+  if (filled.includes('(')) return undefined;
+  return filled.charAt(0).toUpperCase() + filled.slice(1);
+}
