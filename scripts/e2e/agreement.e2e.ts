@@ -31,9 +31,9 @@ async function main() {
     console.log('\n[1] Foundation dashboard and the Agreement module');
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
     await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
-    const card = p.locator('main a[href="/ielts/foundation/agreement"]').first();
+    const card = p.locator('main [data-topic-modules~="agreement"]').first();
     check('dashboard links to Subject–Verb Agreement, and the card is no longer "Soon"', (await card.isVisible()) && !(await card.innerText()).includes('Soon'), await card.innerText());
-    const articlesCard = p.locator('main a[href="/ielts/foundation/articles"]').first();
+    const articlesCard = p.locator('main [data-topic-modules~="articles"]').first();
     check('Articles is still available on the dashboard', (await articlesCard.isVisible()) && !(await articlesCard.innerText()).includes('Soon'));
     await p.goto(`${BASE}/ielts/foundation/agreement`, { waitUntil: 'load' });
     const lessonLinks = p.locator('main a[href^="/ielts/foundation/lesson/sva-"]');

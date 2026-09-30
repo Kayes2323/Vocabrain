@@ -10,12 +10,14 @@ import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, ScreenSkeleton, S
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  dailyGoal, findLesson, foundationDailyPlan, getConcept, getModule, isComingSoon, lessonsDone, lessonTotal, levelProgress, modulesForLevel,
-  moduleProgress, nextAction, nextLesson, PARALLEL_LESSONS, PATH_LESSONS, skillProgress, stepBeforeModule, topicSummary,
+  dailyGoal, findLesson, foundationDailyPlan, getConcept, getModule, isComingSoon, lessonsDone, lessonTotal, modulesForLevel,
+  moduleProgress, nextAction, nextLesson, skillProgress, stepBeforeModule, topicSummary,
   type Module, type NextAction, type PlanItem,
 } from '@/lib/foundation';
 import type { FoundationProgress, UserProfile } from '@/lib/models';
 import { cn } from '@/lib/utils';
+import { ieltsJourney } from '@/lib/engine';
+import { TopicCards } from './TopicCards';
 import { useFoundation, useText } from './useFoundation';
 
 /** The one next step: title, Mino's message and the button. */
@@ -112,26 +114,23 @@ const MODULE_ICON: Record<string, LucideIcon> = {
 };
 
 function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationProgress }) {
-  const { t } = useLocale();
+  const { t, n } = useLocale();
   const text = useText();
   const { update } = useFoundation();
   const brain = useBrainContext();
   const { intercept, dialog } = useGuideReminder();
   const action = nextAction(fp);
   const step = useNextStep(fp, action);
-  const progress = levelProgress(1, fp);
-  const completed = Object.keys(fp.lessons).length;
+  // English Foundation topics, from the one curriculum (progress = lessons completed).
+  const foundation = ieltsJourney(profile).stages.find((x) => x.id === 'english-foundation')!;
+  const topicCards = foundation.steps.filter((x) => !x.step.parallel);
+  const topicsDone = topicCards.filter((x) => x.state === 'done').length;
+  const topicsTotal = topicCards.length;
+  const topicsPct = Math.round((topicsDone / topicsTotal) * 100);
   const goal = dailyGoal(profile);
   const plan = foundationDailyPlan(profile, brain);
   const topics = topicSummary(fp).filter((x) => x.status !== 'learning');
   const next = nextLesson(fp);
-  // Modules in the order the learning path first reaches them.
-  const order = [...PATH_LESSONS, ...PARALLEL_LESSONS];
-  const firstOnPath = (m: Module) => Math.min(...m.lessons.map((l) => order.indexOf(l.id)).filter((i) => i >= 0), order.length);
-  const grammar = modulesForLevel(1)
-    .filter((m) => m.skill === 'grammar')
-    .sort((a, b) => firstOnPath(a) - firstOnPath(b));
-  const vocabulary = modulesForLevel(1).filter((m) => m.skill === 'vocabulary');
   const basics = modulesForLevel(2);
 
   const card = (m: Module, tint: Tint) => {
@@ -173,38 +172,47 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
         action={fp.diagnostic ? <StatusChip tone={fp.diagnostic.level === 'strong' ? 'success' : 'brand'}>{t(`foundation.level.${fp.diagnostic.level}`)}</StatusChip> : undefined}
       />
 
-      {/* Where am I? One thin bar. */}
-      <div className="-mt-2 flex items-center gap-3">
-        <ProgressBar value={progress} label={t('foundation.progressLabel')} size="sm" className="flex-1" />
-        <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
-          <span className="font-semibold text-foreground">{progress}%</span> · {t('foundation.lessonsN', { n: completed })}
-        </span>
-      </div>
-
-      {/* What next? One card, one button. */}
-      <Panel variant="brand" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 space-y-1">
-          <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.nextLabel')}</p>
-          <p className="text-lg font-semibold tracking-tight text-balance">{step.title}</p>
-          <p className="flex gap-1.5 text-sm text-muted-foreground">
-            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-brand" aria-hidden />
-            <span className="line-clamp-2">{step.mino}</span>
-          </p>
+      {/* Level 1: where the student is, then the topics in order. */}
+      <section className="space-y-4" aria-labelledby="level1-title" data-testid="foundation-level1">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.groups.grammar')}</p>
+          <h2 id="level1-title" className="text-xl font-semibold tracking-tight">
+            {t('foundation.topicCards.title')}
+          </h2>
+          <p className="text-[15px] text-muted-foreground">{t('foundation.topicCards.intro')}</p>
         </div>
-        <Button asChild size="lg" className="h-12 shrink-0" onClick={() => !fp.introSeenAt && update((p) => ({ ...p, introSeenAt: new Date().toISOString() }))}>
-          <Link href={step.href}>
-            {step.cta} <ArrowRight />
-          </Link>
-        </Button>
-      </Panel>
+        <div className="space-y-2 rounded-2xl border bg-card px-4 py-3.5" data-testid="foundation-progress">
+          <div className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="font-medium">{t('foundation.topicCards.progress')}</span>
+            <span className="text-muted-foreground tabular-nums">
+              <span data-testid="topics-done">{t('foundation.topicCards.count', { done: n(topicsDone), total: n(topicsTotal) })}</span> ·{' '}
+              <span className="font-semibold text-foreground">{n(topicsPct)}%</span>
+            </span>
+          </div>
+          <ProgressBar value={topicsPct} label={t('foundation.topicCards.progress')} size="sm" />
+        </div>
 
-      <Section title={t('foundation.groups.grammar')} variant="label">
-        <CardGrid>{grammar.map((m) => card(m, 'lavender'))}</CardGrid>
-      </Section>
+        {/* Reviews, quizzes and the check still get one clear reminder; lessons live on the cards. */}
+        {(action.kind === 'review' || action.kind === 'quiz' || action.kind === 'check') && (
+          <Panel variant="brand" className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" data-testid="foundation-next">
+            <div className="min-w-0 space-y-1">
+              <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.nextLabel')}</p>
+              <p className="font-semibold tracking-tight text-balance">{step.title}</p>
+              <p className="flex gap-1.5 text-sm text-muted-foreground">
+                <Sparkles className="mt-0.5 size-3.5 shrink-0 text-brand" aria-hidden />
+                <span className="line-clamp-2">{step.mino}</span>
+              </p>
+            </div>
+            <Button asChild className="h-11 shrink-0" onClick={() => !fp.introSeenAt && update((p) => ({ ...p, introSeenAt: new Date().toISOString() }))}>
+              <Link href={step.href}>
+                {step.cta} <ArrowRight />
+              </Link>
+            </Button>
+          </Panel>
+        )}
 
-      <Section title={t('foundation.groups.vocabulary')} variant="label">
-        <CardGrid>{vocabulary.map((m) => card(m, 'green'))}</CardGrid>
-      </Section>
+        <TopicCards stage={foundation} fp={fp} />
+      </section>
 
       <Section title={t('foundation.groups.basics')} variant="label">
         <CardGrid>{basics.map((m) => card(m, 'blue'))}</CardGrid>

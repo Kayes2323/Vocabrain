@@ -65,10 +65,10 @@ export async function runModuleSpec(s: ModuleSpec) {
     console.log(`\n[1] Foundation dashboard and the ${s.name} module`);
     await p.goto(`${BASE}/ielts/foundation`, { waitUntil: 'load' });
     await p.getByText('Level 1 — Foundation Grammar').waitFor({ timeout: 60_000 });
-    const card = p.locator(`main a[href="/ielts/foundation/${s.moduleId}"]`).first();
+    const card = p.locator(`main a[href="/ielts/foundation/${s.moduleId}"], main [data-topic-modules~="${s.moduleId}"]`).first();
     check(`dashboard links to ${s.name}, and the card is no longer "Soon"`, (await card.isVisible()) && !(await card.innerText()).includes('Soon'), await card.innerText());
     for (const other of ['articles', 'agreement']) {
-      const c = p.locator(`main a[href="/ielts/foundation/${other}"]`).first();
+      const c = p.locator(`main a[href="/ielts/foundation/${other}"], main [data-topic-modules~="${other}"]`).first();
       check(`${other} is still available on the dashboard`, (await c.isVisible()) && !(await c.innerText()).includes('Soon'));
     }
     await p.goto(`${BASE}/ielts/foundation/${s.moduleId}`, { waitUntil: 'load' });

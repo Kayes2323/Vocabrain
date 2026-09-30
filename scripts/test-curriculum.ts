@@ -36,23 +36,23 @@ test('every existing lesson is placed exactly once; nothing new, nothing lost', 
   assert.deepEqual(CURRICULUM.map((s) => s.level), [0, 1, 2, 3, 4, 5, 6]);
 });
 
-test('the path order: sentence → word classes → articles → core tenses → … → common errors', () => {
+test('English Foundation: 16 topic cards in the agreed order, then the review', () => {
+  const ef = getStage('english-foundation').steps;
+  assert.deepEqual(
+    ef.filter((s) => !s.parallel).map((s) => s.title.en),
+    [
+      'Sentence Basics', 'Parts of Speech', 'Noun', 'Pronoun', 'Verb & Helping Verbs', 'Simple & Compound Sentences', 'Articles', 'Tenses',
+      'Subject–Verb Agreement', 'Adjectives & Adverbs', 'Prepositions', 'Connectors', 'Complex Sentences', 'Punctuation & Capitalisation', 'Common Errors', 'Foundation Review',
+    ],
+  );
+  assert.equal(ef.at(-1)!.parallel, true, 'Vocabulary Foundation runs alongside');
   const before = (a: string, b: string) => assert.ok(at(a) < at(b), `${a} before ${b}`);
   before('ib-4', 'sb-1'); // Start Here first
-  before('sb-5', 'po-1'); // sentences, then parts of speech
-  before('pn-1', 'ppr-1'); // nouns → pronouns
-  before('ppr-3', 'pvb-1'); // → verbs (incl. helping verbs)
-  before('pvb-5', 'ar-1'); // → articles
-  before('ar-9', 't-2'); // → present simple
-  before('t-4', 'sva-1'); // past simple before agreement
-  before('t-8', 't-6'); // future with the core tenses, perfect forms later
-  before('pa-1', 'pv-1'); // adjectives → adverbs
-  before('pr-9', 't-6'); // prepositions before perfect tenses
-  before('cn-9', 'cx-1'); // connectors → complex sentences
-  before('cx-9', 'pu-1'); // → punctuation
-  before('pu-9', 'ce-1'); // → common errors
-  const ef = stageLessons(getStage('english-foundation'));
-  assert.equal(ef.at(-1), 'ce-9', 'English Foundation ends with the Common Errors review');
+  before('t-5', 't-8'); // inside Tenses: simple forms first…
+  before('t-8', 't-6'); // …then the perfect forms
+  before('t-12', 'sva-1'); // Tenses (with its review test) before agreement
+  const lessons = stageLessons(getStage('english-foundation'));
+  assert.equal(lessons.at(-1), 'pl-8', 'English Foundation ends with the review labs');
   before('ce-9', 'ib-5'); // IELTS Basics after English Foundation
   before('sp-1', 'ls-2'); // Skill Building after IELTS Basics
   assert.ok(PARALLEL_LESSONS.every((id) => id.startsWith('vc-')), 'Vocabulary Foundation runs alongside');

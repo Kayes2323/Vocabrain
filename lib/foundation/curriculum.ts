@@ -4,11 +4,11 @@
 // is duplicated. Continue Learning, the IELTS page, Home's journey card,
 // Today's Learning and Mino all read this one path.
 //
-// Order: sentence → word classes (noun, pronoun, verb) → articles → basic
-// tenses → agreement → describing words → prepositions → perfect tenses →
-// linking → complex sentences → punctuation → common errors. This follows the
-// usual A1 → B1 progression (present/past simple and articles early; present
-// perfect, relative clauses and linking later) — a sound order, not the only one.
+// English Foundation is 16 topics, in order: sentence basics → word classes
+// (noun, pronoun, verb) → simple/compound sentences → articles → tenses →
+// agreement → describing words → prepositions → connectors → complex
+// sentences → punctuation → common errors → review. Inside Tenses, the simple
+// tenses come before the perfect forms (the usual A1 → B1 progression).
 import { findLesson } from './content';
 import type { L } from './model';
 
@@ -76,45 +76,36 @@ export const CURRICULUM: CurriculumStage[] = [
     title: l('English Foundation', 'English Foundation'),
     goal: l('The grammar every IELTS answer is built on, from a simple sentence to error-free writing.', 'প্রতিটি IELTS উত্তরের ভিত্তি যে grammar — সহজ sentence থেকে ভুলহীন লেখা পর্যন্ত।'),
     steps: [
-      { id: 'sentences', title: l('Sentences: subject, verb, object', 'Sentence: subject, verb, object'), why: l('Every other topic builds on a complete sentence.', 'বাকি সব topic একটি সম্পূর্ণ sentence-এর ওপর দাঁড়ায়।'), lessons: range('sb', 1, 5) },
-      { id: 'parts-of-speech', title: l('Parts of speech: the big picture', 'Parts of speech: পুরো ছবি'), why: l('Name the job each word does.', 'প্রতিটি শব্দ কী কাজ করে, তার নাম জানুন।'), lessons: ['po-1'] },
-      { id: 'nouns', title: l('Nouns', 'Noun'), why: l('Subjects and objects are nouns.', 'Subject আর object সাধারণত noun।'), lessons: range('pn', 1, 4) },
-      { id: 'pronouns', title: l('Pronouns', 'Pronoun'), why: l('Replace nouns without repeating them.', 'একই noun বারবার না বলে তার জায়গায় বসান।'), lessons: range('ppr', 1, 3) },
-      { id: 'verbs', title: l('Verbs, including helping verbs', 'Verb, helping verb সহ'), why: l('The verb carries time, questions and negatives.', 'সময়, প্রশ্ন আর negative — সব verb-এর মাধ্যমে আসে।'), lessons: range('pvb', 1, 5) },
-      { id: 'sentence-patterns', title: l('Simple and compound sentences', 'Simple আর compound sentence'), why: l('Join two ideas correctly.', 'দুটি idea ঠিকভাবে যুক্ত করুন।'), lessons: ['sb-6', 'sb-7'] },
-      { id: 'articles', title: l('Articles: a, an, the', 'Article: a, an, the'), why: l('One of the most frequent errors in IELTS writing.', 'IELTS writing-এ সবচেয়ে বেশি হওয়া ভুলগুলোর একটি।'), lessons: range('ar', 1, 9) },
+      { id: 'sentences', title: l('Sentence Basics', 'Sentence Basics'), why: l('How a sentence is built — start here.', 'বাক্য কীভাবে তৈরি হয়, এখান থেকে শুরু।'), lessons: range('sb', 1, 5) },
+      { id: 'parts-of-speech', title: l('Parts of Speech', 'Parts of Speech'), why: l('The job each word does.', 'প্রতিটি শব্দ কী কাজ করে।'), lessons: ['po-1'] },
+      { id: 'nouns', title: l('Noun', 'Noun'), why: l('Names of people, things, places and ideas.', 'মানুষ, বস্তু, জায়গা আর ধারণার নাম।'), lessons: range('pn', 1, 4) },
+      { id: 'pronouns', title: l('Pronoun', 'Pronoun'), why: l('Replace a noun instead of repeating it.', 'Noun বারবার না বলে তার জায়গায় বসে।'), lessons: range('ppr', 1, 3) },
+      { id: 'verbs', title: l('Verb & Helping Verbs', 'Verb ও Helping Verb'), why: l('Actions, states, questions and negatives.', 'কাজ, অবস্থা, প্রশ্ন আর negative।'), lessons: range('pvb', 1, 5) },
+      { id: 'sentence-patterns', title: l('Simple & Compound Sentences', 'Simple ও Compound Sentence'), why: l('Join two ideas correctly.', 'দুটি idea ঠিকভাবে যুক্ত করুন।'), lessons: ['sb-6', 'sb-7'] },
+      { id: 'articles', title: l('Articles', 'Articles'), why: l('a, an, the — which one and when.', 'a, an, the — কখন কোনটা।'), lessons: range('ar', 1, 9) },
       {
-        id: 'tenses-core',
-        title: l('Core tenses: present, past, future', 'মূল tense: present, past, future'),
-        why: l('Talk about habits, now, the past and plans.', 'অভ্যাস, এখন, অতীত আর পরিকল্পনা নিয়ে বলুন।'),
-        lessons: ['t-1', 't-2', 't-3', 't-4', 't-5', 't-8'],
+        id: 'tenses',
+        title: l('Tenses', 'Tenses'),
+        why: l('Past, present and future — then tenses in IELTS.', 'অতীত, বর্তমান, ভবিষ্যৎ — তারপর IELTS-এ tense।'),
+        lessons: ['t-1', 't-2', 't-3', 't-4', 't-5', 't-8', 't-6', 't-13', 't-7', 't-14', 't-9', 't-10', 't-11', 't-15', 't-12'],
       },
-      { id: 'agreement', title: l('Subject–verb agreement', 'Subject–verb agreement'), why: l('He goes, they go — needed in every sentence.', 'He goes, they go — প্রতিটি sentence-এ লাগে।'), lessons: range('sva', 1, 9) },
-      { id: 'adjectives', title: l('Adjectives', 'Adjective'), why: l('Describe things precisely.', 'কোনো কিছু নিখুঁতভাবে বর্ণনা করুন।'), lessons: range('pa', 1, 4) },
-      { id: 'adverbs', title: l('Adverbs', 'Adverb'), why: l('Describe how, when and how much.', 'কীভাবে, কখন, কতটা — বর্ণনা করুন।'), lessons: range('pv', 1, 4) },
-      { id: 'word-forms', title: l('Word forms', 'Word form'), why: l('Choose between develop, development and developing.', 'develop, development, developing — ঠিকটা বেছে নিন।'), lessons: range('pf', 1, 5) },
-      { id: 'prepositions', title: l('Prepositions', 'Preposition'), why: l('Time, place and fixed partners like "depend on".', 'সময়, স্থান আর "depend on"-এর মতো নির্দিষ্ট জোড়া।'), lessons: [...range('ppp', 1, 3), ...range('pr', 1, 9)] },
+      { id: 'agreement', title: l('Subject–Verb Agreement', 'Subject–Verb Agreement'), why: l('He goes, they go — in every sentence.', 'He goes, they go — প্রতিটি sentence-এ।'), lessons: range('sva', 1, 9) },
       {
-        id: 'tenses-more',
-        title: l('More tenses: perfect forms and tenses in IELTS', 'আরও tense: perfect form আর IELTS-এ tense'),
-        why: l('Link past and present, then use tenses in Writing and Speaking.', 'অতীত আর বর্তমান যুক্ত করুন, তারপর Writing ও Speaking-এ tense ব্যবহার করুন।'),
-        lessons: ['t-6', 't-13', 't-7', 't-14', 't-9', 't-10', 't-11', 't-15', 't-12'],
+        id: 'adjectives-adverbs',
+        title: l('Adjectives & Adverbs', 'Adjective ও Adverb'),
+        why: l('Describing words and word forms.', 'বর্ণনার শব্দ আর word form।'),
+        lessons: [...range('pa', 1, 4), ...range('pv', 1, 4), ...range('pf', 1, 5)],
       },
-      { id: 'connectors', title: l('Connectors and conjunctions', 'Connector আর conjunction'), why: l('Link ideas — part of how Writing is marked.', 'Idea যুক্ত করুন — Writing-এর নম্বরের একটা অংশ।'), lessons: [...range('pcj', 1, 3), ...range('cn', 1, 9)] },
-      { id: 'interjections', title: l('Interjections', 'Interjection'), why: l('The last word class, and when not to use it.', 'শেষ word class, আর কখন ব্যবহার করবেন না।'), lessons: ['pij-1'] },
-      {
-        id: 'complex-sentences',
-        title: l('Complex sentences', 'Complex sentence'),
-        why: l('Because, although, which, if — the range examiners look for.', 'because, although, which, if — examiner যে বৈচিত্র্য খোঁজেন।'),
-        lessons: ['sb-8', ...range('cx', 1, 9), 'sb-9'],
-      },
-      { id: 'punctuation', title: l('Punctuation', 'Punctuation'), why: l('Clear sentences on paper and on screen.', 'কাগজে আর screen-এ পরিষ্কার sentence।'), lessons: range('pu', 1, 9) },
-      { id: 'grammar-labs', title: l('Grammar mistake labs', 'Grammar mistake lab'), why: l('Find and fix mixed mistakes.', 'মিশ্র ভুল খুঁজে ঠিক করুন।'), lessons: range('pl', 1, 8) },
-      { id: 'common-errors', title: l('Common errors and review', 'সাধারণ ভুল আর review'), why: l('The mistakes Bangla speakers make most — a final review.', 'বাংলাভাষীরা সবচেয়ে বেশি যে ভুল করেন — শেষ review।'), lessons: range('ce', 1, 9) },
+      { id: 'prepositions', title: l('Prepositions', 'Prepositions'), why: l('Time, place and partners like "depend on".', 'সময়, জায়গা আর "depend on"-এর মতো জোড়া।'), lessons: [...range('ppp', 1, 3), ...range('pr', 1, 9)] },
+      { id: 'connectors', title: l('Connectors', 'Connectors'), why: l('Words that link ideas.', 'Idea যুক্ত করার শব্দ।'), lessons: [...range('pcj', 1, 3), ...range('cn', 1, 9), 'pij-1'] },
+      { id: 'complex-sentences', title: l('Complex Sentences', 'Complex Sentence'), why: l('because, although, which, if.', 'because, although, which, if।'), lessons: ['sb-8', ...range('cx', 1, 9), 'sb-9'] },
+      { id: 'punctuation', title: l('Punctuation & Capitalisation', 'Punctuation ও Capitalisation'), why: l('Commas, full stops and capital letters.', 'Comma, full stop আর capital letter।'), lessons: range('pu', 1, 9) },
+      { id: 'common-errors', title: l('Common Errors', 'Common Errors'), why: l('The mistakes Bangla speakers make most.', 'বাংলাভাষীদের সবচেয়ে সাধারণ ভুল।'), lessons: range('ce', 1, 9) },
+      { id: 'foundation-review', title: l('Foundation Review', 'Foundation Review'), why: l('Find and fix mixed mistakes.', 'মিশ্র ভুল খুঁজে ঠিক করুন।'), lessons: range('pl', 1, 8) },
       {
         id: 'vocabulary-foundation',
         title: l('Vocabulary Foundation', 'Vocabulary Foundation'),
-        why: l('Runs alongside grammar: how to learn, remember and use words.', 'Grammar-এর পাশাপাশি চলে: শব্দ কীভাবে শিখবেন, মনে রাখবেন আর ব্যবহার করবেন।'),
+        why: l('Alongside grammar: learn, remember and use words.', 'Grammar-এর পাশাপাশি: শব্দ শেখা, মনে রাখা, ব্যবহার।'),
         lessons: range('vc', 1, 9),
         parallel: true,
       },

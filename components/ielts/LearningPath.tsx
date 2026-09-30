@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Check, ChevronDown, ChevronRight } from 'lucide-react';
 import { StatusChip } from '@/components/ds';
+import { TopicCards } from '@/components/foundation/TopicCards';
 import { useText } from '@/components/foundation/useFoundation';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import type { IELTSJourney, JourneyStageStatus, JourneyStepStatus, StepState } from '@/lib/engine';
@@ -81,6 +82,8 @@ function StageRow({ stage, profile, last }: { stage: JourneyStageStatus; profile
   const visible = all || stage.steps.length <= WINDOW + 1 ? stage.steps : stage.steps.slice(from, from + WINDOW);
   const hidden = stage.steps.length - visible.length;
   const def = getStage(stage.id);
+  // English Foundation shows its topic cards (the same ones as the Foundation page).
+  const cards = stage.id === 'english-foundation';
   const meta =
     stage.lessonsTotal > 0
       ? t('ielts.path.lessons', { done: n(stage.lessonsDone), total: n(stage.lessonsTotal) })
@@ -111,18 +114,24 @@ function StageRow({ stage, profile, last }: { stage: JourneyStageStatus; profile
         <span className="sr-only">{open ? t('ielts.path.hideSteps') : t('ielts.path.showSteps')}</span>
       </button>
       {open && (
-        <div id={panelId} className="space-y-2 pb-3 pl-11" data-testid={`stage-steps-${stage.id}`}>
+        <div id={panelId} className={cn('space-y-2 pb-3', cards ? 'pt-1 sm:pl-11' : 'pl-11')} data-testid={`stage-steps-${stage.id}`}>
           <p className="text-sm text-foreground/80">{text(def.goal)}</p>
           {stage.testedOut && <p className="text-sm font-medium text-success">{t('ielts.path.testedOut')}</p>}
-          <ol className="-mx-3 space-y-0.5">
-            {visible.map((s) => (
-              <StepRow key={s.step.id} s={s} profile={profile} />
-            ))}
-          </ol>
-          {hidden > 0 && (
-            <button type="button" onClick={() => setAll(true)} className="h-11 text-sm font-medium text-brand" data-testid={`stage-all-${stage.id}`}>
-              {t('ielts.path.showAll', { n: n(stage.steps.length) })}
-            </button>
+          {cards ? (
+            <TopicCards stage={stage} fp={profile.foundation} className="pt-1" />
+          ) : (
+            <>
+              <ol className="-mx-3 space-y-0.5">
+                {visible.map((s) => (
+                  <StepRow key={s.step.id} s={s} profile={profile} />
+                ))}
+              </ol>
+              {hidden > 0 && (
+                <button type="button" onClick={() => setAll(true)} className="h-11 text-sm font-medium text-brand" data-testid={`stage-all-${stage.id}`}>
+                  {t('ielts.path.showAll', { n: n(stage.steps.length) })}
+                </button>
+              )}
+            </>
           )}
         </div>
       )}

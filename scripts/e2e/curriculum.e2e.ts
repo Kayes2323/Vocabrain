@@ -7,6 +7,10 @@ import type { Page } from 'playwright-core';
 import { scoreDiagnostic } from '../../lib/foundation';
 import { BASE, check, getDoc, launch, noHorizontalScroll, patchField, playLesson, report, shot, signUp, uidOf, watchErrors, type Lang } from './helpers';
 
+const TOPICS = [
+  'sentences', 'parts-of-speech', 'nouns', 'pronouns', 'verbs', 'sentence-patterns', 'articles', 'tenses', 'agreement', 'adjectives-adverbs',
+  'prepositions', 'connectors', 'complex-sentences', 'punctuation', 'common-errors', 'foundation-review', 'vocabulary-foundation',
+];
 const STAGES = ['start-here', 'english-foundation', 'ielts-basics', 'skill-building', 'practice', 'mock-tests', 'target-ready'];
 const TEXT = {
   bn: { start: 'এখান থেকে শুরু', foundationTitle: 'এবার আপনার দরকারি English foundation তৈরি করা যাক', check: 'আপনার English level যাচাই করুন' },
@@ -45,7 +49,7 @@ async function run(p: Page, lang: Lang, tag: string) {
   check(`${tag}: honest stats start at zero`, /^(0|০)\//.test((await p.getByTestId('stat-lessons').innerText()).trim()));
   // Progressive disclosure: a later stage opens and closes on tap.
   await p.getByTestId('stage-toggle-english-foundation').click();
-  check(`${tag}: tapping a stage shows its steps`, (await p.getByTestId('stage-steps-english-foundation').isVisible()) && (await p.locator('[data-step="sentences"]').getAttribute('href')) === '/ielts/foundation/lesson/sb-1');
+  check(`${tag}: tapping English Foundation shows its topic cards`, (await p.getByTestId('stage-steps-english-foundation').isVisible()) && (await p.locator('[data-testid="stage-steps-english-foundation"] [data-topic]').count()) === 17);
   await p.getByTestId('stage-toggle-english-foundation').click();
   check(`${tag}: and hides them again`, (await p.getByTestId('stage-steps-english-foundation').count()) === 0);
   check(`${tag}: IELTS page has no sideways scroll`, await noHorizontalScroll(p));
@@ -94,19 +98,52 @@ async function run(p: Page, lang: Lang, tag: string) {
   await ielts(p);
   c = await cont(p);
   check(`${tag}: after verbs and sentence patterns → Articles`, c.href === '/ielts/foundation/lesson/ar-1', JSON.stringify(c));
-  check(`${tag}: step states — done, current`, (await p.locator('[data-step="sentence-patterns"]').getAttribute('data-state')) === 'done' && (await p.locator('[data-step="articles"]').getAttribute('data-state')) === 'current');
-  check(`${tag}: a long stage shows the steps around the current one`, (await p.locator('[data-step="nouns"]').count()) === 0 && (await p.locator('[data-step="english-foundation"] [data-step]').count()) === 0);
-  await p.getByTestId('stage-all-english-foundation').click();
-  check(`${tag}: "Show all" lists every step`, (await p.locator('[data-testid="stage-steps-english-foundation"] [data-step]').count()) === 21 && (await p.locator('[data-step="verbs"]').getAttribute('data-state')) === 'done');
+  check(`${tag}: IELTS page — the same cards: Simple & Compound done, Articles current`, (await p.locator('[data-topic="sentence-patterns"]').getAttribute('data-state')) === 'done' && (await p.locator('[data-topic="articles"]').getAttribute('data-state')) === 'current');
   check(`${tag}: stats count only completed lessons`, (await p.getByTestId('stat-lessons').innerText()).trim().startsWith(lang === 'bn' ? '২৪/' : '24/'), await p.getByTestId('stat-lessons').innerText());
   const f = (await getDoc(`users/${uid}`)).app.foundation;
   check(`${tag}: no data was changed by viewing`, Object.keys(f.lessons).length === 24);
   await p.goto(BASE + '/', { waitUntil: 'load' });
   await p.getByTestId('home-continue').waitFor({ timeout: 60_000 });
   check(`${tag}: Home follows the same path`, (await p.getByTestId('home-continue').getAttribute('href')) === '/ielts/foundation/lesson/ar-1');
+
+  // ---------------------------------------------------------------- Foundation page: topic cards
+  await setLessons(['ib-1', 'ib-2', 'ib-3', 'ib-4', ...ef, 'ar-1', 'ar-2', 'ar-3']);
   await p.goto(BASE + '/ielts/foundation', { waitUntil: 'load' });
-  await p.getByText(/Articles|Article/).first().waitFor({ timeout: 60_000 });
-  check(`${tag}: Foundation library still lists every module`, (await p.locator('a[href^="/ielts/foundation/"]').count()) >= 16);
+  await p.getByTestId('topic-cards').waitFor({ timeout: 60_000 });
+  const topics = await p.locator('[data-testid="foundation-level1"] [data-topic]').evaluateAll((els) => els.map((e) => e.getAttribute('data-topic')));
+  check(`${tag}: 16 topic cards in order, Vocabulary alongside`, topics.join(',') === TOPICS.join(','), topics.join(','));
+  check(`${tag}: Level 1 header and topic progress (6 of 16 done)`, (await p.getByTestId('topics-done').innerText()).trim().startsWith(lang === 'bn' ? '৬/১৬' : '6/16'), await p.getByTestId('topics-done').innerText());
+  const articles = p.locator('[data-topic="articles"]');
+  const artText = await articles.innerText();
+  check(`${tag}: progress kept per card — Articles 3/9, 33%`, (lang === 'bn' ? /৩\/৯/.test(artText) && /৩৩%/.test(artText) : /3\/9/.test(artText) && /33%/.test(artText)), artText);
+  check(`${tag}: finished cards say so, not-started cards show their size`, (await p.locator('[data-topic="nouns"]').getAttribute('data-state')) === 'done' && /Completed|সম্পন্ন/.test(await p.locator('[data-topic="nouns"]').innerText()) && !/%/.test(await p.locator('[data-topic="agreement"]').innerText()));
+  check(`${tag}: the current card offers Continue at the next lesson`, (await articles.getAttribute('data-state')) === 'current' && (await articles.getByTestId('topic-continue').getAttribute('href')) === '/ielts/foundation/lesson/ar-4');
+  check(`${tag}: all cards start closed`, (await p.locator('[data-testid^="topic-body-"][data-open="true"]').count()) === 0);
+  await p.getByTestId('topic-toggle-articles').click();
+  await p.waitForTimeout(400);
+  check(`${tag}: tapping a card opens its lessons in place (no navigation)`, new URL(p.url()).pathname === '/ielts/foundation' && (await p.getByTestId('topic-body-articles').getAttribute('data-open')) === 'true' && (await articles.locator('[data-lesson]').count()) === 9);
+  check(`${tag}: lesson states — done ✓ and the next one marked`, (await articles.locator('[data-lesson="ar-1"]').getAttribute('data-state')) === 'done' && (await articles.locator('[data-lesson="ar-4"]').getAttribute('data-state')) === 'current');
+  check(`${tag}: chevron points down when open`, (await p.getByTestId('topic-toggle-articles').getAttribute('aria-expanded')) === 'true');
+  await shot(p, `topics-open-${tag}`);
+  await p.getByTestId('topic-toggle-tenses').click();
+  await p.waitForTimeout(700);
+  check(`${tag}: one card open at a time`, (await p.getByTestId('topic-body-articles').getAttribute('data-open')) === 'false' && (await p.getByTestId('topic-body-tenses').getAttribute('data-open')) === 'true');
+  check(`${tag}: Tenses holds all 15 lessons, simple forms before perfect`, (await p.locator('[data-topic="tenses"] [data-lesson]').evaluateAll((els) => els.map((e) => e.getAttribute('data-lesson')))).join(',') === 't-1,t-2,t-3,t-4,t-5,t-8,t-6,t-13,t-7,t-14,t-9,t-10,t-11,t-15,t-12');
+  check(`${tag}: the open card stays in view`, ((await p.getByTestId('topic-toggle-tenses').boundingBox())!.y) >= -1);
+  check(`${tag}: the module (quiz & challenge) is one tap away`, (await p.locator('[data-topic="tenses"] [data-module-link="tenses"]').getAttribute('href')) === '/ielts/foundation/tenses');
+  await p.getByTestId('topic-toggle-tenses').click();
+  await p.waitForTimeout(400);
+  check(`${tag}: and closes again`, (await p.getByTestId('topic-body-tenses').getAttribute('data-open')) === 'false');
+  const wide = await p.locator('[data-topic]').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().right > window.innerWidth + 1).length);
+  check(`${tag}: cards fit the screen, no sideways scroll`, wide === 0 && (await noHorizontalScroll(p)));
+  const small = await p.locator('[data-testid^="topic-toggle-"]').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height < 44).length);
+  check(`${tag}: card headers are comfortable touch targets`, small === 0);
+  await shot(p, `topics-${tag}`);
+  await p.getByTestId('topic-toggle-articles').click();
+  await p.waitForTimeout(400);
+  await articles.locator('[data-lesson="ar-4"]').click();
+  await p.waitForURL('**/ielts/foundation/lesson/ar-4', { timeout: 30_000 });
+  check(`${tag}: a lesson in the card opens the lesson`, true);
 }
 
 async function main() {
