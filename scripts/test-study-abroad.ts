@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { COUNTRY_PHOTOS } from '../lib/content/country-photos';
+import { byRanking, rankLabel, rankNumber, type SourcedText } from '../lib/abroad/university-layer';
+import { UNI_LAYERS, getUniLayer, getUniversityProfile } from '../lib/content/university-layers';
 import assert from 'node:assert/strict';
 import { emptyProfile, type UserProfile } from '../lib/models';
 import { withProfileDefaults } from '../lib/services/profile-repository';
@@ -2615,6 +2617,89 @@ test('Finland: registries, no scholarship invented, Mino knowledge', () => {
   assert.equal(FI_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 30);
   assert.equal(FI_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 9600);
   assert.equal(FI_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 24);
+});
+
+// ---------------------------------------------------------------- university → program layer
+
+test('University layer: ranking order, labels and never mixing ranking systems', () => {
+  assert.equal(rankNumber('=158'), 158);
+  assert.equal(rankNumber(null), Number.POSITIVE_INFINITY);
+  assert.equal(rankLabel('25'), '#25');
+  assert.equal(rankLabel(null), null);
+  const de = getUniLayer('de')!;
+  assert.deepEqual(byRanking(de.universities).map((u) => u.id), ['de-tum', 'de-lmu', 'de-heidelberg', 'de-rwth', 'de-kit', 'de-tuberlin', 'de-stuttgart']);
+  assert.deepEqual(byRanking(de.universities).map((u) => u.ranking.rank), ['25', '61', '86', '104', '110', '=158', '=318']);
+  for (const layer of Object.values(UNI_LAYERS)) {
+    const editions = new Set(layer.universities.map((u) => `${u.ranking.provider}|${u.ranking.year}`));
+    assert.equal(editions.size, 1, `${layer.code}: one ranking edition only`);
+    for (const u of layer.universities) {
+      assert.match(u.ranking.sourceUrl, /^https:\/\/www\.topuniversities\.com\//, `${u.id}: QS source`);
+      assert.ok(u.ranking.lastVerified && u.ranking.status, `${u.id}: ranking verified date`);
+    }
+  }
+  const unranked = byRanking([{ ...de.universities[0], id: 'x', name: 'A', ranking: { ...de.universities[0].ranking, rank: null } }, de.universities[6]]);
+  assert.equal(unranked[1].id, 'x', 'unranked last');
+});
+
+test('University layer: every value is sourced, dated, bilingual and never guessed', () => {
+  const facts = (u: NonNullable<ReturnType<typeof getUniversityProfile>>): [string, SourcedText][] => [
+    ['tuition', u.tuition], ['deadlines', u.deadlines], ['admission', u.admission], ['english', u.english], ['applicationFee', u.applicationFee], ['scholarships', u.scholarships], ['route', u.applicationRoute],
+    ...(u.semesterFee ? [['semesterFee', u.semesterFee] as [string, SourcedText]] : []),
+    ...u.programs.flatMap((p) => ([['tuition', p.tuition], ['deadline', p.deadline], ['requirements', p.requirements], ['english', p.english], ...(p.documents ? [['documents', p.documents]] : [])] as [string, SourcedText][]).map(([k, v]) => [`${p.id}.${k}`, v] as [string, SourcedText])),
+  ];
+  const ok = (s: { url?: string; sourceType: string }) => /^https:\/\//.test(s.url ?? '') && /^official-/.test(s.sourceType);
+  for (const layer of Object.values(UNI_LAYERS)) {
+    for (const u of layer.universities) {
+      assert.equal(u.countryCode, layer.code);
+      assert.ok(/^https:\/\//.test(u.officialUrl) && /[ঀ-৿]/.test(u.overview.bn), `${u.id}: site + bn overview`);
+      for (const [k, f] of facts(u)) {
+        assert.ok(f.sources.length && f.sources.every(ok), `${u.id}.${k}: official https sources`);
+        assert.ok(f.lastVerified && f.text.en && /[ঀ-৿]/.test(f.text.bn), `${u.id}.${k}: dated + bilingual`);
+        if (f.status === 'not-verified') assert.doesNotMatch(f.text.en, /\b[A-Z]{3} \d|\b\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December)\b/, `${u.id}.${k}: an unverified value carries no amount or date`);
+        assert.doesNotMatch(f.text.en + f.text.bn, /\b(best|we recommend|your chance|guaranteed)\b|তুমি/i, `${u.id}.${k}: neutral tone`);
+      }
+      for (const p of u.programs) {
+        assert.ok(p.url.startsWith('https://') && p.sources.every(ok), `${p.id}: program sources`);
+        if (p.nextIntake.status === 'confirmed') assert.ok(p.nextIntake.value && p.nextIntake.sources.length, `${p.id}: confirmed intake has a value`);
+        else assert.equal(p.nextIntake.value, undefined, `${p.id}: no guessed intake`);
+        if (p.tuition.money) assert.match(p.tuition.text.en, new RegExp(p.tuition.money.currency), `${p.id}: currency as the source prints it`);
+      }
+      for (const s of u.steps.items) assert.ok(/[ঀ-৿]/.test(s.title.bn) && /[ঀ-৿]/.test(s.body.bn), `${u.id}: bn steps`);
+      assert.ok(u.steps.items.length > 0 || u.steps.status === 'not-verified', `${u.id}: missing steps are marked`);
+    }
+  }
+});
+
+test('University layer: visa statistics state their scope; Bangladesh data only when verified', () => {
+  for (const layer of Object.values(UNI_LAYERS)) {
+    for (const s of layer.visaStats) {
+      assert.ok(['bangladesh', 'all-nationalities'].includes(s.scope));
+      assert.ok(/^https:\/\//.test(s.source.url!) && /^official-/.test(s.source.sourceType), `${s.id}: official source`);
+      assert.ok(s.period && s.lastVerified && s.figures.length, `${s.id}: period + figures`);
+      if (s.scope !== 'bangladesh') assert.match(s.covers.en, /not Bangladesh-specific/, `${s.id}: says it is not Bangladesh-specific`);
+      assert.doesNotMatch(JSON.stringify(s), /success rate|approval rate/i, `${s.id}: no success rates`);
+    }
+    for (const x of layer.unverified) assert.ok(['not-verified', 'needs-review'].includes(x.status) && x.note);
+  }
+  const de = getUniLayer('DE')!;
+  assert.equal(de.visaStats.filter((s) => s.scope === 'bangladesh').length, 0);
+  assert.equal(de.visaStats[0].figures[0].value, '480,864');
+  assert.ok(de.unverified.some((x) => x.id === 'bd-study-visa-rate' && x.status === 'not-verified'));
+});
+
+test('Germany university layer: researched values', () => {
+  const tum = getUniversityProfile('de', 'de-tum')!;
+  assert.deepEqual(tum.tuition.money, { amount: 2000, max: 6000, currency: 'EUR', period: 'semester' });
+  assert.equal(tum.programs[0].tuition.money!.amount, 6000);
+  assert.match(tum.programs[0].deadline.text.en, /1 February – 31 May.*1 October – 30 November/);
+  assert.match(getUniversityProfile('de', 'de-lmu')!.deadlines.text.en, /15 January.*15 July/);
+  assert.match(getUniversityProfile('de', 'de-rwth')!.programs[0].requirements.text.en, /GRE/);
+  assert.ok(getUniversityProfile('de', 'de-rwth')!.semesterFee!.note, 'RWTH fee conflict kept');
+  assert.equal(getUniversityProfile('de', 'de-kit')!.programs.length, 0);
+  assert.equal(getUniversityProfile('de', 'de-heidelberg')!.programs[0].nextIntake.status, 'needs-review');
+  assert.match(getUniversityProfile('de', 'de-stuttgart')!.programs[0].english.text.en, /C1/);
+  assert.equal(getUniversityProfile('de', 'nope'), undefined);
+  assert.equal(getUniLayer('RO'), undefined, 'card-only countries have no layer');
 });
 
 console.log(`\n${passed} passed`);

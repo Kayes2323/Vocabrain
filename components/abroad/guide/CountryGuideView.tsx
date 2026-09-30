@@ -8,6 +8,8 @@ import { useBilingual } from '@/components/abroad/useBilingual';
 import { GUIDE_DEGREES, guideSources, type CountryGuide } from '@/lib/abroad/guides';
 import { countryHref } from '@/lib/abroad/countries';
 import type { Country } from '@/lib/models';
+import { getUniLayer } from '@/lib/content/university-layers';
+import { TopUniversities, VisaData } from '@/components/abroad/uni/UniParts';
 import { AnswerBody, AnswerTags, Discrepancy, GuideQA, GuideSources, SectionSources } from './GuideParts';
 
 /** The country guide: a short introduction, the overview, the degree choice and the most asked questions. */
@@ -15,10 +17,13 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
   const { t } = useLocale();
   const text = useBilingual();
   const lower = country.code.toLowerCase();
+  const layer = getUniLayer(country.code);
   const sections = [
     { id: 'overview', label: t('sa.book.overview') },
     { id: 'degrees', label: t('sa.book.degrees') },
+    ...(layer ? [{ id: 'universities', label: t('sa.book.unis.title') }] : []),
     { id: 'questions', label: t('sa.book.faq') },
+    ...(layer ? [{ id: 'visa-data', label: t('sa.book.unis.sections.visa') }] : []),
     ...(guide.life ? [{ id: 'living', label: t('sa.book.life', { country: country.name }) }] : []),
   ];
   const per = guide.sourcesPerSection;
@@ -79,6 +84,8 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
         </div>
       </section>
 
+      {layer && <TopUniversities country={country} layer={layer} />}
+
       <section id="questions" className="scroll-mt-6 space-y-8 border-t pt-10" aria-labelledby="questions-title" data-testid="guide-faq">
         <h2 id="questions-title" className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t('sa.book.faq')}
@@ -95,6 +102,8 @@ export function CountryGuideView({ country, guide }: { country: Country; guide: 
         ))}
         {per && <SectionSources sources={guideSources(guide.faqs)} />}
       </section>
+
+      {layer && <VisaData country={country} layer={layer} />}
 
       {guide.life && (
         <section id="living" className="scroll-mt-6 space-y-8 border-t pt-10" aria-labelledby="living-title" data-testid="guide-life">
