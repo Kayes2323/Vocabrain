@@ -15,6 +15,7 @@ export type SourceType =
   | 'official-scholarship'
   | 'intergovernmental' // OECD, UNESCO, etc.
   | 'licensed-publisher'
+  | 'ranking-publisher' // the publisher of a university ranking (e.g. QS), cited only for that ranking
   | 'vocab-brain-original'
   | 'user-provided'
   | 'calculated'
