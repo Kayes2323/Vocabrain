@@ -10,12 +10,13 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { IELTS_SKILLS } from '@/lib/constants';
 import {
-  applyMyPlan, changedFields, formatBand, generateMyPlan, isCompletePlan, localDateKey, PLAN_BANDS, PLAN_DAILY_MINUTES, PLAN_DAYS_PER_WEEK, PLAN_LEVELS,
+  applyMyPlan, changedFields, rebasePlan, formatBand, generateMyPlan, isCompletePlan, localDateKey, PLAN_BANDS, PLAN_DAILY_MINUTES, PLAN_DAYS_PER_WEEK, PLAN_LEVELS,
   PLAN_MAX_DAYS_AHEAD, PLAN_PREFERENCES, planAnswers, suggestedAnswers, suggestedLevel, validatePlanAnswers,
 } from '@/lib/engine';
 import type { PlanAnswers } from '@/lib/models';
 import { readJSON, writeJSON } from '@/lib/services/local-store';
 import { cn } from '@/lib/utils';
+import { useTestSections } from './usePlanActivity';
 import { PlanOverview, PlanSummary, usePlanText } from './PlanParts';
 
 /** One question per step, in this order. */
@@ -59,6 +60,7 @@ function Setup() {
   const { t, n } = useLocale();
   const { profile, updateProfile } = useProfile();
   const text = usePlanText();
+  const sections = useTestSections();
   const uid = profile!.userId;
   const saved = profile!.ielts.plan;
   const edit = params.get('edit') === '1' && Boolean(saved);
@@ -106,7 +108,9 @@ function Setup() {
       if (saving) return;
       setSaving(true);
       // Generated once, outside the state update, so the saved plan is exactly this one.
-      const final = generateMyPlan(planAnswers(plan), new Date(), saved);
+      // An edit changes today (if not started) and the days after; the past keeps its tasks.
+      const generated = generateMyPlan(planAnswers(plan), new Date(), saved);
+      const final = saved ? rebasePlan(saved, generated, profile!, sections, localDateKey()) : generated;
       updateProfile((p) => applyMyPlan(p, final));
       clearDraft(uid);
       toast.success(edit ? t('myPlan.updated') : t('myPlan.saved'));

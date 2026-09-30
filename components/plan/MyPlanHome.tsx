@@ -9,6 +9,8 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { daysUntil, ieltsJourney } from '@/lib/engine';
 import { readJSON } from '@/lib/services/local-store';
 import { PlanOverview, PlanSummary } from './PlanParts';
+import { PlanProgressLine, PlanTimeline, TodayCard } from './PlanTimeline';
+import { usePlanActivity } from './usePlanActivity';
 
 /**
  * My IELTS Plan: an introduction and "Create my plan" when there is no plan,
@@ -17,6 +19,7 @@ import { PlanOverview, PlanSummary } from './PlanParts';
 export function MyPlanHome() {
   const { t, n } = useLocale();
   const { profile } = useProfile();
+  const ctx = usePlanActivity();
   if (!profile) return <ScreenSkeleton />;
   const plan = profile.ielts.plan;
 
@@ -56,9 +59,17 @@ export function MyPlanHome() {
           <CalendarDays className="size-4" aria-hidden /> {t('myPlan.daysLeft', { n: n(left) })}
         </p>
       )}
+      {ctx ? (
+        <>
+          <TodayCard plan={plan} ctx={ctx} />
+          <PlanProgressLine plan={plan} ctx={ctx} />
+          <PlanTimeline plan={plan} ctx={ctx} />
+        </>
+      ) : (
+        <div className="h-40 animate-pulse rounded-2xl bg-muted" />
+      )}
       <PlanSummary answers={plan} />
       <PlanOverview plan={plan} foundation={{ done: topics.filter((s) => s.state === 'done').length, total: topics.length }} />
-      <p className="px-1 text-sm text-muted-foreground">{t('myPlan.comingSoon')}</p>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button asChild variant="outline" className="h-11">
           <Link href="/ielts/plan/setup?edit=1" data-testid="plan-edit">

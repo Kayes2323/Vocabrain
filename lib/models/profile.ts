@@ -84,6 +84,32 @@ export interface MyPlan extends PlanAnswers {
   totals: { days: number; studyDays: number; hours: number };
   /** Notes shown with the plan (keys under myPlan.notes). */
   notes: string[];
+  /** Weekdays to study (0 = Sunday … 6 = Saturday). Older plans derive them from studyDaysPerWeek. */
+  studyWeekdays?: number[];
+  /** Days the student chose to skip (date → when). */
+  log?: Record<string, { skippedAt: ISODate }>;
+  /**
+   * Task lists of days planned under an earlier version of the plan, frozen when
+   * the plan was edited so past (and started) days never change afterwards.
+   */
+  history?: Record<string, FrozenPlanDay>;
+}
+
+export type ScheduleTaskKind = 'foundation' | 'vocabulary' | 'reading' | 'listening' | 'writing' | 'speaking' | 'review' | 'mock' | 'light-review';
+
+/** One task on a study day. Its status always comes from the student's real activity. */
+export interface ScheduleTask {
+  kind: ScheduleTaskKind;
+  minutes: number;
+  /** How many units finish it (e.g. 2 Foundation lessons). */
+  count: number;
+  /** Mock tasks: a full test (all written sections) or one timed section. */
+  full?: boolean;
+}
+
+export interface FrozenPlanDay {
+  phase: MyPlanPhaseId;
+  tasks: ScheduleTask[];
 }
 
 export type PriorityFactor =

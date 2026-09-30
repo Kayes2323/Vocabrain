@@ -19,7 +19,11 @@ export const PLAN_MAX_DAYS_AHEAD = 730;
 
 const DAY = 86_400_000;
 const parseDay = (key: string) => new Date(`${key}T00:00`);
-const addDays = (key: string, n: number) => localDateKey(new Date(parseDay(key).getTime() + n * DAY));
+const addDays = (key: string, n: number) => {
+  // Calendar arithmetic (not +24 h), so days never repeat or skip on a daylight-saving change.
+  const [y, m, d] = key.split('-').map(Number);
+  return localDateKey(new Date(y, m - 1, d + n));
+};
 const diffDays = (from: string, to: string) => Math.round((parseDay(to).getTime() - parseDay(from).getTime()) / DAY);
 
 // ---------------------------------------------------------------- validation
@@ -171,17 +175,19 @@ const WEEK_ORDER = [6, 0, 1, 2, 3, 4, 5];
  */
 export function applyMyPlan(profile: UserProfile, plan: MyPlan): UserProfile {
   const keepDays = profile.ielts.studyDays?.length === plan.studyDaysPerWeek;
+  const studyDays = keepDays ? profile.ielts.studyDays! : WEEK_ORDER.slice(0, plan.studyDaysPerWeek).sort();
   return {
     ...profile,
     ielts: {
       ...profile.ielts,
-      plan,
+      // The daily schedule uses the same study weekdays as the rest of the app.
+      plan: { ...plan, studyWeekdays: [...studyDays] },
       targetBand: plan.targetBand,
       targetUnsure: false,
       testDate: plan.targetDate,
       testDateUnknown: false,
       weeklyStudyHours: Math.round(((plan.dailyStudyMinutes * plan.studyDaysPerWeek) / 60) * 10) / 10,
-      studyDays: keepDays ? profile.ielts.studyDays : WEEK_ORDER.slice(0, plan.studyDaysPerWeek).sort(),
+      studyDays,
     },
   };
 }
