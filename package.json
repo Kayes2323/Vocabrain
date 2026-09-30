@@ -21,6 +21,7 @@
     "test:kr": "npx -y tsx scripts/test-kr-content.ts",
     "test:plan": "npx -y tsx scripts/test-study-plan.ts",
     "test:curriculum": "npx -y tsx scripts/test-curriculum.ts",
+    "test:my-plan": "npx -y tsx scripts/test-my-plan.ts",
     "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:abroad": "npx -y tsx scripts/test-country-match.ts",
     "test:study-abroad": "npx -y tsx scripts/test-study-abroad.ts",
@@ -44,7 +45,8 @@
     "test:e2e:abroad": "bash scripts/e2e/run.sh abroad",
     "test:e2e:home": "bash scripts/e2e/run.sh home",
     "test:e2e:curriculum": "bash scripts/e2e/run.sh curriculum",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading reading-library writing speaking abroad home curriculum"
+    "test:e2e:plan": "bash scripts/e2e/run.sh plan",
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading reading-library writing speaking abroad home curriculum plan"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

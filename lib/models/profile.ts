@@ -36,6 +36,54 @@ export interface IELTSProfile {
   /** 0 = Sunday ... 6 = Saturday. */
   studyDays?: number[];
   startedAt?: ISODate;
+  /** The student's saved, personalised preparation plan (My IELTS Plan). */
+  plan?: MyPlan;
+}
+
+// ---------------------------------------------------------------- My IELTS Plan
+
+export type PlanLevel = 'beginner' | 'elementary' | 'intermediate' | 'upper-intermediate' | 'advanced';
+export type PlanPreference = 'short' | 'long' | 'mixed';
+export type MyPlanPhaseId = 'foundation' | 'skill-building' | 'practice' | 'mock-tests' | 'final-review';
+
+/** What the student told us in the plan setup. */
+export interface PlanAnswers {
+  /** The IELTS test date, YYYY-MM-DD (local). */
+  targetDate: string;
+  targetBand: number;
+  currentLevel: PlanLevel;
+  dailyStudyMinutes: number;
+  studyDaysPerWeek: number;
+  /** Skills that feel hardest; empty = all about the same. */
+  weakSkills: IELTSSkill[];
+  studyPreference: PlanPreference;
+}
+
+export interface MyPlanPhase {
+  id: MyPlanPhaseId;
+  startDate: string;
+  endDate: string;
+  days: number;
+  studyDays: number;
+  minutes: number;
+}
+
+/** A generated plan: the answers plus the structure built from them (rule-based, versioned). */
+export interface MyPlan extends PlanAnswers {
+  version: 1;
+  status: 'active';
+  createdAt: ISODate;
+  generatedAt: ISODate;
+  /** How many times the plan was changed after it was first saved. */
+  revisions: number;
+  phases: MyPlanPhase[];
+  /** Share of skill time per skill, 0–100, summing to 100. */
+  skillShare: Record<IELTSSkill, number>;
+  sessionMinutes: number;
+  sessionsPerDay: number;
+  totals: { days: number; studyDays: number; hours: number };
+  /** Notes shown with the plan (keys under myPlan.notes). */
+  notes: string[];
 }
 
 export type PriorityFactor =

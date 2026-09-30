@@ -14,3 +14,4 @@ export * from './diagnosis';
 export * from './study-plan';
 export * from './country-match';
 export * from './abroad-tracker';
+export * from './my-plan';

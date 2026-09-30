@@ -20,7 +20,7 @@ import { SplashScreen } from './SplashScreen';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 
 /** Routes that take over the full screen (focused flows, no navigation). */
-const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '/practice'];
+const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '/practice', '/ielts/plan/setup'];
 /** Test runner: full screen, no app navigation (/ielts/tests/{testId}/{skill}). */
 const TEST_RUNNER = /^\/ielts\/tests\/[^/]+\/[^/]+/;
 
