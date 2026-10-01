@@ -1,3 +1,4 @@
+import { fromAcceptedList, validateAnswer, validateChoice } from '@/lib/answers';
 import type { WordInfo } from '@/lib/models';
 import type {
   Bi, GapGroup, GapItem, LexEntry, LibraryPassage, MultiGroup, Option, PassageVocab, QuestionGroup, ReadingLevel, ReadingLibraryProgress, SelectGroup,
@@ -76,11 +77,13 @@ export const wordCount = (s: string) => normalize(s).split(' ').filter(Boolean).
 
 export type Verdict = { correct: boolean; reason?: 'blank' | 'limit' | 'wrong' };
 
+/** Checked by the shared validator (lib/answers) against the item's accepted answers; the passage is the authority. */
 export function gradeGap(g: GapGroup, item: GapItem, answer: string | undefined): Verdict {
   const a = normalize(answer ?? '');
   if (!a) return { correct: false, reason: 'blank' };
   if (wordCount(a) > g.maxWords) return { correct: false, reason: 'limit' };
-  return item.accepted.some((x) => normalize(x) === a) ? { correct: true } : { correct: false, reason: 'wrong' };
+  const v = validateAnswer({ question: fromAcceptedList(item.accepted, { equivalents: ['numbers', 'spelling'] }), userAnswer: answer });
+  return v.correct ? { correct: true } : { correct: false, reason: 'wrong' };
 }
 
 /** A "Choose TWO" answer is stored as "A,C"; returns marks earned. */
@@ -93,7 +96,7 @@ export function gradeMulti(g: MultiGroup, answer: string | undefined): number {
 /** Marks for one flattened question (a multi question can be worth more than one). */
 export function marksFor(q: FlatQuestion, answer: string | undefined): number {
   if (q.kind === 'multi') return gradeMulti(q.group, answer);
-  if (q.kind === 'select') return answer === q.item.answer ? 1 : 0;
+  if (q.kind === 'select') return validateChoice(q.item.answer, answer).correct ? 1 : 0;
   return gradeGap(q.group, q.item, answer).correct ? 1 : 0;
 }
 

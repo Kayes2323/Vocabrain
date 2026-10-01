@@ -139,6 +139,17 @@ export const en = {
     back: 'Go to the previous step',
     continue: 'I want to go here',
   },
+  answers: {
+    correct: 'Correct',
+    accepted: 'Your answer is acceptable.',
+    acceptedHere: 'Correct. "{answer}" is acceptable in this context.',
+    mainAnswer: 'Main answer: {answer}',
+    yourAnswer: 'Your answer:',
+    acceptedList: 'Accepted answer: {list}',
+    acceptedListMany: 'Accepted answers: {list}',
+    spelling: 'Check the spelling — it is one or two letters away.',
+    overLimit: 'Too many words for this question.',
+  },
   foundation: {
     topicPage: {
       back: 'Foundation',

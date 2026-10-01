@@ -2,6 +2,7 @@
 // against the content's answer key, then broken down by part and question type
 // so diagnostics (and Mino) can work from facts.
 import type { IELTSModule, ObjectiveSection, ObjectiveSkill, Question, QuestionGroup, QuestionType, WordLimit } from './model';
+import { fromAcceptedList, validateAnswer, validateChoice } from '@/lib/answers';
 import { answerMode } from './question-types';
 
 /** A student's answer: text / option id, or a set of letters for multi-choice groups. */
@@ -87,35 +88,24 @@ export function withinLimit(text: string, limit: WordLimit | undefined): boolean
   return limit.number ? words <= limit.words && numbers <= 1 : words + numbers <= limit.words;
 }
 
-function distance(a: string, b: string): number {
-  if (Math.abs(a.length - b.length) > 2) return 3;
-  const prev = Array.from({ length: b.length + 1 }, (_, i) => i);
-  for (let i = 1; i <= a.length; i++) {
-    let diag = prev[0];
-    prev[0] = i;
-    for (let j = 1; j <= b.length; j++) {
-      const tmp = prev[j];
-      prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
-      diag = tmp;
-    }
-  }
-  return prev[b.length];
-}
-
 // ---------- checking ----------
 
+/**
+ * Text answers go through the shared validator (lib/answers): the answer key is
+ * the authority; "(the) library" marks optional words; digits or number words
+ * and British or American spelling are both accepted, as in the real test.
+ */
 function checkText(given: string, question: Question, group: QuestionGroup) {
-  const answer = normalise(given);
-  const accepted = question.answer.accepted.flatMap(expandAccepted);
-  const overLimit = !withinLimit(given, group.wordLimit);
-  const matches = accepted.includes(answer);
-  const nearMiss = !matches && answer.length >= 4 && accepted.some((a) => a.length >= 4 && distance(answer, a) <= (a.length > 7 ? 2 : 1));
-  return { correct: matches && !overLimit, nearMiss, overLimit };
+  const v = validateAnswer({
+    question: fromAcceptedList(question.answer.accepted, { optionalWords: true, equivalents: ['numbers', 'spelling'], withinLimit: (a) => withinLimit(a, group.wordLimit) }),
+    userAnswer: given,
+  });
+  return { correct: v.correct, nearMiss: v.nearMiss, overLimit: v.overLimit };
 }
 
+/** Options are graded by letter / id, never by the option text. */
 function checkOption(given: string, question: Question) {
-  const answer = given.trim().toUpperCase();
-  return question.answer.accepted.some((a) => a.trim().toUpperCase() === answer);
+  return validateChoice(question.answer.accepted.map((a) => a.toUpperCase()), given.toUpperCase()).correct;
 }
 
 /**

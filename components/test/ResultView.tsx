@@ -11,9 +11,9 @@ import type { ObjectiveSection, PracticeTest, Question, QuestionResult, TestSess
 import { cn } from '@/lib/utils';
 import { formatClock, QUESTION_TYPE_LABELS } from './labels';
 
-/** The main accepted answer, readable: "(rubber) tyres" → "rubber tyres"; all letters for choose-TWO groups. */
+/** Every accepted answer, readable: "(rubber) tyres" → "rubber tyres"; all letters for choose-TWO groups. */
 const displayAnswer = (r: QuestionResult) =>
-  r.type === 'multiple-choice-multi' ? r.expected.join(', ') : r.expected[0].replace(/[()]/g, '');
+  r.type === 'multiple-choice-multi' ? r.expected.join(', ') : r.expected.map((a) => a.replace(/[()]/g, '')).join(' / ');
 
 const pct = (correct: number, total: number) => (total ? Math.round((correct / total) * 100) : 0);
 

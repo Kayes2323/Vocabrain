@@ -8,10 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { foundationFeedback } from '@/lib/ai/client';
 import type { FoundationFeedback } from '@/lib/ai/server/assess/foundation';
-import { expectedAnswer, formatTags, fullSentence, gradeExercise, normaliseAnswer, parseSpot, parseTags, shuffledWords, type Exercise, type L, type Pos } from '@/lib/foundation';
+import { checkExercise, expectedAnswer, formatTags, fullSentence, gradeExercise, normaliseAnswer, parseSpot, parseTags, shuffledWords, type Exercise, type L, type Pos } from '@/lib/foundation';
 import { TagBoard } from './TagBoard';
 import { cn } from '@/lib/utils';
 import { useText } from './useFoundation';
+import { AnswerFeedback } from '@/components/answers/AnswerFeedback';
+import { fromAcceptedList, validateAnswer } from '@/lib/answers';
 
 export interface ExerciseResult {
   answer: string;
@@ -101,6 +103,8 @@ export function ExerciseView({
   };
 
   const locked = checked !== null;
+  // Typed answers: the shared validator's result (accepted alternative, accepted list, spelling slip).
+  const typed = checked && exercise.type !== 'spot' ? checkExercise(exercise, checked.answer) : null;
 
   return (
     <div className="space-y-5" data-exercise-id={exercise.id}>
@@ -407,16 +411,16 @@ export function ExerciseView({
             {checked.correct ? <Check className="size-4 text-success" aria-hidden /> : <X className="size-4 text-destructive" aria-hidden />}
             {checked.correct ? t('foundation.lesson.correct') : t('foundation.lesson.notQuite')}
           </p>
+          {checked.correct && typed?.feedback.kind === 'accepted' && <AnswerFeedback result={typed} />}
           {!checked.correct && (
-            <div className="space-y-1" lang="en">
-              {exercise.type !== 'choice' && exercise.type !== 'tag' && exercise.type !== 'spot' && checked.answer && (
-                <p className="text-muted-foreground">
-                  ✗ <span className="line-through decoration-destructive/60">{checked.answer}</span>
-                </p>
+            <div className="space-y-1">
+              {typed && exercise.type !== 'spot' ? (
+                <AnswerFeedback result={typed} showAccepted={!fullSentence(exercise) || typed.accepted.length > 1} />
+              ) : (
+                !fullSentence(exercise) && <p className="font-medium" lang="en">✓ {expectedAnswer(exercise)}</p>
               )}
-              {!fullSentence(exercise) && <p className="font-medium">✓ {expectedAnswer(exercise)}</p>}
               {fullSentence(exercise) && (
-                <p className="text-foreground/80" data-testid="correct-sentence">
+                <p className="text-foreground/80" data-testid="correct-sentence" lang="en">
                   <span className="font-sans font-medium" lang={locale}>
                     {t('foundation.teach.correctSentence')}:{' '}
                   </span>
@@ -466,7 +470,7 @@ function MinoPractice({ practice }: { practice: { sentence: string; answers: str
         className="flex flex-wrap items-center gap-2"
         onSubmit={(e) => {
           e.preventDefault();
-          if (value.trim()) setResult(practice.answers.some((a) => normaliseAnswer(a) === normaliseAnswer(value)));
+          if (value.trim()) setResult(validateAnswer({ question: { ...fromAcceptedList(practice.answers), context: { before, after } }, userAnswer: value }).correct);
         }}
       >
         <span lang="en" className="flex flex-wrap items-center gap-1.5">

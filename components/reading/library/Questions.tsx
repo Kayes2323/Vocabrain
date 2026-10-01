@@ -307,7 +307,7 @@ function Feedback({ q, answer, numbered }: { q: FlatQuestion; answer: string | u
         </p>
       )}
       <p>
-        <span className="font-medium">{t('reading.lib.answer', { answer: modelAnswer(q) })}</span>
+        <span className="font-medium">{t('reading.lib.answer', { answer: !correct && q.kind === 'gap' ? q.item.accepted.join(' / ') : modelAnswer(q) })}</span>
       </p>
       {locale === 'en' && <p lang="en">{explain.en}</p>}
       {(locale === 'bn' || !correct) && (

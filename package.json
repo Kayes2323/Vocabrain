@@ -10,6 +10,8 @@
     "test:rules": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"node scripts/test-firestore-rules.mjs\"",
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
+    "test:answers": "npx -y tsx scripts/test-answer-validation.ts",
+    "audit:answers": "npx -y tsx scripts/audit-answers.ts",
     "test:reading-library": "npx -y tsx scripts/test-reading-library.ts",
     "test:word-meaning": "npx -y tsx scripts/test-word-meaning.ts",
     "test:vocab-foundation": "npx -y tsx scripts/test-vocab-foundation.ts",

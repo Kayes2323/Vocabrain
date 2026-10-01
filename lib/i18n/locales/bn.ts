@@ -141,6 +141,17 @@ export const bn: LocaleDictionary = {
     back: 'আগের ধাপে যাই',
     continue: 'আমি এখানেই যেতে চাই',
   },
+  answers: {
+    correct: 'সঠিক',
+    accepted: 'আপনার উত্তর গ্রহণযোগ্য।',
+    acceptedHere: 'ঠিক আছে। এই context-এ "{answer}" গ্রহণযোগ্য।',
+    mainAnswer: 'মূল উত্তর: {answer}',
+    yourAnswer: 'আপনার উত্তর:',
+    acceptedList: 'গ্রহণযোগ্য উত্তর: {list}',
+    acceptedListMany: 'গ্রহণযোগ্য উত্তর: {list}',
+    spelling: 'বানানটা আরেকবার দেখুন — এক-দুটো অক্ষরের পার্থক্য।',
+    overLimit: 'এই প্রশ্নের word limit-এর চেয়ে বেশি word।',
+  },
   foundation: {
     topicPage: {
       back: 'Foundation',

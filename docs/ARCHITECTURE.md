@@ -143,6 +143,31 @@ Content model, scoring, sessions and runner: see `docs/IELTS_ENGINE.md`.
 `lib/ielts` is pure (model, question types, scoring, session, validation);
 `lib/ielts/content` is the book library; `components/test` renders any test.
 
+## 5c. Answer checking (one validator)
+
+Every typed answer is checked by `lib/answers/validate.ts` —
+`validateAnswer({ question, userAnswer }) → { correct, matchedAnswer, primary, nearMiss, overLimit, feedback, … }`.
+Deterministic, no AI per answer. A question gives `correctAnswer` and optional
+`acceptedAnswers` (content lists use `fromAcceptedList`, first = main answer);
+with only `correctAnswer`, that is the only right answer. Modes: `exact`
+(capitals, punctuation and dashes count), `accepted_answers` (default:
+case, spaces, quotes and end punctuation forgiven) and `semantic` (reserved:
+grades like accepted_answers and marks a non-match `needsSemantic`).
+Opt-in per source: `equivalents` (numbers / UK-US spelling / contractions),
+`optionalWords` ("(the) library"), `optionalArticles`, `context` (words
+repeated from around a gap are dropped), `withinLimit`, `spelling: 'tolerant'`.
+Synonyms are never guessed. Multiple choice uses `validateChoice` (by id).
+
+| Grader | Settings |
+| --- | --- |
+| Foundation `gradeExercise` / `checkExercise` (gap, rewrite, order, spot fix) | strict lessons → exact; others → UK/US spelling; one-gap sentences → context |
+| IELTS practice tests `scoreSection` | optional words, numbers, UK/US spelling, word limit, near miss |
+| Reading Library `gradeGap` | numbers, UK/US spelling, word limit |
+| Brain recall (`lib/engine/recall.ts`) | unchanged on purpose: recalling a vocabulary word accepts its inflections |
+
+Feedback UI: `components/answers/AnswerFeedback.tsx`. Content review list:
+`npm run audit:answers` → `docs/ANSWER_AUDIT.md`. Tests: `npm run test:answers`.
+
 ## 6. Guest preview
 
 The login screen offers email, Google and **Continue as guest**. A guest session is remembered on the device

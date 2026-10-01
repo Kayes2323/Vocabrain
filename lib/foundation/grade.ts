@@ -1,3 +1,4 @@
+import { validateAnswer, type AnswerSpec, type Validation } from '@/lib/answers';
 import type { Exercise, Pos, SpotExercise } from './model';
 
 /** Case-, space- and final-punctuation-insensitive; curly quotes count as straight. */
@@ -46,27 +47,61 @@ export function shuffledWords(id: string, sentence: string): string[] {
   return out;
 }
 
+/** The answers a typed exercise accepts, main answer first. */
+export function acceptedAnswers(ex: Exercise): string[] {
+  switch (ex.type) {
+    case 'gap':
+    case 'correct':
+    case 'spot':
+      return ex.accepted;
+    case 'order':
+      return [ex.answer, ...(ex.alsoAccepted ?? [])];
+    default:
+      return [];
+  }
+}
+
+/**
+ * How a typed exercise is checked (shared validator, lib/answers). Strict
+ * exercises (punctuation, capitals) compare exactly; others accept British or
+ * American spelling. A one-gap sentence lets
+ * the student repeat the words around the gap ("main gate" for "the main ___").
+ */
+export function answerSpec(ex: Exercise): AnswerSpec {
+  const [correctAnswer = '', ...others] = acceptedAnswers(ex);
+  const strict = 'strict' in ex && ex.strict;
+  // British or American spelling never changes a grammar answer ("favourite" = "favorite").
+  const spec: AnswerSpec = { correctAnswer, acceptedAnswers: others, mode: strict ? 'exact' : 'accepted_answers', ...(strict ? {} : { equivalents: ['spelling'] }) };
+  if (ex.type === 'gap' && ex.sentence && ex.sentence.split('___').length === 2 && !correctAnswer.includes(' · ')) {
+    const [before, after] = ex.sentence.split('___');
+    spec.context = { before, after };
+  }
+  return spec;
+}
+
+/** The full check of a typed answer (gap / correct / order / spot fix), for feedback. */
+export function checkExercise(ex: Exercise, answer: string | undefined): Validation | null {
+  if (ex.type !== 'gap' && ex.type !== 'correct' && ex.type !== 'order' && ex.type !== 'spot') return null;
+  return validateAnswer({ question: answerSpec(ex), userAnswer: ex.type === 'spot' ? parseSpot(answer ?? '').fix : answer });
+}
+
 /** true/false for auto-graded exercises; null for free writing (self-checked). */
 export function gradeExercise(ex: Exercise, answer: string | undefined): boolean | null {
   if (ex.type === 'write') return null;
   if (!answer || !answer.trim()) return false;
-  const a = normaliseAnswer(answer);
   switch (ex.type) {
     case 'choice':
       return answer === ex.answer;
     case 'gap':
     case 'correct':
-      return ex.accepted.some((x) => answerKey(ex, x) === answerKey(ex, answer));
     case 'order':
-      return [ex.answer, ...(ex.alsoAccepted ?? [])].some((x) => normaliseAnswer(x) === a);
+      return checkExercise(ex, answer)!.correct;
     case 'tag': {
       const tags = parseTags(answer);
       return ex.tokens.every((tk, i) => !tk.pos || tags[i] === tk.pos);
     }
-    case 'spot': {
-      const { index, fix } = parseSpot(answer);
-      return index === ex.wrong && ex.accepted.some((x) => answerKey(ex, x) === answerKey(ex, fix));
-    }
+    case 'spot':
+      return parseSpot(answer).index === ex.wrong && checkExercise(ex, answer)!.correct;
   }
 }
 
