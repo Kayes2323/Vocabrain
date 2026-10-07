@@ -42,6 +42,10 @@
   --tint-green-fg: oklch(0.52 0.12 160);
   --tint-yellow: oklch(0.98 0.03 90);
   --tint-yellow-fg: oklch(0.58 0.12 75);
+  /* Academic path accent: a deep teal "ink" that sets it apart from IELTS (lavender/brand). */
+  --academic: oklch(0.48 0.09 200);
+  --academic-soft: oklch(0.965 0.018 200);
+  --academic-line: oklch(0.9 0.02 200);
   --border: oklch(0.92 0.008 264);
   --input: oklch(0.9 0.01 264);
   --ring: oklch(0.52 0.2 277);
@@ -94,6 +98,9 @@
   --tint-green-fg: oklch(0.8 0.1 160);
   --tint-yellow: oklch(0.25 0.035 85);
   --tint-yellow-fg: oklch(0.85 0.1 85);
+  --academic: oklch(0.78 0.09 200);
+  --academic-soft: oklch(0.25 0.035 200);
+  --academic-line: oklch(0.33 0.04 200);
   --border: oklch(0.3 0.03 264);
   --input: oklch(0.33 0.03 264);
   --ring: oklch(0.68 0.16 277);
@@ -147,6 +154,9 @@
   --color-tint-green-fg: var(--tint-green-fg);
   --color-tint-yellow: var(--tint-yellow);
   --color-tint-yellow-fg: var(--tint-yellow-fg);
+  --color-academic: var(--academic);
+  --color-academic-soft: var(--academic-soft);
+  --color-academic-line: var(--academic-line);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

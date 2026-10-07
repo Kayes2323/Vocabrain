@@ -6,6 +6,14 @@ export type Locale = 'en' | 'bn';
 /** Why the student came to Mino. IELTS is the primary path today. */
 export type StudentGoal = 'ielts' | 'abroad' | 'english' | 'unsure';
 
+/**
+ * The two learning worlds of Mino: IELTS Academic (IELTS preparation and the
+ * study-abroad journey) and Academic (school, college and university subjects).
+ * The active one decides Home, the learning tab and where Mino starts.
+ */
+export const LEARNING_PATHS = ['ielts', 'academic'] as const;
+export type LearningPath = (typeof LEARNING_PATHS)[number];
+
 export type SkillBands = Partial<Record<IELTSSkill, number>>;
 
 /**
@@ -447,6 +455,8 @@ export interface UserProfile {
   displayName?: string;
   language?: Locale;
   goal?: StudentGoal;
+  /** Chosen in onboarding; students who onboarded before paths existed are IELTS Academic. */
+  activePath?: LearningPath;
   onboardedAt?: ISODate;
   ielts: IELTSProfile;
   abroad: StudyAbroadProfile;

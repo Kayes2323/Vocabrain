@@ -56,7 +56,8 @@ export async function shot(p: Page, name: string, fullPage = true) {
 export const noHorizontalScroll = (p: Page) => p.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth);
 
 // ------------------------------------------------------------------ accounts
-export async function signUp(p: Page, name: string, email: string, lang: Lang) {
+/** Creates an account and stops at the first onboarding question. */
+export async function createAccount(p: Page, name: string, email: string) {
   await p.goto(BASE + '/', { waitUntil: 'load' });
   await p.getByText('Welcome to Mino').waitFor({ timeout: 90_000 });
   await p.getByRole('tab', { name: 'Create account' }).click();
@@ -65,9 +66,15 @@ export async function signUp(p: Page, name: string, email: string, lang: Lang) {
   await p.fill('#signup-password', 'secret123');
   await p.getByRole('button', { name: 'Create account', exact: true }).click();
   await p.waitForURL('**/onboarding', { timeout: 60_000 });
+}
+
+/** A new IELTS Academic student, through the whole onboarding, ending on Home. */
+export async function signUp(p: Page, name: string, email: string, lang: Lang) {
+  await createAccount(p, name, email);
   if (lang === 'en') {
     const c = (n: string, role: 'button' | 'radio' = 'button') => p.getByRole(role, { name: n, exact: true }).click();
     await c('English', 'radio'); await c('Continue');
+    await p.getByRole('radio', { name: /^IELTS Academic/ }).click(); await c('Continue');
     await c('IELTS', 'radio'); await c('Continue');
     await c('7.0', 'radio'); await c('Continue');
     await c('No', 'radio'); await c('Continue');
@@ -76,7 +83,8 @@ export async function signUp(p: Page, name: string, email: string, lang: Lang) {
   } else {
     const go = () => p.getByRole('button', { name: 'এগিয়ে যান', exact: true }).click();
     await p.getByRole('radio', { name: 'বাংলা' }).click(); await go();
-    await p.getByRole('radio', { name: 'IELTS' }).click(); await go();
+    await p.getByRole('radio', { name: /^IELTS Academic/ }).click(); await go();
+    await p.getByRole('radio', { name: 'IELTS', exact: true }).click(); await go();
     await p.getByRole('radio', { name: '7.0' }).click(); await go();
     await p.getByRole('radio', { name: 'না', exact: true }).click(); await go();
     await p.getByRole('radio').nth(1).click(); await go();
@@ -124,6 +132,16 @@ const toValue = (v: unknown): FsValue =>
 export async function getDoc(docPath: string): Promise<any> {
   const j = await (await fetch(`${FS}/${docPath}`, { headers: { Authorization: 'Bearer owner' } })).json();
   return j.fields ? fromValue({ mapValue: { fields: j.fields } }) : null;
+}
+
+/** Remove one field (e.g. "app.activePath") from a document, as data written before the field existed. */
+export async function deleteField(docPath: string, fieldPath: string) {
+  const r = await fetch(`${FS}/${docPath}?updateMask.fieldPaths=${encodeURIComponent(fieldPath)}`, {
+    method: 'PATCH',
+    headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ fields: {} }),
+  });
+  if (!r.ok) throw new Error(`delete ${r.status} ${(await r.text()).slice(0, 200)}`);
 }
 
 /** Replace one top-level-path field (e.g. "app.foundation.concepts") of a document. */

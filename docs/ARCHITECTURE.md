@@ -37,8 +37,9 @@ Known issues left for follow-up:
 ## 2. Information architecture
 
 ```
-/onboarding            Mino-guided first run (language, goal, target, experience, study time)
-/                      Home: where am I, where am I going, what do I do today
+/onboarding            Mino-guided first run (language, learning path, then for IELTS: goal, target, experience, study time)
+/                      Home: path switch (IELTS Academic | Academic), then the active path's home
+/academic              Academic world (see docs/ACADEMIC.md)
 /ielts                 IELTS hub
   /diagnostic          Find your starting point (live, estimate only)
   /plan                My IELTS Plan            (planned)

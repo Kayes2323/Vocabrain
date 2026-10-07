@@ -7,6 +7,9 @@ import { Callout, ScreenSkeleton } from '@/components/ds';
 import { JourneyCard } from '@/components/home/JourneyCard';
 import { MinoCard } from '@/components/home/MinoCard';
 import { QuickAccess } from '@/components/home/QuickAccess';
+import { PathSwitch } from '@/components/home/PathSwitch';
+import { AcademicHome } from '@/components/academic/AcademicHome';
+import { activePathOf } from '@/lib/navigation';
 
 function greetingKey(date = new Date()): string {
   const h = date.getHours();
@@ -24,7 +27,8 @@ function firstName(name: string | null | undefined, email: string | null | undef
 
 /**
  * Home answers three questions: where am I, where am I going, what do I do
- * today. Everything else lives in its own section.
+ * today. Everything else lives in its own section. The two learning worlds
+ * (IELTS Academic, Academic) sit side by side; Home shows the active one.
  */
 export default function HomePage() {
   const { user, isGuest } = useAuth();
@@ -48,16 +52,24 @@ export default function HomePage() {
         </Callout>
       )}
 
-      {/* Greeting → goal & progress → Quick access → Mino (only when useful). */}
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
-        <div className="space-y-6">
-          <JourneyCard profile={profile} />
-          <QuickAccess profile={profile} />
+      <PathSwitch profile={profile} />
+
+      {activePathOf(profile) === 'academic' ? (
+        <div className="lg:max-w-2xl">
+          <AcademicHome />
         </div>
-        <div className="lg:sticky lg:top-10">
-          <MinoCard profile={profile} />
+      ) : (
+        // IELTS Academic: greeting → goal & progress → Quick access → Mino (only when useful).
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-start">
+          <div className="space-y-6">
+            <JourneyCard profile={profile} />
+            <QuickAccess profile={profile} />
+          </div>
+          <div className="lg:sticky lg:top-10">
+            <MinoCard profile={profile} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

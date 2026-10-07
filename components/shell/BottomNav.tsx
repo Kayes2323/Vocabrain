@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { activePathOf, isNavActive, primaryNav } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { MinoMark } from './MinoMark';
 
@@ -16,6 +17,7 @@ import { MinoMark } from './MinoMark';
 export function BottomNav() {
   const pathname = usePathname();
   const { t } = useLocale();
+  const { profile } = useProfile();
   return (
     <nav
       aria-label={t('nav.primary')}
@@ -23,7 +25,7 @@ export function BottomNav() {
       data-testid="bottom-nav"
     >
       <ul className="mx-auto grid h-[4.5rem] max-w-lg grid-cols-5 px-1">
-        {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured, tint }) => {
+        {primaryNav(activePathOf(profile)).map(({ href, labelKey, icon: Icon, featured, tint }) => {
           const active = isNavActive(pathname, href);
           return (
             <li key={href} className="relative">

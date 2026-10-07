@@ -1,5 +1,7 @@
-import { emptyProfile, type UserProfile } from '@/lib/models';
+import { emptyProfile, LEARNING_PATHS, type LearningPath, type UserProfile } from '@/lib/models';
 import { readJSON, writeJSON } from './local-store';
+
+const isLearningPath = (v: unknown): v is LearningPath => LEARNING_PATHS.includes(v as LearningPath);
 
 /**
  * Persistence boundary for the student profile. The app depends on this
@@ -21,10 +23,14 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
     !stored.onboardedAt && stored.ielts?.targetBand !== undefined
       ? { onboardedAt: stored.updatedAt ?? new Date().toISOString(), goal: stored.goal ?? ('ielts' as const) }
       : {};
+  // Students who finished onboarding before learning paths existed were all preparing for IELTS.
+  const onboarded = Boolean(stored.onboardedAt ?? migrated.onboardedAt);
+  const activePath = isLearningPath(stored.activePath) ? stored.activePath : onboarded ? ('ielts' as const) : undefined;
   return {
     ...base,
     ...stored,
     ...migrated,
+    activePath,
     userId,
     ielts: { ...base.ielts, ...stored.ielts, currentBands: { ...stored.ielts?.currentBands } },
     abroad: {

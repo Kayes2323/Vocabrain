@@ -1,3 +1,4 @@
+import { acBn } from './ac.bn';
 import { saBn } from './sa.bn';
 import type { LocaleDictionary } from './types';
 
@@ -8,6 +9,12 @@ import type { LocaleDictionary } from './types';
  */
 export const bn: LocaleDictionary = {
   sa: saBn,
+  academic: acBn,
+  paths: {
+    label: 'আপনি কীসের জন্য পড়ছেন?',
+    ielts: { name: 'IELTS Academic', sub: 'IELTS আর বিদেশে পড়া' },
+    academic: { name: 'Academic', sub: 'SSC · HSC · University' },
+  },
   common: {
     back: 'পেছনে',
     continue: 'এগিয়ে যান',
@@ -1041,6 +1048,7 @@ export const bn: LocaleDictionary = {
   nav: {
     home: 'Home',
     ielts: 'IELTS',
+    academic: 'Academic',
     mino: 'Mino',
     abroad: 'Abroad',
     profile: 'Profile',
@@ -1285,6 +1293,13 @@ export const bn: LocaleDictionary = {
   onboarding: {
     minoHello: 'হাই, আমি Mino। চলুন আগে আপনার goal টা বুঝি।',
     language: { title: 'আপনার ভাষা বেছে নিন', description: 'পরে Profile থেকে বদলাতে পারবেন।' },
+    path: {
+      title: 'আপনি কীসের জন্য পড়ছেন?',
+      description: 'পরে Home থেকে যেকোনো সময় বদলাতে পারবেন।',
+      ielts: { label: 'IELTS Academic', description: 'IELTS আর বিদেশে পড়ার প্রস্তুতি নিন।' },
+      academic: { label: 'Academic', description: 'আপনার পড়ার বিষয়গুলো শিখুন, প্রতিটি concept আয়ত্ত করুন।' },
+      academicNote: 'Academic একেবারে নতুন। প্রথমে HSC Higher Mathematics তৈরি করছি, আর যা তৈরি শুধু সেটাই দেখাবো।',
+    },
     goal: {
       title: 'কী নিয়ে কাজ করতে চান?',
       options: {

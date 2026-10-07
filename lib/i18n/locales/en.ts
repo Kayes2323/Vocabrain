@@ -2,10 +2,17 @@
  * English copy. Simple, international English. Keys are shared with bn.ts;
  * this file is the fallback for any key missing in another locale.
  */
+import { acEn } from './ac.en';
 import { saEn } from './sa.en';
 
 export const en = {
   sa: saEn,
+  academic: acEn,
+  paths: {
+    label: 'What are you learning for?',
+    ielts: { name: 'IELTS Academic', sub: 'IELTS and study abroad' },
+    academic: { name: 'Academic', sub: 'SSC · HSC · University' },
+  },
   common: {
     back: 'Back',
     continue: 'Continue',
@@ -1039,6 +1046,7 @@ export const en = {
   nav: {
     home: 'Home',
     ielts: 'IELTS',
+    academic: 'Academic',
     mino: 'Mino',
     abroad: 'Abroad',
     profile: 'Profile',
@@ -1283,6 +1291,13 @@ export const en = {
   onboarding: {
     minoHello: "Hi, I'm Mino. Let's understand your goal.",
     language: { title: 'Choose your language', description: 'You can change this later in Profile.' },
+    path: {
+      title: 'What are you learning for?',
+      description: 'You can switch any time from Home.',
+      ielts: { label: 'IELTS Academic', description: 'Prepare for IELTS and your study-abroad journey.' },
+      academic: { label: 'Academic', description: 'Learn your academic subjects and master concepts.' },
+      academicNote: 'Academic is new. I’m building HSC Higher Mathematics first, and I’ll only show you what is ready.',
+    },
     goal: {
       title: 'What brings you here?',
       options: {

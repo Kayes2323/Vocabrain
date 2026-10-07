@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { activePathOf, isNavActive, primaryNav } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { BrandMark } from './BrandMark';
 import { MinoMark } from './MinoMark';
@@ -12,6 +13,7 @@ import { MinoMark } from './MinoMark';
 export function SideNav() {
   const pathname = usePathname();
   const { t } = useLocale();
+  const { profile } = useProfile();
   return (
     <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r bg-sidebar px-3 py-5 md:flex">
       <Link href="/" className="mb-8 px-3">
@@ -19,7 +21,7 @@ export function SideNav() {
       </Link>
       <nav aria-label={t('nav.primary')}>
         <ul className="space-y-1">
-          {PRIMARY_NAV.map(({ href, labelKey, icon: Icon, featured, tint }) => {
+          {primaryNav(activePathOf(profile)).map(({ href, labelKey, icon: Icon, featured, tint }) => {
             const active = isNavActive(pathname, href);
             return (
               <li key={href}>

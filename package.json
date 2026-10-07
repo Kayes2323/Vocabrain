@@ -11,6 +11,7 @@
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
     "test:answers": "npx -y tsx scripts/test-answer-validation.ts",
+    "test:paths": "npx -y tsx scripts/test-paths.ts",
     "audit:answers": "npx -y tsx scripts/audit-answers.ts",
     "test:reading-library": "npx -y tsx scripts/test-reading-library.ts",
     "test:word-meaning": "npx -y tsx scripts/test-word-meaning.ts",
@@ -53,7 +54,8 @@
     "test:e2e:plan-daily": "bash scripts/e2e/run.sh plan-daily",
     "test:e2e:progress": "bash scripts/e2e/run.sh progress",
     "test:e2e:ielts-hub": "bash scripts/e2e/run.sh ielts-hub",
-    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading reading-library writing speaking abroad home curriculum plan plan-daily progress ielts-hub"
+    "test:e2e:paths": "bash scripts/e2e/run.sh paths",
+    "test:e2e": "bash scripts/e2e/run.sh tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading reading-library writing speaking abroad home curriculum plan plan-daily progress ielts-hub paths"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

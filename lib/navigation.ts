@@ -24,6 +24,7 @@ import {
   PenLine,
   Plane,
   Scale,
+  Shapes,
   Columns3,
   Sparkles,
   Target,
@@ -31,6 +32,7 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react';
+import type { LearningPath, UserProfile } from '@/lib/models';
 
 export interface PrimaryNavItem {
   href: string;
@@ -43,13 +45,33 @@ export interface PrimaryNavItem {
   tint: string;
 }
 
+/**
+ * The learning tab of each path. The navigation keeps five places; the second
+ * one is the student's active path (IELTS Academic or Academic).
+ */
+export const LEARNING_NAV: Record<LearningPath, PrimaryNavItem> = {
+  ielts: { href: '/ielts', labelKey: 'nav.ielts', icon: GraduationCap, tint: 'bg-tint-lavender text-tint-lavender-fg' },
+  academic: { href: '/academic', labelKey: 'nav.academic', icon: Shapes, tint: 'bg-academic-soft text-academic' },
+};
+
+/** Where each path lives. */
+export const PATH_HOME: Record<LearningPath, string> = { ielts: '/ielts', academic: '/academic' };
+
 export const PRIMARY_NAV: PrimaryNavItem[] = [
   { href: '/', labelKey: 'nav.home', icon: Home, tint: 'bg-tint-blue text-tint-blue-fg' },
-  { href: '/ielts', labelKey: 'nav.ielts', icon: GraduationCap, tint: 'bg-tint-lavender text-tint-lavender-fg' },
+  LEARNING_NAV.ielts,
   { href: '/mino', labelKey: 'nav.mino', icon: Sparkles, featured: true, tint: 'bg-brand-soft text-brand' },
   { href: '/abroad', labelKey: 'nav.abroad', icon: Plane, tint: 'bg-tint-yellow text-tint-yellow-fg' },
   { href: '/profile', labelKey: 'nav.profile', icon: User, tint: 'bg-tint-green text-tint-green-fg' },
 ];
+
+/** The student's path; IELTS Academic until they choose (or while the profile loads). */
+export const activePathOf = (profile: Pick<UserProfile, 'activePath'> | null | undefined): LearningPath => profile?.activePath ?? 'ielts';
+
+/** Primary navigation for a path: the learning tab follows the active path. */
+export function primaryNav(path: LearningPath): PrimaryNavItem[] {
+  return PRIMARY_NAV.map((item) => (item === LEARNING_NAV.ielts ? LEARNING_NAV[path] : item));
+}
 
 /**
  * Home "Quick access": the one hub for the few places a student goes most —

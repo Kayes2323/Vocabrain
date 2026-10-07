@@ -13,15 +13,16 @@ import { useSetLanguage } from '@/components/providers/useSetLanguage';
 import { WEEKLY_STUDY_HOUR_OPTIONS } from '@/lib/constants';
 import { getTranslator } from '@/lib/i18n';
 import { formatBand } from '@/lib/engine';
-import type { StudentGoal } from '@/lib/models';
+import type { LearningPath, StudentGoal } from '@/lib/models';
 
 const TARGET_OPTIONS = [5.5, 6, 6.5, 7, 7.5, 8] as const;
 const PREVIOUS_OPTIONS = [4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5] as const;
 const NOT_SURE = -1;
 
-type Step = 'language' | 'goal' | 'target' | 'taken' | 'previous' | 'time' | 'done';
+type Step = 'language' | 'path' | 'goal' | 'target' | 'taken' | 'previous' | 'time' | 'done';
 
 interface Draft {
+  path?: LearningPath;
   goal?: StudentGoal;
   target?: number; // NOT_SURE when the student isn't sure
   takenBefore?: boolean;
@@ -44,7 +45,11 @@ export function OnboardingFlow() {
   if (!profile) return <ScreenSkeleton />;
 
   const step = history[history.length - 1];
-  const steps: Step[] = ['language', 'goal', 'target', 'taken', ...(draft.takenBefore ? (['previous'] as Step[]) : []), 'time'];
+  // Academic asks nothing IELTS-specific; its level and subjects come with the Academic setup.
+  const steps: Step[] =
+    draft.path === 'academic'
+      ? ['language', 'path']
+      : ['language', 'path', 'goal', 'target', 'taken', ...(draft.takenBefore ? (['previous'] as Step[]) : []), 'time'];
   const number = Math.min(steps.indexOf(step) + 1, steps.length);
   const go = (next: Step) => setHistory((h) => [...h, next]);
   const back = history.length > 1 ? () => setHistory((h) => h.slice(0, -1)) : undefined;
@@ -52,9 +57,15 @@ export function OnboardingFlow() {
 
   const finish = (destination: string) => {
     const now = new Date().toISOString();
+    if (draft.path === 'academic') {
+      updateProfile((p) => ({ ...p, language: locale, activePath: 'academic', onboardedAt: now }));
+      router.replace(destination);
+      return;
+    }
     updateProfile((p) => ({
       ...p,
       language: locale,
+      activePath: 'ielts',
       goal: draft.goal,
       onboardedAt: now,
       ielts: {
@@ -74,7 +85,7 @@ export function OnboardingFlow() {
     step: number,
     totalSteps: steps.length,
     onBack: back,
-    onClose: () => finish('/'),
+    onClose: () => finish(draft.path === 'academic' ? '/academic' : '/'),
   };
 
   if (step === 'done') {
@@ -113,7 +124,7 @@ export function OnboardingFlow() {
           title="আপনি কোন ভাষায় Mino ব্যবহার করতে চান? · Which language would you like to use?"
           description={t('onboarding.language.description')}
           primaryLabel={t('common.continue')}
-          onPrimary={() => go('goal')}
+          onPrimary={() => go('path')}
         >
           <ChoiceGrid
             label="Language"
@@ -125,6 +136,33 @@ export function OnboardingFlow() {
               { value: 'en', label: 'English' },
             ]}
           />
+        </StepFlow>
+      );
+
+    case 'path':
+      return (
+        <StepFlow
+          {...common}
+          title={t('onboarding.path.title')}
+          description={t('onboarding.path.description')}
+          primaryLabel={t('common.continue')}
+          primaryDisabled={!draft.path}
+          onPrimary={() => (draft.path === 'academic' ? finish('/academic') : go('goal'))}
+        >
+          <div className="space-y-4">
+            <ChoiceGrid
+              label={t('onboarding.path.title')}
+              columns={1}
+              value={draft.path}
+              onChange={(path) => set({ path })}
+              options={(['ielts', 'academic'] as const).map((path) => ({
+                value: path,
+                label: t(`onboarding.path.${path}.label`),
+                description: t(`onboarding.path.${path}.description`),
+              }))}
+            />
+            {draft.path === 'academic' && <MinoSays>{t('onboarding.path.academicNote')}</MinoSays>}
+          </div>
         </StepFlow>
       );
 
