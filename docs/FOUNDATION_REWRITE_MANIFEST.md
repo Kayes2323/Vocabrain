@@ -16,15 +16,15 @@ Status vocabulary:
 |---:|---|---|---|
 | 1 | Sentence Basics | draft (partial) | Batch 01 covers `sb-1`–`sb-3`; Batch 02 covers `sb-4`–`sb-9`. Map all existing exercise IDs before integration. |
 | 2 | Tenses for IELTS | draft (partial) | Batch 03 covers core lessons `t-3`–`t-8`; still audit/rewrite the other active tense lessons and verify the complete order. |
-| 3 | Parts of Speech | not audited for rewrite | Inspect active `POS_LESSONS`, units, planned lessons and prior live implementation before edits. |
+| 3 | Parts of Speech | draft (partial) | Batch 07 covers core word-class function and word families; map to active `POS_LESSONS` and remaining units. |
 | 4 | Articles | draft (partial) | Batch 04 covers `ar-1`–`ar-4`; audit remaining article application/review lessons. |
 | 5 | Subject–Verb Agreement | not audited | Audit `agreement` and `agreement-apply`. |
-| 6 | Prepositions | not audited | Audit `prepositions` and `prepositions-apply`. |
-| 7 | Connectors | not audited | Audit `connectors` and `connectors-apply`. |
-| 8 | Complex Sentences | not audited | Audit `complex` and `complex-apply`. |
-| 9 | Punctuation | not audited | Audit `punctuation` and `punctuation-apply`. |
-| 10 | Common Errors | not audited | Audit `common-errors` and `common-errors-apply`. |
-| 11 | Vocabulary Foundation | not audited | Audit `vocabulary` and `vocabulary-apply`. |
+| 6 | Prepositions | draft (partial) | Batch 06 contains bilingual Prepositions teaching source; map and audit all active lessons/exercises. |
+| 7 | Connectors | draft (partial) | Batch 06 contains bilingual Connectors teaching source; map and audit all active lessons/exercises. |
+| 8 | Complex Sentences | draft (partial) | Batch 07 covers clause types and relative clauses; map to all active lessons. |
+| 9 | Punctuation | draft (partial) | Batch 07 covers sentence boundaries and apostrophes; audit remaining punctuation topics. |
+| 10 | Common Errors | draft (partial) | Batch 07 provides a diagnostic teaching source; map it to active error lessons and exercises. |
+| 11 | Vocabulary Foundation | draft (partial) | Batch 08 covers contextual meaning, paraphrase, collocation and word families; audit all active vocabulary lessons. |
 | 12 | IELTS Introduction | not audited; factual review required | Verify test format, versions, marking and scoring against current official IELTS sources before edits. |
 | 13 | Listening Foundation | not audited; factual review required | Verify format, question types, timing and transfer/answer-entry rules against current official sources. |
 | 14 | Reading Foundation | not audited; factual review required | Verify format, question instructions, timing and scoring statements against current official sources. |
