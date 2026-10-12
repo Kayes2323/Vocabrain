@@ -52,3 +52,7 @@ These are editorial drafts; module status is partial until every active lesson I
 
 ## Honest reporting
 Do not call the whole Foundation “done” until every active module/lesson is accounted for and the completion definition in the integration guide is met. Draft-only and live-tested status must never be conflated.
+
+
+## Runtime catalogue map
+See [`FOUNDATION_ACTIVE_CATALOGUE_MAP.md`](./FOUNDATION_ACTIVE_CATALOGUE_MAP.md) for the actual active module-to-source-object order from `lib/foundation/content/index.ts`, including spread arrays and the remaining mapping/counting work. This is a source-reference map, not proof that all lessons have been rewritten or tested.
