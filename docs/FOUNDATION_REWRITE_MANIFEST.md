@@ -25,11 +25,21 @@ Status vocabulary:
 | 9 | Punctuation | draft (partial) | Batch 07 covers sentence boundaries and apostrophes; audit remaining punctuation topics. |
 | 10 | Common Errors | draft (partial) | Batch 07 provides a diagnostic teaching source; map it to active error lessons and exercises. |
 | 11 | Vocabulary Foundation | draft (partial) | Batch 08 covers contextual meaning, paraphrase, collocation and word families; audit all active vocabulary lessons. |
-| 12 | IELTS Introduction | not audited; factual review required | Verify test format, versions, marking and scoring against current official IELTS sources before edits. |
-| 13 | Listening Foundation | not audited; factual review required | Verify format, question types, timing and transfer/answer-entry rules against current official sources. |
-| 14 | Reading Foundation | not audited; factual review required | Verify format, question instructions, timing and scoring statements against current official sources. |
-| 15 | Writing Foundation | not audited; factual review required | Verify task formats, word-count guidance, assessment criteria and claims against current official sources. |
-| 16 | Speaking Foundation | not audited; factual review required | Verify parts, timing, assessment criteria and claims against current official sources. |
+| 12 | IELTS Introduction | draft (partial; fact-check pending) | Batch 10 covers test-version awareness and practice-score limitations; verify current official test facts before release. |
+| 13 | Listening Foundation | draft (partial; fact-check pending) | Batch 10 covers listening strategy and answer constraints; verify mode-specific format/timing and current official rules. |
+| 14 | Reading Foundation | draft (partial; fact-check pending) | Batch 09 covers reading strategy, paraphrase and evidence; verify official format/timing/scoring claims before release. |
+| 15 | Writing Foundation | draft (partial; fact-check pending) | Batch 09 covers planning, cohesion and editing; verify Academic/General task details, word count, timing and criteria. |
+| 16 | Speaking Foundation | draft (partial; fact-check pending) | Batch 10 covers response development, fluency, grammar and pronunciation; verify official format/timing/criteria. |
+
+## Batch source index
+- Batch 05: Subject–Verb Agreement teaching source.
+- Batch 06: Prepositions and Connectors teaching source.
+- Batch 07: Parts of Speech, Complex Sentences, Punctuation and Common Errors teaching source.
+- Batch 08: Vocabulary Foundation teaching source.
+- Batch 09: Reading and Writing Foundation teaching source.
+- Batch 10: IELTS Introduction, Listening and Speaking teaching source.
+
+These are editorial drafts; module status is partial until every active lesson ID and exercise has been mapped, reviewed, integrated and tested.
 
 ## Quality gate for each lesson
 - Accurate rule, with limits/exceptions where needed.
