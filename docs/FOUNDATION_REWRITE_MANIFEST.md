@@ -15,9 +15,9 @@ Status vocabulary:
 | # | Module | Current status | Source / next action |
 |---:|---|---|---|
 | 1 | Sentence Basics | draft (partial) | Batch 01 covers `sb-1`–`sb-3`; Batch 02 covers `sb-4`–`sb-9`. Map all existing exercise IDs before integration. |
-| 2 | Tenses for IELTS | not audited | Resolve active lesson order across `tenses`, `tenses-2`, `tenses-v2`, `tenses-core`, `tenses-apply`, `tenses-new`. |
+| 2 | Tenses for IELTS | draft (partial) | Batch 03 covers core lessons `t-3`–`t-8`; still audit/rewrite the other active tense lessons and verify the complete order. |
 | 3 | Parts of Speech | not audited for rewrite | Inspect active `POS_LESSONS`, units, planned lessons and prior live implementation before edits. |
-| 4 | Articles | not audited | Active imports include `articles` and `articles-apply`; map lesson IDs. |
+| 4 | Articles | draft (partial) | Batch 04 covers `ar-1`–`ar-4`; audit remaining article application/review lessons. |
 | 5 | Subject–Verb Agreement | not audited | Audit `agreement` and `agreement-apply`. |
 | 6 | Prepositions | not audited | Audit `prepositions` and `prepositions-apply`. |
 | 7 | Connectors | not audited | Audit `connectors` and `connectors-apply`. |
