@@ -9,6 +9,10 @@
 - Batch 02: Sentence Basics lessons `sb-4`–`sb-9`.
 - Batch 03: Core Tenses lessons `t-3`–`t-8`.
 - Batch 04: Articles lessons `ar-1`–`ar-4`.
+- Batch 05: Subject–Verb Agreement teaching source.
+- Batch 06: Prepositions and Connectors teaching source.
+- Batch 07: Parts of Speech, Complex Sentences, Punctuation and Common Errors teaching source.
+- Batch 08: Vocabulary Foundation teaching source.
 - Existing runtime sources remain in `lib/foundation/content/` until integration is explicitly completed and verified.
 
 ## Non-negotiable implementation rules
@@ -62,6 +66,10 @@ The inventory is not proof that every lesson is high quality. Use the active imp
 - `FOUNDATION_REWRITE_BATCH_02_SENTENCE_BASICS.md`: lessons `sb-4`–`sb-9`.
 - `FOUNDATION_REWRITE_BATCH_03_TENSES_CORE.md`: core tense lessons `t-3`–`t-8`.
 - `FOUNDATION_REWRITE_BATCH_04_ARTICLES.md`: lessons `ar-1`–`ar-4`.
+- `FOUNDATION_REWRITE_BATCH_05_SUBJECT_VERB_AGREEMENT.md`: agreement teaching source.
+- `FOUNDATION_REWRITE_BATCH_06_PREPOSITIONS_CONNECTORS.md`: prepositions and connectors teaching source.
+- `FOUNDATION_REWRITE_BATCH_07_POS_COMPLEX_PUNCTUATION_ERRORS.md`: grammar/error modules teaching source.
+- `FOUNDATION_REWRITE_BATCH_08_VOCABULARY.md`: vocabulary teaching source.
 - `FOUNDATION_REWRITE_MANIFEST.md`: module/lesson status tracker.
 
 **Important:** Keep this guide updated as new batches are added. Do not delete or overwrite the existing runtime content until the replacement has been integrated and tested.
