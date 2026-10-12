@@ -7,6 +7,8 @@
 - Content is editorial source material in `docs/`; it is **not yet live in the app**.
 - Batch 01: Sentence Basics lessons `sb-1`–`sb-3`.
 - Batch 02: Sentence Basics lessons `sb-4`–`sb-9`.
+- Batch 03: Core Tenses lessons `t-3`–`t-8`.
+- Batch 04: Articles lessons `ar-1`–`ar-4`.
 - Existing runtime sources remain in `lib/foundation/content/` until integration is explicitly completed and verified.
 
 ## Non-negotiable implementation rules
@@ -58,6 +60,8 @@ The inventory is not proof that every lesson is high quality. Use the active imp
 - `FOUNDATION_CONTENT_AUDIT.md`: initial inventory/triage; not a completed line-by-line audit.
 - `FOUNDATION_REWRITE_BATCH_01_SENTENCE_BASICS.md`: lessons `sb-1`–`sb-3`.
 - `FOUNDATION_REWRITE_BATCH_02_SENTENCE_BASICS.md`: lessons `sb-4`–`sb-9`.
+- `FOUNDATION_REWRITE_BATCH_03_TENSES_CORE.md`: core tense lessons `t-3`–`t-8`.
+- `FOUNDATION_REWRITE_BATCH_04_ARTICLES.md`: lessons `ar-1`–`ar-4`.
 - `FOUNDATION_REWRITE_MANIFEST.md`: module/lesson status tracker.
 
 **Important:** Keep this guide updated as new batches are added. Do not delete or overwrite the existing runtime content until the replacement has been integrated and tested.
