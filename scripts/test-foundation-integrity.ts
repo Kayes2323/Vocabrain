@@ -146,5 +146,19 @@ for (const { l } of lessons) {
 }
 check('answer keys: options, accepted lists, orders, tags and spots are well-formed', keyProblems.length === 0, keyProblems);
 
+// ---------------------------------------------------------------- IELTS facts (checked 2026-10-14, see docs/FOUNDATION_INTEGRATION_INVENTORY.md)
+const exById = (id: string) => lessons.flatMap(({ l }) => exercisesOf(l)).find((e) => e.id === id)!;
+const grades = (id: string, answer: string) => gradeExercise(exById(id), answer);
+// Paper-based IELTS ends from mid-2026 and is no longer offered in Bangladesh (IDP, after 31 Jan 2026):
+// computer Listening gives 2 minutes to check, with no transfer time.
+check('computer Listening: 2 minutes to check (ib-3-r1, ib-3-c2, ib-9-e10, ls-8-p5)',
+  grades('ib-3-r1', '2') === true && grades('ib-3-c2', `${(exById('ib-3-c2') as { wrong: number }).wrong}:2`) === true
+  && grades('ib-9-e10', 'Computer-delivered Listening gives 2 minutes to check answers.') === true && grades('ls-8-p5', '2 minutes') === true && grades('ls-8-p5', '10 minutes') === false);
+const deliveryText = JSON.stringify(lessons.filter(({ m }) => m.id === 'ielts-intro' || m.id === 'listening-foundation' || m.id === 'reading-foundation').map(({ l }) => l));
+check('no lesson presents a paper test as a current choice', !/choose the paper-based test|Paper-based Listening gives 10 minutes|In paper-based Listening you get/i.test(deliveryText));
+check('ib-3 teaches the current delivery facts', /mid-2026/.test(JSON.stringify(lessons.find(({ l }) => l.id === 'ib-3')!.l)) && /Writing on Paper/.test(JSON.stringify(lessons.find(({ l }) => l.id === 'ib-3')!.l)));
+// Letter case does not change a Listening mark; spelling does.
+check('Listening does not teach that a lowercase name is marked wrong', !/Names need a capital|names take capitals/i.test(deliveryText));
+
 console.log(failed ? `\n${failed} check(s) failed` : `\nAll integrity checks passed (${lessons.length} lessons)`);
 process.exit(failed ? 1 : 0);

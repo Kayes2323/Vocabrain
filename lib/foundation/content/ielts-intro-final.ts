@@ -30,12 +30,12 @@ export const IELTS_INTRO_FINAL_PARTS: FinalPart[] = [
     ],
   },
   {
-    id: 'C', title: l('Computer or paper', 'Computer না paper'), intro: l('Same test, different answering.', 'একই test, উত্তর দেওয়ার ধরন আলাদা।'),
+    id: 'C', title: l('IELTS on computer', 'Computer-এ IELTS'), intro: l('Same test, typed answers.', 'একই test, type করা উত্তর।'),
     items: [
       at(1, choice('ibfin-c1', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Is the computer test easier?', 'Computer test কি সহজ?'), options: ['No — same content and scoring', 'Yes — shorter questions', 'Yes — no Writing'], answer: 'No — same content and scoring', explanation: l('Neither is easier.', 'কোনোটাই সহজ না।') })),
       at(2, choice('ibfin-c2', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('What does the computer test show while you write?', 'Computer test-এ লেখার সময় কী দেখা যায়?'), options: ['Your word count', 'Your band score', 'Model answers'], answer: 'Your word count', explanation: l('The word count is on screen.', 'Screen-এ word count।') })),
-      at(2, gap('ibfin-c3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Write the number of minutes.', 'মিনিটের সংখ্যা লিখুন।'), sentence: 'In paper-based Listening you get ___ minutes to transfer answers.', accepted: ['10', 'ten'], explanation: l('10 minutes.', '১০ মিনিট।') })),
-      at(3, correct('ibfin-c4', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Correct the false statement.', 'ভুল বাক্যটা ঠিক করুন।'), sentence: 'Computer and paper IELTS use different band scores.', accepted: ['Computer and paper IELTS use the same band scores.', 'Computer and paper IELTS use identical band scores.'], explanation: l('The same scoring.', 'একই scoring।') })),
+      at(2, gap('ibfin-c3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Write the number of minutes.', 'মিনিটের সংখ্যা লিখুন।'), sentence: 'In computer-delivered Listening you get ___ minutes to check your answers.', accepted: ['2', 'two'], explanation: l('2 minutes, and no transfer time.', '২ মিনিট, transfer সময় নেই।') })),
+      at(3, correct('ibfin-c4', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Correct the false statement.', 'ভুল বাক্যটা ঠিক করুন।'), sentence: 'Typed and handwritten Writing use different band scores.', accepted: ['Typed and handwritten Writing use the same band scores.', 'Typed and handwritten Writing use identical band scores.'], explanation: l('The same scoring.', 'একই scoring।') })),
     ],
   },
   {

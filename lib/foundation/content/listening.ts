@@ -223,7 +223,7 @@ export const lsPart1: Lesson = {
         l('Letters: know how English letters sound — especially A / E / I, G / J, and V / W; "double" means the letter twice (double L = LL).', 'অক্ষর: English অক্ষর কেমন শোনায় জানুন — বিশেষ করে A / E / I, G / J, আর V / W; "double" মানে অক্ষর দুবার (double L = LL)।'),
         l('Numbers: "oh" can mean 0; "double 3" = 33; listen for -teen vs -ty (fifteen / fifty) by the stress: fifTEEN, FIFty.', 'সংখ্যা: "oh" মানে 0 হতে পারে; "double 3" = 33; -teen আর -ty (fifteen / fifty) জোর দিয়ে চিনুন: fifTEEN, FIFty।'),
         l('Corrections and distractors: "sorry, I mean…", "actually…", "no, that’s wrong…" — the last answer counts.', 'শোধরানো আর distractor: "sorry, I mean…", "actually…", "no, that’s wrong…" — শেষ উত্তরটাই গোনা হয়।'),
-        l('Write exactly: capital letters for names, correct spelling, and the word limit.', 'হুবহু লিখুন: নামে capital letter, সঠিক বানান, আর word-এর সীমা।'),
+        l('Write exactly: correct spelling and the word limit. Capital or small letters do not change the mark, but a capital for names is a clear habit.', 'হুবহু লিখুন: সঠিক বানান আর word-এর সীমা। Capital বা ছোট হাতের অক্ষরে নম্বর বদলায় না, তবে নামে capital দেওয়া পরিষ্কার অভ্যাস।'),
         l('Common mix-up: writing the first number you hear. In Part 1 the first number is often the distractor.', 'সাধারণ ভুল: প্রথম শোনা সংখ্যা লিখে ফেলা। Part 1-এ প্রথম সংখ্যা প্রায়ই distractor।'),
       ],
     },
@@ -253,7 +253,7 @@ export const lsPart1: Lesson = {
       items: [
         { wrong: 'Writing 15 when you hear "fifty"', right: '50 — the stress is on FIF-', why: l('-ty is stressed at the start.', '-ty-তে শুরুতে জোর।') },
         { wrong: 'Writing the first date mentioned', right: 'Write the corrected date', why: l('The final answer counts.', 'শেষ উত্তর গোনা হয়।') },
-        { wrong: '"Rahman" written as "rahman"', right: 'Rahman', why: l('Names take capitals.', 'নামে capital।') },
+        { wrong: '"Rahman" written as "Rahmaan"', right: 'Rahman', why: l('Write the spelling you hear letter by letter — a spelling slip loses the mark.', 'অক্ষর ধরে ধরে যে বানান শোনেন সেটাই লিখুন — বানানে ভুল হলে নম্বর যায়।') },
       ],
     },
     {
@@ -265,7 +265,7 @@ export const lsPart1: Lesson = {
         choice('ls-2-p2', 'ls-part1', { ...P, pattern: 'ls-spelling-number', prompt: l('You hear: "My postcode is B-double-T 4." What do you write?', 'আপনি শুনলেন: "My postcode is B-double-T 4." কী লিখবেন?'), options: ['BTT4', 'BT4', 'BDT4'], answer: 'BTT4', explanation: l('double T = TT.', 'double T = TT।'), why: { BT4: l('"double T" means two Ts.', '"double T" মানে দুটো T।'), BDT4: l('"double" is not a letter D.', '"double" অক্ষর D না।') } }),
         choice('ls-2-p3', 'ls-part1', { ...P, pattern: 'ls-spelling-number', prompt: l('You hear "FIF-ty" with the stress at the start. Which number is it?', '"FIF-ty" শুনলেন, শুরুতে জোর। কোন সংখ্যা?'), options: ['50', '15', '55'], answer: '50', explanation: l('-ty: stress at the start.', '-ty: শুরুতে জোর।'), why: { '15': l('fifTEEN has the stress at the end.', 'fifTEEN-এ শেষে জোর।'), '55': l('55 would be fifty-five.', '55 হতো fifty-five।') } }),
         choice('ls-2-p4', 'ls-part1', { ...P, pattern: 'ls-distractor', prompt: l('You hear: "Tuesday is usually our day, but this month it’s moved to Thursday." Meeting day: ______', 'আপনি শুনলেন: "Tuesday is usually our day, but this month it’s moved to Thursday." Meeting day: ______'), options: ['Thursday', 'Tuesday', 'Tuesday and Thursday'], answer: 'Thursday', explanation: l('"but … moved to Thursday".', '"but … moved to Thursday"।'), why: { Tuesday: l('Tuesday is the usual day, but not this month.', 'Tuesday সাধারণ দিন, কিন্তু এই মাসে না।'), 'Tuesday and Thursday': l('Only one day is correct.', 'একটাই দিন ঠিক।') } }),
-        choice('ls-2-p5', 'ls-part1', { ...P, pattern: 'ls-spelling-number', prompt: l('You hear: "It’s Mahmud — M-A-H-M-U-D." Which answer is correct?', 'আপনি শুনলেন: "It’s Mahmud — M-A-H-M-U-D." কোন উত্তরটা ঠিক?'), options: ['Mahmud', 'Mahmood', 'mahmud'], answer: 'Mahmud', explanation: l('Exact spelling with a capital.', 'হুবহু বানান, capital-সহ।'), why: { Mahmood: l('Write the spelling you hear, not a familiar one.', 'পরিচিত বানান না, যা শোনেন সেটা লিখুন।'), mahmud: l('Names need a capital letter.', 'নামে capital letter লাগে।') } }),
+        choice('ls-2-p5', 'ls-part1', { ...P, pattern: 'ls-spelling-number', prompt: l('You hear: "It’s Mahmud — M-A-H-M-U-D." Which answer is correct?', 'আপনি শুনলেন: "It’s Mahmud — M-A-H-M-U-D." কোন উত্তরটা ঠিক?'), options: ['Mahmud', 'Mahmood', 'Mahmoud'], answer: 'Mahmud', explanation: l('Exact spelling, letter by letter: M-A-H-M-U-D.', 'অক্ষর ধরে হুবহু বানান: M-A-H-M-U-D।'), why: { Mahmood: l('Write the spelling you hear, not a familiar one.', 'পরিচিত বানান না, যা শোনেন সেটা লিখুন।'), Mahmoud: l('Another common spelling of the name — but the speaker spelled M-A-H-M-U-D.', 'নামটার আরেকটা চেনা বানান — কিন্তু বক্তা বলেছেন M-A-H-M-U-D।') } }),
       ],
     },
     {
@@ -308,7 +308,7 @@ export const lsPart1: Lesson = {
       kind: 'recall',
       title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Write names, numbers and dates exactly; names take capitals.', 'নাম, সংখ্যা আর তারিখ হুবহু লিখুন; নামে capital।'),
+        l('Write names, numbers and dates exactly as spelled; capitals do not change the mark.', 'নাম, সংখ্যা আর তারিখ হুবহু বানানে লিখুন; capital-এ নম্বর বদলায় না।'),
         l('"double 3" = 33 · fifTEEN vs FIFty · "oh" can be 0.', '"double 3" = 33 · fifTEEN বনাম FIFty · "oh" মানে 0 হতে পারে।'),
         l('Wait for corrections: "sorry", "actually", "no" — the final answer counts.', 'শোধরানোর অপেক্ষা করুন: "sorry", "actually", "no" — শেষ উত্তর গোনা হয়।'),
       ],

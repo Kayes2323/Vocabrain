@@ -8,7 +8,7 @@ import { choice, correct, gap, l, order, spot, write } from './pos-kit';
  * times and institution requirements change and differ by test centre, so the
  * lessons always send students to the official source for those.
  * ib-1 IELTS Academic · ib-2 the four skills and timing ·
- * ib-3 computer-delivered and paper-based · ib-4 the band scale and the overall
+ * ib-3 IELTS on computer (paper ends from mid-2026) · ib-4 the band scale and the overall
  * score · ib-5 how each skill is marked · ib-6 planning: targets and official
  * requirements. Original Mino content.
  */
@@ -16,7 +16,7 @@ import { choice, correct, gap, l, order, spot, write } from './pos-kit';
 export const IELTS_INTRO_CONCEPTS: Concept[] = [
   { id: 'ib-versions', title: l('IELTS Academic', 'IELTS Academic'), lessonId: 'ib-1', tag: 'ielts-basics' },
   { id: 'ib-format', title: l('The four skills and test timing', 'চার skill আর test-এর সময়'), lessonId: 'ib-2', tag: 'ielts-basics' },
-  { id: 'ib-delivery', title: l('Computer-delivered and paper-based', 'Computer-delivered আর paper-based'), lessonId: 'ib-3', tag: 'ielts-basics' },
+  { id: 'ib-delivery', title: l('IELTS on computer', 'Computer-এ IELTS'), lessonId: 'ib-3', tag: 'ielts-basics' },
   { id: 'ib-bands', title: l('Band Scores and the overall score', 'Band Score আর overall score'), lessonId: 'ib-4', tag: 'ielts-basics' },
   { id: 'ib-marking', title: l('How each skill is marked', 'প্রতিটা skill কীভাবে নম্বর পায়'), lessonId: 'ib-5', tag: 'ielts-basics' },
   { id: 'ib-plan', title: l('Targets and official requirements', 'Target আর official requirement'), lessonId: 'ib-6', tag: 'ielts-basics' },
@@ -320,65 +320,70 @@ export const ibDelivery: Lesson = {
   id: 'ib-3',
   format: 'v2',
   concept: 'ib-delivery',
-  title: l('Computer-delivered and paper-based', 'Computer-delivered আর paper-based'),
-  why: l('You can take IELTS on paper or on a computer. The content and scoring are the same, but the way you answer is different — so practise the way you will be tested.', 'IELTS কাগজে বা computer-এ দেওয়া যায়। Content আর scoring একই, কিন্তু উত্তর দেওয়ার ধরন আলাদা — তাই যেভাবে test দেবেন সেভাবে practice করুন।'),
+  // Facts checked 2026-10-14: IELTS "Updates to IELTS test delivery" (5 March 2026, ielts.org/news-and-insights/updates-to-ielts-test-delivery):
+  // paper-based IELTS ends from mid-2026, timelines vary by market, Writing on Paper in selected markets.
+  // IDP Bangladesh (ielts.idp.com/bangladesh/about/which-test-do-i-take/paper-based-ielts): paper IELTS not offered after 31 January 2026.
+  // Computer Listening: 2 minutes to check at the end, no transfer time (IDP "How IELTS on computer works"; British Council "IELTS on paper vs computer").
+  title: l('IELTS on computer: how you answer', 'Computer-এ IELTS: কীভাবে উত্তর দেবেন'),
+  why: l('IELTS is moving fully to computer. The questions and scoring do not change, but typing, reading on screen and the short Listening check time do — so practise the way you will be tested.', 'IELTS পুরোপুরি computer-এ চলে যাচ্ছে। প্রশ্ন আর scoring বদলায় না, কিন্তু type করা, screen-এ পড়া আর Listening-এর ছোট checking সময় বদলায় — তাই যেভাবে test দেবেন সেভাবে practice করুন।'),
   minutes: 8,
   difficulty: 'easy',
   skill: 'reading',
   steps: [
     {
       kind: 'hook',
-      title: l('Choosing a format', 'Format বাছাই'),
-      situation: l('Mim hears that "computer IELTS is easier and gives higher scores". She types slowly but books the computer test anyway.', 'Mim শুনেছেন "computer IELTS সহজ, নম্বরও বেশি দেয়"। তিনি ধীরে type করেন, তবু computer test book করলেন।'),
-      question: l('Is computer IELTS easier?', 'Computer IELTS কি সহজ?'),
-      options: ['No — same content and scoring; choose the format you work best in', 'Yes — it is marked more generously', 'Yes — Speaking is skipped'],
-      answer: 'No — same content and scoring; choose the format you work best in',
+      title: l('Waiting for a paper date', 'Paper-এর তারিখের অপেক্ষা'),
+      situation: l('Mim types slowly. A friend tells her: "Wait for a paper IELTS date in Dhaka — paper is easier."', 'Mim ধীরে type করেন। এক বন্ধু বলল: "ঢাকায় paper IELTS-এর তারিখের জন্য অপেক্ষা করো — paper সহজ।"'),
+      question: l('What is the best advice for Mim?', 'Mim-এর জন্য সবচেয়ে ভালো পরামর্শ কী?'),
+      options: ['Prepare for the computer test and practise typing', 'Wait for a paper test date', 'Skip Writing practice until test day'],
+      answer: 'Prepare for the computer test and practise typing',
       diagnose: {
-        'No — same content and scoring; choose the format you work best in': l('Right. The questions, timing and scoring are the same. If you type slowly, practise typing essays before choosing the computer test.', 'ঠিক। প্রশ্ন, সময় আর scoring একই। ধীরে type করলে computer test বাছার আগে essay type করার practice করুন।'),
-        'Yes — it is marked more generously': l('Both formats use the same scoring. Neither is easier.', 'দুই format-এ একই scoring। কোনোটাই সহজ না।'),
-        'Yes — Speaking is skipped': l('Speaking is face to face with an examiner in both formats.', 'দুই format-এই Speaking examiner-এর সাথে মুখোমুখি।'),
+        'Prepare for the computer test and practise typing': l('Right. In Bangladesh, IDP stopped offering paper IELTS after 31 January 2026, and IELTS is moving to computer everywhere. Practise typing essays — and ask your centre whether it offers Writing on Paper.', 'ঠিক। বাংলাদেশে IDP ৩১ জানুয়ারি ২০২৬-এর পরে paper IELTS নেওয়া বন্ধ করেছে, আর সব জায়গায় IELTS computer-এ যাচ্ছে। Essay type করার practice করুন — আর আপনার centre-এ Writing on Paper আছে কিনা জিজ্ঞেস করুন।'),
+        'Wait for a paper test date': l('Paper IELTS is no longer offered in Bangladesh, and it is ending worldwide from mid-2026. Waiting only delays you.', 'বাংলাদেশে paper IELTS আর নেওয়া হয় না, আর mid-2026 থেকে সারা বিশ্বে বন্ধ হচ্ছে। অপেক্ষা শুধু দেরি করাবে।'),
+        'Skip Writing practice until test day': l('Slow typing costs Writing time. Practise typing timed essays now.', 'ধীরে type করলে Writing-এর সময় যায়। এখনই সময় ধরে essay type করার practice করুন।'),
       },
     },
     {
       kind: 'discover',
       title: l('What changes, what stays', 'কী বদলায়, কী থাকে'),
       items: [
-        { en: 'Same: questions, timing, band scores, Speaking face to face', note: l('the test itself does not change', 'test নিজে বদলায় না') },
+        { en: 'Same: questions, timing, band scores, Speaking face to face with an examiner', note: l('the test itself does not change', 'test নিজে বদলায় না') },
         { en: 'Computer: you type answers and essays; the word count is shown on screen', note: l('typing speed matters', 'type করার গতি গুরুত্বপূর্ণ') },
-        { en: 'Paper: you write by hand on answer sheets', note: l('handwriting must be clear', 'হাতের লেখা পরিষ্কার হতে হবে') },
-        { en: 'Paper Listening: 10 minutes to transfer answers · Computer Listening: 2 minutes to check', note: l('you type answers as you listen on computer', 'computer-এ শুনতে শুনতেই type করেন') },
+        { en: 'Computer Listening: you type as you listen, then get 2 minutes to check', note: l('there is no 10-minute transfer time', '১০ মিনিটের transfer সময় নেই') },
+        { en: 'Writing on Paper (some centres): Listening and Reading on computer, Writing by hand', note: l('same tasks, timing and scoring', 'একই task, সময় আর scoring') },
       ],
-      question: l('What is the biggest difference for Writing?', 'Writing-এ সবচেয়ে বড় পার্থক্য কী?'),
+      question: l('What changes most when the test is on computer?', 'Test computer-এ হলে সবচেয়ে বেশি কী বদলায়?'),
       options: [
-        l('Typing vs handwriting', 'Type করা বনাম হাতে লেখা'),
-        l('Different questions', 'আলাদা প্রশ্ন'),
-        l('Different word limits', 'আলাদা word-এর সীমা'),
+        l('How you answer: typing and reading on screen', 'কীভাবে উত্তর দেন: type করা আর screen-এ পড়া'),
+        l('The questions', 'প্রশ্নগুলো'),
+        l('The band scores', 'Band score'),
       ],
       answer: 0,
-      pattern: l('Same test, different answering: type on a computer or write on paper. Choose the one you are faster and more accurate in — and practise in that format.', 'একই test, উত্তর দেওয়ার ধরন আলাদা: computer-এ type বা কাগজে লেখা। যেটায় দ্রুত আর নির্ভুল সেটা বাছুন — আর সেই format-এ practice করুন।'),
+      pattern: l('Same test, different answering: you type and read on screen. Practise in that format — and if your centre offers Writing on Paper, you may handwrite only the Writing test.', 'একই test, উত্তর দেওয়ার ধরন আলাদা: type করেন আর screen-এ পড়েন। সেই format-এ practice করুন — আর centre-এ Writing on Paper থাকলে শুধু Writing হাতে লিখতে পারেন।'),
     },
     {
       kind: 'concept',
-      title: l('Choosing between the formats', 'দুই format-এর মধ্যে বাছাই'),
+      title: l('IELTS is on computer now', 'IELTS এখন computer-এ'),
       body: l(
-        'Computer-delivered IELTS has the same content and scoring as the paper test. The difference is how you read, listen and answer.',
-        'Computer-delivered IELTS-এর content আর scoring paper test-এর মতোই। পার্থক্য হলো কীভাবে পড়েন, শোনেন আর উত্তর দেন।',
+        'From mid-2026, IELTS is no longer offered on paper, and the dates vary by country. In Bangladesh, IDP stopped offering paper IELTS after 31 January 2026. The questions, timing and scoring stay the same.',
+        'Mid-2026 থেকে IELTS আর paper-এ নেওয়া হয় না, তারিখ দেশ অনুযায়ী আলাদা। বাংলাদেশে IDP ৩১ জানুয়ারি ২০২৬-এর পরে paper IELTS নেওয়া বন্ধ করেছে। প্রশ্ন, সময় আর scoring একই থাকে।',
       ),
       points: [
-        l('Same in both: the questions, the timing, the marking and the band scores. Speaking is always face to face with an examiner.', 'দুটোতেই একই: প্রশ্ন, সময়, নম্বর দেওয়া আর band score। Speaking সবসময় examiner-এর সাথে মুখোমুখি।'),
-        l('Computer: answers and essays are typed; the screen shows your word count; you can highlight text and make notes on screen.', 'Computer: উত্তর আর essay type করা হয়; screen-এ word count দেখা যায়; screen-এ text highlight আর note করা যায়।'),
-        l('Paper: answers are written by hand; in Listening you get 10 minutes at the end to transfer answers to the answer sheet. On computer you type answers during the recording and get 2 minutes to check.', 'Paper: উত্তর হাতে লেখা; Listening-এর শেষে answer sheet-এ উত্তর তোলার জন্য ১০ মিনিট। Computer-এ recording চলার সময়ই type করেন, আর যাচাইয়ের জন্য ২ মিনিট পান।'),
-        l('Result times, dates and availability differ by test centre — check the official IELTS or test centre website.', 'Result-এর সময়, তারিখ আর কোনটা পাওয়া যায় — test centre অনুযায়ী আলাদা। Official IELTS বা test centre-এর website দেখুন।'),
-        l('Common mix-up: "the computer test is easier". It is not; it only suits people who type well and like reading on screen.', 'সাধারণ ভুল: "computer test সহজ"। তা না; শুধু যাঁরা ভালো type করেন আর screen-এ পড়তে স্বচ্ছন্দ, তাঁদের জন্য সুবিধাজনক।'),
+        l('Same as before: the questions, the timing, the marking and the band scores. Speaking is face to face with a trained examiner.', 'আগের মতোই: প্রশ্ন, সময়, নম্বর দেওয়া আর band score। Speaking প্রশিক্ষিত examiner-এর সাথে মুখোমুখি।'),
+        l('On computer: answers and essays are typed; the screen shows your word count; you can highlight text and make notes on screen.', 'Computer-এ: উত্তর আর essay type করা হয়; screen-এ word count দেখা যায়; screen-এ text highlight আর note করা যায়।'),
+        l('Listening on computer: type your answers while you listen. At the end you get 2 minutes to check — there is no 10-minute transfer time (that was the paper test).', 'Computer-এ Listening: শুনতে শুনতেই উত্তর type করুন। শেষে যাচাইয়ের জন্য ২ মিনিট পান — ১০ মিনিটের transfer সময় নেই (ওটা paper test-এ ছিল)।'),
+        l('Writing on Paper: in some centres you can handwrite the Writing test while Listening and Reading stay on computer. The tasks, timing and scoring are the same.', 'Writing on Paper: কিছু centre-এ Listening আর Reading computer-এ রেখে শুধু Writing হাতে লেখা যায়। Task, সময় আর scoring একই।'),
+        l('Dates, result times and the options a centre offers change — check the official IELTS or test centre website.', 'তারিখ, result-এর সময় আর centre কোন option দেয় — এগুলো বদলায়। Official IELTS বা test centre-এর website দেখুন।'),
+        l('Common mix-up: "paper is easier, so I will wait for a paper date". The scoring is the same, and paper IELTS is no longer offered in Bangladesh.', 'সাধারণ ভুল: "paper সহজ, তাই paper-এর তারিখের অপেক্ষা করব"। Scoring একই, আর বাংলাদেশে paper IELTS আর নেওয়া হয় না।'),
       ],
     },
     {
       kind: 'examples',
-      title: l('Who suits which?', 'কার জন্য কোনটা?'),
+      title: l('Getting ready for the computer test', 'Computer test-এর প্রস্তুতি'),
       items: [
-        { en: 'Types 40 words a minute, reads on screen every day → computer may suit', note: l('fast, accurate typing', 'দ্রুত, নির্ভুল type') },
-        { en: 'Writes neatly and fast, finds screens tiring → paper may suit', note: l('clear handwriting', 'পরিষ্কার হাতের লেখা') },
-        { en: 'Makes many spelling mistakes by hand → practise both, then decide', note: l('test yourself in both formats', 'দুই format-এ নিজেকে যাচাই করুন') },
+        { en: 'Types slowly → practise typing a Task 2 essay in 40 minutes every week', note: l('build typing speed early', 'আগে থেকেই type-এর গতি বাড়ান') },
+        { en: 'Finds screens tiring → practise timed Reading passages on screen', note: l('get used to scrolling', 'scroll করায় অভ্যস্ত হন') },
+        { en: 'Prefers handwriting → ask your centre whether it offers Writing on Paper', note: l('only some centres do', 'শুধু কিছু centre-এ আছে') },
         { en: 'Either way: the same band scores and the same Speaking test', note: l('no hidden advantage', 'লুকানো সুবিধা নেই') },
       ],
     },
@@ -386,19 +391,20 @@ export const ibDelivery: Lesson = {
       kind: 'ielts',
       title: l('Skill by skill', 'Skill অনুযায়ী'),
       uses: [
-        { skill: 'listening', example: 'Paper: 10 minutes to transfer answers · Computer: 2 minutes to check', note: l('On computer, type answers as you listen.', 'Computer-এ শুনতে শুনতেই type করুন।') },
+        { skill: 'listening', example: 'Computer: type as you listen · 2 minutes to check at the end', note: l('Do not wait for transfer time — there is none.', 'Transfer সময়ের অপেক্ষা করবেন না — নেই।') },
         { skill: 'reading', example: 'Computer: passage and questions side by side on screen', note: l('Practise scrolling and highlighting.', 'Scroll আর highlight করার practice করুন।') },
-        { skill: 'writing', example: 'Computer: the word count is shown as you type', note: l('Paper: count your words yourself.', 'Paper: নিজেই word গুনুন।') },
-        { skill: 'speaking', example: 'Face to face with an examiner in both formats', note: l('No difference.', 'কোনো পার্থক্য নেই।') },
+        { skill: 'writing', example: 'Computer: the word count is shown as you type', note: l('Writing on Paper: count your words yourself.', 'Writing on Paper: নিজেই word গুনুন।') },
+        { skill: 'speaking', example: 'Face to face with an examiner', note: l('No change.', 'কোনো পরিবর্তন নেই।') },
       ],
     },
     {
       kind: 'mistakes',
       title: l('Common Mistake Lab', 'Common Mistake Lab'),
       items: [
-        { wrong: '"Computer IELTS gives higher scores."', right: 'Both formats use the same scoring.', why: l('Same marking.', 'একই নম্বর দেওয়া।') },
-        { wrong: '"On computer, Speaking is with a machine."', right: 'Speaking is face to face in both formats.', why: l('Always an examiner.', 'সবসময় examiner।') },
-        { wrong: 'Practising only by hand, then taking the computer test', right: 'Practise typing essays before the computer test', why: l('Typing speed affects Writing.', 'Type-এর গতি Writing-এ প্রভাব ফেলে।') },
+        { wrong: '"Computer IELTS gives higher scores."', right: 'The scoring is the same.', why: l('Same marking.', 'একই নম্বর দেওয়া।') },
+        { wrong: '"On computer, Speaking is with a machine."', right: 'Speaking is face to face with an examiner.', why: l('Always an examiner.', 'সবসময় examiner।') },
+        { wrong: '"I will wait for a paper test date in Dhaka."', right: 'Prepare for the computer test (or ask about Writing on Paper).', why: l('Paper IELTS is no longer offered in Bangladesh.', 'বাংলাদেশে paper IELTS আর নেওয়া হয় না।') },
+        { wrong: 'Practising essays only by hand', right: 'Practise typing timed essays', why: l('Typing speed affects Writing.', 'Type-এর গতি Writing-এ প্রভাব ফেলে।') },
       ],
     },
     {
@@ -406,10 +412,10 @@ export const ibDelivery: Lesson = {
       mode: 'practice',
       title: l('Practice: easy → harder', 'Practice: সহজ → কঠিন'),
       exercises: [
-        choice('ib-3-p1', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Which is the same in both formats?', 'দুই format-এ কোনটা একই?'), options: ['The questions and the scoring', 'The way you write answers', 'The Listening transfer time'], answer: 'The questions and the scoring', explanation: l('Same content and scoring.', 'একই content আর scoring।'), why: { 'The way you write answers': l('Computer = typing; paper = handwriting.', 'Computer = type; paper = হাতে লেখা।'), 'The Listening transfer time': l('Paper gives 10 minutes to transfer; computer gives 2 minutes to check.', 'Paper-এ উত্তর তোলার ১০ মিনিট; computer-এ যাচাইয়ের ২ মিনিট।') } }),
-        choice('ib-3-p2', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('How is Speaking done in computer-delivered IELTS?', 'Computer-delivered IELTS-এ Speaking কীভাবে হয়?'), options: ['Face to face with an examiner', 'Recorded by the computer', 'It is not included'], answer: 'Face to face with an examiner', explanation: l('Always face to face.', 'সবসময় মুখোমুখি।'), why: { 'Recorded by the computer': l('Speaking stays face to face with a trained examiner.', 'Speaking প্রশিক্ষিত examiner-এর সাথে মুখোমুখিই থাকে।'), 'It is not included': l('All four skills are tested in both formats.', 'দুই format-এই চার skill-এর test হয়।') } }),
-        choice('ib-3-p3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('In paper-based Listening, how long do you get to transfer answers?', 'Paper-based Listening-এ উত্তর তোলার জন্য কত সময়?'), options: ['10 minutes', '2 minutes', 'No time'], answer: '10 minutes', explanation: l('Paper: 10 minutes at the end.', 'Paper: শেষে ১০ মিনিট।'), why: { '2 minutes': l('2 minutes to check is the computer version.', 'যাচাইয়ের ২ মিনিট হলো computer version-এ।'), 'No time': l('That is Reading: no extra transfer time.', 'এটা Reading: উত্তর তোলার আলাদা সময় নেই।') } }),
-        choice('ib-3-p4', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Who is the computer test best for?', 'Computer test কার জন্য সবচেয়ে ভালো?'), options: ['Someone who types quickly and accurately', 'Anyone who wants an easier test', 'Someone who cannot type'], answer: 'Someone who types quickly and accurately', explanation: l('Typing speed matters for Writing.', 'Writing-এ type-এর গতি গুরুত্বপূর্ণ।'), why: { 'Anyone who wants an easier test': l('It is not easier — same content and scoring.', 'এটা সহজ না — একই content আর scoring।'), 'Someone who cannot type': l('Typing essays slowly wastes Writing time.', 'ধীরে essay type করলে Writing-এর সময় নষ্ট হয়।') } }),
+        choice('ib-3-p1', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('What stays the same now that IELTS is on computer?', 'IELTS computer-এ হওয়ায় কী একই থাকে?'), options: ['The questions and the scoring', 'The way you write answers', 'The Listening checking time'], answer: 'The questions and the scoring', explanation: l('Same content and scoring.', 'একই content আর scoring।'), why: { 'The way you write answers': l('On computer you type; on paper you wrote by hand.', 'Computer-এ type করেন; paper-এ হাতে লিখতেন।'), 'The Listening checking time': l('Computer Listening gives 2 minutes to check; the paper test gave 10 minutes to transfer.', 'Computer Listening-এ যাচাইয়ের ২ মিনিট; paper test-এ উত্তর তোলার ১০ মিনিট ছিল।') } }),
+        choice('ib-3-p2', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('How is Speaking done in computer-delivered IELTS?', 'Computer-delivered IELTS-এ Speaking কীভাবে হয়?'), options: ['Face to face with an examiner', 'Recorded by the computer', 'It is not included'], answer: 'Face to face with an examiner', explanation: l('Always face to face.', 'সবসময় মুখোমুখি।'), why: { 'Recorded by the computer': l('Speaking stays face to face with a trained examiner.', 'Speaking প্রশিক্ষিত examiner-এর সাথে মুখোমুখিই থাকে।'), 'It is not included': l('All four skills are tested.', 'চার skill-এরই test হয়।') } }),
+        choice('ib-3-p3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('From mid-2026, how is IELTS delivered?', 'Mid-2026 থেকে IELTS কীভাবে নেওয়া হয়?'), options: ['On computer (Writing on Paper in some centres)', 'Only on paper', 'Paper or computer, your choice in every country'], answer: 'On computer (Writing on Paper in some centres)', explanation: l('The paper-based test is ending; some centres let you handwrite only the Writing test.', 'Paper-based test বন্ধ হচ্ছে; কিছু centre-এ শুধু Writing হাতে লেখা যায়।'), why: { 'Only on paper': l('It is the other way round: paper is ending.', 'উল্টো: paper বন্ধ হচ্ছে।'), 'Paper or computer, your choice in every country': l('Paper is no longer offered in Bangladesh, and it is ending worldwide.', 'বাংলাদেশে paper আর নেই, আর সারা বিশ্বে বন্ধ হচ্ছে।') } }),
+        choice('ib-3-p4', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('You type slowly. What should you do before your IELTS?', 'আপনি ধীরে type করেন। IELTS-এর আগে কী করবেন?'), options: ['Practise typing timed essays (and ask about Writing on Paper)', 'Book a paper test in Dhaka', 'Practise only Speaking'], answer: 'Practise typing timed essays (and ask about Writing on Paper)', explanation: l('Typing speed matters for Writing.', 'Writing-এ type-এর গতি গুরুত্বপূর্ণ।'), why: { 'Book a paper test in Dhaka': l('Paper IELTS is no longer offered in Bangladesh.', 'বাংলাদেশে paper IELTS আর নেওয়া হয় না।'), 'Practise only Speaking': l('Speaking does not fix slow typing in Writing.', 'Speaking দিয়ে Writing-এর ধীর type ঠিক হয় না।') } }),
         choice('ib-3-p5', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Where should you check result times and test dates?', 'Result-এর সময় আর test-এর তারিখ কোথায় দেখবেন?'), options: ['The official IELTS or test centre website', 'A coaching centre poster', 'This lesson'], answer: 'The official IELTS or test centre website', explanation: l('These details change and differ by centre.', 'এসব তথ্য বদলায় আর centre অনুযায়ী আলাদা।'), why: { 'A coaching centre poster': l('Posters can be out of date.', 'Poster পুরোনো হতে পারে।'), 'This lesson': l('Mino does not give dates or result times — they change.', 'Mino তারিখ বা result-এর সময় দেয় না — এগুলো বদলায়।') } }),
       ],
     },
@@ -428,24 +434,24 @@ export const ibDelivery: Lesson = {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('ib-3-c1', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Which statement is true?', 'কোন বাক্যটা সত্য?'), options: ['Neither format is easier.', 'Paper is always easier.', 'Computer is always easier.'], answer: 'Neither format is easier.', explanation: l('Same content and scoring.', 'একই content আর scoring।') }),
-        spot('ib-3-c2', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('One word makes this false. Tap it, then fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'In paper-based Listening, you get 2 minutes to transfer answers.', wrong: '2', accepted: ['10', 'ten'], fixOptions: ['10', '20', '5'], explanation: l('Paper: 10 minutes.', 'Paper: ১০ মিনিট।') }),
+        choice('ib-3-c1', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Which statement is true?', 'কোন বাক্যটা সত্য?'), options: ['Typed and handwritten Writing are marked the same way.', 'Handwritten Writing gets higher scores.', 'Typed Writing gets higher scores.'], answer: 'Typed and handwritten Writing are marked the same way.', explanation: l('Same tasks, timing and scoring.', 'একই task, সময় আর scoring।') }),
+        spot('ib-3-c2', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('One word makes this false. Tap it, then fix it.', 'একটা word এটাকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'In computer-delivered Listening, you get 10 minutes to check your answers.', wrong: '10', accepted: ['2', 'two'], fixOptions: ['2', '20', '5'], explanation: l('Computer Listening: 2 minutes to check. The 10 minutes were for transferring answers in the paper test.', 'Computer Listening: যাচাইয়ের ২ মিনিট। ১০ মিনিট ছিল paper test-এ উত্তর তোলার জন্য।') }),
         order('ib-3-c3', 'ib-delivery', { ...P, pattern: 'ib-delivery-fact', prompt: l('Build the sentence.', 'Sentence-টা সাজান।'), answer: 'Both formats have the same questions and scoring.', explanation: l('Same test.', 'একই test।') }),
       ],
     },
     {
       kind: 'practice',
       mode: 'personal',
-      title: l('Your turn: which format for you?', 'এবার আপনার পালা: আপনার জন্য কোন format?'),
+      title: l('Your turn: your test-day plan', 'এবার আপনার পালা: আপনার test-এর দিনের plan'),
       exercises: [
         write('ib-3-y1', 'ib-delivery', {
           ...P,
-          prompt: l('Write 3 sentences: which format you prefer, why (typing, handwriting, reading on screen), and how you will practise for it.', '৩টা sentence লিখুন: কোন format পছন্দ, কেন (type, হাতের লেখা, screen-এ পড়া), আর তার জন্য কীভাবে practice করবেন।'),
-          model: 'I prefer the computer-delivered test because I type faster than I write. I also like seeing the word count while I write my essays. I will practise typing Task 2 essays in 40 minutes every week.',
-          checklist: [l('a format and a real reason', 'একটা format আর আসল কারণ'), l('no "easier" myth', '"সহজ"-এর ভুল ধারণা না'), l('a practice plan in that format', 'সেই format-এ practice plan')],
-          explanation: l('Choose by how you work best.', 'যেভাবে ভালো কাজ করেন সেভাবে বাছুন।'),
-          task: 'The student explains in 3 sentences which IELTS format they prefer and how they will practise. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts: computer-delivered and paper-based IELTS have the same questions, timing and scoring; Speaking is face to face with an examiner in both; on computer, answers and essays are typed and the word count is shown; on paper, answers are handwritten and Listening has 10 minutes at the end to transfer answers, while computer Listening gives 2 minutes to check. Correct the myth that either format is easier or scores higher. Never state result times, fees or dates.',
-          target: l('Choosing a format', 'Format বাছাই'),
+          prompt: l('Write 3 sentences: how you will take the test (on computer, or Writing on Paper if your centre offers it), what will be hardest for you about it, and how you will practise.', '৩টা sentence লিখুন: কীভাবে test দেবেন (computer-এ, বা centre-এ থাকলে Writing on Paper), এর কোন দিক আপনার জন্য সবচেয়ে কঠিন হবে, আর কীভাবে practice করবেন।'),
+          model: 'I will take IELTS on computer at a centre in Dhaka. Typing a full essay in 40 minutes will be hardest for me because I type slowly. I will practise typing one Task 2 essay every week and check my word count.',
+          checklist: [l('how you will take the test', 'কীভাবে test দেবেন'), l('one real difficulty', 'একটা আসল অসুবিধা'), l('a practice plan in that format', 'সেই format-এ practice plan')],
+          explanation: l('Plan for the format you will really face.', 'যে format-এ সত্যিই test দেবেন, সেভাবে plan করুন।'),
+          task: 'The student explains in 3 sentences how they will take IELTS and how they will practise. Judge the IELTS facts first, then grammar only where it blocks meaning. Facts (checked October 2026): from mid-2026 IELTS is no longer offered on paper (timelines vary by country) and in Bangladesh IDP stopped offering paper IELTS after 31 January 2026; some centres offer Writing on Paper (Listening and Reading on computer, Writing handwritten) with the same tasks, timing and scoring; content and scoring do not change; Speaking is face to face with an examiner; on computer the word count is shown and Listening gives 2 minutes to check at the end with no transfer time. Correct the myth that either format is easier or scores higher, and any plan to wait for a paper date in Bangladesh. Never state result times, fees or dates beyond these.',
+          target: l('Preparing for the computer test', 'Computer test-এর প্রস্তুতি'),
         }),
       ],
     },
@@ -453,9 +459,9 @@ export const ibDelivery: Lesson = {
       kind: 'recall',
       title: l('Remember', 'মনে রাখুন'),
       points: [
-        l('Same questions, timing and scoring on computer and paper; Speaking is always face to face.', 'Computer আর paper-এ একই প্রশ্ন, সময় আর scoring; Speaking সবসময় মুখোমুখি।'),
-        l('Computer: typing, word count on screen, 2 minutes to check Listening. Paper: handwriting, 10 minutes to transfer Listening answers.', 'Computer: type, screen-এ word count, Listening যাচাইয়ে ২ মিনিট। Paper: হাতে লেখা, Listening উত্তর তোলায় ১০ মিনিট।'),
-        l('Choose the format you work best in; check dates and result times officially.', 'যে format-এ ভালো কাজ করেন সেটা বাছুন; তারিখ আর result-এর সময় official-ভাবে দেখুন।'),
+        l('IELTS is moving fully to computer (paper ends from mid-2026; in Bangladesh, after January 2026). Same questions, timing and scoring.', 'IELTS পুরোপুরি computer-এ যাচ্ছে (mid-2026 থেকে paper বন্ধ; বাংলাদেশে জানুয়ারি ২০২৬-এর পরে)। একই প্রশ্ন, সময় আর scoring।'),
+        l('Computer: typing, word count on screen, 2 minutes to check Listening — no transfer time.', 'Computer: type, screen-এ word count, Listening যাচাইয়ে ২ মিনিট — transfer সময় নেই।'),
+        l('Some centres offer Writing on Paper. Speaking is always face to face. Check dates and options officially.', 'কিছু centre-এ Writing on Paper আছে। Speaking সবসময় মুখোমুখি। তারিখ আর option official-ভাবে দেখুন।'),
       ],
     },
   ],

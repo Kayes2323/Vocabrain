@@ -32,6 +32,7 @@ export const IELTS_CARDS: KnowledgeCard[] = [
       o('Writing: Task 1 (at least 150 words, about 20 minutes) and Task 2 (at least 250 words, about 40 minutes); 60 minutes total. Task 2 counts for more than Task 1.'),
       o('Speaking: 11–14 minutes, face to face with an examiner, 3 parts.'),
       o('Computer-delivered IELTS has the same content and scoring; answers are typed on screen. Speaking stays face to face.'),
+      o('From mid-2026 IELTS is no longer offered on paper (timelines vary by country; in Bangladesh, IDP stopped paper IELTS after 31 January 2026). Some centres offer Writing on Paper: Listening and Reading on computer, Writing handwritten, same tasks and scoring. Computer Listening: answers are typed during the recording, 2 minutes to check at the end, no transfer time. (Checked October 2026.)'),
     ],
     verify: 'Result timing, fees, dates and whether One Skill Retake is offered depend on the test centre: check the official IELTS / test centre website.',
   },

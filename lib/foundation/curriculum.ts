@@ -68,7 +68,7 @@ export const CURRICULUM: CurriculumStage[] = [
       { id: 'why-ielts', title: l('Why do you need IELTS?', 'IELTS কেন লাগে?'), why: l('Proof of English for your university — and your target.', 'University-র জন্য English-এর প্রমাণ — আর আপনার target।'), lessons: ['ib-11'] },
       { id: 'academic-ielts', title: l('What is Academic IELTS?', 'Academic IELTS কী?'), why: l('The version for university study.', 'University-তে পড়ার version।'), lessons: ['ib-1'] },
       { id: 'four-skills', title: l('The four skills', 'IELTS-এর চারটি skill'), why: l('Listening, Reading, Writing, Speaking — parts and timing.', 'Listening, Reading, Writing, Speaking — part আর সময়।'), lessons: ['ib-2'] },
-      { id: 'test-structure', title: l('IELTS test structure', 'IELTS test-এর গঠন'), why: l('Test day on computer or paper.', 'Computer বা paper-এ test-এর দিন।'), lessons: ['ib-3'] },
+      { id: 'test-structure', title: l('IELTS test structure', 'IELTS test-এর গঠন'), why: l('Test day on computer: typing, screens and timing.', 'Computer-এ test-এর দিন: type, screen আর সময়।'), lessons: ['ib-3'] },
       { id: 'band-scores', title: l('How Band Scores work', 'Band Score কীভাবে কাজ করে'), why: l('Bands, the overall score and how each skill is marked.', 'Band, overall score আর প্রতিটি skill-এর নম্বর।'), lessons: ['ib-4', 'ib-5'] },
       { id: 'how-to-prepare', title: l('How to prepare for IELTS', 'IELTS-এর প্রস্তুতি কীভাবে নেবেন'), why: l('Targets, myths and your plan.', 'Target, ভুল ধারণা আর আপনার plan।'), lessons: ['ib-6', 'ib-7', 'ib-8', 'ib-9'] },
       {
