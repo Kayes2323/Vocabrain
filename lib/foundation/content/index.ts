@@ -2,7 +2,7 @@
 // 3–5 hand over to features that already exist (practice, tests, mock tests).
 // A module with only `planned` lessons shows as "Soon" (never as available).
 import type { Concept, L, Lesson, Level, Module } from '../model';
-import { sentenceBasicsLessons } from './sentence-basics';
+import { SENTENCE_BASICS_CONCEPTS, sentenceBasicsLessons } from './sentence-basics';
 import { TENSE_CONCEPTS, tensesLessons } from './tenses';
 import { tensesLessons2 } from './tenses-2';
 import { presentSimpleV2, understandingTime } from './tenses-v2';
@@ -271,7 +271,7 @@ export const MODULES: Module[] = [
 ];
 
 /** Reviewable concepts across the course. */
-export const CONCEPTS: Concept[] = [...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_START_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...SENTENCE_QUESTION_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS, ...SPEAKING_CONCEPTS];
+export const CONCEPTS: Concept[] = [...SENTENCE_BASICS_CONCEPTS, ...TENSE_CONCEPTS, ...POS_CONCEPTS, ...ARTICLE_CONCEPTS, ...AGREEMENT_CONCEPTS, ...PREPOSITION_CONCEPTS, ...CONNECTOR_CONCEPTS, ...COMPLEX_CONCEPTS, ...PUNCTUATION_CONCEPTS, ...COMMON_ERROR_CONCEPTS, ...VOCABULARY_CONCEPTS, ...IELTS_START_CONCEPTS, ...IELTS_INTRO_CONCEPTS, ...SENTENCE_QUESTION_CONCEPTS, ...LISTENING_CONCEPTS, ...READING_CONCEPTS, ...WRITING_CONCEPTS, ...SPEAKING_CONCEPTS];
 
 export const getConcept = (id: string) => CONCEPTS.find((c) => c.id === id);
 

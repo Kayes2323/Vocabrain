@@ -208,8 +208,8 @@ export const articleMistakes: Lesson = {
         l('2. "the" before a general idea (the pollution, the education)? Remove it.', '২. সাধারণ ধারণার আগে "the" (the pollution, the education)? সরান।'),
         l('3. a / an before advice, information, news, furniture, equipment, research, traffic? Use some / a piece of / nothing.', '৩. advice, information, news, furniture, equipment, research, traffic-এর আগে a / an? some / a piece of / কিছুই না ব্যবহার করুন।'),
         l('4. a or an? Say the next word: a university, an hour.', '৪. a নাকি an? পরের word-টা বলুন: a university, an hour।'),
-        l('5. Task 1: The chart, the number of, the highest — never drop "the" here.', '৫. Task 1: The chart, the number of, the highest — এখানে "the" কখনো বাদ দিও না।'),
-        l('NOT: don’t add "the" to names of people, most cities and countries (Dhaka, Bangladesh) or languages (English, Bangla).', 'না: মানুষ, বেশিরভাগ শহর ও দেশের নাম (Dhaka, Bangladesh) বা ভাষার নামে (English, Bangla) "the" দিও না।'),
+        l('5. Task 1: The chart, the number of, the highest — never drop "the" here.', '৫. Task 1: The chart, the number of, the highest — এখানে "the" কখনো বাদ দেবেন না।'),
+        l('NOT: don’t add "the" to names of people, most cities and countries (Dhaka, Bangladesh) or languages (English, Bangla).', 'না: মানুষ, বেশিরভাগ শহর ও দেশের নাম (Dhaka, Bangladesh) বা ভাষার নামে (English, Bangla) "the" দেবেন না।'),
       ],
     },
     {

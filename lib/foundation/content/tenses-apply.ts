@@ -561,7 +561,7 @@ export const tensesSpeakingV2: Lesson = {
       answer: 0,
       pattern: l(
         'The question gives you the tense. Answer in that tense, then extend with a different time (a past example, a future plan).',
-        'প্রশ্নই tense দিয়ে দেয়। সেই tense-এ উত্তর দিন, তারপর অন্য সময় দিয়ে বাড়াও (অতীতের উদাহরণ, ভবিষ্যতের পরিকল্পনা)।',
+        'প্রশ্নই tense দিয়ে দেয়। সেই tense-এ উত্তর দিন, তারপর অন্য সময় দিয়ে বাড়ান (অতীতের উদাহরণ, ভবিষ্যতের পরিকল্পনা)।',
       ),
     },
     {
@@ -632,7 +632,7 @@ export const tensesSpeakingV2: Lesson = {
       title: l('Remember', 'মনে রাখুন'),
       points: [
         l('Answer in the tense of the question.', 'প্রশ্নের tense-এই answer দিন।'),
-        l('Extend with another time: a past example or a future plan.', 'আরেকটা সময় দিয়ে বাড়াও: অতীতের উদাহরণ বা ভবিষ্যতের পরিকল্পনা।'),
+        l('Extend with another time: a past example or a future plan.', 'আরেকটা সময় দিয়ে বাড়ান: অতীতের উদাহরণ বা ভবিষ্যতের পরিকল্পনা।'),
         l('"Have you ever…?" → I have. + past detail with a finished time.', '"Have you ever…?" → I have। + শেষ হওয়া সময়ের বিস্তারিত past-এ।'),
       ],
     },

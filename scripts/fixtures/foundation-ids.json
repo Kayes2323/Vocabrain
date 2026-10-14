@@ -1,0 +1,3824 @@
+{
+ "modules": [
+  {
+   "id": "sentence-basics",
+   "lessons": [
+    {
+     "id": "sb-1",
+     "exercises": [
+      "sb-1-e1",
+      "sb-1-e2",
+      "sb-1-e3",
+      "sb-1-e4",
+      "sb-1-e5"
+     ]
+    },
+    {
+     "id": "sb-2",
+     "exercises": [
+      "sb-2-e1",
+      "sb-2-e2",
+      "sb-2-e3",
+      "sb-2-e4",
+      "sb-2-e5"
+     ]
+    },
+    {
+     "id": "sb-3",
+     "exercises": [
+      "sb-3-e1",
+      "sb-3-e2",
+      "sb-3-e3",
+      "sb-3-e4",
+      "sb-3-e5"
+     ]
+    },
+    {
+     "id": "sb-4",
+     "exercises": [
+      "sb-4-e1",
+      "sb-4-e2",
+      "sb-4-e3",
+      "sb-4-e4",
+      "sb-4-e5"
+     ]
+    },
+    {
+     "id": "sb-5",
+     "exercises": [
+      "sb-5-e1",
+      "sb-5-e2",
+      "sb-5-e3",
+      "sb-5-e4"
+     ]
+    },
+    {
+     "id": "sb-6",
+     "exercises": [
+      "sb-6-e1",
+      "sb-6-e2",
+      "sb-6-e3"
+     ]
+    },
+    {
+     "id": "sb-7",
+     "exercises": [
+      "sb-7-e1",
+      "sb-7-e2",
+      "sb-7-e3",
+      "sb-7-e4"
+     ]
+    },
+    {
+     "id": "sb-8",
+     "exercises": [
+      "sb-8-e1",
+      "sb-8-e2",
+      "sb-8-e3",
+      "sb-8-e4"
+     ]
+    },
+    {
+     "id": "sb-9",
+     "exercises": [
+      "sb-9-e1",
+      "sb-9-e2",
+      "sb-9-e3",
+      "sb-9-e4",
+      "sb-9-e5",
+      "sb-9-e6"
+     ]
+    },
+    {
+     "id": "sb-10",
+     "exercises": [
+      "sb-10-p1",
+      "sb-10-p2",
+      "sb-10-p3",
+      "sb-10-p4",
+      "sb-10-p5",
+      "sb-10-r1",
+      "sb-10-r2",
+      "sb-10-r3",
+      "sb-10-r4",
+      "sb-10-c1",
+      "sb-10-c2",
+      "sb-10-c3",
+      "sb-10-y1"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tenses",
+   "lessons": [
+    {
+     "id": "t-1",
+     "exercises": [
+      "t-1-p1",
+      "t-1-p2",
+      "t-1-p3",
+      "t-1-p4",
+      "t-1-p5",
+      "t-1-p6",
+      "t-1-r1",
+      "t-1-r2",
+      "t-1-r3",
+      "t-1-r4",
+      "t-1-y1"
+     ]
+    },
+    {
+     "id": "t-2",
+     "exercises": [
+      "t-2-p1",
+      "t-2-p2",
+      "t-2-p3",
+      "t-2-p4",
+      "t-2-p5",
+      "t-2-p6",
+      "t-2-r1",
+      "t-2-r2",
+      "t-2-r3",
+      "t-2-r4",
+      "t-2-y1"
+     ]
+    },
+    {
+     "id": "t-3",
+     "exercises": [
+      "t-3-e1",
+      "t-3-p1",
+      "t-3-e3",
+      "t-3-p2",
+      "t-3-p3",
+      "t-3-e2",
+      "t-3-e4",
+      "t-3-r1",
+      "t-3-r2",
+      "t-3-c1",
+      "t-3-c2",
+      "t-3-c3",
+      "t-3-e5"
+     ]
+    },
+    {
+     "id": "t-4",
+     "exercises": [
+      "t-4-e1",
+      "t-4-e4",
+      "t-4-p1",
+      "t-4-p2",
+      "t-4-e2",
+      "t-4-e3",
+      "t-4-e5",
+      "t-4-r1",
+      "t-4-c1",
+      "t-4-c2",
+      "t-4-c3",
+      "t-4-e6"
+     ]
+    },
+    {
+     "id": "t-5",
+     "exercises": [
+      "t-5-e1",
+      "t-5-e4",
+      "t-5-p1",
+      "t-5-p2",
+      "t-5-e2",
+      "t-5-e3",
+      "t-5-r1",
+      "t-5-c1",
+      "t-5-c2",
+      "t-5-c3",
+      "t-5-e5"
+     ]
+    },
+    {
+     "id": "t-6",
+     "exercises": [
+      "t-6-e1",
+      "t-6-e2",
+      "t-6-e5",
+      "t-6-p1",
+      "t-6-e3",
+      "t-6-e4",
+      "t-6-r1",
+      "t-6-r2",
+      "t-6-c1",
+      "t-6-c2",
+      "t-6-c3",
+      "t-6-e6"
+     ]
+    },
+    {
+     "id": "t-13",
+     "exercises": [
+      "t-13-p1",
+      "t-13-p2",
+      "t-13-p3",
+      "t-13-p4",
+      "t-13-r1",
+      "t-13-r2",
+      "t-13-r3",
+      "t-13-c1",
+      "t-13-c2",
+      "t-13-c3",
+      "t-13-y1"
+     ]
+    },
+    {
+     "id": "t-7",
+     "exercises": [
+      "t-7-e1",
+      "t-7-e4",
+      "t-7-p1",
+      "t-7-p2",
+      "t-7-e2",
+      "t-7-e3",
+      "t-7-r1",
+      "t-7-c1",
+      "t-7-c2",
+      "t-7-c3",
+      "t-7-e5"
+     ]
+    },
+    {
+     "id": "t-8",
+     "exercises": [
+      "t-8-e1",
+      "t-8-e3",
+      "t-8-p1",
+      "t-8-p2",
+      "t-8-e2",
+      "t-8-e4",
+      "t-8-r1",
+      "t-8-c1",
+      "t-8-c2",
+      "t-8-c3",
+      "t-8-e5"
+     ]
+    },
+    {
+     "id": "t-14",
+     "exercises": [
+      "t-14-p1",
+      "t-14-p2",
+      "t-14-p3",
+      "t-14-p4",
+      "t-14-p5",
+      "t-14-p6",
+      "t-14-r1",
+      "t-14-r2",
+      "t-14-r3",
+      "t-14-r4",
+      "t-14-c1",
+      "t-14-c2",
+      "t-14-c3",
+      "t-14-y1"
+     ]
+    },
+    {
+     "id": "t-9",
+     "exercises": [
+      "t-9-e5",
+      "t-9-p1",
+      "t-9-p2",
+      "t-9-p3",
+      "t-9-e1",
+      "t-9-e2",
+      "t-9-e3",
+      "t-9-e4",
+      "t-9-e6",
+      "t-9-c1",
+      "t-9-c2",
+      "t-9-c3",
+      "t-9-y1"
+     ]
+    },
+    {
+     "id": "t-10",
+     "exercises": [
+      "t-10-e1",
+      "t-10-e2",
+      "t-10-e4",
+      "t-10-p1",
+      "t-10-e3",
+      "t-10-r1",
+      "t-10-r2",
+      "t-10-c1",
+      "t-10-c2",
+      "t-10-c3",
+      "t-10-y1",
+      "t-10-e5"
+     ]
+    },
+    {
+     "id": "t-11",
+     "exercises": [
+      "t-11-e1",
+      "t-11-e2",
+      "t-11-e4",
+      "t-11-p1",
+      "t-11-e3",
+      "t-11-r1",
+      "t-11-r2",
+      "t-11-c1",
+      "t-11-c2",
+      "t-11-c3",
+      "t-11-e5"
+     ]
+    },
+    {
+     "id": "t-15",
+     "exercises": [
+      "t-15-p1",
+      "t-15-p2",
+      "t-15-p3",
+      "t-15-p4",
+      "t-15-p5",
+      "t-15-p6",
+      "t-15-r1",
+      "t-15-r2",
+      "t-15-r3",
+      "t-15-r4",
+      "t-15-r5",
+      "t-15-c1",
+      "t-15-c2",
+      "t-15-c3",
+      "t-15-y1"
+     ]
+    },
+    {
+     "id": "t-12",
+     "exercises": [
+      "t-12-e1",
+      "t-12-e2",
+      "t-12-e3",
+      "t-12-e4",
+      "t-12-e5",
+      "t-12-e6",
+      "t-12-e7",
+      "t-12-e8",
+      "t-12-e9",
+      "t-12-e10",
+      "t-12-e11",
+      "t-12-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "parts-of-speech",
+   "lessons": [
+    {
+     "id": "po-1",
+     "exercises": [
+      "po-1-p1",
+      "po-1-p2",
+      "po-1-p3",
+      "po-1-p4",
+      "po-1-p5"
+     ]
+    },
+    {
+     "id": "pn-1",
+     "exercises": [
+      "pn-1-p1",
+      "pn-1-p2",
+      "pn-1-p3",
+      "pn-1-p4",
+      "pn-1-r1",
+      "pn-1-r2",
+      "pn-1-r3",
+      "pn-1-c1",
+      "pn-1-c2",
+      "pn-1-c3",
+      "pn-1-w1"
+     ]
+    },
+    {
+     "id": "pn-2",
+     "exercises": [
+      "pn-2-p1",
+      "pn-2-p2",
+      "pn-2-p3",
+      "pn-2-p4",
+      "pn-2-r1",
+      "pn-2-r2",
+      "pn-2-r3",
+      "pn-2-c1",
+      "pn-2-c2",
+      "pn-2-c3",
+      "pn-2-w1"
+     ]
+    },
+    {
+     "id": "pn-3",
+     "exercises": [
+      "pn-3-p1",
+      "pn-3-p2",
+      "pn-3-p3",
+      "pn-3-p4",
+      "pn-3-r1",
+      "pn-3-r2",
+      "pn-3-r3",
+      "pn-3-c1",
+      "pn-3-c2",
+      "pn-3-c3",
+      "pn-3-w1"
+     ]
+    },
+    {
+     "id": "pn-4",
+     "exercises": [
+      "pn-4-p1",
+      "pn-4-p2",
+      "pn-4-p3",
+      "pn-4-p4",
+      "pn-4-r1",
+      "pn-4-r2",
+      "pn-4-r3",
+      "pn-4-c1",
+      "pn-4-c2",
+      "pn-4-c3",
+      "pn-4-w1"
+     ]
+    },
+    {
+     "id": "pvb-1",
+     "exercises": [
+      "pvb-1-p1",
+      "pvb-1-p2",
+      "pvb-1-p3",
+      "pvb-1-p4",
+      "pvb-1-r1",
+      "pvb-1-r2",
+      "pvb-1-r3",
+      "pvb-1-c1",
+      "pvb-1-c2",
+      "pvb-1-c3",
+      "pvb-1-w1"
+     ]
+    },
+    {
+     "id": "pvb-2",
+     "exercises": [
+      "pvb-2-p1",
+      "pvb-2-p2",
+      "pvb-2-p3",
+      "pvb-2-p4",
+      "pvb-2-r1",
+      "pvb-2-r2",
+      "pvb-2-r3",
+      "pvb-2-c1",
+      "pvb-2-c2",
+      "pvb-2-c3",
+      "pvb-2-w1"
+     ]
+    },
+    {
+     "id": "pvb-3",
+     "exercises": [
+      "pvb-3-p1",
+      "pvb-3-p2",
+      "pvb-3-p3",
+      "pvb-3-p4",
+      "pvb-3-r1",
+      "pvb-3-r2",
+      "pvb-3-r3",
+      "pvb-3-c1",
+      "pvb-3-c2",
+      "pvb-3-c3",
+      "pvb-3-w1"
+     ]
+    },
+    {
+     "id": "pvb-4",
+     "exercises": [
+      "pvb-4-p1",
+      "pvb-4-p2",
+      "pvb-4-p3",
+      "pvb-4-p4",
+      "pvb-4-r1",
+      "pvb-4-r2",
+      "pvb-4-r3",
+      "pvb-4-c1",
+      "pvb-4-c2",
+      "pvb-4-c3",
+      "pvb-4-w1"
+     ]
+    },
+    {
+     "id": "pvb-5",
+     "exercises": [
+      "pvb-5-p1",
+      "pvb-5-p2",
+      "pvb-5-p3",
+      "pvb-5-p4",
+      "pvb-5-r1",
+      "pvb-5-r2",
+      "pvb-5-r3",
+      "pvb-5-c1",
+      "pvb-5-c2",
+      "pvb-5-c3",
+      "pvb-5-w1"
+     ]
+    },
+    {
+     "id": "pa-1",
+     "exercises": [
+      "pa-1-p1",
+      "pa-1-p2",
+      "pa-1-p3",
+      "pa-1-p4",
+      "pa-1-r1",
+      "pa-1-r2",
+      "pa-1-r3",
+      "pa-1-c1",
+      "pa-1-c2",
+      "pa-1-c3",
+      "pa-1-w1"
+     ]
+    },
+    {
+     "id": "pa-2",
+     "exercises": [
+      "pa-2-p1",
+      "pa-2-p2",
+      "pa-2-p3",
+      "pa-2-p4",
+      "pa-2-r1",
+      "pa-2-r2",
+      "pa-2-r3",
+      "pa-2-c1",
+      "pa-2-c2",
+      "pa-2-c3",
+      "pa-2-w1"
+     ]
+    },
+    {
+     "id": "pa-3",
+     "exercises": [
+      "pa-3-p1",
+      "pa-3-p2",
+      "pa-3-p3",
+      "pa-3-p4",
+      "pa-3-r1",
+      "pa-3-r2",
+      "pa-3-r3",
+      "pa-3-c1",
+      "pa-3-c2",
+      "pa-3-c3",
+      "pa-3-w1"
+     ]
+    },
+    {
+     "id": "pa-4",
+     "exercises": [
+      "pa-4-p1",
+      "pa-4-p2",
+      "pa-4-p3",
+      "pa-4-p4",
+      "pa-4-r1",
+      "pa-4-r2",
+      "pa-4-r3",
+      "pa-4-c1",
+      "pa-4-c2",
+      "pa-4-c3",
+      "pa-4-w1"
+     ]
+    },
+    {
+     "id": "pv-1",
+     "exercises": [
+      "pv-1-p1",
+      "pv-1-p2",
+      "pv-1-p3",
+      "pv-1-p4",
+      "pv-1-r1",
+      "pv-1-r2",
+      "pv-1-r3",
+      "pv-1-c1",
+      "pv-1-c2",
+      "pv-1-c3",
+      "pv-1-w1"
+     ]
+    },
+    {
+     "id": "pv-2",
+     "exercises": [
+      "pv-2-p1",
+      "pv-2-p2",
+      "pv-2-p3",
+      "pv-2-p4",
+      "pv-2-p5",
+      "pv-2-r1",
+      "pv-2-r2",
+      "pv-2-r3",
+      "pv-2-r4",
+      "pv-2-c1",
+      "pv-2-c2",
+      "pv-2-c3",
+      "pv-2-w1"
+     ]
+    },
+    {
+     "id": "pv-3",
+     "exercises": [
+      "pv-3-p1",
+      "pv-3-p2",
+      "pv-3-p3",
+      "pv-3-p4",
+      "pv-3-r1",
+      "pv-3-r2",
+      "pv-3-r3",
+      "pv-3-c1",
+      "pv-3-c2",
+      "pv-3-c3",
+      "pv-3-w1"
+     ]
+    },
+    {
+     "id": "pv-4",
+     "exercises": [
+      "pv-4-p1",
+      "pv-4-p2",
+      "pv-4-p3",
+      "pv-4-p4",
+      "pv-4-r1",
+      "pv-4-r2",
+      "pv-4-r3",
+      "pv-4-c1",
+      "pv-4-c2",
+      "pv-4-c3",
+      "pv-4-w1"
+     ]
+    },
+    {
+     "id": "pf-1",
+     "exercises": [
+      "pf-1-p1",
+      "pf-1-p2",
+      "pf-1-p3",
+      "pf-1-p4",
+      "pf-1-r1",
+      "pf-1-r2",
+      "pf-1-r3",
+      "pf-1-c1",
+      "pf-1-c2",
+      "pf-1-c3",
+      "pf-1-w1"
+     ]
+    },
+    {
+     "id": "pf-2",
+     "exercises": [
+      "pf-2-p1",
+      "pf-2-p2",
+      "pf-2-p3",
+      "pf-2-p4",
+      "pf-2-r1",
+      "pf-2-r2",
+      "pf-2-r3",
+      "pf-2-c1",
+      "pf-2-c2",
+      "pf-2-c3",
+      "pf-2-w1"
+     ]
+    },
+    {
+     "id": "pf-3",
+     "exercises": [
+      "pf-3-p1",
+      "pf-3-p2",
+      "pf-3-p3",
+      "pf-3-p4",
+      "pf-3-r1",
+      "pf-3-r2",
+      "pf-3-r3",
+      "pf-3-c1",
+      "pf-3-c2",
+      "pf-3-c3",
+      "pf-3-w1"
+     ]
+    },
+    {
+     "id": "pf-4",
+     "exercises": [
+      "pf-4-p1",
+      "pf-4-p2",
+      "pf-4-p3",
+      "pf-4-p4",
+      "pf-4-r1",
+      "pf-4-r2",
+      "pf-4-r3",
+      "pf-4-c1",
+      "pf-4-c2",
+      "pf-4-c3",
+      "pf-4-w1"
+     ]
+    },
+    {
+     "id": "pf-5",
+     "exercises": [
+      "pf-5-p1",
+      "pf-5-p2",
+      "pf-5-p3",
+      "pf-5-p4",
+      "pf-5-r1",
+      "pf-5-r2",
+      "pf-5-r3",
+      "pf-5-c1",
+      "pf-5-c2",
+      "pf-5-c3",
+      "pf-5-w1"
+     ]
+    },
+    {
+     "id": "ppr-1",
+     "exercises": [
+      "ppr-1-p1",
+      "ppr-1-p2",
+      "ppr-1-p3",
+      "ppr-1-p4",
+      "ppr-1-r1",
+      "ppr-1-r2",
+      "ppr-1-r3",
+      "ppr-1-c1",
+      "ppr-1-c2",
+      "ppr-1-c3",
+      "ppr-1-w1"
+     ]
+    },
+    {
+     "id": "ppr-2",
+     "exercises": [
+      "ppr-2-p1",
+      "ppr-2-p2",
+      "ppr-2-p3",
+      "ppr-2-p4",
+      "ppr-2-r1",
+      "ppr-2-r2",
+      "ppr-2-r3",
+      "ppr-2-c1",
+      "ppr-2-c2",
+      "ppr-2-c3",
+      "ppr-2-w1"
+     ]
+    },
+    {
+     "id": "ppr-3",
+     "exercises": [
+      "ppr-3-p1",
+      "ppr-3-p2",
+      "ppr-3-p3",
+      "ppr-3-p4",
+      "ppr-3-r1",
+      "ppr-3-r2",
+      "ppr-3-r3",
+      "ppr-3-c1",
+      "ppr-3-c2",
+      "ppr-3-c3",
+      "ppr-3-w1"
+     ]
+    },
+    {
+     "id": "ppp-1",
+     "exercises": [
+      "ppp-1-p1",
+      "ppp-1-p2",
+      "ppp-1-p3",
+      "ppp-1-p4",
+      "ppp-1-r1",
+      "ppp-1-r2",
+      "ppp-1-r3",
+      "ppp-1-c1",
+      "ppp-1-c2",
+      "ppp-1-c3",
+      "ppp-1-w1"
+     ]
+    },
+    {
+     "id": "ppp-2",
+     "exercises": [
+      "ppp-2-p1",
+      "ppp-2-p2",
+      "ppp-2-p3",
+      "ppp-2-p4",
+      "ppp-2-r1",
+      "ppp-2-r2",
+      "ppp-2-r3",
+      "ppp-2-c1",
+      "ppp-2-c2",
+      "ppp-2-c3",
+      "ppp-2-w1"
+     ]
+    },
+    {
+     "id": "ppp-3",
+     "exercises": [
+      "ppp-3-p1",
+      "ppp-3-p2",
+      "ppp-3-p3",
+      "ppp-3-p4",
+      "ppp-3-r1",
+      "ppp-3-r2",
+      "ppp-3-r3",
+      "ppp-3-c1",
+      "ppp-3-c2",
+      "ppp-3-c3",
+      "ppp-3-w1"
+     ]
+    },
+    {
+     "id": "pcj-1",
+     "exercises": [
+      "pcj-1-p1",
+      "pcj-1-p2",
+      "pcj-1-p3",
+      "pcj-1-p4",
+      "pcj-1-r1",
+      "pcj-1-r2",
+      "pcj-1-r3",
+      "pcj-1-c1",
+      "pcj-1-c2",
+      "pcj-1-c3",
+      "pcj-1-w1"
+     ]
+    },
+    {
+     "id": "pcj-2",
+     "exercises": [
+      "pcj-2-p1",
+      "pcj-2-p2",
+      "pcj-2-p3",
+      "pcj-2-p4",
+      "pcj-2-r1",
+      "pcj-2-r2",
+      "pcj-2-r3",
+      "pcj-2-c1",
+      "pcj-2-c2",
+      "pcj-2-c3",
+      "pcj-2-w1"
+     ]
+    },
+    {
+     "id": "pcj-3",
+     "exercises": [
+      "pcj-3-p1",
+      "pcj-3-p2",
+      "pcj-3-p3",
+      "pcj-3-p4",
+      "pcj-3-r1",
+      "pcj-3-r2",
+      "pcj-3-r3",
+      "pcj-3-c1",
+      "pcj-3-c2",
+      "pcj-3-c3",
+      "pcj-3-w1"
+     ]
+    },
+    {
+     "id": "pij-1",
+     "exercises": [
+      "pij-1-p1",
+      "pij-1-p2",
+      "pij-1-p3",
+      "pij-1-p4",
+      "pij-1-r1",
+      "pij-1-r2",
+      "pij-1-r3",
+      "pij-1-c1",
+      "pij-1-c2",
+      "pij-1-c3",
+      "pij-1-w1"
+     ]
+    },
+    {
+     "id": "pie-1",
+     "exercises": [
+      "pie-1-p1",
+      "pie-1-p2",
+      "pie-1-p3",
+      "pie-1-p4",
+      "pie-1-r1",
+      "pie-1-r2",
+      "pie-1-r3",
+      "pie-1-c1",
+      "pie-1-c2",
+      "pie-1-c3",
+      "pie-1-w1"
+     ]
+    },
+    {
+     "id": "pie-2",
+     "exercises": [
+      "pie-2-p1",
+      "pie-2-p2",
+      "pie-2-p3",
+      "pie-2-p4",
+      "pie-2-r1",
+      "pie-2-r2",
+      "pie-2-r3",
+      "pie-2-c1",
+      "pie-2-c2",
+      "pie-2-c3",
+      "pie-2-w1"
+     ]
+    },
+    {
+     "id": "pie-3",
+     "exercises": [
+      "pie-3-p1",
+      "pie-3-p2",
+      "pie-3-p3",
+      "pie-3-p4",
+      "pie-3-r1",
+      "pie-3-r2",
+      "pie-3-r3",
+      "pie-3-c1",
+      "pie-3-c2",
+      "pie-3-c3",
+      "pie-3-w1"
+     ]
+    },
+    {
+     "id": "pie-4",
+     "exercises": [
+      "pie-4-p1",
+      "pie-4-p2",
+      "pie-4-p3",
+      "pie-4-p4",
+      "pie-4-r1",
+      "pie-4-r2",
+      "pie-4-r3",
+      "pie-4-c1",
+      "pie-4-c2",
+      "pie-4-c3",
+      "pie-4-w1"
+     ]
+    },
+    {
+     "id": "pie-5",
+     "exercises": [
+      "pie-5-p1",
+      "pie-5-p2",
+      "pie-5-p3",
+      "pie-5-p4",
+      "pie-5-r1",
+      "pie-5-r2",
+      "pie-5-r3",
+      "pie-5-c1",
+      "pie-5-c2",
+      "pie-5-c3",
+      "pie-5-w1"
+     ]
+    },
+    {
+     "id": "pie-6",
+     "exercises": [
+      "pie-6-p1",
+      "pie-6-p2",
+      "pie-6-p3",
+      "pie-6-p4",
+      "pie-6-r1",
+      "pie-6-r2",
+      "pie-6-r3",
+      "pie-6-c1",
+      "pie-6-c2",
+      "pie-6-c3",
+      "pie-6-w1"
+     ]
+    },
+    {
+     "id": "pie-7",
+     "exercises": [
+      "pie-7-p1",
+      "pie-7-p2",
+      "pie-7-p3",
+      "pie-7-p4",
+      "pie-7-r1",
+      "pie-7-r2",
+      "pie-7-r3",
+      "pie-7-c1",
+      "pie-7-c2",
+      "pie-7-c3",
+      "pie-7-w1"
+     ]
+    },
+    {
+     "id": "pie-8",
+     "exercises": [
+      "pie-8-p1",
+      "pie-8-p2",
+      "pie-8-p3",
+      "pie-8-p4",
+      "pie-8-r1",
+      "pie-8-r2",
+      "pie-8-r3",
+      "pie-8-c1",
+      "pie-8-c2",
+      "pie-8-c3",
+      "pie-8-w1"
+     ]
+    },
+    {
+     "id": "pie-9",
+     "exercises": [
+      "pie-9-p1",
+      "pie-9-p2",
+      "pie-9-p3",
+      "pie-9-p4",
+      "pie-9-r1",
+      "pie-9-r2",
+      "pie-9-r3",
+      "pie-9-c1",
+      "pie-9-c2",
+      "pie-9-c3",
+      "pie-9-w1"
+     ]
+    },
+    {
+     "id": "pl-1",
+     "exercises": [
+      "pl-1-s1",
+      "pl-1-y1",
+      "pl-1-s2",
+      "pl-1-y2",
+      "pl-1-s3",
+      "pl-1-y3",
+      "pl-1-r1",
+      "pl-1-r2",
+      "pl-1-r3"
+     ]
+    },
+    {
+     "id": "pl-2",
+     "exercises": [
+      "pl-2-s1",
+      "pl-2-y1",
+      "pl-2-s2",
+      "pl-2-y2",
+      "pl-2-s3",
+      "pl-2-y3",
+      "pl-2-r1",
+      "pl-2-r2",
+      "pl-2-r3"
+     ]
+    },
+    {
+     "id": "pl-3",
+     "exercises": [
+      "pl-3-s1",
+      "pl-3-y1",
+      "pl-3-s2",
+      "pl-3-y2",
+      "pl-3-s3",
+      "pl-3-y3",
+      "pl-3-r1",
+      "pl-3-r2",
+      "pl-3-r3"
+     ]
+    },
+    {
+     "id": "pl-4",
+     "exercises": [
+      "pl-4-s1",
+      "pl-4-y1",
+      "pl-4-s2",
+      "pl-4-y2",
+      "pl-4-s3",
+      "pl-4-y3",
+      "pl-4-r1",
+      "pl-4-r2",
+      "pl-4-r3"
+     ]
+    },
+    {
+     "id": "pl-5",
+     "exercises": [
+      "pl-5-s1",
+      "pl-5-y1",
+      "pl-5-s2",
+      "pl-5-y2",
+      "pl-5-s3",
+      "pl-5-y3",
+      "pl-5-r1",
+      "pl-5-r2",
+      "pl-5-r3"
+     ]
+    },
+    {
+     "id": "pl-6",
+     "exercises": [
+      "pl-6-s1",
+      "pl-6-y1",
+      "pl-6-s2",
+      "pl-6-y2",
+      "pl-6-s3",
+      "pl-6-y3",
+      "pl-6-r1",
+      "pl-6-r2",
+      "pl-6-r3"
+     ]
+    },
+    {
+     "id": "pl-7",
+     "exercises": [
+      "pl-7-s1",
+      "pl-7-y1",
+      "pl-7-s2",
+      "pl-7-y2",
+      "pl-7-s3",
+      "pl-7-y3",
+      "pl-7-r1",
+      "pl-7-r2",
+      "pl-7-r3"
+     ]
+    },
+    {
+     "id": "pl-8",
+     "exercises": [
+      "pl-8-s1",
+      "pl-8-y1",
+      "pl-8-s2",
+      "pl-8-y2",
+      "pl-8-s3",
+      "pl-8-y3",
+      "pl-8-r1",
+      "pl-8-r2",
+      "pl-8-r3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "articles",
+   "lessons": [
+    {
+     "id": "ar-1",
+     "exercises": [
+      "ar-1-p1",
+      "ar-1-p2",
+      "ar-1-p3",
+      "ar-1-p4",
+      "ar-1-p5",
+      "ar-1-r1",
+      "ar-1-r2",
+      "ar-1-r3",
+      "ar-1-r4",
+      "ar-1-c1",
+      "ar-1-c2",
+      "ar-1-c3",
+      "ar-1-y1"
+     ]
+    },
+    {
+     "id": "ar-2",
+     "exercises": [
+      "ar-2-p1",
+      "ar-2-p2",
+      "ar-2-p3",
+      "ar-2-p4",
+      "ar-2-p5",
+      "ar-2-r1",
+      "ar-2-r2",
+      "ar-2-r3",
+      "ar-2-r4",
+      "ar-2-c1",
+      "ar-2-c2",
+      "ar-2-c3",
+      "ar-2-y1"
+     ]
+    },
+    {
+     "id": "ar-3",
+     "exercises": [
+      "ar-3-p1",
+      "ar-3-p2",
+      "ar-3-p3",
+      "ar-3-p4",
+      "ar-3-p5",
+      "ar-3-r1",
+      "ar-3-r2",
+      "ar-3-r3",
+      "ar-3-r4",
+      "ar-3-c1",
+      "ar-3-c2",
+      "ar-3-c3",
+      "ar-3-y1"
+     ]
+    },
+    {
+     "id": "ar-4",
+     "exercises": [
+      "ar-4-p1",
+      "ar-4-p2",
+      "ar-4-p3",
+      "ar-4-p4",
+      "ar-4-p5",
+      "ar-4-r1",
+      "ar-4-r2",
+      "ar-4-r3",
+      "ar-4-r4",
+      "ar-4-c1",
+      "ar-4-c2",
+      "ar-4-c3",
+      "ar-4-y1"
+     ]
+    },
+    {
+     "id": "ar-5",
+     "exercises": [
+      "ar-5-p1",
+      "ar-5-p2",
+      "ar-5-p3",
+      "ar-5-p4",
+      "ar-5-p5",
+      "ar-5-r1",
+      "ar-5-r2",
+      "ar-5-r3",
+      "ar-5-r4",
+      "ar-5-c1",
+      "ar-5-c2",
+      "ar-5-c3",
+      "ar-5-y1"
+     ]
+    },
+    {
+     "id": "ar-6",
+     "exercises": [
+      "ar-6-p1",
+      "ar-6-p2",
+      "ar-6-p3",
+      "ar-6-p4",
+      "ar-6-p5",
+      "ar-6-r1",
+      "ar-6-r2",
+      "ar-6-r3",
+      "ar-6-r4",
+      "ar-6-c1",
+      "ar-6-c2",
+      "ar-6-c3",
+      "ar-6-y1"
+     ]
+    },
+    {
+     "id": "ar-7",
+     "exercises": [
+      "ar-7-p1",
+      "ar-7-p2",
+      "ar-7-p3",
+      "ar-7-p4",
+      "ar-7-p5",
+      "ar-7-r1",
+      "ar-7-r2",
+      "ar-7-r3",
+      "ar-7-r4",
+      "ar-7-c1",
+      "ar-7-c2",
+      "ar-7-c3",
+      "ar-7-y1"
+     ]
+    },
+    {
+     "id": "ar-8",
+     "exercises": [
+      "ar-8-p1",
+      "ar-8-p2",
+      "ar-8-p3",
+      "ar-8-p4",
+      "ar-8-p5",
+      "ar-8-r1",
+      "ar-8-r2",
+      "ar-8-r3",
+      "ar-8-r4",
+      "ar-8-c1",
+      "ar-8-c2",
+      "ar-8-c3",
+      "ar-8-y1"
+     ]
+    },
+    {
+     "id": "ar-9",
+     "exercises": [
+      "ar-9-e1",
+      "ar-9-e2",
+      "ar-9-e3",
+      "ar-9-e4",
+      "ar-9-e5",
+      "ar-9-e6",
+      "ar-9-e7",
+      "ar-9-e8",
+      "ar-9-e9",
+      "ar-9-e10",
+      "ar-9-e11",
+      "ar-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "agreement",
+   "lessons": [
+    {
+     "id": "sva-1",
+     "exercises": [
+      "sva-1-p1",
+      "sva-1-p2",
+      "sva-1-p3",
+      "sva-1-p4",
+      "sva-1-p5",
+      "sva-1-p6",
+      "sva-1-r1",
+      "sva-1-r2",
+      "sva-1-r3",
+      "sva-1-r4",
+      "sva-1-c1",
+      "sva-1-c2",
+      "sva-1-c3",
+      "sva-1-y1"
+     ]
+    },
+    {
+     "id": "sva-2",
+     "exercises": [
+      "sva-2-p1",
+      "sva-2-p2",
+      "sva-2-p3",
+      "sva-2-p4",
+      "sva-2-p5",
+      "sva-2-r1",
+      "sva-2-r2",
+      "sva-2-r3",
+      "sva-2-r4",
+      "sva-2-c1",
+      "sva-2-c2",
+      "sva-2-c3",
+      "sva-2-y1"
+     ]
+    },
+    {
+     "id": "sva-3",
+     "exercises": [
+      "sva-3-p1",
+      "sva-3-p2",
+      "sva-3-p3",
+      "sva-3-p4",
+      "sva-3-p5",
+      "sva-3-r1",
+      "sva-3-r2",
+      "sva-3-r3",
+      "sva-3-r4",
+      "sva-3-c1",
+      "sva-3-c2",
+      "sva-3-c3",
+      "sva-3-y1"
+     ]
+    },
+    {
+     "id": "sva-4",
+     "exercises": [
+      "sva-4-p1",
+      "sva-4-p2",
+      "sva-4-p3",
+      "sva-4-p4",
+      "sva-4-p5",
+      "sva-4-r1",
+      "sva-4-r2",
+      "sva-4-r3",
+      "sva-4-r4",
+      "sva-4-c1",
+      "sva-4-c2",
+      "sva-4-c3",
+      "sva-4-y1"
+     ]
+    },
+    {
+     "id": "sva-5",
+     "exercises": [
+      "sva-5-p1",
+      "sva-5-p2",
+      "sva-5-p3",
+      "sva-5-p4",
+      "sva-5-p5",
+      "sva-5-r1",
+      "sva-5-r2",
+      "sva-5-r3",
+      "sva-5-r4",
+      "sva-5-c1",
+      "sva-5-c2",
+      "sva-5-c3",
+      "sva-5-y1"
+     ]
+    },
+    {
+     "id": "sva-6",
+     "exercises": [
+      "sva-6-p1",
+      "sva-6-p2",
+      "sva-6-p3",
+      "sva-6-p4",
+      "sva-6-p5",
+      "sva-6-r1",
+      "sva-6-r2",
+      "sva-6-r3",
+      "sva-6-r4",
+      "sva-6-c1",
+      "sva-6-c2",
+      "sva-6-c3",
+      "sva-6-y1"
+     ]
+    },
+    {
+     "id": "sva-7",
+     "exercises": [
+      "sva-7-p1",
+      "sva-7-p2",
+      "sva-7-p3",
+      "sva-7-p4",
+      "sva-7-p5",
+      "sva-7-r1",
+      "sva-7-r2",
+      "sva-7-r3",
+      "sva-7-r4",
+      "sva-7-c1",
+      "sva-7-c2",
+      "sva-7-c3",
+      "sva-7-y1"
+     ]
+    },
+    {
+     "id": "sva-8",
+     "exercises": [
+      "sva-8-p1",
+      "sva-8-p2",
+      "sva-8-p3",
+      "sva-8-p4",
+      "sva-8-p5",
+      "sva-8-r1",
+      "sva-8-r2",
+      "sva-8-r3",
+      "sva-8-r4",
+      "sva-8-c1",
+      "sva-8-c2",
+      "sva-8-c3",
+      "sva-8-y1"
+     ]
+    },
+    {
+     "id": "sva-9",
+     "exercises": [
+      "sva-9-e1",
+      "sva-9-e2",
+      "sva-9-e3",
+      "sva-9-e4",
+      "sva-9-e5",
+      "sva-9-e6",
+      "sva-9-e7",
+      "sva-9-e8",
+      "sva-9-e9",
+      "sva-9-e10",
+      "sva-9-e11",
+      "sva-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "prepositions",
+   "lessons": [
+    {
+     "id": "pr-1",
+     "exercises": [
+      "pr-1-p1",
+      "pr-1-p2",
+      "pr-1-p3",
+      "pr-1-p4",
+      "pr-1-p5",
+      "pr-1-r1",
+      "pr-1-r2",
+      "pr-1-r3",
+      "pr-1-r4",
+      "pr-1-c1",
+      "pr-1-c2",
+      "pr-1-c3",
+      "pr-1-y1"
+     ]
+    },
+    {
+     "id": "pr-2",
+     "exercises": [
+      "pr-2-p1",
+      "pr-2-p2",
+      "pr-2-p3",
+      "pr-2-p4",
+      "pr-2-p5",
+      "pr-2-r1",
+      "pr-2-r2",
+      "pr-2-r3",
+      "pr-2-r4",
+      "pr-2-c1",
+      "pr-2-c2",
+      "pr-2-c3",
+      "pr-2-y1"
+     ]
+    },
+    {
+     "id": "pr-3",
+     "exercises": [
+      "pr-3-p1",
+      "pr-3-p2",
+      "pr-3-p3",
+      "pr-3-p4",
+      "pr-3-p5",
+      "pr-3-r1",
+      "pr-3-r2",
+      "pr-3-r3",
+      "pr-3-r4",
+      "pr-3-c1",
+      "pr-3-c2",
+      "pr-3-c3",
+      "pr-3-y1"
+     ]
+    },
+    {
+     "id": "pr-4",
+     "exercises": [
+      "pr-4-p1",
+      "pr-4-p2",
+      "pr-4-p3",
+      "pr-4-p4",
+      "pr-4-p5",
+      "pr-4-r1",
+      "pr-4-r2",
+      "pr-4-r3",
+      "pr-4-r4",
+      "pr-4-c1",
+      "pr-4-c2",
+      "pr-4-c3",
+      "pr-4-y1"
+     ]
+    },
+    {
+     "id": "pr-5",
+     "exercises": [
+      "pr-5-p1",
+      "pr-5-p2",
+      "pr-5-p3",
+      "pr-5-p4",
+      "pr-5-p5",
+      "pr-5-r1",
+      "pr-5-r2",
+      "pr-5-r3",
+      "pr-5-r4",
+      "pr-5-c1",
+      "pr-5-c2",
+      "pr-5-c3",
+      "pr-5-y1"
+     ]
+    },
+    {
+     "id": "pr-6",
+     "exercises": [
+      "pr-6-p1",
+      "pr-6-p2",
+      "pr-6-p3",
+      "pr-6-p4",
+      "pr-6-p5",
+      "pr-6-r1",
+      "pr-6-r2",
+      "pr-6-r3",
+      "pr-6-r4",
+      "pr-6-c1",
+      "pr-6-c2",
+      "pr-6-c3",
+      "pr-6-y1"
+     ]
+    },
+    {
+     "id": "pr-7",
+     "exercises": [
+      "pr-7-p1",
+      "pr-7-p2",
+      "pr-7-p3",
+      "pr-7-p4",
+      "pr-7-p5",
+      "pr-7-r1",
+      "pr-7-r2",
+      "pr-7-r3",
+      "pr-7-r4",
+      "pr-7-c1",
+      "pr-7-c2",
+      "pr-7-c3",
+      "pr-7-y1"
+     ]
+    },
+    {
+     "id": "pr-8",
+     "exercises": [
+      "pr-8-p1",
+      "pr-8-p2",
+      "pr-8-p3",
+      "pr-8-p4",
+      "pr-8-p5",
+      "pr-8-r1",
+      "pr-8-r2",
+      "pr-8-r3",
+      "pr-8-r4",
+      "pr-8-c1",
+      "pr-8-c2",
+      "pr-8-c3",
+      "pr-8-y1"
+     ]
+    },
+    {
+     "id": "pr-9",
+     "exercises": [
+      "pr-9-e1",
+      "pr-9-e2",
+      "pr-9-e3",
+      "pr-9-e4",
+      "pr-9-e5",
+      "pr-9-e6",
+      "pr-9-e7",
+      "pr-9-e8",
+      "pr-9-e9",
+      "pr-9-e10",
+      "pr-9-e11",
+      "pr-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "connectors",
+   "lessons": [
+    {
+     "id": "cn-1",
+     "exercises": [
+      "cn-1-p1",
+      "cn-1-p2",
+      "cn-1-p3",
+      "cn-1-p4",
+      "cn-1-p5",
+      "cn-1-r1",
+      "cn-1-r2",
+      "cn-1-r3",
+      "cn-1-r4",
+      "cn-1-c1",
+      "cn-1-c2",
+      "cn-1-c3",
+      "cn-1-y1"
+     ]
+    },
+    {
+     "id": "cn-2",
+     "exercises": [
+      "cn-2-p1",
+      "cn-2-p2",
+      "cn-2-p3",
+      "cn-2-p4",
+      "cn-2-p5",
+      "cn-2-r1",
+      "cn-2-r2",
+      "cn-2-r3",
+      "cn-2-r4",
+      "cn-2-c1",
+      "cn-2-c2",
+      "cn-2-c3",
+      "cn-2-y1"
+     ]
+    },
+    {
+     "id": "cn-3",
+     "exercises": [
+      "cn-3-p1",
+      "cn-3-p2",
+      "cn-3-p3",
+      "cn-3-p4",
+      "cn-3-p5",
+      "cn-3-r1",
+      "cn-3-r2",
+      "cn-3-r3",
+      "cn-3-r4",
+      "cn-3-c1",
+      "cn-3-c2",
+      "cn-3-c3",
+      "cn-3-y1"
+     ]
+    },
+    {
+     "id": "cn-4",
+     "exercises": [
+      "cn-4-p1",
+      "cn-4-p2",
+      "cn-4-p3",
+      "cn-4-p4",
+      "cn-4-p5",
+      "cn-4-r1",
+      "cn-4-r2",
+      "cn-4-r3",
+      "cn-4-r4",
+      "cn-4-c1",
+      "cn-4-c2",
+      "cn-4-c3",
+      "cn-4-y1"
+     ]
+    },
+    {
+     "id": "cn-5",
+     "exercises": [
+      "cn-5-p1",
+      "cn-5-p2",
+      "cn-5-p3",
+      "cn-5-p4",
+      "cn-5-p5",
+      "cn-5-r1",
+      "cn-5-r2",
+      "cn-5-r3",
+      "cn-5-r4",
+      "cn-5-c1",
+      "cn-5-c2",
+      "cn-5-c3",
+      "cn-5-y1"
+     ]
+    },
+    {
+     "id": "cn-6",
+     "exercises": [
+      "cn-6-p1",
+      "cn-6-p2",
+      "cn-6-p3",
+      "cn-6-p4",
+      "cn-6-p5",
+      "cn-6-r1",
+      "cn-6-r2",
+      "cn-6-r3",
+      "cn-6-r4",
+      "cn-6-c1",
+      "cn-6-c2",
+      "cn-6-c3",
+      "cn-6-y1"
+     ]
+    },
+    {
+     "id": "cn-7",
+     "exercises": [
+      "cn-7-p1",
+      "cn-7-p2",
+      "cn-7-p3",
+      "cn-7-p4",
+      "cn-7-p5",
+      "cn-7-r1",
+      "cn-7-r2",
+      "cn-7-r3",
+      "cn-7-r4",
+      "cn-7-c1",
+      "cn-7-c2",
+      "cn-7-c3",
+      "cn-7-y1"
+     ]
+    },
+    {
+     "id": "cn-8",
+     "exercises": [
+      "cn-8-p1",
+      "cn-8-p2",
+      "cn-8-p3",
+      "cn-8-p4",
+      "cn-8-p5",
+      "cn-8-r1",
+      "cn-8-r2",
+      "cn-8-r3",
+      "cn-8-r4",
+      "cn-8-c1",
+      "cn-8-c2",
+      "cn-8-c3",
+      "cn-8-y1"
+     ]
+    },
+    {
+     "id": "cn-9",
+     "exercises": [
+      "cn-9-e1",
+      "cn-9-e2",
+      "cn-9-e3",
+      "cn-9-e4",
+      "cn-9-e5",
+      "cn-9-e6",
+      "cn-9-e7",
+      "cn-9-e8",
+      "cn-9-e9",
+      "cn-9-e10",
+      "cn-9-e11",
+      "cn-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "complex-sentences",
+   "lessons": [
+    {
+     "id": "cx-1",
+     "exercises": [
+      "cx-1-p1",
+      "cx-1-p2",
+      "cx-1-p3",
+      "cx-1-p4",
+      "cx-1-p5",
+      "cx-1-r1",
+      "cx-1-r2",
+      "cx-1-r3",
+      "cx-1-r4",
+      "cx-1-c1",
+      "cx-1-c2",
+      "cx-1-c3",
+      "cx-1-y1"
+     ]
+    },
+    {
+     "id": "cx-2",
+     "exercises": [
+      "cx-2-p1",
+      "cx-2-p2",
+      "cx-2-p3",
+      "cx-2-p4",
+      "cx-2-p5",
+      "cx-2-r1",
+      "cx-2-r2",
+      "cx-2-r3",
+      "cx-2-r4",
+      "cx-2-c1",
+      "cx-2-c2",
+      "cx-2-c3",
+      "cx-2-y1"
+     ]
+    },
+    {
+     "id": "cx-3",
+     "exercises": [
+      "cx-3-p1",
+      "cx-3-p2",
+      "cx-3-p3",
+      "cx-3-p4",
+      "cx-3-p5",
+      "cx-3-r1",
+      "cx-3-r2",
+      "cx-3-r3",
+      "cx-3-r4",
+      "cx-3-c1",
+      "cx-3-c2",
+      "cx-3-c3",
+      "cx-3-y1"
+     ]
+    },
+    {
+     "id": "cx-4",
+     "exercises": [
+      "cx-4-p1",
+      "cx-4-p2",
+      "cx-4-p3",
+      "cx-4-p4",
+      "cx-4-p5",
+      "cx-4-r1",
+      "cx-4-r2",
+      "cx-4-r3",
+      "cx-4-r4",
+      "cx-4-c1",
+      "cx-4-c2",
+      "cx-4-c3",
+      "cx-4-y1"
+     ]
+    },
+    {
+     "id": "cx-5",
+     "exercises": [
+      "cx-5-p1",
+      "cx-5-p2",
+      "cx-5-p3",
+      "cx-5-p4",
+      "cx-5-p5",
+      "cx-5-r1",
+      "cx-5-r2",
+      "cx-5-r3",
+      "cx-5-r4",
+      "cx-5-c1",
+      "cx-5-c2",
+      "cx-5-c3",
+      "cx-5-y1"
+     ]
+    },
+    {
+     "id": "cx-6",
+     "exercises": [
+      "cx-6-p1",
+      "cx-6-p2",
+      "cx-6-p3",
+      "cx-6-p4",
+      "cx-6-p5",
+      "cx-6-r1",
+      "cx-6-r2",
+      "cx-6-r3",
+      "cx-6-r4",
+      "cx-6-c1",
+      "cx-6-c2",
+      "cx-6-c3",
+      "cx-6-y1"
+     ]
+    },
+    {
+     "id": "cx-7",
+     "exercises": [
+      "cx-7-p1",
+      "cx-7-p2",
+      "cx-7-p3",
+      "cx-7-p4",
+      "cx-7-p5",
+      "cx-7-r1",
+      "cx-7-r2",
+      "cx-7-r3",
+      "cx-7-r4",
+      "cx-7-c1",
+      "cx-7-c2",
+      "cx-7-c3",
+      "cx-7-y1"
+     ]
+    },
+    {
+     "id": "cx-8",
+     "exercises": [
+      "cx-8-p1",
+      "cx-8-p2",
+      "cx-8-p3",
+      "cx-8-p4",
+      "cx-8-p5",
+      "cx-8-r1",
+      "cx-8-r2",
+      "cx-8-r3",
+      "cx-8-r4",
+      "cx-8-c1",
+      "cx-8-c2",
+      "cx-8-c3",
+      "cx-8-y1"
+     ]
+    },
+    {
+     "id": "cx-9",
+     "exercises": [
+      "cx-9-e1",
+      "cx-9-e2",
+      "cx-9-e3",
+      "cx-9-e4",
+      "cx-9-e5",
+      "cx-9-e6",
+      "cx-9-e7",
+      "cx-9-e8",
+      "cx-9-e9",
+      "cx-9-e10",
+      "cx-9-e11",
+      "cx-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "punctuation",
+   "lessons": [
+    {
+     "id": "pu-1",
+     "exercises": [
+      "pu-1-p1",
+      "pu-1-p2",
+      "pu-1-p3",
+      "pu-1-p4",
+      "pu-1-p5",
+      "pu-1-r1",
+      "pu-1-r2",
+      "pu-1-r3",
+      "pu-1-r4",
+      "pu-1-c1",
+      "pu-1-c2",
+      "pu-1-c3",
+      "pu-1-y1"
+     ]
+    },
+    {
+     "id": "pu-2",
+     "exercises": [
+      "pu-2-p1",
+      "pu-2-p2",
+      "pu-2-p3",
+      "pu-2-p4",
+      "pu-2-p5",
+      "pu-2-r1",
+      "pu-2-r2",
+      "pu-2-r3",
+      "pu-2-r4",
+      "pu-2-c1",
+      "pu-2-c2",
+      "pu-2-c3",
+      "pu-2-y1"
+     ]
+    },
+    {
+     "id": "pu-3",
+     "exercises": [
+      "pu-3-p1",
+      "pu-3-p2",
+      "pu-3-p3",
+      "pu-3-p4",
+      "pu-3-p5",
+      "pu-3-r1",
+      "pu-3-r2",
+      "pu-3-r3",
+      "pu-3-r4",
+      "pu-3-c1",
+      "pu-3-c2",
+      "pu-3-c3",
+      "pu-3-y1"
+     ]
+    },
+    {
+     "id": "pu-4",
+     "exercises": [
+      "pu-4-p1",
+      "pu-4-p2",
+      "pu-4-p3",
+      "pu-4-p4",
+      "pu-4-p5",
+      "pu-4-r1",
+      "pu-4-r2",
+      "pu-4-r3",
+      "pu-4-r4",
+      "pu-4-c1",
+      "pu-4-c2",
+      "pu-4-c3",
+      "pu-4-y1"
+     ]
+    },
+    {
+     "id": "pu-5",
+     "exercises": [
+      "pu-5-p1",
+      "pu-5-p2",
+      "pu-5-p3",
+      "pu-5-p4",
+      "pu-5-p5",
+      "pu-5-r1",
+      "pu-5-r2",
+      "pu-5-r3",
+      "pu-5-r4",
+      "pu-5-c1",
+      "pu-5-c2",
+      "pu-5-c3",
+      "pu-5-y1"
+     ]
+    },
+    {
+     "id": "pu-6",
+     "exercises": [
+      "pu-6-p1",
+      "pu-6-p2",
+      "pu-6-p3",
+      "pu-6-p4",
+      "pu-6-p5",
+      "pu-6-r1",
+      "pu-6-r2",
+      "pu-6-r3",
+      "pu-6-r4",
+      "pu-6-c1",
+      "pu-6-c2",
+      "pu-6-c3",
+      "pu-6-y1"
+     ]
+    },
+    {
+     "id": "pu-7",
+     "exercises": [
+      "pu-7-p1",
+      "pu-7-p2",
+      "pu-7-p3",
+      "pu-7-p4",
+      "pu-7-p5",
+      "pu-7-r1",
+      "pu-7-r2",
+      "pu-7-r3",
+      "pu-7-r4",
+      "pu-7-c1",
+      "pu-7-c2",
+      "pu-7-c3",
+      "pu-7-y1"
+     ]
+    },
+    {
+     "id": "pu-8",
+     "exercises": [
+      "pu-8-p1",
+      "pu-8-p2",
+      "pu-8-p3",
+      "pu-8-p4",
+      "pu-8-p5",
+      "pu-8-r1",
+      "pu-8-r2",
+      "pu-8-r3",
+      "pu-8-r4",
+      "pu-8-c1",
+      "pu-8-c2",
+      "pu-8-c3",
+      "pu-8-y1"
+     ]
+    },
+    {
+     "id": "pu-9",
+     "exercises": [
+      "pu-9-e1",
+      "pu-9-e2",
+      "pu-9-e3",
+      "pu-9-e4",
+      "pu-9-e5",
+      "pu-9-e6",
+      "pu-9-e7",
+      "pu-9-e8",
+      "pu-9-e9",
+      "pu-9-e10",
+      "pu-9-e11",
+      "pu-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "common-errors",
+   "lessons": [
+    {
+     "id": "ce-1",
+     "exercises": [
+      "ce-1-p1",
+      "ce-1-p2",
+      "ce-1-p3",
+      "ce-1-p4",
+      "ce-1-p5",
+      "ce-1-r1",
+      "ce-1-r2",
+      "ce-1-r3",
+      "ce-1-r4",
+      "ce-1-c1",
+      "ce-1-c2",
+      "ce-1-c3",
+      "ce-1-y1"
+     ]
+    },
+    {
+     "id": "ce-2",
+     "exercises": [
+      "ce-2-p1",
+      "ce-2-p2",
+      "ce-2-p3",
+      "ce-2-p4",
+      "ce-2-p5",
+      "ce-2-r1",
+      "ce-2-r2",
+      "ce-2-r3",
+      "ce-2-r4",
+      "ce-2-c1",
+      "ce-2-c2",
+      "ce-2-c3",
+      "ce-2-y1"
+     ]
+    },
+    {
+     "id": "ce-3",
+     "exercises": [
+      "ce-3-p1",
+      "ce-3-p2",
+      "ce-3-p3",
+      "ce-3-p4",
+      "ce-3-p5",
+      "ce-3-r1",
+      "ce-3-r2",
+      "ce-3-r3",
+      "ce-3-r4",
+      "ce-3-c1",
+      "ce-3-c2",
+      "ce-3-c3",
+      "ce-3-y1"
+     ]
+    },
+    {
+     "id": "ce-4",
+     "exercises": [
+      "ce-4-p1",
+      "ce-4-p2",
+      "ce-4-p3",
+      "ce-4-p4",
+      "ce-4-p5",
+      "ce-4-r1",
+      "ce-4-r2",
+      "ce-4-r3",
+      "ce-4-r4",
+      "ce-4-c1",
+      "ce-4-c2",
+      "ce-4-c3",
+      "ce-4-y1"
+     ]
+    },
+    {
+     "id": "ce-5",
+     "exercises": [
+      "ce-5-p1",
+      "ce-5-p2",
+      "ce-5-p3",
+      "ce-5-p4",
+      "ce-5-p5",
+      "ce-5-r1",
+      "ce-5-r2",
+      "ce-5-r3",
+      "ce-5-r4",
+      "ce-5-c1",
+      "ce-5-c2",
+      "ce-5-c3",
+      "ce-5-y1"
+     ]
+    },
+    {
+     "id": "ce-6",
+     "exercises": [
+      "ce-6-p1",
+      "ce-6-p2",
+      "ce-6-p3",
+      "ce-6-p4",
+      "ce-6-p5",
+      "ce-6-r1",
+      "ce-6-r2",
+      "ce-6-r3",
+      "ce-6-r4",
+      "ce-6-c1",
+      "ce-6-c2",
+      "ce-6-c3",
+      "ce-6-y1"
+     ]
+    },
+    {
+     "id": "ce-7",
+     "exercises": [
+      "ce-7-p1",
+      "ce-7-p2",
+      "ce-7-p3",
+      "ce-7-p4",
+      "ce-7-p5",
+      "ce-7-p6",
+      "ce-7-r1",
+      "ce-7-r2",
+      "ce-7-r3",
+      "ce-7-r4",
+      "ce-7-c1",
+      "ce-7-c2",
+      "ce-7-c3",
+      "ce-7-y1"
+     ]
+    },
+    {
+     "id": "ce-8",
+     "exercises": [
+      "ce-8-p1",
+      "ce-8-p2",
+      "ce-8-p3",
+      "ce-8-p4",
+      "ce-8-p5",
+      "ce-8-p6",
+      "ce-8-r1",
+      "ce-8-r2",
+      "ce-8-r3",
+      "ce-8-r4",
+      "ce-8-c1",
+      "ce-8-c2",
+      "ce-8-c3",
+      "ce-8-y1"
+     ]
+    },
+    {
+     "id": "ce-9",
+     "exercises": [
+      "ce-9-e1",
+      "ce-9-e2",
+      "ce-9-e3",
+      "ce-9-e4",
+      "ce-9-e5",
+      "ce-9-e6",
+      "ce-9-e7",
+      "ce-9-e8",
+      "ce-9-e9",
+      "ce-9-e10",
+      "ce-9-e11",
+      "ce-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "vocabulary-foundation",
+   "lessons": [
+    {
+     "id": "vc-1",
+     "exercises": [
+      "vc-1-p1",
+      "vc-1-p2",
+      "vc-1-p3",
+      "vc-1-p4",
+      "vc-1-p5",
+      "vc-1-r1",
+      "vc-1-r2",
+      "vc-1-r3",
+      "vc-1-r4",
+      "vc-1-c1",
+      "vc-1-c2",
+      "vc-1-c3",
+      "vc-1-y1"
+     ]
+    },
+    {
+     "id": "vc-2",
+     "exercises": [
+      "vc-2-p1",
+      "vc-2-p2",
+      "vc-2-p3",
+      "vc-2-p4",
+      "vc-2-p5",
+      "vc-2-r1",
+      "vc-2-r2",
+      "vc-2-r3",
+      "vc-2-r4",
+      "vc-2-c1",
+      "vc-2-c2",
+      "vc-2-c3",
+      "vc-2-y1"
+     ]
+    },
+    {
+     "id": "vc-3",
+     "exercises": [
+      "vc-3-p1",
+      "vc-3-p2",
+      "vc-3-p3",
+      "vc-3-p4",
+      "vc-3-p5",
+      "vc-3-r1",
+      "vc-3-r2",
+      "vc-3-r3",
+      "vc-3-r4",
+      "vc-3-c1",
+      "vc-3-c2",
+      "vc-3-c3",
+      "vc-3-y1"
+     ]
+    },
+    {
+     "id": "vc-4",
+     "exercises": [
+      "vc-4-p1",
+      "vc-4-p2",
+      "vc-4-p3",
+      "vc-4-p4",
+      "vc-4-p5",
+      "vc-4-r1",
+      "vc-4-r2",
+      "vc-4-r3",
+      "vc-4-r4",
+      "vc-4-c1",
+      "vc-4-c2",
+      "vc-4-c3",
+      "vc-4-y1"
+     ]
+    },
+    {
+     "id": "vc-5",
+     "exercises": [
+      "vc-5-p1",
+      "vc-5-p2",
+      "vc-5-p3",
+      "vc-5-p4",
+      "vc-5-p5",
+      "vc-5-r1",
+      "vc-5-r2",
+      "vc-5-r3",
+      "vc-5-r4",
+      "vc-5-c1",
+      "vc-5-c2",
+      "vc-5-c3",
+      "vc-5-y1"
+     ]
+    },
+    {
+     "id": "vc-6",
+     "exercises": [
+      "vc-6-p1",
+      "vc-6-p2",
+      "vc-6-p3",
+      "vc-6-p4",
+      "vc-6-p5",
+      "vc-6-r1",
+      "vc-6-r2",
+      "vc-6-r3",
+      "vc-6-r4",
+      "vc-6-c1",
+      "vc-6-c2",
+      "vc-6-c3",
+      "vc-6-y1"
+     ]
+    },
+    {
+     "id": "vc-7",
+     "exercises": [
+      "vc-7-p1",
+      "vc-7-p2",
+      "vc-7-p3",
+      "vc-7-p4",
+      "vc-7-p5",
+      "vc-7-p6",
+      "vc-7-r1",
+      "vc-7-r2",
+      "vc-7-r3",
+      "vc-7-r4",
+      "vc-7-c1",
+      "vc-7-c2",
+      "vc-7-c3",
+      "vc-7-y1"
+     ]
+    },
+    {
+     "id": "vc-8",
+     "exercises": [
+      "vc-8-p1",
+      "vc-8-p2",
+      "vc-8-p3",
+      "vc-8-p4",
+      "vc-8-p5",
+      "vc-8-p6",
+      "vc-8-r1",
+      "vc-8-r2",
+      "vc-8-r3",
+      "vc-8-r4",
+      "vc-8-c1",
+      "vc-8-c2",
+      "vc-8-c3",
+      "vc-8-y1"
+     ]
+    },
+    {
+     "id": "vc-9",
+     "exercises": [
+      "vc-9-e1",
+      "vc-9-e2",
+      "vc-9-e3",
+      "vc-9-e4",
+      "vc-9-e5",
+      "vc-9-e6",
+      "vc-9-e7",
+      "vc-9-e8",
+      "vc-9-e9",
+      "vc-9-e10",
+      "vc-9-e11",
+      "vc-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ielts-intro",
+   "lessons": [
+    {
+     "id": "ib-10",
+     "exercises": [
+      "ib-10-p1",
+      "ib-10-p2",
+      "ib-10-p3",
+      "ib-10-p4",
+      "ib-10-p5",
+      "ib-10-r1",
+      "ib-10-r2",
+      "ib-10-r3",
+      "ib-10-r4",
+      "ib-10-c1",
+      "ib-10-c2",
+      "ib-10-c3",
+      "ib-10-y1"
+     ]
+    },
+    {
+     "id": "ib-11",
+     "exercises": [
+      "ib-11-p1",
+      "ib-11-p2",
+      "ib-11-p3",
+      "ib-11-p4",
+      "ib-11-r1",
+      "ib-11-r2",
+      "ib-11-r3",
+      "ib-11-c1",
+      "ib-11-c2",
+      "ib-11-c3",
+      "ib-11-y1"
+     ]
+    },
+    {
+     "id": "ib-1",
+     "exercises": [
+      "ib-1-p1",
+      "ib-1-p2",
+      "ib-1-p3",
+      "ib-1-p4",
+      "ib-1-p5",
+      "ib-1-r1",
+      "ib-1-r2",
+      "ib-1-r3",
+      "ib-1-r4",
+      "ib-1-c1",
+      "ib-1-c2",
+      "ib-1-c3",
+      "ib-1-y1"
+     ]
+    },
+    {
+     "id": "ib-2",
+     "exercises": [
+      "ib-2-p1",
+      "ib-2-p2",
+      "ib-2-p3",
+      "ib-2-p4",
+      "ib-2-p5",
+      "ib-2-r1",
+      "ib-2-r2",
+      "ib-2-r3",
+      "ib-2-r4",
+      "ib-2-c1",
+      "ib-2-c2",
+      "ib-2-c3",
+      "ib-2-y1"
+     ]
+    },
+    {
+     "id": "ib-3",
+     "exercises": [
+      "ib-3-p1",
+      "ib-3-p2",
+      "ib-3-p3",
+      "ib-3-p4",
+      "ib-3-p5",
+      "ib-3-r1",
+      "ib-3-r2",
+      "ib-3-r3",
+      "ib-3-r4",
+      "ib-3-c1",
+      "ib-3-c2",
+      "ib-3-c3",
+      "ib-3-y1"
+     ]
+    },
+    {
+     "id": "ib-4",
+     "exercises": [
+      "ib-4-p1",
+      "ib-4-p2",
+      "ib-4-p3",
+      "ib-4-p4",
+      "ib-4-p5",
+      "ib-4-r1",
+      "ib-4-r2",
+      "ib-4-r3",
+      "ib-4-r4",
+      "ib-4-c1",
+      "ib-4-c2",
+      "ib-4-c3",
+      "ib-4-y1"
+     ]
+    },
+    {
+     "id": "ib-5",
+     "exercises": [
+      "ib-5-p1",
+      "ib-5-p2",
+      "ib-5-p3",
+      "ib-5-p4",
+      "ib-5-p5",
+      "ib-5-r1",
+      "ib-5-r2",
+      "ib-5-r3",
+      "ib-5-r4",
+      "ib-5-c1",
+      "ib-5-c2",
+      "ib-5-c3",
+      "ib-5-y1"
+     ]
+    },
+    {
+     "id": "ib-6",
+     "exercises": [
+      "ib-6-p1",
+      "ib-6-p2",
+      "ib-6-p3",
+      "ib-6-p4",
+      "ib-6-p5",
+      "ib-6-r1",
+      "ib-6-r2",
+      "ib-6-r3",
+      "ib-6-r4",
+      "ib-6-c1",
+      "ib-6-c2",
+      "ib-6-c3",
+      "ib-6-y1"
+     ]
+    },
+    {
+     "id": "ib-7",
+     "exercises": [
+      "ib-7-p1",
+      "ib-7-p2",
+      "ib-7-p3",
+      "ib-7-p4",
+      "ib-7-p5",
+      "ib-7-p6",
+      "ib-7-r1",
+      "ib-7-r2",
+      "ib-7-r3",
+      "ib-7-r4",
+      "ib-7-c1",
+      "ib-7-c2",
+      "ib-7-c3",
+      "ib-7-y1"
+     ]
+    },
+    {
+     "id": "ib-8",
+     "exercises": [
+      "ib-8-p1",
+      "ib-8-p2",
+      "ib-8-p3",
+      "ib-8-p4",
+      "ib-8-p5",
+      "ib-8-p6",
+      "ib-8-r1",
+      "ib-8-r2",
+      "ib-8-r3",
+      "ib-8-r4",
+      "ib-8-c1",
+      "ib-8-c2",
+      "ib-8-c3",
+      "ib-8-y1"
+     ]
+    },
+    {
+     "id": "ib-9",
+     "exercises": [
+      "ib-9-e1",
+      "ib-9-e2",
+      "ib-9-e3",
+      "ib-9-e4",
+      "ib-9-e5",
+      "ib-9-e6",
+      "ib-9-e7",
+      "ib-9-e8",
+      "ib-9-e9",
+      "ib-9-e10",
+      "ib-9-e11",
+      "ib-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "listening-foundation",
+   "lessons": [
+    {
+     "id": "ls-1",
+     "exercises": [
+      "ls-1-p1",
+      "ls-1-p2",
+      "ls-1-p3",
+      "ls-1-p4",
+      "ls-1-p5",
+      "ls-1-r1",
+      "ls-1-r2",
+      "ls-1-r3",
+      "ls-1-r4",
+      "ls-1-c1",
+      "ls-1-c2",
+      "ls-1-c3",
+      "ls-1-y1"
+     ]
+    },
+    {
+     "id": "ls-2",
+     "exercises": [
+      "ls-2-p1",
+      "ls-2-p2",
+      "ls-2-p3",
+      "ls-2-p4",
+      "ls-2-p5",
+      "ls-2-r1",
+      "ls-2-r2",
+      "ls-2-r3",
+      "ls-2-r4",
+      "ls-2-c1",
+      "ls-2-c2",
+      "ls-2-c3",
+      "ls-2-y1"
+     ]
+    },
+    {
+     "id": "ls-3",
+     "exercises": [
+      "ls-3-p1",
+      "ls-3-p2",
+      "ls-3-p3",
+      "ls-3-p4",
+      "ls-3-p5",
+      "ls-3-r1",
+      "ls-3-r2",
+      "ls-3-r3",
+      "ls-3-r4",
+      "ls-3-c1",
+      "ls-3-c2",
+      "ls-3-c3",
+      "ls-3-y1"
+     ]
+    },
+    {
+     "id": "ls-4",
+     "exercises": [
+      "ls-4-p1",
+      "ls-4-p2",
+      "ls-4-p3",
+      "ls-4-p4",
+      "ls-4-p5",
+      "ls-4-r1",
+      "ls-4-r2",
+      "ls-4-r3",
+      "ls-4-r4",
+      "ls-4-c1",
+      "ls-4-c2",
+      "ls-4-c3",
+      "ls-4-y1"
+     ]
+    },
+    {
+     "id": "ls-5",
+     "exercises": [
+      "ls-5-p1",
+      "ls-5-p2",
+      "ls-5-p3",
+      "ls-5-p4",
+      "ls-5-p5",
+      "ls-5-r1",
+      "ls-5-r2",
+      "ls-5-r3",
+      "ls-5-r4",
+      "ls-5-c1",
+      "ls-5-c2",
+      "ls-5-c3",
+      "ls-5-y1"
+     ]
+    },
+    {
+     "id": "ls-6",
+     "exercises": [
+      "ls-6-p1",
+      "ls-6-p2",
+      "ls-6-p3",
+      "ls-6-p4",
+      "ls-6-p5",
+      "ls-6-r1",
+      "ls-6-r2",
+      "ls-6-r3",
+      "ls-6-r4",
+      "ls-6-c1",
+      "ls-6-c2",
+      "ls-6-c3",
+      "ls-6-y1"
+     ]
+    },
+    {
+     "id": "ls-7",
+     "exercises": [
+      "ls-7-p1",
+      "ls-7-p2",
+      "ls-7-p3",
+      "ls-7-p4",
+      "ls-7-p5",
+      "ls-7-p6",
+      "ls-7-r1",
+      "ls-7-r2",
+      "ls-7-r3",
+      "ls-7-r4",
+      "ls-7-c1",
+      "ls-7-c2",
+      "ls-7-c3",
+      "ls-7-y1"
+     ]
+    },
+    {
+     "id": "ls-8",
+     "exercises": [
+      "ls-8-p1",
+      "ls-8-p2",
+      "ls-8-p3",
+      "ls-8-p4",
+      "ls-8-p5",
+      "ls-8-p6",
+      "ls-8-r1",
+      "ls-8-r2",
+      "ls-8-r3",
+      "ls-8-r4",
+      "ls-8-c1",
+      "ls-8-c2",
+      "ls-8-c3",
+      "ls-8-y1"
+     ]
+    },
+    {
+     "id": "ls-9",
+     "exercises": [
+      "ls-9-e1",
+      "ls-9-e2",
+      "ls-9-e3",
+      "ls-9-e4",
+      "ls-9-e5",
+      "ls-9-e6",
+      "ls-9-e7",
+      "ls-9-e8",
+      "ls-9-e9",
+      "ls-9-e10",
+      "ls-9-e11",
+      "ls-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "reading-foundation",
+   "lessons": [
+    {
+     "id": "rd-1",
+     "exercises": [
+      "rd-1-p1",
+      "rd-1-p2",
+      "rd-1-p3",
+      "rd-1-p4",
+      "rd-1-p5",
+      "rd-1-r1",
+      "rd-1-r2",
+      "rd-1-r3",
+      "rd-1-r4",
+      "rd-1-c1",
+      "rd-1-c2",
+      "rd-1-c3",
+      "rd-1-y1"
+     ]
+    },
+    {
+     "id": "rd-2",
+     "exercises": [
+      "rd-2-p1",
+      "rd-2-p2",
+      "rd-2-p3",
+      "rd-2-p4",
+      "rd-2-p5",
+      "rd-2-r1",
+      "rd-2-r2",
+      "rd-2-r3",
+      "rd-2-r4",
+      "rd-2-c1",
+      "rd-2-c2",
+      "rd-2-c3",
+      "rd-2-y1"
+     ]
+    },
+    {
+     "id": "rd-3",
+     "exercises": [
+      "rd-3-p1",
+      "rd-3-p2",
+      "rd-3-p3",
+      "rd-3-p4",
+      "rd-3-p5",
+      "rd-3-r1",
+      "rd-3-r2",
+      "rd-3-r3",
+      "rd-3-r4",
+      "rd-3-c1",
+      "rd-3-c2",
+      "rd-3-c3",
+      "rd-3-y1"
+     ]
+    },
+    {
+     "id": "rd-4",
+     "exercises": [
+      "rd-4-p1",
+      "rd-4-p2",
+      "rd-4-p3",
+      "rd-4-p4",
+      "rd-4-p5",
+      "rd-4-r1",
+      "rd-4-r2",
+      "rd-4-r3",
+      "rd-4-r4",
+      "rd-4-c1",
+      "rd-4-c2",
+      "rd-4-c3",
+      "rd-4-y1"
+     ]
+    },
+    {
+     "id": "rd-5",
+     "exercises": [
+      "rd-5-p1",
+      "rd-5-p2",
+      "rd-5-p3",
+      "rd-5-p4",
+      "rd-5-p5",
+      "rd-5-r1",
+      "rd-5-r2",
+      "rd-5-r3",
+      "rd-5-r4",
+      "rd-5-c1",
+      "rd-5-c2",
+      "rd-5-c3",
+      "rd-5-y1"
+     ]
+    },
+    {
+     "id": "rd-6",
+     "exercises": [
+      "rd-6-p1",
+      "rd-6-p2",
+      "rd-6-p3",
+      "rd-6-p4",
+      "rd-6-p5",
+      "rd-6-r1",
+      "rd-6-r2",
+      "rd-6-r3",
+      "rd-6-r4",
+      "rd-6-c1",
+      "rd-6-c2",
+      "rd-6-c3",
+      "rd-6-y1"
+     ]
+    },
+    {
+     "id": "rd-7",
+     "exercises": [
+      "rd-7-p1",
+      "rd-7-p2",
+      "rd-7-p3",
+      "rd-7-p4",
+      "rd-7-p5",
+      "rd-7-p6",
+      "rd-7-r1",
+      "rd-7-r2",
+      "rd-7-r3",
+      "rd-7-r4",
+      "rd-7-c1",
+      "rd-7-c2",
+      "rd-7-c3",
+      "rd-7-y1"
+     ]
+    },
+    {
+     "id": "rd-8",
+     "exercises": [
+      "rd-8-p1",
+      "rd-8-p2",
+      "rd-8-p3",
+      "rd-8-p4",
+      "rd-8-p5",
+      "rd-8-p6",
+      "rd-8-r1",
+      "rd-8-r2",
+      "rd-8-r3",
+      "rd-8-r4",
+      "rd-8-c1",
+      "rd-8-c2",
+      "rd-8-c3",
+      "rd-8-y1"
+     ]
+    },
+    {
+     "id": "rd-9",
+     "exercises": [
+      "rd-9-e1",
+      "rd-9-e2",
+      "rd-9-e3",
+      "rd-9-e4",
+      "rd-9-e5",
+      "rd-9-e6",
+      "rd-9-e7",
+      "rd-9-e8",
+      "rd-9-e9",
+      "rd-9-e10",
+      "rd-9-e11",
+      "rd-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "writing-foundation",
+   "lessons": [
+    {
+     "id": "wr-1",
+     "exercises": [
+      "wr-1-p1",
+      "wr-1-p2",
+      "wr-1-p3",
+      "wr-1-p4",
+      "wr-1-p5",
+      "wr-1-r1",
+      "wr-1-r2",
+      "wr-1-r3",
+      "wr-1-r4",
+      "wr-1-c1",
+      "wr-1-c2",
+      "wr-1-c3",
+      "wr-1-y1"
+     ]
+    },
+    {
+     "id": "wr-2",
+     "exercises": [
+      "wr-2-p1",
+      "wr-2-p2",
+      "wr-2-p3",
+      "wr-2-p4",
+      "wr-2-p5",
+      "wr-2-r1",
+      "wr-2-r2",
+      "wr-2-r3",
+      "wr-2-r4",
+      "wr-2-c1",
+      "wr-2-c2",
+      "wr-2-c3",
+      "wr-2-y1"
+     ]
+    },
+    {
+     "id": "wr-3",
+     "exercises": [
+      "wr-3-p1",
+      "wr-3-p2",
+      "wr-3-p3",
+      "wr-3-p4",
+      "wr-3-p5",
+      "wr-3-r1",
+      "wr-3-r2",
+      "wr-3-r3",
+      "wr-3-r4",
+      "wr-3-c1",
+      "wr-3-c2",
+      "wr-3-c3",
+      "wr-3-y1"
+     ]
+    },
+    {
+     "id": "wr-4",
+     "exercises": [
+      "wr-4-p1",
+      "wr-4-p2",
+      "wr-4-p3",
+      "wr-4-p4",
+      "wr-4-p5",
+      "wr-4-r1",
+      "wr-4-r2",
+      "wr-4-r3",
+      "wr-4-r4",
+      "wr-4-c1",
+      "wr-4-c2",
+      "wr-4-c3",
+      "wr-4-y1"
+     ]
+    },
+    {
+     "id": "wr-5",
+     "exercises": [
+      "wr-5-p1",
+      "wr-5-p2",
+      "wr-5-p3",
+      "wr-5-p4",
+      "wr-5-p5",
+      "wr-5-r1",
+      "wr-5-r2",
+      "wr-5-r3",
+      "wr-5-r4",
+      "wr-5-c1",
+      "wr-5-c2",
+      "wr-5-c3",
+      "wr-5-y1"
+     ]
+    },
+    {
+     "id": "wr-6",
+     "exercises": [
+      "wr-6-p1",
+      "wr-6-p2",
+      "wr-6-p3",
+      "wr-6-p4",
+      "wr-6-p5",
+      "wr-6-r1",
+      "wr-6-r2",
+      "wr-6-r3",
+      "wr-6-r4",
+      "wr-6-c1",
+      "wr-6-c2",
+      "wr-6-c3",
+      "wr-6-y1"
+     ]
+    },
+    {
+     "id": "wr-7",
+     "exercises": [
+      "wr-7-p1",
+      "wr-7-p2",
+      "wr-7-p3",
+      "wr-7-p4",
+      "wr-7-p5",
+      "wr-7-p6",
+      "wr-7-r1",
+      "wr-7-r2",
+      "wr-7-r3",
+      "wr-7-r4",
+      "wr-7-c1",
+      "wr-7-c2",
+      "wr-7-c3",
+      "wr-7-y1"
+     ]
+    },
+    {
+     "id": "wr-8",
+     "exercises": [
+      "wr-8-p1",
+      "wr-8-p2",
+      "wr-8-p3",
+      "wr-8-p4",
+      "wr-8-p5",
+      "wr-8-r1",
+      "wr-8-r2",
+      "wr-8-r3",
+      "wr-8-r4",
+      "wr-8-c1",
+      "wr-8-c2",
+      "wr-8-c3",
+      "wr-8-y1"
+     ]
+    },
+    {
+     "id": "wr-9",
+     "exercises": [
+      "wr-9-e1",
+      "wr-9-e2",
+      "wr-9-e3",
+      "wr-9-e4",
+      "wr-9-e5",
+      "wr-9-e6",
+      "wr-9-e7",
+      "wr-9-e8",
+      "wr-9-e9",
+      "wr-9-e10",
+      "wr-9-e11",
+      "wr-9-e12"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "speaking-foundation",
+   "lessons": [
+    {
+     "id": "sp-1",
+     "exercises": [
+      "sp-1-p1",
+      "sp-1-p2",
+      "sp-1-p3",
+      "sp-1-p4",
+      "sp-1-p5",
+      "sp-1-r1",
+      "sp-1-r2",
+      "sp-1-r3",
+      "sp-1-r4",
+      "sp-1-c1",
+      "sp-1-c2",
+      "sp-1-c3",
+      "sp-1-y1"
+     ]
+    },
+    {
+     "id": "sp-2",
+     "exercises": [
+      "sp-2-p1",
+      "sp-2-p2",
+      "sp-2-p3",
+      "sp-2-p4",
+      "sp-2-p5",
+      "sp-2-r1",
+      "sp-2-r2",
+      "sp-2-r3",
+      "sp-2-r4",
+      "sp-2-c1",
+      "sp-2-c2",
+      "sp-2-c3",
+      "sp-2-y1"
+     ]
+    },
+    {
+     "id": "sp-3",
+     "exercises": [
+      "sp-3-p1",
+      "sp-3-p2",
+      "sp-3-p3",
+      "sp-3-p4",
+      "sp-3-p5",
+      "sp-3-r1",
+      "sp-3-r2",
+      "sp-3-r3",
+      "sp-3-r4",
+      "sp-3-c1",
+      "sp-3-c2",
+      "sp-3-c3",
+      "sp-3-y1"
+     ]
+    },
+    {
+     "id": "sp-4",
+     "exercises": [
+      "sp-4-p1",
+      "sp-4-p2",
+      "sp-4-p3",
+      "sp-4-p4",
+      "sp-4-p5",
+      "sp-4-r1",
+      "sp-4-r2",
+      "sp-4-r3",
+      "sp-4-r4",
+      "sp-4-c1",
+      "sp-4-c2",
+      "sp-4-c3",
+      "sp-4-y1"
+     ]
+    },
+    {
+     "id": "sp-5",
+     "exercises": [
+      "sp-5-p1",
+      "sp-5-p2",
+      "sp-5-p3",
+      "sp-5-p4",
+      "sp-5-p5",
+      "sp-5-r1",
+      "sp-5-r2",
+      "sp-5-r3",
+      "sp-5-r4",
+      "sp-5-c1",
+      "sp-5-c2",
+      "sp-5-c3",
+      "sp-5-y1"
+     ]
+    },
+    {
+     "id": "sp-6",
+     "exercises": [
+      "sp-6-p1",
+      "sp-6-p2",
+      "sp-6-p3",
+      "sp-6-p4",
+      "sp-6-p5",
+      "sp-6-r1",
+      "sp-6-r2",
+      "sp-6-r3",
+      "sp-6-r4",
+      "sp-6-c1",
+      "sp-6-c2",
+      "sp-6-c3",
+      "sp-6-y1"
+     ]
+    },
+    {
+     "id": "sp-7",
+     "exercises": [
+      "sp-7-p1",
+      "sp-7-p2",
+      "sp-7-p3",
+      "sp-7-p4",
+      "sp-7-p5",
+      "sp-7-p6",
+      "sp-7-r1",
+      "sp-7-r2",
+      "sp-7-r3",
+      "sp-7-r4",
+      "sp-7-c1",
+      "sp-7-c2",
+      "sp-7-c3",
+      "sp-7-y1"
+     ]
+    },
+    {
+     "id": "sp-8",
+     "exercises": [
+      "sp-8-p1",
+      "sp-8-p2",
+      "sp-8-p3",
+      "sp-8-p4",
+      "sp-8-p5",
+      "sp-8-r1",
+      "sp-8-r2",
+      "sp-8-r3",
+      "sp-8-r4",
+      "sp-8-c1",
+      "sp-8-c2",
+      "sp-8-c3",
+      "sp-8-y1"
+     ]
+    },
+    {
+     "id": "sp-9",
+     "exercises": [
+      "sp-9-e1",
+      "sp-9-e2",
+      "sp-9-e3",
+      "sp-9-e4",
+      "sp-9-e5",
+      "sp-9-e6",
+      "sp-9-e7",
+      "sp-9-e8",
+      "sp-9-e9",
+      "sp-9-e10",
+      "sp-9-e11",
+      "sp-9-e12"
+     ]
+    }
+   ]
+  }
+ ],
+ "challenges": [
+  {
+   "id": "pos",
+   "items": [
+    "pfin-a1",
+    "pfin-a2",
+    "pfin-a3",
+    "pfin-a4",
+    "pfin-b1",
+    "pfin-b2",
+    "pfin-b3",
+    "pfin-b4",
+    "pfin-c1",
+    "pfin-c2",
+    "pfin-c3",
+    "pfin-c4",
+    "pfin-d1",
+    "pfin-d2",
+    "pfin-d3",
+    "pfin-d4",
+    "pfin-e1",
+    "pfin-e2",
+    "pfin-e3",
+    "pfin-e4",
+    "pfin-f1",
+    "pfin-f2",
+    "pfin-f3",
+    "pfin-f4",
+    "pfin-g1",
+    "pfin-g2",
+    "pfin-g3",
+    "pfin-g4",
+    "pfin-h1",
+    "pfin-h2",
+    "pfin-h3",
+    "pfin-h4",
+    "pfin-i1",
+    "pfin-i2",
+    "pfin-i3",
+    "pfin-i4",
+    "pfin-j1",
+    "pfin-j2",
+    "pfin-j3",
+    "pfin-j4"
+   ]
+  },
+  {
+   "id": "tenses",
+   "items": [
+    "tfin-a1",
+    "tfin-a2",
+    "tfin-a3",
+    "tfin-a4",
+    "tfin-b1",
+    "tfin-b2",
+    "tfin-b3",
+    "tfin-b4",
+    "tfin-c1",
+    "tfin-c2",
+    "tfin-c3",
+    "tfin-c4",
+    "tfin-d1",
+    "tfin-d2",
+    "tfin-d3",
+    "tfin-d4",
+    "tfin-e1",
+    "tfin-e2",
+    "tfin-e3",
+    "tfin-e4",
+    "tfin-f1",
+    "tfin-f2",
+    "tfin-f3",
+    "tfin-f4",
+    "tfin-g1",
+    "tfin-g2",
+    "tfin-g3",
+    "tfin-g4",
+    "tfin-h1",
+    "tfin-h2",
+    "tfin-h3",
+    "tfin-h4"
+   ]
+  },
+  {
+   "id": "articles",
+   "items": [
+    "afin-a1",
+    "afin-a2",
+    "afin-a3",
+    "afin-a4",
+    "afin-b1",
+    "afin-b2",
+    "afin-b3",
+    "afin-b4",
+    "afin-c1",
+    "afin-c2",
+    "afin-c3",
+    "afin-c4",
+    "afin-d1",
+    "afin-d2",
+    "afin-d3",
+    "afin-d4",
+    "afin-e1",
+    "afin-e2",
+    "afin-e3",
+    "afin-e4",
+    "afin-f1",
+    "afin-f2",
+    "afin-f3",
+    "afin-f4"
+   ]
+  },
+  {
+   "id": "agreement",
+   "items": [
+    "sfin-a1",
+    "sfin-a2",
+    "sfin-a3",
+    "sfin-a4",
+    "sfin-b1",
+    "sfin-b2",
+    "sfin-b3",
+    "sfin-b4",
+    "sfin-c1",
+    "sfin-c2",
+    "sfin-c3",
+    "sfin-c4",
+    "sfin-d1",
+    "sfin-d2",
+    "sfin-d3",
+    "sfin-d4",
+    "sfin-e1",
+    "sfin-e2",
+    "sfin-e3",
+    "sfin-e4",
+    "sfin-f1",
+    "sfin-f2",
+    "sfin-f3",
+    "sfin-f4"
+   ]
+  },
+  {
+   "id": "prepositions",
+   "items": [
+    "prfin-a1",
+    "prfin-a2",
+    "prfin-a3",
+    "prfin-a4",
+    "prfin-b1",
+    "prfin-b2",
+    "prfin-b3",
+    "prfin-b4",
+    "prfin-c1",
+    "prfin-c2",
+    "prfin-c3",
+    "prfin-c4",
+    "prfin-d1",
+    "prfin-d2",
+    "prfin-d3",
+    "prfin-d4",
+    "prfin-e1",
+    "prfin-e2",
+    "prfin-e3",
+    "prfin-e4",
+    "prfin-f1",
+    "prfin-f2",
+    "prfin-f3",
+    "prfin-f4"
+   ]
+  },
+  {
+   "id": "connectors",
+   "items": [
+    "cnfin-a1",
+    "cnfin-a2",
+    "cnfin-a3",
+    "cnfin-a4",
+    "cnfin-b1",
+    "cnfin-b2",
+    "cnfin-b3",
+    "cnfin-b4",
+    "cnfin-c1",
+    "cnfin-c2",
+    "cnfin-c3",
+    "cnfin-c4",
+    "cnfin-d1",
+    "cnfin-d2",
+    "cnfin-d3",
+    "cnfin-d4",
+    "cnfin-e1",
+    "cnfin-e2",
+    "cnfin-e3",
+    "cnfin-e4",
+    "cnfin-f1",
+    "cnfin-f2",
+    "cnfin-f3",
+    "cnfin-f4"
+   ]
+  },
+  {
+   "id": "complex-sentences",
+   "items": [
+    "cxfin-a1",
+    "cxfin-a2",
+    "cxfin-a3",
+    "cxfin-a4",
+    "cxfin-b1",
+    "cxfin-b2",
+    "cxfin-b3",
+    "cxfin-b4",
+    "cxfin-c1",
+    "cxfin-c2",
+    "cxfin-c3",
+    "cxfin-c4",
+    "cxfin-d1",
+    "cxfin-d2",
+    "cxfin-d3",
+    "cxfin-d4",
+    "cxfin-e1",
+    "cxfin-e2",
+    "cxfin-e3",
+    "cxfin-e4",
+    "cxfin-f1",
+    "cxfin-f2",
+    "cxfin-f3",
+    "cxfin-f4"
+   ]
+  },
+  {
+   "id": "punctuation",
+   "items": [
+    "pnfin-a1",
+    "pnfin-a2",
+    "pnfin-a3",
+    "pnfin-a4",
+    "pnfin-b1",
+    "pnfin-b2",
+    "pnfin-b3",
+    "pnfin-b4",
+    "pnfin-c1",
+    "pnfin-c2",
+    "pnfin-c3",
+    "pnfin-c4",
+    "pnfin-d1",
+    "pnfin-d2",
+    "pnfin-d3",
+    "pnfin-d4",
+    "pnfin-e1",
+    "pnfin-e2",
+    "pnfin-e3",
+    "pnfin-e4",
+    "pnfin-f1",
+    "pnfin-f2",
+    "pnfin-f3",
+    "pnfin-f4"
+   ]
+  },
+  {
+   "id": "common-errors",
+   "items": [
+    "cefin-a1",
+    "cefin-a2",
+    "cefin-a3",
+    "cefin-a4",
+    "cefin-b1",
+    "cefin-b2",
+    "cefin-b3",
+    "cefin-b4",
+    "cefin-c1",
+    "cefin-c2",
+    "cefin-c3",
+    "cefin-c4",
+    "cefin-d1",
+    "cefin-d2",
+    "cefin-d3",
+    "cefin-d4",
+    "cefin-e1",
+    "cefin-e2",
+    "cefin-e3",
+    "cefin-e4",
+    "cefin-f1",
+    "cefin-f2",
+    "cefin-f3",
+    "cefin-f4"
+   ]
+  },
+  {
+   "id": "vocabulary-foundation",
+   "items": [
+    "vcfin-a1",
+    "vcfin-a2",
+    "vcfin-a3",
+    "vcfin-a4",
+    "vcfin-b1",
+    "vcfin-b2",
+    "vcfin-b3",
+    "vcfin-b4",
+    "vcfin-c1",
+    "vcfin-c2",
+    "vcfin-c3",
+    "vcfin-c4",
+    "vcfin-d1",
+    "vcfin-d2",
+    "vcfin-d3",
+    "vcfin-d4",
+    "vcfin-e1",
+    "vcfin-e2",
+    "vcfin-e3",
+    "vcfin-e4",
+    "vcfin-f1",
+    "vcfin-f2",
+    "vcfin-f3",
+    "vcfin-f4"
+   ]
+  },
+  {
+   "id": "ielts-intro",
+   "items": [
+    "ibfin-a1",
+    "ibfin-a2",
+    "ibfin-a3",
+    "ibfin-a4",
+    "ibfin-b1",
+    "ibfin-b2",
+    "ibfin-b3",
+    "ibfin-b4",
+    "ibfin-c1",
+    "ibfin-c2",
+    "ibfin-c3",
+    "ibfin-c4",
+    "ibfin-d1",
+    "ibfin-d2",
+    "ibfin-d3",
+    "ibfin-d4",
+    "ibfin-e1",
+    "ibfin-e2",
+    "ibfin-e3",
+    "ibfin-e4",
+    "ibfin-f1",
+    "ibfin-f2",
+    "ibfin-f3",
+    "ibfin-f4"
+   ]
+  },
+  {
+   "id": "listening-foundation",
+   "items": [
+    "lsfin-a1",
+    "lsfin-a2",
+    "lsfin-a3",
+    "lsfin-a4",
+    "lsfin-b1",
+    "lsfin-b2",
+    "lsfin-b3",
+    "lsfin-b4",
+    "lsfin-c1",
+    "lsfin-c2",
+    "lsfin-c3",
+    "lsfin-c4",
+    "lsfin-d1",
+    "lsfin-d2",
+    "lsfin-d3",
+    "lsfin-d4",
+    "lsfin-e1",
+    "lsfin-e2",
+    "lsfin-e3",
+    "lsfin-e4",
+    "lsfin-f1",
+    "lsfin-f2",
+    "lsfin-f3",
+    "lsfin-f4"
+   ]
+  },
+  {
+   "id": "reading-foundation",
+   "items": [
+    "rdfin-a1",
+    "rdfin-a2",
+    "rdfin-a3",
+    "rdfin-a4",
+    "rdfin-b1",
+    "rdfin-b2",
+    "rdfin-b3",
+    "rdfin-b4",
+    "rdfin-c1",
+    "rdfin-c2",
+    "rdfin-c3",
+    "rdfin-c4",
+    "rdfin-d1",
+    "rdfin-d2",
+    "rdfin-d3",
+    "rdfin-d4",
+    "rdfin-e1",
+    "rdfin-e2",
+    "rdfin-e3",
+    "rdfin-e4",
+    "rdfin-f1",
+    "rdfin-f2",
+    "rdfin-f3",
+    "rdfin-f4"
+   ]
+  },
+  {
+   "id": "writing-foundation",
+   "items": [
+    "wrfin-a1",
+    "wrfin-a2",
+    "wrfin-a3",
+    "wrfin-a4",
+    "wrfin-b1",
+    "wrfin-b2",
+    "wrfin-b3",
+    "wrfin-b4",
+    "wrfin-c1",
+    "wrfin-c2",
+    "wrfin-c3",
+    "wrfin-c4",
+    "wrfin-d1",
+    "wrfin-d2",
+    "wrfin-d3",
+    "wrfin-d4",
+    "wrfin-e1",
+    "wrfin-e2",
+    "wrfin-e3",
+    "wrfin-e4",
+    "wrfin-f1",
+    "wrfin-f2",
+    "wrfin-f3",
+    "wrfin-f4"
+   ]
+  },
+  {
+   "id": "speaking-foundation",
+   "items": [
+    "spfin-a1",
+    "spfin-a2",
+    "spfin-a3",
+    "spfin-a4",
+    "spfin-b1",
+    "spfin-b2",
+    "spfin-b3",
+    "spfin-b4",
+    "spfin-c1",
+    "spfin-c2",
+    "spfin-c3",
+    "spfin-c4",
+    "spfin-d1",
+    "spfin-d2",
+    "spfin-d3",
+    "spfin-d4",
+    "spfin-e1",
+    "spfin-e2",
+    "spfin-e3",
+    "spfin-e4",
+    "spfin-f1",
+    "spfin-f2",
+    "spfin-f3",
+    "spfin-f4"
+   ]
+  }
+ ]
+}

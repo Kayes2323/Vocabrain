@@ -170,7 +170,7 @@ const c2: Lesson = {
       kind: 'mistakes',
       title: l('Common mistakes', 'Common ভুল'),
       items: [
-        { wrong: 'People move to cities. Because there are more jobs.', right: 'People move to cities because there are more jobs.', why: l('Join the because-clause to the main clause.', 'because-clause-কে main clause-এর সাথে জোড়ো।') },
+        { wrong: 'People move to cities. Because there are more jobs.', right: 'People move to cities because there are more jobs.', why: l('Join the because-clause to the main clause.', 'because-clause-কে main clause-এর সাথে জুড়ুন।') },
         { wrong: 'Although it was late we continued.', right: 'Although it was late, we continued.', why: l('Comma after the first (dependent) clause.', 'প্রথম (নির্ভরশীল) clause-এর পরে comma।') },
         { wrong: 'If I will have time, I will help.', right: 'If I have time, I will help.', why: l('After "if" (future meaning) use the present.', '"if"-এর পরে (ভবিষ্যৎ অর্থে) present।') },
       ],
@@ -189,7 +189,7 @@ const c2: Lesson = {
       kind: 'practice', mode: 'recall',
       title: l('Now without options', 'এবার option ছাড়া'),
       exercises: [
-        correct('pcj-2-r1', C, { tag: 'connector', prompt: l('Join into one correct sentence.', 'এক সঠিক sentence-এ জোড়ো।'), sentence: 'Many students work part-time. Because fees are high.', accepted: ['Many students work part-time because fees are high.', 'Because fees are high, many students work part-time.'], explanation: l('Join the because-clause to the main clause.', 'because-clause-কে main clause-এর সাথে জোড়ো।') }),
+        correct('pcj-2-r1', C, { tag: 'connector', prompt: l('Join into one correct sentence.', 'এক সঠিক sentence-এ জুড়ুন।'), sentence: 'Many students work part-time. Because fees are high.', accepted: ['Many students work part-time because fees are high.', 'Because fees are high, many students work part-time.'], explanation: l('Join the because-clause to the main clause.', 'because-clause-কে main clause-এর সাথে জুড়ুন।') }),
         gap('pcj-2-r2', C, { tag: 'connector', prompt: l('Write a joining word for contrast.', 'বিপরীত বোঝাতে জোড়া দেওয়ার word লিখুন।'), sentence: '___ the rain was heavy, the match continued.', accepted: ['although', 'though', 'even though'], explanation: l('Contrast → Although.', 'বিপরীত → Although।') }),
         correct('pcj-2-r3', C, { tag: 'connector', prompt: l('Rewrite the sentence correctly.', 'Sentence-টা ঠিক করে আবার লিখুন।'), sentence: 'If I will pass IELTS, I will study in Canada.', accepted: ['If I pass IELTS, I will study in Canada.', 'If I pass IELTS, I’ll study in Canada.', "If I pass IELTS, I'll study in Canada."], explanation: l('if + present: If I pass…', 'if + present: If I pass…') }),
       ],
@@ -198,7 +198,7 @@ const c2: Lesson = {
       kind: 'practice',
       title: l('Mini challenge', 'Mini challenge'),
       exercises: [
-        choice('pcj-2-c1', C, { tag: 'connector', prompt: l('Why is "Because it is cheap." wrong in writing?', 'লেখায় "Because it is cheap." ভুল কেন?'), options: ['It is a dependent clause with no main clause', 'because must be at the end', '"cheap" needs an adverb'], answer: 'It is a dependent clause with no main clause', explanation: l('Join it: People choose buses because they are cheap.', 'জোড়ো: People choose buses because they are cheap।') }),
+        choice('pcj-2-c1', C, { tag: 'connector', prompt: l('Why is "Because it is cheap." wrong in writing?', 'লেখায় "Because it is cheap." ভুল কেন?'), options: ['It is a dependent clause with no main clause', 'because must be at the end', '"cheap" needs an adverb'], answer: 'It is a dependent clause with no main clause', explanation: l('Join it: People choose buses because they are cheap.', 'জুড়ে দিন: People choose buses because they are cheap।') }),
         spot('pcj-2-c2', C, { tag: 'connector', sentence: 'I stayed at home although I had a high fever.', wrong: 'although', accepted: ['because', 'as', 'since'], fixOptions: ['because', 'but', 'so'], explanation: l('The fever is the reason → because.', 'জ্বর হলো কারণ → because।') }),
         choice('pcj-2-c3', C, { tag: 'connector', prompt: l('Choose the correctly punctuated sentence.', 'সঠিক punctuation-এর sentence বেছে নিন।'), options: ['When I finish school, I want to study abroad.', 'When I finish school I want, to study abroad.'], answer: 'When I finish school, I want to study abroad.', explanation: l('Comma after the first (dependent) clause.', 'প্রথম (নির্ভরশীল) clause-এর পরে comma।') }),
       ],
