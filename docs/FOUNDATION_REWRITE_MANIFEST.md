@@ -1,7 +1,7 @@
 # Mino Foundation Rewrite Manifest
 
 **Branch:** `mino/foundation-content-quality-pilot`  
-**Overall status:** In progress — editorial drafts are not yet live.  
+**Overall status:** In progress — 38 lessons integrated in the runtime on this branch (not yet merged or deployed to Production); 156 unchanged.  
 **Source of truth for integration contract:** `FOUNDATION_CLAUDE_CODE_INTEGRATION_GUIDE.md`
 
 Status vocabulary:
@@ -12,24 +12,28 @@ Status vocabulary:
 - `tested`: integration and relevant checks passed.
 - `blocked`: a specific schema, factual, or product decision prevents safe completion.
 
-| # | Module | Current status | Source / next action |
+| # | Module | Current status | What is live on this branch |
 |---:|---|---|---|
-| 1 | Sentence Basics | draft (partial) | Batch 01 covers `sb-1`–`sb-3`; Batch 02 covers `sb-4`–`sb-9`. Map all existing exercise IDs before integration. |
-| 2 | Tenses for IELTS | draft (partial) | Batch 03 covers core lessons `t-3`–`t-8`; still audit/rewrite the other active tense lessons and verify the complete order. |
-| 3 | Parts of Speech | draft (partial) | Batch 07 covers core word-class function and word families; map to active `POS_LESSONS` and remaining units. |
-| 4 | Articles | draft (partial) | Batch 04 covers `ar-1`–`ar-4`; audit remaining article application/review lessons. |
-| 5 | Subject–Verb Agreement | not audited | Audit `agreement` and `agreement-apply`. |
-| 6 | Prepositions | draft (partial) | Batch 06 contains bilingual Prepositions teaching source; map and audit all active lessons/exercises. |
-| 7 | Connectors | draft (partial) | Batch 06 contains bilingual Connectors teaching source; map and audit all active lessons/exercises. |
-| 8 | Complex Sentences | draft (partial) | Batch 07 covers clause types and relative clauses; map to all active lessons. |
-| 9 | Punctuation | draft (partial) | Batch 07 covers sentence boundaries and apostrophes; audit remaining punctuation topics. |
-| 10 | Common Errors | draft (partial) | Batch 07 provides a diagnostic teaching source; map it to active error lessons and exercises. |
-| 11 | Vocabulary Foundation | draft (partial) | Batch 08 covers contextual meaning, paraphrase, collocation and word families; audit all active vocabulary lessons. |
-| 12 | IELTS Introduction | draft (partial; fact-check pending) | Batch 10 covers test-version awareness and practice-score limitations; verify current official test facts before release. |
-| 13 | Listening Foundation | draft (partial; fact-check pending) | Batch 10 covers listening strategy and answer constraints; verify mode-specific format/timing and current official rules. |
-| 14 | Reading Foundation | draft (partial; fact-check pending) | Batch 09 covers reading strategy, paraphrase and evidence; verify official format/timing/scoring claims before release. |
-| 15 | Writing Foundation | draft (partial; fact-check pending) | Batch 09 covers planning, cohesion and editing; verify Academic/General task details, word count, timing and criteria. |
-| 16 | Speaking Foundation | draft (partial; fact-check pending) | Batch 10 covers response development, fluency, grammar and pronunciation; verify official format/timing/criteria. |
+| 1 | Sentence Basics | **integrated, tested** (sb-1–sb-9) · sb-10 unchanged | Batches 01/02 mapped by topic into sb-1–sb-9 (v2 format, hook, mistake lab, recall, Mino task, 8 review concepts). E2E: sb-1 in Bangla on a phone. |
+| 2 | Tenses for IELTS | **integrated, tested** (t-3–t-8, t-11) · others unchanged | Batch 03 accuracy points added to t-3–t-8 (state verbs, has lived / lived, past perfect not compulsory, timetables, will vs going to). E2E: t-6. |
+| 3 | Parts of Speech | partly integrated (pie-5, pcj-2) · others unchanged | Neutral wording instead of "Band 6+"; respectful Bangla. Batch 07 points already covered by the live units. |
+| 4 | Articles | partly integrated (ar-3, ar-6, ar-7) | Shared context and "the" (batch 04); no "Band 7" label; respectful Bangla. |
+| 5 | Subject–Verb Agreement | partly integrated (sva-2, sva-4) | Rewrite awkward either/or (batch 05); group-noun answer keys checked — none rejects a plural. |
+| 6 | Prepositions | partly integrated (pr-5) | No "always one rule" claim (batch 06). |
+| 7 | Connectors | partly integrated (cn-6, cn-7, cn-9) | No unsupported Band 7 claim; two answer keys accept a second correct order. |
+| 8 | Complex Sentences | partly integrated (cx-8) | cx-8-c3 accepts the other non-defining order. |
+| 9 | Punctuation | unchanged | Automated checks pass; batch 07 punctuation points are already taught (comma splices, apostrophes, colons). |
+| 10 | Common Errors | unchanged | Automated checks pass. |
+| 11 | Vocabulary Foundation | unchanged | Automated checks pass. E2E: vc-1 played end to end. |
+| 12 | IELTS Introduction | **integrated, tested** (ib-3, ib-7, ib-8, ib-9, final part C) | Delivery facts checked 2026-10-14 (paper ends mid-2026; Bangladesh after 31 Jan 2026; Writing on Paper; 2-minute Listening check). E2E: ib-3. |
+| 13 | Listening Foundation | integrated, tested (ls-2, ls-8) | Letter case does not change a mark; computer check time. |
+| 14 | Reading Foundation | integrated, tested (rd-8) | Paper-only wording removed. |
+| 15 | Writing Foundation | integrated (wr-8) | wr-8-r2 accepts "outline". Format facts verified, already correct. |
+| 16 | Speaking Foundation | integrated (sp-6, sp-8) | Answer-key fixes. Format facts verified, already correct. |
+
+Per-lesson detail, sources and test status: [`FOUNDATION_INTEGRATION_INVENTORY.md`](./FOUNDATION_INTEGRATION_INVENTORY.md).
+"unchanged" means the lesson passed every automated check and the module-level scan, but has not had a manual
+line-by-line rewrite against the quality standard.
 
 ## Batch source index
 - Batch 05: Subject–Verb Agreement teaching source.

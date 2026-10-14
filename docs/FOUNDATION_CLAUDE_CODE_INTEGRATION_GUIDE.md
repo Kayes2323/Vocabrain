@@ -4,7 +4,7 @@
 
 ## Current status
 - Rewrite branch: `mino/foundation-content-quality-pilot`
-- Content is editorial source material in `docs/`; it is **not yet live in the app**.
+- Content is editorial source material in `docs/`. Integration into the runtime has started on this branch: see `FOUNDATION_REWRITE_MANIFEST.md` and `FOUNDATION_INTEGRATION_INVENTORY.md` for what is live in the lesson objects (not yet merged to `main` or deployed to Production).
 - Batch 01: Sentence Basics lessons `sb-1`–`sb-3`.
 - Batch 02: Sentence Basics lessons `sb-4`–`sb-9`.
 - Batch 03: Core Tenses lessons `t-3`–`t-8`.
