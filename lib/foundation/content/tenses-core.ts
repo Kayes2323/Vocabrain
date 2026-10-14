@@ -165,6 +165,8 @@ export const presentContinuousV2: Lesson = {
         l('NOT for routines or permanent facts: I work in a bank (my job), not "I am working in a bank".', 'রুটিন বা স্থায়ী সত্যের জন্য না: I work in a bank (আমার চাকরি), "I am working in a bank" না।'),
         l('NOT with state verbs: know, believe, want, own, understand ("I know", not "I am knowing").', 'State verb-এর সাথে না: know, believe, want, own, understand ("I know", "I am knowing" না)।'),
         l('Why Bangla speakers slip: "করছি" covers both "I work" and "I am working", so -ing feels right everywhere.', 'বাংলাভাষীরা কেন ভুল করে: "করছি" দিয়ে "I work" আর "I am working" দুটোই বোঝায়, তাই -ing সব জায়গায় ঠিক মনে হয়।'),
+        l('Some state verbs can be continuous with a different meaning: "I\'m thinking about it" (considering), "We\'re having lunch" (eating).', 'কিছু state verb অন্য অর্থে continuous হতে পারে: "I\'m thinking about it" (ভেবে দেখছি), "We\'re having lunch" (খাচ্ছি)।'),
+        l('Task 1: finished historical data (2010–2020) takes past forms. A graph showing a trend does not by itself mean present continuous.', 'Task 1: শেষ হওয়া অতীতের data (2010–2020)-তে past form। Graph-এ trend আছে বলেই present continuous হয় না।'),
       ],
       timeline: [
         { sentence: 'I am cooking dinner.', picture: 'now', label: l('Now', 'এখন') },
@@ -380,6 +382,7 @@ export const pastSimpleV2: Lesson = {
         l('Negative / question: did not + base verb; Did + subject + base verb?', 'Negative / question: did not + base verb; Did + subject + base verb?'),
         l('NOT when the time continues until now (since 2019, so far): use the present perfect.', 'সময় এখন পর্যন্ত চললে না (since 2019, so far): তখন present perfect।'),
         l('Why Bangla speakers slip: "গিয়েছি" feels like "have gone", so "I have gone yesterday" appears. With "yesterday", English only accepts "I went".', 'বাংলাভাষীরা কেন ভুল করে: "গিয়েছি" শুনে "have gone" মনে হয়, তাই "I have gone yesterday" চলে আসে। "yesterday"-এর সাথে English শুধু "I went" মানে।'),
+        l('be has its own past forms and no did: "The city was quiet." → "It was not quiet." → "Was it quiet?"', 'be-এর নিজের past form আছে, did লাগে না: "The city was quiet." → "It was not quiet." → "Was it quiet?"'),
       ],
       timeline: [
         { sentence: 'Sales rose in 2015.', picture: 'finished', label: l('Finished time', 'শেষ হওয়া সময়') },
@@ -589,6 +592,7 @@ export const pastContinuousV2: Lesson = {
         l('"while" + long action: While I was studying, the power went out.', '"while" + লম্বা কাজ: While I was studying, the power went out।'),
         l('NOT for a list of finished events: "I woke up, had breakfast and left" (all past simple).', 'পরপর শেষ হওয়া ঘটনার তালিকায় না: "I woke up, had breakfast and left" (সব past simple)।'),
         l('NOT with state verbs: "I knew him", not "I was knowing him".', 'State verb-এর সাথে না: "I knew him", "I was knowing him" না।'),
+        l('It does not always mean an interruption: it can set the scene, or show two actions at the same time: "While I was studying, my brother was watching TV."', 'এটা সবসময় বাধা পাওয়া বোঝায় না: দৃশ্যটা তৈরি করতে পারে, বা একই সময়ে চলা দুটো কাজ দেখাতে পারে: "While I was studying, my brother was watching TV."'),
       ],
       timeline: [
         { sentence: 'I was walking home when it started to rain.', picture: 'finished', label: l('Long action + interruption', 'লম্বা কাজ + বাধা') },
@@ -804,6 +808,7 @@ export const presentPerfectV2: Lesson = {
         l('Irregular participles: risen, fallen, grown, been, done, seen, gone.', 'Irregular participle: risen, fallen, grown, been, done, seen, gone।'),
         l('NOT with a finished time: yesterday, last year, in 2010, ago → past simple.', 'শেষ হওয়া সময়ের সাথে না: yesterday, last year, in 2010, ago → past simple।'),
         l('Why Bangla speakers slip: "২০১৫ থেকে থাকি" uses the present, so "I live here since 2015" feels right. English needs "have lived".', 'বাংলাভাষীরা কেন ভুল করে: "২০১৫ থেকে থাকি"-তে present, তাই "I live here since 2015" ঠিক মনে হয়। English-এ "have lived" লাগে।'),
+        l('Compare: "She has lived here for five years" (she still lives here) · "She lived here for five years" (that time is finished).', 'তুলনা করুন: "She has lived here for five years" (এখনো এখানে থাকেন) · "She lived here for five years" (সেই সময় শেষ)।'),
       ],
       timeline: [
         { sentence: 'I have lived in Dhaka since 2019.', picture: 'past-to-now', label: l('Past → now', 'অতীত → এখন') },
@@ -1011,6 +1016,8 @@ export const pastPerfectV2: Lesson = {
         l('Signals: before, after, by (1990), already, when.', 'Signal: before, after, by (1990), already, when।'),
         l('NOT for events told in order: "I woke up, had breakfast and left" needs only the past simple.', 'ক্রম অনুযায়ী বলা ঘটনায় না: "I woke up, had breakfast and left"-এ শুধু past simple লাগে।'),
         l('NOT without a second past point: use it only when the order matters.', 'অতীতের দ্বিতীয় বিন্দু ছাড়া না: শুধু যখন ক্রমটা গুরুত্বপূর্ণ।'),
+        l('Not compulsory when the order is already clear: "After she finished the form, she submitted it." is correct.', 'ক্রম আগে থেকেই পরিষ্কার হলে বাধ্যতামূলক না: "After she finished the form, she submitted it." সঠিক।'),
+        l('"She had a car" is the past simple of have (possession), not the past perfect.', '"She had a car" হলো have-এর past simple (মালিকানা), past perfect না।'),
       ],
       timeline: [
         { sentence: 'When I arrived, the exam had started.', picture: 'earlier-past', label: l('Earlier past', 'আরও আগের অতীত') },
@@ -1214,6 +1221,8 @@ export const futureFormsV2: Lesson = {
         l('Task 1: The figure is expected to reach 50% by 2030.', 'Task 1: The figure is expected to reach 50% by 2030।'),
         l('NOT "will" after if / when about the future: "When I finish, I will call you."', 'ভবিষ্যৎ নিয়ে if / when-এর পরে "will" না: "When I finish, I will call you."'),
         l('Why Bangla speakers slip: "করব" can be a plan or a prediction, so "will" gets used for everything.', 'বাংলাভাষীরা কেন ভুল করে: "করব" পরিকল্পনাও হতে পারে, ভবিষ্যদ্বাণীও, তাই সব জায়গায় "will" বসে যায়।'),
+        l('Present simple for timetables: "The exam starts at nine." "The train leaves at 7:30."', 'Timetable-এর জন্য present simple: "The exam starts at nine." "The train leaves at 7:30."'),
+        l('These forms overlap. "will = uncertain, going to = certain" is not a fixed rule — the meaning and context decide.', 'এই form-গুলো অনেক সময় মিলে যায়। "will = অনিশ্চিত, going to = নিশ্চিত" — এটা বাঁধা নিয়ম না; অর্থ আর প্রসঙ্গ ঠিক করে।'),
       ],
       timeline: [
         { sentence: 'The figure is expected to reach 50% by 2030.', picture: 'future', label: l('Future', 'ভবিষ্যৎ') },

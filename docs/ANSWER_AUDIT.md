@@ -9,16 +9,17 @@ an alternative to the content after checking it.
 
 | Checked | Count |
 | --- | --- |
-| Foundation typed questions (gap / rewrite) | 774 |
+| Foundation typed questions (gap / rewrite) | 799 |
 | IELTS practice-test text answers | 42 |
 | Reading Library gap answers | 74 |
-| Flagged — needs review | 58 |
+| Flagged — needs review | 54 |
 | Flagged — by design (exact word required) | 6 |
 
 | Question ID | Where | Current answer | Potential ambiguity | Needs review |
 | --- | --- | --- | --- | --- |
 | sb-1-e3 | Foundation correct | Public transport is very cheap in Dhaka. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
-| sb-8-e3 | Foundation correct | I want to study abroad because I want better job opportunities. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
+| sb-2-r1 | Foundation gap | quality | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
+| sb-6-r3 | Foundation correct | Online shopping is very popular. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | sb-10-r2 | Foundation gap | isn’t \| isn't \| is not | Prompt asks for the short form, but a full form is also accepted. | Yes |
 | t-6-r1 | Foundation gap | has grown | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | pn-1-r2 | Foundation gap | gate | Listening item: only the word heard is right. Synonyms (e.g. "entrance") must NOT be added. | No — by design |
@@ -35,10 +36,7 @@ an alternative to the content after checking it.
 | pl-2-r3 | Foundation correct | Did you finish your essay? | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | ar-4-c3 | Foundation correct | Smartphones are useful for students. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | cn-4-r1 | Foundation gap | such as | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
-| cn-7-r3 | Foundation correct | I enjoy cooking because it helps me relax. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
-| cn-9-e10 | Foundation correct | I walk to college because it is close. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | cx-6-r4 | Foundation correct | Do you know where she works? | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
-| cx-8-c3 | Foundation correct | My father, who is a farmer, grows vegetables. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | pu-3-r3 | Foundation correct | The hotel was expensive, but the service was excellent. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | ce-1-r1 | Foundation gap | take | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | ce-1-r2 | Foundation correct | I agree with the writer. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
@@ -50,7 +48,6 @@ an alternative to the content after checking it.
 | ib-3-r4 | Foundation gap | count | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | ib-6-r1 | Foundation gap | official | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | ib-8-c1 | Foundation correct | Targets L 6.5, R 6.5, W 6.0 and S 6.0 give an overall of 6.5. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
-| ib-9-e10 | Foundation correct | Paper-based Listening gives 10 minutes to transfer answers. | Open rewrite with one accepted sentence: other word orders or linkers may be correct. | Yes |
 | ls-1-r2 | Foundation gap | once | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | ls-3-r1 | Foundation gap | opposite | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | ls-3-r2 | Foundation gap | behind | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
@@ -62,7 +59,6 @@ an alternative to the content after checking it.
 | rd-7-r2 | Foundation gap | hours | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | wr-2-r1 | Foundation gap | Overall | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | wr-5-r2 | Foundation gap | conclusion | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
-| wr-8-r2 | Foundation gap | plan | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | sp-7-r2 | Foundation gap | general | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | sp-8-r2 | Foundation gap | recording | Open content-word gap with one answer: a synonym may also fit the sentence. | Yes |
 | pfin-e3 | Foundation gap | volunteers | Listening item: only the word heard is right. Synonyms (e.g. "entrance") must NOT be added. | No — by design |

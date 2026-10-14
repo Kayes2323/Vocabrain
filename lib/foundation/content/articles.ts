@@ -366,6 +366,7 @@ export const theArticle: Lesson = {
       ),
       points: [
         l('Second mention: a phone → the phone.', 'দ্বিতীয়বার: a phone → the phone।'),
+        l('Not only the second mention: shared context also makes it exact. "Could you close the window?" — the window in this room, even if no one mentioned it.', 'শুধু দ্বিতীয় উল্লেখ না: দুজনের জানা প্রসঙ্গও exact করে। "Could you close the window?" — এই ঘরের জানালা, আগে কেউ না বললেও।'),
         l('Only one: the sun, the internet, the government, the environment.', 'একটাই: the sun, the internet, the government, the environment।'),
         l('Superlatives and order: the highest, the most popular, the first, the last.', 'Superlative আর ক্রম: the highest, the most popular, the first, the last।'),
         l('Made exact by "of": the number of, the percentage of, the price of, the capital of.', '"of" দিয়ে নির্দিষ্ট: the number of, the percentage of, the price of, the capital of।'),

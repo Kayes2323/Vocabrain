@@ -262,7 +262,7 @@ export const wrPlan: Lesson = {
       title: l('Active recall: no options', 'Active recall: কোনো option নেই'),
       exercises: [
         gap('wr-8-r1', 'wr-format', { ...P, pattern: 'wr-format-fact', prompt: l('Write the number.', 'সংখ্যাটা লিখুন।'), sentence: 'Keep about ___ minutes for Task 2.', accepted: ['40', 'forty'], explanation: l('About 40 minutes.', 'প্রায় ৪০ মিনিট।') }),
-        gap('wr-8-r2', 'wr-task2', { ...P, pattern: 'wr-task-response', prompt: l('Write one word.', 'একটা word লিখুন।'), sentence: 'Before writing Task 2, spend a few minutes making a ___.', accepted: ['plan'], explanation: l('plan.', 'plan।') }),
+        gap('wr-8-r2', 'wr-task2', { ...P, pattern: 'wr-task-response', prompt: l('Write one word.', 'একটা word লিখুন।'), sentence: 'Before writing Task 2, spend a few minutes making a ___.', accepted: ['plan', 'outline'], explanation: l('plan.', 'plan।') }),
         spot('wr-8-r3', 'wr-task1', { ...P, pattern: 'wr-overview', prompt: l('One word makes this advice wrong. Tap it and fix it.', 'একটা word এই পরামর্শকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'In Task 1, find the smallest features before you write.', wrong: 'smallest', accepted: ['main', 'key'], explanation: l('The main features.', 'মূল বৈশিষ্ট্য।') }),
         correct('wr-8-r4', 'wr-format', { ...P, pattern: 'wr-format-fact', prompt: l('Correct the plan.', 'Plan-টা ঠিক করুন।'), sentence: 'Spend 40 minutes on Task 1 and 20 minutes on Task 2.', accepted: ['Spend 20 minutes on Task 1 and 40 minutes on Task 2.', 'Spend about 20 minutes on Task 1 and about 40 minutes on Task 2.'], explanation: l('20 + 40.', '২০ + ৪০।') }),
       ],

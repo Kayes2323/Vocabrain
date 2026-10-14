@@ -360,7 +360,7 @@ export const articlesInIelts: Lesson = {
     },
     {
       kind: 'examples',
-      title: l('Band 7 sentences', 'Band 7-এর sentence'),
+      title: l('Accurate academic sentences', 'নির্ভুল academic sentence'),
       items: [
         { en: 'The table shows the percentage of households with a car in four countries.', note: l('the table · the percentage of · a car (one each).', 'the table · the percentage of · a car (প্রতিটায় একটা)।') },
         { en: 'There was a slight decline in 2012, followed by a steady increase.', note: l('Trend nouns: a decline, an increase.', 'Trend noun: a decline, an increase।') },

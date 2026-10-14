@@ -260,7 +260,7 @@ export const spPlan: Lesson = {
       title: l('Active recall: no options', 'Active recall: কোনো option নেই'),
       exercises: [
         gap('sp-8-r1', 'sp-format', { ...P, pattern: 'sp-format-fact', prompt: l('Write the numbers (e.g. 11–14).', 'সংখ্যাগুলো লিখুন (যেমন 11–14)।'), sentence: 'The Speaking test lasts ___ minutes.', accepted: ['11–14', '11-14', '11 to 14'], explanation: l('11–14 minutes.', '১১–১৪ মিনিট।') }),
-        gap('sp-8-r2', 'sp-fluency', { ...P, pattern: 'sp-natural', prompt: l('Write one word.', 'একটা word লিখুন।'), sentence: 'Practise by speaking aloud and ___ yourself.', accepted: ['recording'], explanation: l('recording.', 'recording।') }),
+        gap('sp-8-r2', 'sp-fluency', { ...P, pattern: 'sp-natural', prompt: l('Write one word.', 'একটা word লিখুন।'), sentence: 'Practise by speaking aloud and ___ yourself, then listen back to it.', accepted: ['recording'], explanation: l('recording.', 'recording।') }),
         spot('sp-8-r3', 'sp-part2', { ...P, pattern: 'sp-long-turn', prompt: l('One word makes this advice wrong. Tap it and fix it.', 'একটা word এই পরামর্শকে ভুল করছে। Tap করে ঠিক করুন।'), sentence: 'Practise Part 2 without a timer.', wrong: 'without', accepted: ['with'], explanation: l('With a timer.', 'Timer সহ।') }),
         correct('sp-8-r4', 'sp-part1', { ...P, pattern: 'sp-extend', prompt: l('Correct the plan.', 'Plan-টা ঠিক করুন।'), sentence: 'In Part 1, speak for two minutes on every question.', accepted: ['In Part 1, give two or three sentences for every question.', 'In Part 1, give 2–3 sentences for every question.', 'In Part 1, give short answers with a reason and a detail.'], explanation: l('Part 1 answers are short.', 'Part 1-এর উত্তর ছোট।') }),
       ],

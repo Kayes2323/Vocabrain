@@ -456,7 +456,7 @@ const w1: Lesson = {
 const w2: Lesson = {
   id: 'pie-5', unit: 'ielts', format: 'v2', concept: C, minutes: 7, difficulty: 'medium', skill: 'writing',
   title: l('Building an academic sentence', 'Academic sentence বানানো'),
-  why: l('Band 6+ sentences pack ideas into noun phrases (immediate action, a sharp rise in prices). Knowing each word’s job lets you build them without errors.', 'Band 6+ sentence idea-গুলো noun phrase-এ গুছিয়ে রাখে (immediate action, a sharp rise in prices)। প্রতিটা word-এর কাজ জানলে ভুল ছাড়া এগুলো বানানো যায়।'),
+  why: l('Academic sentences often pack ideas into noun phrases (immediate action, a sharp rise in prices). Knowing each word’s job lets you build them without errors.', 'Academic sentence প্রায়ই idea-গুলো noun phrase-এ গুছিয়ে রাখে (immediate action, a sharp rise in prices)। প্রতিটা word-এর কাজ জানলে ভুল ছাড়া এগুলো বানানো যায়।'),
   steps: [
     {
       kind: 'hook',

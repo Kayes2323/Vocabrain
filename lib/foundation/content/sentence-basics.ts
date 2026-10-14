@@ -1280,7 +1280,7 @@ export const sentenceBasicsLessons: Lesson[] = [
             concept: C8,
             prompt: { en: 'Join with "because".', bn: '"because" দিয়ে জুড়ুন।' },
             sentence: 'I want to study abroad. I want better job opportunities.',
-            accepted: ['I want to study abroad because I want better job opportunities.'],
+            accepted: ['I want to study abroad because I want better job opportunities.', 'Because I want better job opportunities, I want to study abroad.'],
             explanation: { en: 'Main idea + "because" + reason.', bn: 'Main idea + "because" + কারণ।' },
             tag: 'complex-sentence',
           },

@@ -811,8 +811,8 @@ export const connCohesion: Lesson = {
       kind: 'concept',
       title: l('Cohesion that sounds natural', 'স্বাভাবিক শোনায় এমন cohesion'),
       body: l(
-        'Cohesion is how your sentences hold together. Connectors are one tool; referencing, synonyms and sentence joining are the others. Band 7 writing uses all of them, and uses connectors only where the logic needs them.',
-        'Cohesion হলো sentence-গুলো কীভাবে একসাথে থাকে। Connector একটা উপায়; referencing, synonym আর sentence জোড়া অন্য উপায়। Band 7-এর লেখা সবগুলো ব্যবহার করে, আর connector শুধু যেখানে যুক্তির দরকার সেখানে।',
+        'Cohesion is how your sentences hold together. Connectors are one tool; referencing, synonyms and sentence joining are the others. Clear writing uses all of them, and uses connectors only where the logic needs them.',
+        'Cohesion হলো sentence-গুলো কীভাবে একসাথে থাকে। Connector একটা উপায়; referencing, synonym আর sentence জোড়া অন্য উপায়। পরিষ্কার লেখা সবগুলো ব্যবহার করে, আর connector শুধু যেখানে যুক্তির দরকার সেখানে।',
       ),
       points: [
         l('Refer back: this / these + noun (This trend, These measures), such + noun (Such policies), it / they, and ", which" for the whole previous clause.', 'আগের দিকে ইঙ্গিত: this / these + noun (This trend, These measures), such + noun (Such policies), it / they, আর আগের পুরো clause-এর জন্য ", which"।'),

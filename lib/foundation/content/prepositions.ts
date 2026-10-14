@@ -661,8 +661,8 @@ export const prepPartners: Lesson = {
       kind: 'concept',
       title: l('The partners IELTS needs most', 'IELTS-এ সবচেয়ে দরকারি সাথী'),
       body: l(
-        'Some words always take the same preposition. There is no logic to learn — learn the chunk, and use it in your own sentences until it sounds natural.',
-        'কিছু word সবসময় একই preposition নেয়। শেখার মতো কোনো যুক্তি নেই — chunk-টা শিখুন, আর নিজের sentence-এ ব্যবহার করুন যতক্ষণ না স্বাভাবিক শোনায়।',
+        'Many words have a usual preposition partner, and often there is no simple rule behind it — learn the chunk and use it in your own sentences until it sounds natural. Some partners change the meaning, so learn them with an example.',
+        'অনেক word-এর একটা চেনা preposition সঙ্গী থাকে, আর প্রায়ই এর পেছনে সহজ কোনো নিয়ম নেই — chunk-টা শিখুন, আর নিজের sentence-এ ব্যবহার করুন যতক্ষণ না স্বাভাবিক শোনায়। কিছু সঙ্গী বদলালে অর্থ বদলায়, তাই উদাহরণসহ শিখুন।',
       ),
       points: [
         l('Adjectives: interested in · good / bad at · afraid of · aware of · responsible for · famous for · different from · similar to · addicted to · proud of.', 'Adjective: interested in · good / bad at · afraid of · aware of · responsible for · famous for · different from · similar to · addicted to · proud of।'),
