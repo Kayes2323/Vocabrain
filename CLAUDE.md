@@ -10,4 +10,5 @@ Caveman skills (from JuliusBrussee/caveman, v3.1.0) are installed in `.claude/sk
 - `stop caveman` or `normal mode` turns it off. `/ultracave` and `/megacave` are the stronger modes.
 - Commits: use `caveman-commit`. Reviews: use `caveman-review`.
 - Work patterns (pick the one that fits the task): `investigate-first` for unclear bugs, `lean-build` for new features, `surgical-patch` for small fixes, `safe-refactor` for restructuring, `migration` for schema or data changes, `verify-and-stop` for validation-only tasks.
-- Not installed on purpose: the `caveman-setup`/`discover`/`learn`/`manage`/`optimize`/`explore`/`evidence-review` skills. They drive the caveman proxy CLI, which sends usage telemetry.
+- Plugin: `.claude/settings.json` enables the `caveman@caveman` plugin, so hooks auto-start caveman every session in this repo. The full skill set is also copied into `.claude/skills/` as a fallback.
+- Cloud-gateway skills (`caveman-setup`, `discover`, `learn`, `manage`, `optimize`, `evidence-review`) are installed but do not run on their own. Never run `caveman-setup` or `caveman setup --install` without the user's explicit yes. It routes every LLM request through a third-party gateway and sends usage stats (token counts, install ID, OS, IP; not prompts or code).
