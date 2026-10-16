@@ -2,6 +2,7 @@
 // these lists; adding a section means adding an entry here plus its copy
 // under `sections.<id>` in lib/i18n/locales.
 import {
+  BadgeCheck,
   BookOpen,
   BookOpenText,
   BrainCircuit,
@@ -105,6 +106,7 @@ export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'speaking', icon: Mic, href: '/ielts/practice/speaking', status: 'available', phase: 4 },
   { id: 'vocabulary', icon: BookOpen, href: '/ielts/vocabulary', status: 'available', phase: 1 },
   { id: 'mock-tests', icon: Timer, href: '/ielts/tests', status: 'available', phase: 4 },
+  { id: 'full-mock-test', icon: BadgeCheck, href: '/ielts/full-mock-test', status: 'available', phase: 4 },
 ];
 
 export const IELTS_TOOLS: SectionDef[] = [

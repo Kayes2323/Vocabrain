@@ -44,7 +44,7 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   check(`${tag}: no learning-path accordion, no Level 0–6 list`, (await p.locator('main [aria-expanded]').count()) === 0 && !/Level [0-6]|আপনার শেখার পথ|Your learning path/.test(text));
   check(`${tag}: no progress dashboard on the page (Progress has its own page)`, (await p.getByTestId('learning-stats').count()) === 0 && (await p.getByTestId('progress-overall').count()) === 0 && (await p.getByTestId('hub-progress').isVisible()));
   const cards = await p.locator('#hub-learn a, #hub-practice a, #hub-test a, #hub-tools a').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
-  check(`${tag}: one card per destination, no duplicates`, cards.length === 7 && new Set(cards).size === 7, cards.join(' '));
+  check(`${tag}: one card per destination, no duplicates`, cards.length === 8 && new Set(cards).size === 8, cards.join(' '));
   check(`${tag}: practice cards are the four skills`, ['/ielts/practice/listening', '/ielts/reading', '/ielts/practice/writing', '/ielts/practice/speaking'].every((h) => cards.includes(h)));
   const tall = await p.locator('#hub-learn a, #hub-practice a, #hub-test a, #hub-tools a').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height > 96 || e.getBoundingClientRect().height < 44).length);
   check(`${tag}: compact cards with good touch targets (44–96 px)`, tall === 0);
@@ -69,6 +69,7 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   check(`${tag}: Writing page — Task 1 & 2 sections`, (await p.locator('main a[href$="/writing"][href^="/ielts/tests/"]').count()) >= 1);
   await opens(p, tag, '/ielts/practice/speaking', (q) => q.getByTestId('skill-practice').waitFor({ timeout: 60_000 }), 'Speaking');
   await opens(p, tag, '/ielts/tests', (q) => q.locator('main a[href^="/ielts/tests/"]').first().waitFor({ timeout: 60_000 }), 'Practice Tests');
+  await opens(p, tag, '/ielts/full-mock-test', (q) => q.locator('main a[href^="/ielts/full-mock-test/"]').first().waitFor({ timeout: 60_000 }), 'Full Mock Test');
   await opens(p, tag, '/ielts/band-calculator', (q) => q.locator('main h1').first().waitFor({ timeout: 60_000 }), 'Band Score Calculator');
   await hub(p);
   await p.getByTestId('hub-progress').click();
@@ -92,6 +93,19 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
     await p.getByRole('button', { name: 'Submit test' }).click();
     await p.getByText(/Estimated band|Band estimates need/).first().waitFor({ timeout: 60_000 });
     check(`${tag}: a submitted test shows its result`, /\d+ \/ \d+/.test(await p.locator('main').innerText()));
+
+    // ---------------------------------------------------------- Full Mock Test picks up the same attempt
+    const testId = href.split('/')[3];
+    await p.goto(BASE + `/ielts/full-mock-test/${testId}`, { waitUntil: 'load' });
+    await p.locator(`main a[href="/ielts/tests/${testId}/listening"]`).waitFor({ timeout: 60_000 });
+    const rows = await p.locator('main a[href^="/ielts/tests/"]').count();
+    check(`${tag}: Full Mock Test lists all 4 skills`, rows === 4);
+    const readingRow = await p.locator(`main a[href="/ielts/tests/${testId}/reading"]`).innerText();
+    check(`${tag}: Full Mock Test shows Reading as done after the attempt above`, /Done/.test(readingRow));
+    await p.goto(BASE + `/ielts/full-mock-test/${testId}/result`, { waitUntil: 'load' });
+    await p.getByText(/NOT AN OFFICIAL/).waitFor({ timeout: 60_000 });
+    check(`${tag}: the combined result page loads without all 4 skills done`, (await p.locator('main').innerText()).includes('NOT AN OFFICIAL'));
+
     let sessions = 0;
     for (let i = 0; i < 40 && !sessions; i++) {
       await p.waitForTimeout(250);

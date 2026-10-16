@@ -64,7 +64,10 @@ export default function IELTSPage() {
       </Section>
 
       <Section title={t('ielts.groups.test')} variant="label" id="hub-test">
-        <CardGrid>{card('mock-tests', 'yellow')}</CardGrid>
+        <CardGrid className="xl:grid-cols-2">
+          {card('mock-tests', 'yellow')}
+          {card('full-mock-test', 'green')}
+        </CardGrid>
       </Section>
 
       <Section title={t('ielts.groups.tools')} variant="label" id="hub-tools">
