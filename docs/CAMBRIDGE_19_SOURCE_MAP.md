@@ -90,3 +90,17 @@ unchanged, so the existing "coming soon" state remains correct and honest.
 
 No student-flow, lint, build or test run was performed for Cambridge 19,
 because no content was integrated.
+
+## 8. Update — 70-page upload (PDF pp. 1–70)
+
+- The upload is a **scanned image PDF** (no text layer); it was inspected
+  page by page. Pages 1–8 reviewed: cover, title page, contents, introduction.
+- The contents page resolves the earlier ambiguity: Introduction p4, Test 1
+  p10, Test 2 p33, Test 3 p55, **Test 4 p78**, Audioscripts p99, Listening and
+  Reading answer keys **p120–127**, Sample Writing answers p128–138, sample
+  answer sheets p139, acknowledgements p143. Printed page numbers differ from
+  PDF page numbers by a small offset.
+- The 70-page upload therefore covers Tests 1 and 2 and the start of Test 3
+  only. It contains **no answer keys (p120+)**, no audioscripts and no audio.
+- Still not integrated: no test can be validated or scored without its key, so
+  all Cambridge 19 tests remain "not available".
