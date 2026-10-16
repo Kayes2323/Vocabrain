@@ -111,6 +111,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // privateTests/{testId}: personal practice material, readable only by the
+    // owner's verified account. Written only with the Admin SDK (never from clients).
+    match /privateTests/{testId} {
+      allow read: if signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'aaksr99@gmail.com';
+      allow write: if false;
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;

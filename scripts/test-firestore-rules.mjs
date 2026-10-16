@@ -58,6 +58,12 @@ await expect('A saves conversation', () => setDoc(mino(A.db, ua, 'conversation')
 await expect('A other doc under mino', () => setDoc(mino(A.db, ua, 'secrets'), { x: 1 }), false);
 await expect('A reads B Mino memory', () => getDoc(mino(A.db, ub, 'memory')), false);
 await expect('A writes B Mino memory', () => setDoc(mino(A.db, ub, 'memory'), { notes: [], updatedAt: 'x' }), false);
+await expect('A reads private tests', () => getDoc(doc(A.db, 'privateTests', 't1')), false);
+await expect('A writes private tests', () => setDoc(doc(A.db, 'privateTests', 't1'), { x: 1 }), false);
+const O = mk('owner');
+await createUserWithEmailAndPassword(O.auth, 'aaksr99@gmail.com', 'secret123');
+await expect('Unverified owner-email reads private tests', () => getDoc(doc(O.db, 'privateTests', 't1')), false);
+await expect('Owner-email writes private tests', () => setDoc(doc(O.db, 'privateTests', 't1'), { x: 1 }), false);
 await signOut(A.auth);
 await expect('Signed-out reads A profile', () => getDoc(doc(A.db, 'users', ua.uid)), false);
 console.table(results);
