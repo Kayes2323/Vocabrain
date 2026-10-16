@@ -11,6 +11,7 @@ text, questions or answers.
 | # | File | Location | Format | Size | Notes |
 |---|------|----------|--------|------|-------|
 | 1 | `Cambridge 19 Academic_compressed.pdf` | Drive of azizkayes2005@gmail.com, id `1w-NNEUUDOf94nDgV_F48VHSxcr1Npjxq` | PDF, compressed | 15.3 MB | The only Cambridge file in the Drive (searched by full text "Cambridge" and by recent files). No audio, image or separate answer-key files were found. |
+| 2 | `Cambridge 19 Academic.pdf` | Drive folder `Cambridges 11-21`, id `1qPD8ZFkIfywN_-xgIig0BYsPAv4Z-7oy` | PDF, uncompressed | 27.8 MB | **Unreadable here:** over the 10 MB download cap, the proxy blocks drive.google.com, and Drive text extraction returns empty (no text layer — likely scanned images). Sole file in that folder; no audio yet. |
 
 The other Drive files matching "IELTS"/"Cambridge" (a personal test report
 form, ORPS terms, a Writing phrase bank, unrelated ID documents) are **not**
