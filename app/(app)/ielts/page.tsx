@@ -67,6 +67,7 @@ export default function IELTSPage() {
         <CardGrid className="xl:grid-cols-2">
           {card('mock-tests', 'yellow')}
           {card('full-mock-test', 'green')}
+          {card('cambridge', 'blue')}
         </CardGrid>
       </Section>
 

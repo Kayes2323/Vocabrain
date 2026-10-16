@@ -8,6 +8,7 @@ import {
   BrainCircuit,
   BookText,
   Building2,
+  Library,
   Calculator,
   CalendarCheck,
   CalendarClock,
@@ -107,6 +108,7 @@ export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'vocabulary', icon: BookOpen, href: '/ielts/vocabulary', status: 'available', phase: 1 },
   { id: 'mock-tests', icon: Timer, href: '/ielts/tests', status: 'available', phase: 4 },
   { id: 'full-mock-test', icon: BadgeCheck, href: '/ielts/full-mock-test', status: 'available', phase: 4 },
+  { id: 'cambridge', icon: Library, href: '/ielts/cambridge', status: 'available', phase: 4 },
 ];
 
 export const IELTS_TOOLS: SectionDef[] = [

@@ -44,7 +44,7 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   check(`${tag}: no learning-path accordion, no Level 0–6 list`, (await p.locator('main [aria-expanded]').count()) === 0 && !/Level [0-6]|আপনার শেখার পথ|Your learning path/.test(text));
   check(`${tag}: no progress dashboard on the page (Progress has its own page)`, (await p.getByTestId('learning-stats').count()) === 0 && (await p.getByTestId('progress-overall').count()) === 0 && (await p.getByTestId('hub-progress').isVisible()));
   const cards = await p.locator('#hub-learn a, #hub-practice a, #hub-test a, #hub-tools a').evaluateAll((els) => els.map((e) => e.getAttribute('href')));
-  check(`${tag}: one card per destination, no duplicates`, cards.length === 8 && new Set(cards).size === 8, cards.join(' '));
+  check(`${tag}: one card per destination, no duplicates`, cards.length === 9 && new Set(cards).size === 9, cards.join(' '));
   check(`${tag}: practice cards are the four skills`, ['/ielts/practice/listening', '/ielts/reading', '/ielts/practice/writing', '/ielts/practice/speaking'].every((h) => cards.includes(h)));
   const tall = await p.locator('#hub-learn a, #hub-practice a, #hub-test a, #hub-tools a').evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height > 96 || e.getBoundingClientRect().height < 44).length);
   check(`${tag}: compact cards with good touch targets (44–96 px)`, tall === 0);
