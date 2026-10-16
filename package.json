@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "test:rules": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"node scripts/test-firestore-rules.mjs\"",
+    "validate:private": "npx -y tsx scripts/validate-private-content.ts",
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
     "test:foundation-integrity": "npx -y tsx scripts/test-foundation-integrity.ts",

@@ -13,3 +13,6 @@ out
 # E2E output
 .e2e-logs/
 .e2e-shots/
+
+# Private (unlicensed-for-redistribution) exam content: never commit
+private-content/
