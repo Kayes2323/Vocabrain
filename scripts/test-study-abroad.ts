@@ -60,6 +60,7 @@ import { FI_GUIDE } from '../lib/content/fi-guide';
 import { LT_GUIDE } from '../lib/content/lt-guide';
 import { CZ_GUIDE } from '../lib/content/cz-guide';
 import { SI_GUIDE } from '../lib/content/si-guide';
+import { FR_GUIDE } from '../lib/content/fr-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1593,7 +1594,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1603,7 +1604,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('lt')?.code, 'LT');
   assert.equal(getCountryGuide('cz')?.code, 'CZ');
   assert.equal(getCountryGuide('si')?.code, 'SI');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('fr')?.code, 'FR');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1804,7 +1806,7 @@ test('Mino: guide knowledge is labelled and never leaks unverified answers', () 
   assert.match(m.rule, /ESTIMATE = a planning range/);
   const facts = countryFactsForMino(getCountry('DE')!, { degreeLevel: 'phd', now: NOW }) as { guide?: ReturnType<typeof guideForMino> };
   assert.deepEqual(Object.keys(facts.guide!.degrees), ['phd']);
-  assert.ok(!('guide' in countryFactsForMino(getCountry('FR')!, { now: NOW })), 'no guide for a country without one');
+  assert.ok(!('guide' in countryFactsForMino(getCountry('NL')!, { now: NOW })), 'no guide for a country without one');
   assert.ok(!JSON.stringify(guideForMino(DE_GUIDE)).includes('"answer":"Not verified yet'), 'not-verified text is withheld');
 });
 
@@ -2925,6 +2927,81 @@ test('Slovenia university layer: researched values, QS 2027 ranks (Nova Gorica u
   assert.match(ung.admission.text.en, /EUR 30\.00/);
   assert.equal(getUniversityProfile('si', 'nope'), undefined);
   assert.ok(si.unverified.some((x) => x.id === 'si-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- France guide
+const frPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(FR_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(FR_GUIDE.degrees[l].intro);
+test('France: its own research from French official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(FR_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|NOK |UDI|SEK |Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|subsistence minimum|DPP|DPČ|Režim Student|£|AUD |USD|NZD |CAD |JPY|KRW|CZK |\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE]), /VLS-TS|Études en France|Campus France|droits différenciés|recherche d.emploi ou création d.entreprise|CVEC/);
+  const hosts = new Set(guideSources([...FR_GUIDE.overview, ...FR_GUIDE.faqs, ...(FR_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(FR_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.service-public\.gouv\.fr|www\.service-public\.fr|administration-etrangers-en-france\.interieur\.gouv\.fr|demarche\.numerique\.gouv\.fr|www\.campusfrance\.org|www\.bangladesh\.campusfrance\.org|www\.universite-paris-saclay\.fr|www\.sciencespo\.fr|www\.sorbonne-universite\.fr|programmes\.polytechnique\.edu)$/, `${h} is an official French source`);
+  assert.ok(hosts.has('www.service-public.gouv.fr') && hosts.has('www.campusfrance.org'));
+});
+
+test('France: key official figures, Bangladesh’s own route (not the bilateral APS), nothing invented', () => {
+  const faq = (id: string) => FR_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(FR_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('funds').a[0].en, /EUR 877\.50/);
+  assert.match(faq('work').a[0].en, /964 hours/);
+  assert.match(faq('visa').a[0].en, /EUR 100/);
+  assert.match(faq('after').a[0].en, /master.s-or-above|RECE/);
+  assert.match(faq('bangladesh').a[0].en, /75 countries/);
+  assert.equal(faq('hsc').status, 'not-verified', 'HSC treatment not invented');
+  assert.equal(faq('ielts').status, 'not-verified', 'no single national IELTS minimum invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = FR_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in EUR, as the source states it`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR/, `${l}/${x.id} not converted`);
+    }
+  }
+  assert.equal(FR_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'national-fee')!.amount!.value, 178);
+  assert.equal(FR_GUIDE.degrees.masters.costs.official.find((x) => x.id === 'national-fee')!.amount!.value, 255);
+  assert.equal(FR_GUIDE.degrees.phd.costs.official.find((x) => x.id === 'national-fee')!.amount!.value, 398);
+  assert.equal(FR_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'funds-living')!.amount!.value, 877.5);
+});
+
+test('France: degree isolation and documents', () => {
+  assert.match(frPage('bachelors'), /HSC|Baccalaureate/);
+  assert.doesNotMatch(frPage('bachelors'), /doctoral school|giving access to the programme/);
+  assert.match(frPage('masters'), /giving access to the programme/);
+  assert.doesNotMatch(frPage('masters'), /HSC|doctoral school/);
+  assert.match(frPage('phd'), /doctoral school/);
+  assert.doesNotMatch(frPage('phd'), /HSC|giving access to the programme/);
+  const docs = FR_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('France: registries, RECE card (not the bilateral APS) for Bangladesh, Mino knowledge', () => {
+  const fr = UNIVERSITIES.filter((u) => u.countryCode === 'FR' && u.id.startsWith('fr-'));
+  assert.deepEqual(fr.map((u) => u.id), ['fr-polytechnique', 'fr-saclay', 'fr-sciencespo', 'fr-sorbonne']);
+  assert.equal(SCHOLARSHIPS.filter((s) => s.countryCode === 'FR').length, 0, 'the Eiffel Excellence Scholarship is institution-nominated, not a fixed open record for Bangladesh');
+  const m = guideForMino(FR_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(FR_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 877.5);
+  assert.equal(FR_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 964);
+  assert.equal(FR_GUIDE.factors!.find((f) => f.id === 'visa-fee')!.value!.min, 100);
+  assert.equal(FR_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 12);
+});
+
+test('France university layer: researched values, QS 2027 ranks (École Polytechnique via Institut Polytechnique de Paris), and sourcing stays honest', () => {
+  const fr = getUniLayer('fr')!;
+  assert.deepEqual(byRanking(fr.universities).map((u) => u.id), ['fr-polytechnique', 'fr-sorbonne', 'fr-saclay', 'fr-sciencespo']);
+  assert.deepEqual(byRanking(fr.universities).map((u) => u.ranking.rank), ['=43', '73', '76', '=354']);
+  const sciencespo = getUniversityProfile('fr', 'fr-sciencespo')!;
+  assert.match(sciencespo.tuition.text.en, /EUR 14,900.*EUR 20,640/);
+  assert.equal(sciencespo.deadlines.status, 'not-verified', 'Sciences Po has no single confirmed deadline on the page read');
+  const sorbonne = getUniversityProfile('fr', 'fr-sorbonne')!;
+  assert.match(sorbonne.tuition.text.en, /exemption to every non-EU applicant/);
+  const polytechnique = getUniversityProfile('fr', 'fr-polytechnique')!;
+  assert.equal(polytechnique.ranking.rank, '=43', 'École Polytechnique shows Institut Polytechnique de Paris’s 2027 QS rank, not its own stale 2021 figure');
+  assert.equal(polytechnique.programs[0]?.id, 'fr-polytechnique-bsc');
+  assert.equal(getUniversityProfile('fr', 'nope'), undefined);
+  assert.ok(fr.unverified.some((x) => x.id === 'fr-bd-visa-approval-rate' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);
