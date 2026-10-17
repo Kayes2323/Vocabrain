@@ -42,7 +42,7 @@ function testsFor(edition: number): CambridgeTestMeta[] {
 export const CAMBRIDGE_CATALOG: CambridgeBookMeta[] = Array.from({ length: 12 }, (_, i) => 21 - i).map((edition) => ({
   id: `cambridge-${edition}`,
   edition,
-  title: `Cambridge IELTS ${edition}`,
+  title: `IELTS ${edition}`,
   academic: true,
   tests: testsFor(edition),
 }));

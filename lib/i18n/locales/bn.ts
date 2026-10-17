@@ -705,9 +705,9 @@ export const bn: LocaleDictionary = {
     askMino: 'আমার Full Mock Test result নিয়ে Mino-কে জিজ্ঞেস করুন',
   },
   cambridge: {
-    libraryTitle: 'Cambridge IELTS',
-    librarySubtitle: 'Cambridge IELTS 10–21, book আর test অনুযায়ী ঘুরে দেখুন। এখনো কোনো Cambridge content load করা হয়নি — এটা শুধু library, exam না।',
-    libraryNote: 'এটা শুধু একটা browsing library। Cambridge IELTS content licensed publisher material, test ধরে ধরে যুক্ত হবে; content তৈরি না হওয়া পর্যন্ত প্রতিটা book-এ "Coming soon" দেখাবে।',
+    libraryTitle: 'IELTS Test Library',
+    librarySubtitle: 'IELTS 10–21, book আর test অনুযায়ী ঘুরে দেখুন। এখনো কোনো content load করা হয়নি — এটা শুধু library, exam না।',
+    libraryNote: 'এটা শুধু একটা browsing library। Content licensed publisher material, test ধরে ধরে যুক্ত হবে; content তৈরি না হওয়া পর্যন্ত প্রতিটা book-এ "Coming soon" দেখাবে।',
     bookSubtitle: 'Academic · Test 1–4',
     bookNote: 'এই book-এর কোনো test এখনো load করা হয়নি। আসল, licensed content যুক্ত হওয়ার সাথে সাথে এখানে "Available" দেখাবে।',
     testN: 'Test {n}',
@@ -715,8 +715,8 @@ export const bn: LocaleDictionary = {
     available: 'Available',
     comingSoon: 'Coming soon',
     comingSoonTitle: 'এখনো পাওয়া যাচ্ছে না',
-    comingSoonBody: 'এই test-এর আসল Cambridge content এখনো যুক্ত হয়নি, তাই শুরু করার মতো কিছু নেই। License আর load হওয়ার পর আবার দেখুন।',
-    comingSoonNote: 'Mino কখনো Cambridge-এর question, passage, audio বা answer key বানায় না। আসল, licensed content যুক্ত হলেই এখানে Start button আসবে।',
+    comingSoonBody: 'এই test-এর আসল content এখনো যুক্ত হয়নি, তাই শুরু করার মতো কিছু নেই। License আর load হওয়ার পর আবার দেখুন।',
+    comingSoonNote: 'Mino কখনো question, passage, audio বা answer key বানায় না। আসল, licensed content যুক্ত হলেই এখানে Start button আসবে।',
   },
   myPlan: {
     title: 'My IELTS Plan',
@@ -1412,7 +1412,7 @@ export const bn: LocaleDictionary = {
       speaking: 'কথা বলে Part 1–3',
       'mock-tests': 'সময় ধরে Academic test: পুরো test বা একটা section',
       'full-mock-test': 'চারটা skill, এক বসায়, একটা combined result',
-      cambridge: 'Cambridge IELTS 10–21 ঘুরে দেখুন — content আসছে শীঘ্রই',
+      cambridge: 'IELTS 10–21 ঘুরে দেখুন — content আসছে শীঘ্রই',
       'band-calculator': 'আপনার overall band হিসাব করুন',
       plan: 'আপনার লক্ষ্য অনুযায়ী IELTS প্রস্তুতির পরিকল্পনা',
     },
@@ -1519,8 +1519,8 @@ export const bn: LocaleDictionary = {
       highlights: ['Listening → Reading → Writing → Speaking, একই ক্রমে', 'একটা combined band estimate', 'স্পষ্টভাবে practice হিসেবে চিহ্নিত, কখনো official score না'],
     },
     cambridge: {
-      title: 'Cambridge IELTS',
-      description: 'Cambridge IELTS 10 থেকে 21, book আর test অনুযায়ী ঘুরে দেখুন।',
+      title: 'IELTS Test Library',
+      description: 'IELTS 10 থেকে 21, book আর test অনুযায়ী ঘুরে দেখুন।',
       highlights: ['10 থেকে 21 পর্যন্ত book, প্রতিটায় চারটা test', 'Content না আসা পর্যন্ত স্পষ্ট "Coming soon" status', 'কোনো বানানো content না — license পেলেই আসল test যুক্ত হবে'],
     },
     'band-calculator': {

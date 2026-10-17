@@ -703,9 +703,9 @@ export const en = {
     askMino: 'Ask Mino about my Full Mock Test result',
   },
   cambridge: {
-    libraryTitle: 'Cambridge IELTS',
-    librarySubtitle: 'Browse Cambridge IELTS 10–21 by book and test. No Cambridge content is loaded yet — this is the library, not the exam.',
-    libraryNote: 'This is a browsing library only. Cambridge IELTS content is licensed publisher material and will be added test by test; every book shows "Coming soon" until its content is ready.',
+    libraryTitle: 'IELTS Test Library',
+    librarySubtitle: 'Browse IELTS 10–21 by book and test. No content is loaded yet — this is the library, not the exam.',
+    libraryNote: 'This is a browsing library only. Content is licensed publisher material and will be added test by test; every book shows "Coming soon" until its content is ready.',
     bookSubtitle: 'Academic · Tests 1–4',
     bookNote: 'None of this book’s tests are loaded yet. Each one will show "Available" here the moment its real, licensed content is added.',
     testN: 'Test {n}',
@@ -713,8 +713,8 @@ export const en = {
     available: 'Available',
     comingSoon: 'Coming soon',
     comingSoonTitle: 'Not available yet',
-    comingSoonBody: 'This test’s real Cambridge content hasn’t been added yet, so there’s nothing to start. Check back once it’s licensed and loaded.',
-    comingSoonNote: 'Mino never invents Cambridge questions, passages, audio or answer keys. This page will only offer a Start button once real, licensed content is linked here.',
+    comingSoonBody: 'This test’s real content hasn’t been added yet, so there’s nothing to start. Check back once it’s licensed and loaded.',
+    comingSoonNote: 'Mino never invents questions, passages, audio or answer keys. This page will only offer a Start button once real, licensed content is linked here.',
   },
   myPlan: {
     title: 'My IELTS Plan',
@@ -1413,7 +1413,7 @@ export const en = {
       speaking: 'Parts 1–3, out loud',
       'mock-tests': 'Timed Academic tests: a full test or one section',
       'full-mock-test': 'All 4 skills, one sitting, one combined result',
-      cambridge: 'Browse Cambridge IELTS 10–21 — content coming soon',
+      cambridge: 'Browse IELTS 10–21 — content coming soon',
       'band-calculator': 'Work out your overall band',
       plan: 'Your IELTS preparation plan, built around your goal',
     },
@@ -1520,8 +1520,8 @@ export const en = {
       highlights: ['Listening → Reading → Writing → Speaking, in order', 'One combined band estimate', 'Clearly marked as practice, never an official score'],
     },
     cambridge: {
-      title: 'Cambridge IELTS',
-      description: 'Browse Cambridge IELTS 10–21 by book and test.',
+      title: 'IELTS Test Library',
+      description: 'Browse IELTS 10–21 by book and test.',
       highlights: ['Books 10 to 21, four tests each', 'Clear "coming soon" status until a test is added', 'No invented content — real tests only, once licensed'],
     },
     'band-calculator': {
