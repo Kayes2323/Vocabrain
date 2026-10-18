@@ -65,6 +65,7 @@ import { IE_GUIDE } from '../lib/content/ie-guide';
 import { NL_GUIDE } from '../lib/content/nl-guide';
 import { CH_GUIDE } from '../lib/content/ch-guide';
 import { HU_GUIDE } from '../lib/content/hu-guide';
+import { AT_GUIDE } from '../lib/content/at-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -232,8 +233,8 @@ test('destinations: grouped Europe → Asia → other regions, every country exa
     assert.equal(c.region, 'Europe');
     assert.equal(c.hero?.src, `/images/countries/${file}`, `${code} uses its own photo`);
     assert.ok(groups[0].countries.includes(c), `${code} sits with the other European countries`);
-    // Lithuania, the Czech Republic, Slovenia and Hungary have since received their own researched guides; every other added country still has none.
-    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : code === 'HU' ? HU_GUIDE : undefined, `${code}: no invented guide`);
+    // Lithuania, the Czech Republic, Slovenia, Hungary and Austria have since received their own researched guides; every other added country still has none.
+    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : code === 'HU' ? HU_GUIDE : code === 'AT' ? AT_GUIDE : undefined, `${code}: no invented guide`);
   }
 });
 
@@ -1598,7 +1599,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1613,7 +1614,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('nl')?.code, 'NL');
   assert.equal(getCountryGuide('ch')?.code, 'CH');
   assert.equal(getCountryGuide('hu')?.code, 'HU');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('at')?.code, 'AT');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1814,7 +1816,7 @@ test('Mino: guide knowledge is labelled and never leaks unverified answers', () 
   assert.match(m.rule, /ESTIMATE = a planning range/);
   const facts = countryFactsForMino(getCountry('DE')!, { degreeLevel: 'phd', now: NOW }) as { guide?: ReturnType<typeof guideForMino> };
   assert.deepEqual(Object.keys(facts.guide!.degrees), ['phd']);
-  assert.ok(!('guide' in countryFactsForMino(getCountry('AT')!, { now: NOW })), 'no guide for a country without one');
+  assert.ok(!('guide' in countryFactsForMino(getCountry('CY')!, { now: NOW })), 'no guide for a country without one');
   assert.ok(!JSON.stringify(guideForMino(DE_GUIDE)).includes('"answer":"Not verified yet'), 'not-verified text is withheld');
 });
 
@@ -3298,6 +3300,76 @@ test('Hungary university layer: researched values, QS 2027 ranks, and sourcing s
   assert.equal(semmelweis.ranking.rank, null, 'Semmelweis is not in the QS 2027 overall ranking');
   assert.equal(getUniversityProfile('hu', 'nope'), undefined);
   assert.ok(hu.unverified.some((x) => x.id === 'hu-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Austria guide
+const atPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(AT_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(AT_GUIDE.degrees[l].intro);
+test('Austria: its own research from Austrian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(AT_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|UDI|Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|schweiz-bangladesch|sem\.admin\.ch|ESKAS|oif\.gov\.hu|stipendiumhungaricum|NDGAP|HUF \d|£|AUD |CAD |JPY|KRW|CZK |CHF |SEK |NOK /);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE, CH_GUIDE, HU_GUIDE]), /migration\.gv\.at|oead\.at|bmfwf\.gv\.at|Aufenthaltsbewilligung|Residence Permit – Student|Red-White-Red/);
+  const hosts = new Set(guideSources([...AT_GUIDE.overview, ...AT_GUIDE.faqs, ...(AT_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(AT_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.migration\.gv\.at|www\.bmfwf\.gv\.at|oead\.at|studieren\.univie\.ac\.at|www\.tuwien\.at|www\.uibk\.ac\.at|www\.tugraz\.at|www\.jku\.at)$/, `${h} is an official Austrian source`);
+  assert.ok(hosts.has('www.migration.gv.at') && hosts.has('oead.at'));
+});
+
+test('Austria: key official figures, Bangladesh’s own situation, nothing invented', () => {
+  const faq = (id: string) => AT_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(AT_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after']);
+  assert.match(faq('work').a[0].en, /20 hours/);
+  assert.match(faq('visa').a[0].en, /Residence Permit – Student/);
+  assert.match(faq('after').a[0].en, /12 months/);
+  assert.match(faq('bangladesh').a[0].en, /Least Developed Country/);
+  assert.equal(faq('funds').status, 'not-verified', 'no single official minimum-funds figure invented');
+  assert.equal(faq('phd').status, 'not-verified', 'no general national PhD rule invented');
+  assert.equal(faq('scholarships').status, 'partly-verified', 'no Bangladesh-specific full-degree scholarship invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = AT_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in the source's own currency`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR|HUF|CHF/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Austria: degree isolation and documents', () => {
+  assert.match(atPage('bachelors'), /Matura/);
+  assert.doesNotMatch(atPage('bachelors'), /doctoral school|research-topic proposal/);
+  assert.match(atPage('masters'), /180 ECTS/);
+  assert.doesNotMatch(atPage('masters'), /Matura|doctoral school/);
+  assert.match(atPage('phd'), /doctoral school/);
+  assert.doesNotMatch(atPage('phd'), /Matura/);
+  const docs = AT_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Austria: registries, no invented Bangladesh-specific full-degree scholarship, Mino knowledge', () => {
+  const at = UNIVERSITIES.filter((u) => u.countryCode === 'AT' && u.id.startsWith('at-'));
+  assert.deepEqual(at.map((u) => u.id).sort(), ['at-jku-linz', 'at-tu-graz', 'at-tu-wien', 'at-uibk', 'at-univie']);
+  const ernstMach = SCHOLARSHIPS.filter((s) => s.countryCode === 'AT');
+  assert.ok(ernstMach.length > 0, 'Austria’s Ernst Mach grants are recorded honestly');
+  for (const s of ernstMach) assert.match(s.coverage!.value, /not funding|not a complete|not full-degree|short research|study.?period/i, `${s.id}: honestly scoped as a short grant, not a full degree`);
+  const m = guideForMino(AT_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(AT_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 20);
+  assert.equal(AT_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 12);
+  assert.equal(AT_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 12);
+  assert.equal(AT_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.status, 'not-verified');
+});
+
+test('Austria university layer: researched values, QS 2027 ranks, national tuition, and sourcing stays honest', () => {
+  const at = getUniLayer('at')!;
+  assert.deepEqual(byRanking(at.universities).map((u) => u.id), ['at-univie', 'at-tu-wien', 'at-uibk', 'at-tu-graz', 'at-jku-linz']);
+  assert.deepEqual(byRanking(at.universities).map((u) => u.ranking.rank), ['=140', '=191', '333', '=409', '=458']);
+  for (const u of at.universities) assert.equal(u.tuition.money?.amount, 726.72, `${u.id}: national tuition figure, not institution-specific`);
+  const tuwien = getUniversityProfile('at', 'at-tu-wien')!;
+  assert.match(tuwien.tuition.text.en, /726\.72/);
+  assert.equal(tuwien.programs[0]?.id, 'at-tuwien-masters-english');
+  assert.equal(getUniversityProfile('at', 'nope'), undefined);
+  assert.ok(at.unverified.some((x) => x.id === 'at-bd-visa-approval-rate' && x.status === 'not-verified'));
+  assert.ok(at.unverified.some((x) => x.id === 'at-ldc-waiver-bangladesh-confirmed' && x.status === 'needs-review'));
 });
 
 console.log(`\n${passed} passed`);
