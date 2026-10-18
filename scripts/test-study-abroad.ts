@@ -68,6 +68,7 @@ import { HU_GUIDE } from '../lib/content/hu-guide';
 import { AT_GUIDE } from '../lib/content/at-guide';
 import { DK_GUIDE } from '../lib/content/dk-guide';
 import { ES_GUIDE } from '../lib/content/es-guide';
+import { MY_GUIDE } from '../lib/content/my-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1601,7 +1602,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1619,7 +1620,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('at')?.code, 'AT');
   assert.equal(getCountryGuide('dk')?.code, 'DK');
   assert.equal(getCountryGuide('es')?.code, 'ES');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('my')?.code, 'MY');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3520,6 +3522,79 @@ test('Spain university layer: researched values, QS 2027 ranks, IE University tu
   assert.equal(getUniversityProfile('es', 'nope'), undefined);
   assert.ok(es.unverified.some((x) => x.id === 'es-bd-visa-approval-rate' && x.status === 'not-verified'));
   assert.ok(es.unverified.some((x) => x.id === 'es-aecid-bangladesh-eligibility' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Malaysia guide
+const myPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(MY_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(MY_GUIDE.degrees[l].intro);
+test('Malaysia: its own research from Malaysian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(MY_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|UDI|Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|schweiz-bangladesch|sem\.admin\.ch|ESKAS|oif\.gov\.hu|stipendiumhungaricum|NDGAP|migration\.gv\.at|oead\.at|bmfwf\.gv\.at|Aufenthaltsbewilligung|Red-White-Red|nyidanmark\.dk|SIRI|yellow card|CPR number|HUF \d|£|AUD |CAD |JPY|KRW|CZK |CHF |SEK |NOK |DKK |IPREM|autorización de estancia|Ley de Startups|\bTIE\b/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE, CH_GUIDE, HU_GUIDE, AT_GUIDE, DK_GUIDE, ES_GUIDE]), /EMGS|eVAL|Single Entry Visa|Graduate Pass|Student Pass|biasiswa\.mohe/);
+  const hosts = new Set(guideSources([...MY_GUIDE.overview, ...MY_GUIDE.faqs, ...(MY_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(MY_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.imi\.gov\.my|visa\.educationmalaysia\.gov\.my|educationmalaysia\.gov\.my|hub\.emgs\.com\.my|www\.kln\.gov\.my|biasiswa\.mohe\.gov\.my|study\.um\.edu\.my|eng\.upm\.edu\.my|akademik\.upm\.edu\.my)$/, `${h} is an official Malaysian source`);
+  assert.ok(hosts.has('visa.educationmalaysia.gov.my') || hosts.has('educationmalaysia.gov.my'));
+  assert.ok(hosts.has('www.imi.gov.my'));
+});
+
+test('Malaysia: key official figures, the EMGS/Immigration process, nothing invented', () => {
+  const faq = (id: string) => MY_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(MY_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after']);
+  assert.match(faq('work').a[0].en, /20 hours/);
+  assert.match(faq('visa').a[0].en, /EMGS/);
+  assert.match(faq('after').a[0].en, /Graduate Pass/);
+  assert.match(faq('after').a[0].en, /not among them/);
+  assert.match(faq('bangladesh').a[0].en, /Single Entry Visa/);
+  assert.equal(faq('hsc').status, 'partly-verified', 'no single nationwide HSC-conversion rule invented');
+  assert.equal(faq('phd').status, 'not-verified', 'no general national PhD rule invented');
+  assert.equal(faq('scholarships').status, 'not-verified', 'no Bangladesh-specific MIS eligibility invented');
+  assert.equal(faq('funds').status, 'not-verified', 'no minimum-funds figure invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = MY_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.match(x.amount.currency, /^(RM|USD)$/, `${l}/${x.id} in the source's own currency`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR|EUR|HUF|CHF|DKK/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Malaysia: degree isolation and documents', () => {
+  assert.match(myPage('bachelors'), /HSC/);
+  assert.doesNotMatch(myPage('bachelors'), /research proposal/);
+  assert.match(myPage('masters'), /regardless of nationality/);
+  assert.doesNotMatch(myPage('masters'), /\bHSC\b/);
+  assert.match(myPage('phd'), /research proposal/);
+  assert.doesNotMatch(myPage('phd'), /\bHSC\b/);
+  const docs = MY_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'sev')!.groups.includes('bangladesh'));
+});
+
+test('Malaysia: registries, no invented Bangladesh-specific MIS/Graduate-Pass eligibility, Mino knowledge', () => {
+  const my = UNIVERSITIES.filter((u) => u.countryCode === 'MY' && u.id.startsWith('my-'));
+  assert.deepEqual(my.map((u) => u.id).sort(), ['my-monash', 'my-ukm', 'my-um', 'my-upm', 'my-utm']);
+  const mis = SCHOLARSHIPS.filter((s) => s.countryCode === 'MY');
+  assert.ok(mis.length > 0, 'Malaysia’s MIS scholarship is recorded honestly');
+  for (const s of mis) assert.equal(s.eligibility.status, 'not-verified', `${s.id}: Bangladesh eligibility honestly not claimed`);
+  const m = guideForMino(MY_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(MY_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 20);
+  assert.equal(MY_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 0);
+  assert.equal(MY_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.status, 'not-verified');
+});
+
+test('Malaysia university layer: researched values, QS 2027 ranks (Monash unranked separately), per-university tuition, and sourcing stays honest', () => {
+  const my = getUniLayer('my')!;
+  assert.deepEqual(byRanking(my.universities).map((u) => u.id), ['my-um', 'my-ukm', 'my-upm', 'my-utm', 'my-monash']);
+  assert.deepEqual(byRanking(my.universities).map((u) => u.ranking.rank), ['56', '130', '138', '=158', null]);
+  const monash = getUniversityProfile('my', 'my-monash')!;
+  assert.equal(monash.tuition.money?.amount, 57600);
+  assert.equal(monash.tuition.money?.currency, 'RM');
+  assert.equal(monash.ranking.rank, null, 'QS does not rank the Monash Malaysia campus separately from the parent Monash University');
+  assert.equal(monash.programs[0]?.id, 'my-monash-bachelor-computer-science');
+  assert.equal(getUniversityProfile('my', 'nope'), undefined);
+  assert.ok(my.unverified.some((x) => x.id === 'my-bd-visa-approval-rate' && x.status === 'not-verified'));
+  assert.ok(my.unverified.some((x) => x.id === 'my-minimum-funds-figure' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);
