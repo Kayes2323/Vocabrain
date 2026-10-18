@@ -62,6 +62,7 @@ import { CZ_GUIDE } from '../lib/content/cz-guide';
 import { SI_GUIDE } from '../lib/content/si-guide';
 import { FR_GUIDE } from '../lib/content/fr-guide';
 import { IE_GUIDE } from '../lib/content/ie-guide';
+import { NL_GUIDE } from '../lib/content/nl-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1595,7 +1596,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1607,7 +1608,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('si')?.code, 'SI');
   assert.equal(getCountryGuide('fr')?.code, 'FR');
   assert.equal(getCountryGuide('ie')?.code, 'IE');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('nl')?.code, 'NL');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -1808,7 +1810,7 @@ test('Mino: guide knowledge is labelled and never leaks unverified answers', () 
   assert.match(m.rule, /ESTIMATE = a planning range/);
   const facts = countryFactsForMino(getCountry('DE')!, { degreeLevel: 'phd', now: NOW }) as { guide?: ReturnType<typeof guideForMino> };
   assert.deepEqual(Object.keys(facts.guide!.degrees), ['phd']);
-  assert.ok(!('guide' in countryFactsForMino(getCountry('NL')!, { now: NOW })), 'no guide for a country without one');
+  assert.ok(!('guide' in countryFactsForMino(getCountry('AT')!, { now: NOW })), 'no guide for a country without one');
   assert.ok(!JSON.stringify(guideForMino(DE_GUIDE)).includes('"answer":"Not verified yet'), 'not-verified text is withheld');
 });
 
@@ -3075,6 +3077,78 @@ test('Ireland university layer: researched values, QS 2027 ranks, and sourcing s
   assert.equal(tcd.deadlines.status, 'partly-verified');
   assert.equal(getUniversityProfile('ie', 'nope'), undefined);
   assert.ok(ie.unverified.some((x) => x.id === 'ie-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Netherlands guide
+const nlPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(NL_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(NL_GUIDE.degrees[l].intro);
+test('Netherlands: its own research from Dutch official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(NL_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|NOK |UDI|SEK |Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|subsistence minimum|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|£|AUD |USD|NZD |CAD |JPY|KRW|CZK |\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE]), /zoekjaar|MVV|study norm|Studielink|ind\.nl|nllabourauthority/);
+  const hosts = new Set(guideSources([...NL_GUIDE.overview, ...NL_GUIDE.faqs, ...(NL_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(NL_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(ind\.nl|www\.netherlandsworldwide\.nl|www\.nllabourauthority\.nl|www\.studyinnl\.org|www\.uva\.nl|www\.tudelft\.nl|www\.uu\.nl)$/, `${h} is an official Dutch source`);
+  assert.ok(hosts.has('ind.nl') && hosts.has('www.studyinnl.org'));
+});
+
+test('Netherlands: key official figures, Bangladesh’s own route, nothing invented', () => {
+  const faq = (id: string) => NL_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(NL_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('funds').a[0].en, /1,130\.77/);
+  assert.match(faq('work').a[0].en, /16 hours/);
+  assert.match(faq('visa').a[0].en, /MVV/);
+  assert.match(faq('after').a[0].en, /zoekjaar/);
+  assert.match(faq('bangladesh').a[0].en, /MVV/);
+  assert.equal(faq('hsc').status, 'not-verified', 'HSC-equivalence rule not invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = NL_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in EUR, as the source states it`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR/, `${l}/${x.id} not converted`);
+    }
+  }
+  assert.equal(NL_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'funds-living')!.amount!.value, 1130.77);
+  assert.equal(NL_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'visa-fee')!.amount!.value, 254);
+});
+
+test('Netherlands: degree isolation and documents', () => {
+  assert.match(nlPage('bachelors'), /HSC|VWO/);
+  assert.doesNotMatch(nlPage('bachelors'), /motivation letter\/CV|employed position/);
+  assert.match(nlPage('masters'), /motivation letter/);
+  assert.doesNotMatch(nlPage('masters'), /HSC|employed position/);
+  assert.match(nlPage('phd'), /employed position|doctoral/);
+  assert.doesNotMatch(nlPage('phd'), /HSC|Studielink.*numerus fixus/);
+  const docs = NL_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Netherlands: registries, NL Scholarship genuinely open to Bangladesh, Mino knowledge', () => {
+  const nl = UNIVERSITIES.filter((u) => u.countryCode === 'NL' && u.id.startsWith('nl-'));
+  assert.deepEqual(nl.map((u) => u.id).sort(), ['nl-eur', 'nl-leiden', 'nl-tudelft', 'nl-uu', 'nl-uva']);
+  const scholarship = SCHOLARSHIPS.find((s) => s.countryCode === 'NL' && s.id === 'nl-scholarship')!;
+  assert.ok(scholarship, 'NL Scholarship is a genuinely open, nationality-eligible scholarship record, like Ireland’s GOI-IES');
+  assert.match(scholarship.eligibility.value, /outside the European Economic Area/);
+  const m = guideForMino(NL_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(NL_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 13569);
+  assert.equal(NL_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 16);
+  assert.equal(NL_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 12);
+  assert.equal(NL_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 12);
+});
+
+test('Netherlands university layer: researched values, QS 2027 ranks, and sourcing stays honest', () => {
+  const nl = getUniLayer('nl')!;
+  assert.deepEqual(byRanking(nl.universities).map((u) => u.id), ['nl-tudelft', 'nl-uva', 'nl-uu', 'nl-leiden', 'nl-eur']);
+  assert.deepEqual(byRanking(nl.universities).map((u) => u.ranking.rank), ['48', '60', '=113', '=119', '148']);
+  const tudelft = getUniversityProfile('nl', 'nl-tudelft')!;
+  assert.match(tudelft.tuition.text.en, /EUR 19,906.*EUR 25,633/);
+  const eur = getUniversityProfile('nl', 'nl-eur')!;
+  assert.equal(eur.programs[0]?.id, 'nl-eur-ibeb');
+  const uu = getUniversityProfile('nl', 'nl-uu')!;
+  assert.equal(uu.tuition.status, 'partly-verified');
+  assert.equal(getUniversityProfile('nl', 'nope'), undefined);
+  assert.ok(nl.unverified.some((x) => x.id === 'nl-bd-visa-approval-rate' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);

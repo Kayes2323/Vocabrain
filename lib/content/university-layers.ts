@@ -6,6 +6,7 @@ import { CZ_UNI_LAYER } from './cz-unis';
 import { SI_UNI_LAYER } from './si-unis';
 import { FR_UNI_LAYER } from './fr-unis';
 import { IE_UNI_LAYER } from './ie-unis';
+import { NL_UNI_LAYER } from './nl-unis';
 
 /** Countries whose university → program layer has been researched. Others show nothing (never placeholders). */
 export const UNI_LAYERS: Record<string, CountryUniversityLayer> = {
@@ -16,6 +17,7 @@ export const UNI_LAYERS: Record<string, CountryUniversityLayer> = {
   SI: SI_UNI_LAYER,
   FR: FR_UNI_LAYER,
   IE: IE_UNI_LAYER,
+  NL: NL_UNI_LAYER,
 };
 
 export const getUniLayer = (code: string): CountryUniversityLayer | undefined => UNI_LAYERS[code.toUpperCase()];
