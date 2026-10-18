@@ -63,6 +63,7 @@ import { SI_GUIDE } from '../lib/content/si-guide';
 import { FR_GUIDE } from '../lib/content/fr-guide';
 import { IE_GUIDE } from '../lib/content/ie-guide';
 import { NL_GUIDE } from '../lib/content/nl-guide';
+import { CH_GUIDE } from '../lib/content/ch-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1596,7 +1597,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1609,7 +1610,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('fr')?.code, 'FR');
   assert.equal(getCountryGuide('ie')?.code, 'IE');
   assert.equal(getCountryGuide('nl')?.code, 'NL');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('ch')?.code, 'CH');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3149,6 +3151,77 @@ test('Netherlands university layer: researched values, QS 2027 ranks, and sourci
   assert.equal(uu.tuition.status, 'partly-verified');
   assert.equal(getUniversityProfile('nl', 'nope'), undefined);
   assert.ok(nl.unverified.some((x) => x.id === 'nl-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Switzerland guide
+const chPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(CH_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(CH_GUIDE.degrees[l].intro);
+test('Switzerland: its own research from Swiss official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(CH_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|NOK |UDI|SEK |Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|subsistence minimum|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|£|AUD |USD|NZD |CAD |JPY|KRW|CZK |EUR |\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE]), /schweiz-bangladesch|sem\.admin\.ch|ESKAS|canton(al)?\b/);
+  const hosts = new Set(guideSources([...CH_GUIDE.overview, ...CH_GUIDE.faqs, ...(CH_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(CH_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.sem\.admin\.ch|www\.schweiz-bangladesch\.eda\.admin\.ch|www\.schweiz-kanada\.eda\.admin\.ch|www\.bag\.admin\.ch|www\.sbfi\.admin\.ch|ethz\.ch|www\.epfl\.ch|www\.uzh\.ch|www\.unige\.ch)$/, `${h} is an official Swiss source`);
+  assert.ok(hosts.has('www.sem.admin.ch') && hosts.has('www.schweiz-bangladesch.eda.admin.ch'));
+});
+
+test('Switzerland: key official figures, Bangladesh’s own route, nothing invented', () => {
+  const faq = (id: string) => CH_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(CH_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('work').a[0].en, /15 hours/);
+  assert.match(faq('visa').a[0].en, /visa D/);
+  assert.match(faq('after').a[0].en, /six months/);
+  assert.match(faq('bangladesh').a[0].en, /Embassy of Switzerland/);
+  assert.equal(faq('hsc').status, 'not-verified', 'HSC-equivalence rule not invented');
+  assert.equal(faq('funds').status, 'not-verified', 'no single official minimum-funds figure invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = CH_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'CHF', `${l}/${x.id} in CHF, as the source states it`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Switzerland: degree isolation and documents', () => {
+  assert.match(chPage('bachelors'), /German|French|HSC/);
+  assert.doesNotMatch(chPage('bachelors'), /doctoral-assistant|academic year \(at EPFL\)/);
+  assert.match(chPage('masters'), /Bachelor’s degree \(or equivalent\)/);
+  assert.doesNotMatch(chPage('masters'), /HSC|doctoral-assistant/);
+  assert.match(chPage('phd'), /doctoral-assistant|supervisor/);
+  assert.doesNotMatch(chPage('phd'), /HSC|CEFR B2/);
+  const docs = CH_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Switzerland: registries, Swiss Government Excellence Scholarship honestly scoped to Bangladesh, Mino knowledge', () => {
+  const ch = UNIVERSITIES.filter((u) => u.countryCode === 'CH' && u.id.startsWith('ch-'));
+  assert.deepEqual(ch.map((u) => u.id).sort(), ['ch-epfl', 'ch-ethz', 'ch-unige', 'ch-uzh']);
+  const sgs = SCHOLARSHIPS.find((s) => s.countryCode === 'CH' && s.id === 'ch-sgs')!;
+  assert.ok(sgs, 'SGS is a genuinely open scholarship record for Bangladesh, but PhD/research only — unlike NL/IE’s Bachelor’s/Master’s-eligible scholarships');
+  assert.deepEqual(sgs.degreeLevels, ['phd']);
+  assert.match(sgs.eligibility.value, /Bangladesh/);
+  const m = guideForMino(CH_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(CH_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 15);
+  assert.equal(CH_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 6);
+  assert.equal(CH_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 6);
+  assert.equal(CH_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.status, 'not-verified');
+});
+
+test('Switzerland university layer: researched values, QS 2027 ranks, and sourcing stays honest', () => {
+  const ch = getUniLayer('ch')!;
+  assert.deepEqual(byRanking(ch.universities).map((u) => u.id), ['ch-ethz', 'ch-epfl', 'ch-uzh', 'ch-unige']);
+  assert.deepEqual(byRanking(ch.universities).map((u) => u.ranking.rank), ['=8', '=22', '=98', '168']);
+  const ethz = getUniversityProfile('ch', 'ch-ethz')!;
+  assert.match(ethz.tuition.text.en, /CHF 730.*CHF 2,190/);
+  const epfl = getUniversityProfile('ch', 'ch-epfl')!;
+  assert.equal(epfl.programs[0]?.id, 'ch-epfl-cs');
+  const unige = getUniversityProfile('ch', 'ch-unige')!;
+  assert.equal(unige.deadlines.status, 'not-verified');
+  assert.equal(getUniversityProfile('ch', 'nope'), undefined);
+  assert.ok(ch.unverified.some((x) => x.id === 'ch-bd-visa-approval-rate' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);
