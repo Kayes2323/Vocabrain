@@ -61,6 +61,7 @@ import { LT_GUIDE } from '../lib/content/lt-guide';
 import { CZ_GUIDE } from '../lib/content/cz-guide';
 import { SI_GUIDE } from '../lib/content/si-guide';
 import { FR_GUIDE } from '../lib/content/fr-guide';
+import { IE_GUIDE } from '../lib/content/ie-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1594,7 +1595,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1605,7 +1606,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('cz')?.code, 'CZ');
   assert.equal(getCountryGuide('si')?.code, 'SI');
   assert.equal(getCountryGuide('fr')?.code, 'FR');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('ie')?.code, 'IE');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3002,6 +3004,77 @@ test('France university layer: researched values, QS 2027 ranks (École Polytech
   assert.equal(polytechnique.programs[0]?.id, 'fr-polytechnique-bsc');
   assert.equal(getUniversityProfile('fr', 'nope'), undefined);
   assert.ok(fr.unverified.some((x) => x.id === 'fr-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Ireland guide
+const iePage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(IE_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(IE_GUIDE.degrees[l].intro);
+test('Ireland: its own research from Irish official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(IE_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|NOK |UDI|SEK |Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|subsistence minimum|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|£|AUD |USD|NZD |CAD |JPY|KRW|CZK |\$\d/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE]), /Stamp 1G|Third Level Graduate Programme|irishimmigration\.ie|IRP card|AVATS/);
+  const hosts = new Set(guideSources([...IE_GUIDE.overview, ...IE_GUIDE.faqs, ...(IE_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(IE_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.irishimmigration\.ie|www\.ireland\.ie|hea\.ie|www\.tcd\.ie|www\.ucd\.ie|www\.ucc\.ie|www\.universityofgalway\.ie)$/, `${h} is an official Irish source`);
+  assert.ok(hosts.has('www.irishimmigration.ie') && hosts.has('hea.ie'));
+});
+
+test('Ireland: key official figures, Bangladesh’s own route, nothing invented', () => {
+  const faq = (id: string) => IE_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(IE_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after'], 'most asked first');
+  assert.match(faq('funds').a[0].en, /EUR 10,000/);
+  assert.match(faq('work').a[0].en, /20 hours/);
+  assert.match(faq('visa').a[0].en, /AVATS/);
+  assert.match(faq('after').a[0].en, /Stamp 1G/);
+  assert.match(faq('bangladesh').a[0].en, /visa-required/);
+  assert.equal(faq('hsc').status, 'not-verified', 'HSC-equivalence rule not invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = IE_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in EUR, as the source states it`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR/, `${l}/${x.id} not converted`);
+    }
+  }
+  assert.equal(IE_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'funds-living')!.amount!.value, 10000);
+  assert.equal(IE_GUIDE.degrees.bachelors.costs.official.find((x) => x.id === 'registration-fee')!.amount!.value, 300);
+});
+
+test('Ireland: degree isolation and documents', () => {
+  assert.match(iePage('bachelors'), /HSC|ILEP/);
+  assert.doesNotMatch(iePage('bachelors'), /doctoral school|2\.1 honours/);
+  assert.match(iePage('masters'), /2\.1 honours/);
+  assert.doesNotMatch(iePage('masters'), /HSC|doctoral school/);
+  assert.match(iePage('phd'), /doctoral|structured PhD/);
+  assert.doesNotMatch(iePage('phd'), /HSC|2\.1 honours/);
+  const docs = IE_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Ireland: registries, GOI-IES scholarship genuinely open to Bangladesh, Mino knowledge', () => {
+  const ie = UNIVERSITIES.filter((u) => u.countryCode === 'IE' && u.id.startsWith('ie-'));
+  assert.deepEqual(ie.map((u) => u.id).sort(), ['ie-galway', 'ie-tcd', 'ie-ucc', 'ie-ucd']);
+  const goi = SCHOLARSHIPS.find((s) => s.countryCode === 'IE' && s.id === 'ie-goi-ies')!;
+  assert.ok(goi, 'GOI-IES is a genuinely open, directly-applied scholarship record, unlike France’s institution-nominated Eiffel scholarship');
+  assert.match(goi.eligibility.value, /domiciliary of origin outside the EU\/EEA/);
+  const m = guideForMino(IE_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(IE_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 10000);
+  assert.equal(IE_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 40);
+  assert.equal(IE_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 12);
+  assert.equal(IE_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 24);
+});
+
+test('Ireland university layer: researched values, QS 2027 ranks, and sourcing stays honest', () => {
+  const ie = getUniLayer('ie')!;
+  assert.deepEqual(byRanking(ie.universities).map((u) => u.id), ['ie-tcd', 'ie-ucd', 'ie-ucc', 'ie-galway']);
+  assert.deepEqual(byRanking(ie.universities).map((u) => u.ranking.rank), ['75', '=100', '220', '275']);
+  const ucc = getUniversityProfile('ie', 'ie-ucc')!;
+  assert.match(ucc.tuition.text.en, /EUR 16,300.*EUR 27,000/);
+  assert.equal(ucc.programs[0]?.id, 'ie-ucc-cs');
+  const tcd = getUniversityProfile('ie', 'ie-tcd')!;
+  assert.equal(tcd.deadlines.status, 'partly-verified');
+  assert.equal(getUniversityProfile('ie', 'nope'), undefined);
+  assert.ok(ie.unverified.some((x) => x.id === 'ie-bd-visa-approval-rate' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);
