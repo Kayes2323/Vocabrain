@@ -67,6 +67,7 @@ import { CH_GUIDE } from '../lib/content/ch-guide';
 import { HU_GUIDE } from '../lib/content/hu-guide';
 import { AT_GUIDE } from '../lib/content/at-guide';
 import { DK_GUIDE } from '../lib/content/dk-guide';
+import { ES_GUIDE } from '../lib/content/es-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -1600,7 +1601,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1617,7 +1618,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('hu')?.code, 'HU');
   assert.equal(getCountryGuide('at')?.code, 'AT');
   assert.equal(getCountryGuide('dk')?.code, 'DK');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('es')?.code, 'ES');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3446,6 +3448,78 @@ test('Denmark university layer: researched values, QS 2027 ranks (CBS unranked o
   assert.equal(getUniversityProfile('dk', 'nope'), undefined);
   assert.ok(dk.unverified.some((x) => x.id === 'dk-bd-visa-approval-rate' && x.status === 'not-verified'));
   assert.ok(dk.unverified.some((x) => x.id === 'dk-embassy-dhaka-residence-permit-role' && x.status === 'needs-review'));
+});
+
+// ---------------------------------------------------------------- Spain guide
+const esPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(ES_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(ES_GUIDE.degrees[l].intro);
+test('Spain: its own research from Spanish official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(ES_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|UDI|Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|schweiz-bangladesch|sem\.admin\.ch|ESKAS|oif\.gov\.hu|stipendiumhungaricum|NDGAP|migration\.gv\.at|oead\.at|bmfwf\.gv\.at|Aufenthaltsbewilligung|Red-White-Red|nyidanmark\.dk|SIRI|yellow card|CPR number|HUF \d|£|AUD |CAD |JPY|KRW|CZK |CHF |SEK |NOK |DKK /);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE, CH_GUIDE, HU_GUIDE, AT_GUIDE, DK_GUIDE]), /IPREM|autorización de estancia|Embassy of Spain in Dhaka|Ley de Startups|\bTIE\b/);
+  const hosts = new Set(guideSources([...ES_GUIDE.overview, ...ES_GUIDE.faqs, ...(ES_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(ES_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www\.inclusion\.gob\.es|www\.exteriores\.gob\.es|www\.aecid\.es|www\.ucm\.es|www\.uam\.es|www\.uab\.cat|www\.ie\.edu)$/, `${h} is an official Spanish source`);
+  assert.ok(hosts.has('www.inclusion.gob.es') && hosts.has('www.exteriores.gob.es'));
+});
+
+test('Spain: key official figures, the post-2023 work-rights reform, nothing invented', () => {
+  const faq = (id: string) => ES_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(ES_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after']);
+  assert.match(faq('work').a[0].en, /30 hours/);
+  assert.match(faq('visa').a[0].en, /Embassy of Spain in Dhaka/);
+  assert.match(faq('after').a[0].en, /24-month/);
+  assert.match(faq('funds').a[0].en, /IPREM/);
+  assert.match(faq('bangladesh').a[0].en, /Embassy in Dhaka/);
+  assert.equal(faq('hsc').status, 'not-verified', 'no nationwide HSC-conversion rule invented');
+  assert.equal(faq('phd').status, 'not-verified', 'no general national PhD rule invented');
+  assert.equal(faq('scholarships').status, 'not-verified', 'no Bangladesh-specific AECID eligibility invented');
+  assert.equal(faq('cost').status, 'partly-verified', 'public tuition figures not independently confirmed per credit');
+  for (const l of GUIDE_DEGREES) {
+    const c = ES_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.match(x.amount.currency, /^EUR$/, `${l}/${x.id} in the source's own currency`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR|HUF|CHF|DKK/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Spain: degree isolation and documents', () => {
+  assert.match(esPage('bachelors'), /HSC/);
+  assert.doesNotMatch(esPage('bachelors'), /doctoral school|equivalence study/);
+  assert.match(esPage('masters'), /equivalence study/);
+  assert.doesNotMatch(esPage('masters'), /HSC|doctoral school/);
+  assert.match(esPage('phd'), /doctoral school/);
+  assert.doesNotMatch(esPage('phd'), /HSC|equivalence study/);
+  const docs = ES_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Spain: registries, no invented Bangladesh-specific AECID eligibility, Mino knowledge', () => {
+  const es = UNIVERSITIES.filter((u) => u.countryCode === 'ES' && u.id.startsWith('es-'));
+  assert.deepEqual(es.map((u) => u.id).sort(), ['es-ie-university', 'es-uab', 'es-uam', 'es-ub', 'es-ucm']);
+  const aecid = SCHOLARSHIPS.filter((s) => s.countryCode === 'ES');
+  assert.ok(aecid.length > 0, 'Spain’s AECID scholarship convocatoria is recorded honestly');
+  for (const s of aecid) assert.equal(s.eligibility.status, 'not-verified', `${s.id}: Bangladesh eligibility honestly not claimed`);
+  const m = guideForMino(ES_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(ES_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 30);
+  assert.equal(ES_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 24);
+  assert.equal(ES_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 24);
+  assert.equal(ES_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.value!.min, 600);
+});
+
+test('Spain university layer: researched values, QS 2027 ranks, IE University tuition, and sourcing stays honest', () => {
+  const es = getUniLayer('es')!;
+  assert.deepEqual(byRanking(es.universities).map((u) => u.id), ['es-ub', 'es-ucm', 'es-uab', 'es-uam', 'es-ie-university']);
+  assert.deepEqual(byRanking(es.universities).map((u) => u.ranking.rank), ['165', '199', '211', '226', '446']);
+  const ieu = getUniversityProfile('es', 'es-ie-university')!;
+  assert.equal(ieu.tuition.money?.amount, 27300);
+  assert.equal(ieu.tuition.money?.currency, 'EUR');
+  assert.equal(ieu.programs[0]?.id, 'es-ieu-bachelor-international-relations');
+  assert.equal(getUniversityProfile('es', 'nope'), undefined);
+  assert.ok(es.unverified.some((x) => x.id === 'es-bd-visa-approval-rate' && x.status === 'not-verified'));
+  assert.ok(es.unverified.some((x) => x.id === 'es-aecid-bangladesh-eligibility' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);

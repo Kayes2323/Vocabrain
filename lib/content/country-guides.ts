@@ -19,6 +19,7 @@ import { CH_GUIDE } from './ch-guide';
 import { HU_GUIDE } from './hu-guide';
 import { AT_GUIDE } from './at-guide';
 import { DK_GUIDE } from './dk-guide';
+import { ES_GUIDE } from './es-guide';
 import { IT_GUIDE } from './it-guide';
 import { JP_GUIDE } from './jp-guide';
 import { KR_GUIDE } from './kr-guide';
@@ -29,6 +30,6 @@ import { TR_GUIDE } from './tr-guide';
  * (its page shows the existing country hub); nothing falls back to another
  * country's guide.
  */
-export const COUNTRY_GUIDES: Record<string, CountryGuide> = { KR: KR_GUIDE, DE: DE_GUIDE, JP: JP_GUIDE, IT: IT_GUIDE, TR: TR_GUIDE, GB: GB_GUIDE, AU: AU_GUIDE, US: US_GUIDE, NZ: NZ_GUIDE, CN: CN_GUIDE, CA: CA_GUIDE, NO: NO_GUIDE, SE: SE_GUIDE, FI: FI_GUIDE, LT: LT_GUIDE, CZ: CZ_GUIDE, SI: SI_GUIDE, FR: FR_GUIDE, IE: IE_GUIDE, NL: NL_GUIDE, CH: CH_GUIDE, HU: HU_GUIDE, AT: AT_GUIDE, DK: DK_GUIDE };
+export const COUNTRY_GUIDES: Record<string, CountryGuide> = { KR: KR_GUIDE, DE: DE_GUIDE, JP: JP_GUIDE, IT: IT_GUIDE, TR: TR_GUIDE, GB: GB_GUIDE, AU: AU_GUIDE, US: US_GUIDE, NZ: NZ_GUIDE, CN: CN_GUIDE, CA: CA_GUIDE, NO: NO_GUIDE, SE: SE_GUIDE, FI: FI_GUIDE, LT: LT_GUIDE, CZ: CZ_GUIDE, SI: SI_GUIDE, FR: FR_GUIDE, IE: IE_GUIDE, NL: NL_GUIDE, CH: CH_GUIDE, HU: HU_GUIDE, AT: AT_GUIDE, DK: DK_GUIDE, ES: ES_GUIDE };
 
 export const getCountryGuide = (code: string | undefined): CountryGuide | undefined => (code ? COUNTRY_GUIDES[code.toUpperCase()] : undefined);
