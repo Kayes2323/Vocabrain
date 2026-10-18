@@ -64,6 +64,7 @@ import { FR_GUIDE } from '../lib/content/fr-guide';
 import { IE_GUIDE } from '../lib/content/ie-guide';
 import { NL_GUIDE } from '../lib/content/nl-guide';
 import { CH_GUIDE } from '../lib/content/ch-guide';
+import { HU_GUIDE } from '../lib/content/hu-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -231,8 +232,8 @@ test('destinations: grouped Europe → Asia → other regions, every country exa
     assert.equal(c.region, 'Europe');
     assert.equal(c.hero?.src, `/images/countries/${file}`, `${code} uses its own photo`);
     assert.ok(groups[0].countries.includes(c), `${code} sits with the other European countries`);
-    // Lithuania, the Czech Republic and Slovenia have since received their own researched guides; every other added country still has none.
-    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : undefined, `${code}: no invented guide`);
+    // Lithuania, the Czech Republic, Slovenia and Hungary have since received their own researched guides; every other added country still has none.
+    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : code === 'HU' ? HU_GUIDE : undefined, `${code}: no invented guide`);
   }
 });
 
@@ -1597,7 +1598,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1611,7 +1612,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('ie')?.code, 'IE');
   assert.equal(getCountryGuide('nl')?.code, 'NL');
   assert.equal(getCountryGuide('ch')?.code, 'CH');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('hu')?.code, 'HU');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3222,6 +3224,80 @@ test('Switzerland university layer: researched values, QS 2027 ranks, and sourci
   assert.equal(unige.deadlines.status, 'not-verified');
   assert.equal(getUniversityProfile('ch', 'nope'), undefined);
   assert.ok(ch.unverified.some((x) => x.id === 'ch-bd-visa-approval-rate' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Hungary guide
+const huPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(HU_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(HU_GUIDE.degrees[l].intro);
+test('Hungary: its own research from Hungarian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(HU_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|NOK |UDI|SEK |Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|schweiz-bangladesch|sem\.admin\.ch|ESKAS|canton(al)?\b|£|AUD |CAD |JPY|KRW|CZK |CHF /);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE, CH_GUIDE]), /oif\.gov\.hu|stipendiumhungaricum|NDGAP|HUF \d|Secondary and Higher Education Division/);
+  const hosts = new Set(guideSources([...HU_GUIDE.overview, ...HU_GUIDE.faqs, ...(HU_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(HU_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(oif\.gov\.hu|studyinhungary\.hu|stipendiumhungaricum\.hu|www\.bme\.hu|xplore\.bme\.hu|edu\.unideb\.hu|www\.elte\.hu|ttk\.elte\.hu|semmelweis\.hu)$/, `${h} is an official Hungarian source`);
+  assert.ok(hosts.has('oif.gov.hu') && hosts.has('stipendiumhungaricum.hu'));
+});
+
+test('Hungary: key official figures, Bangladesh’s own route, nothing invented', () => {
+  const faq = (id: string) => HU_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(HU_GUIDE.faqs.slice(0, 8).map((f) => f.id), ['requirements', 'hsc', 'cost', 'ielts', 'visa', 'work', 'scholarships', 'after']);
+  assert.match(faq('work').a[0].en, /30 hours/);
+  assert.match(faq('visa').a[0].en, /residence-permit application/);
+  assert.match(faq('after').a[0].en, /9 months/);
+  assert.match(faq('bangladesh').a[0].en, /Stipendium Hungaricum/);
+  assert.equal(faq('funds').status, 'not-verified', 'no single official minimum-funds figure invented');
+  assert.equal(faq('phd').status, 'not-verified', 'no general national PhD rule invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = HU_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.ok(['EUR', 'USD'].includes(x.amount.currency), `${l}/${x.id} in the source's own currency`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Hungary: degree isolation and documents', () => {
+  assert.match(huPage('bachelors'), /HSC/);
+  assert.doesNotMatch(huPage('bachelors'), /doctoral school|research-topic proposal/);
+  assert.match(huPage('masters'), /Bachelor’s degree \(or equivalent\)/);
+  assert.doesNotMatch(huPage('masters'), /HSC|doctoral school/);
+  assert.match(huPage('phd'), /doctoral school|research-topic proposal/);
+  assert.doesNotMatch(huPage('phd'), /HSC/);
+  const docs = HU_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'funds')!.groups.includes('bangladesh'));
+});
+
+test('Hungary: registries, Stipendium Hungaricum honestly scoped to Bangladesh, Mino knowledge', () => {
+  const hu = UNIVERSITIES.filter((u) => u.countryCode === 'HU' && u.id.startsWith('hu-'));
+  assert.deepEqual(hu.map((u) => u.id).sort(), ['hu-bme', 'hu-debrecen', 'hu-elte', 'hu-semmelweis']);
+  const sh = SCHOLARSHIPS.find((s) => s.countryCode === 'HU' && s.id === 'hu-stipendium-hungaricum')!;
+  assert.ok(sh, 'Stipendium Hungaricum is a genuinely open, verified scholarship record for Bangladesh');
+  assert.deepEqual(sh.degreeLevels, ['bachelors', 'masters', 'phd']);
+  assert.match(sh.eligibility.value, /Bangladesh/);
+  assert.match(sh.applicationMethod!.value, /Sending Partner/);
+  const m = guideForMino(HU_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(HU_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.min, 30);
+  assert.equal(HU_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 9);
+  assert.equal(HU_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.max, 9);
+  assert.equal(HU_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.status, 'not-verified');
+});
+
+test('Hungary university layer: researched values, QS 2027 ranks, and sourcing stays honest', () => {
+  const hu = getUniLayer('hu')!;
+  assert.deepEqual(byRanking(hu.universities).map((u) => u.id), ['hu-elte', 'hu-debrecen', 'hu-bme', 'hu-semmelweis']);
+  assert.deepEqual(byRanking(hu.universities).map((u) => u.ranking.rank), ['=595', '=600', '751-760', null]);
+  const bme = getUniversityProfile('hu', 'hu-bme')!;
+  assert.match(bme.tuition.text.en, /EUR 3,200.*EUR 3,800/);
+  const debrecen = getUniversityProfile('hu', 'hu-debrecen')!;
+  assert.equal(debrecen.programs[0]?.id, 'hu-debrecen-medicine');
+  const elte = getUniversityProfile('hu', 'hu-elte')!;
+  assert.equal(elte.tuition.status, 'not-verified');
+  const semmelweis = getUniversityProfile('hu', 'hu-semmelweis')!;
+  assert.equal(semmelweis.ranking.rank, null, 'Semmelweis is not in the QS 2027 overall ranking');
+  assert.equal(getUniversityProfile('hu', 'nope'), undefined);
+  assert.ok(hu.unverified.some((x) => x.id === 'hu-bd-visa-approval-rate' && x.status === 'not-verified'));
 });
 
 console.log(`\n${passed} passed`);
