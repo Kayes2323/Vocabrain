@@ -71,6 +71,7 @@ import { ES_GUIDE } from '../lib/content/es-guide';
 import { MY_GUIDE } from '../lib/content/my-guide';
 import { PL_GUIDE } from '../lib/content/pl-guide';
 import { MT_GUIDE } from '../lib/content/mt-guide';
+import { LV_GUIDE } from '../lib/content/lv-guide';
 import { COUNTRY_GUIDES, getCountryGuide } from '../lib/content/country-guides';
 import { KR_ESTIMATES } from '../lib/content/kr-country';
 import { KR_NIIED_GUIDEBOOK } from '../lib/content/kr-sources';
@@ -238,8 +239,8 @@ test('destinations: grouped Europe → Asia → other regions, every country exa
     assert.equal(c.region, 'Europe');
     assert.equal(c.hero?.src, `/images/countries/${file}`, `${code} uses its own photo`);
     assert.ok(groups[0].countries.includes(c), `${code} sits with the other European countries`);
-    // Lithuania, the Czech Republic, Slovenia, Hungary, Austria, Poland and Malta have since received their own researched guides; every other added country still has none.
-    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : code === 'HU' ? HU_GUIDE : code === 'AT' ? AT_GUIDE : code === 'PL' ? PL_GUIDE : code === 'MT' ? MT_GUIDE : undefined, `${code}: no invented guide`);
+    // Lithuania, the Czech Republic, Slovenia, Hungary, Austria, Poland, Malta and Latvia have since received their own researched guides; every other added country still has none.
+    assert.equal(getCountryGuide(code), code === 'LT' ? LT_GUIDE : code === 'CZ' ? CZ_GUIDE : code === 'SI' ? SI_GUIDE : code === 'HU' ? HU_GUIDE : code === 'AT' ? AT_GUIDE : code === 'PL' ? PL_GUIDE : code === 'MT' ? MT_GUIDE : code === 'LV' ? LV_GUIDE : undefined, `${code}: no invented guide`);
   }
 });
 
@@ -1604,7 +1605,7 @@ test('C1.3 Mino: scope per fact, needs-review with notes, no unverified values, 
 
 // ---------------------------------------------------------------- Country & degree guides
 test('guides: one guide per country, no fallback to another country', () => {
-  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY', 'PL', 'MT']);
+  assert.deepEqual(Object.keys(COUNTRY_GUIDES), ['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY', 'PL', 'MT', 'LV']);
   assert.equal(getCountryGuide('it')?.code, 'IT');
   assert.equal(getCountryGuide('gb')?.code, 'GB');
   assert.equal(getCountryGuide('tr')?.code, 'TR');
@@ -1625,7 +1626,8 @@ test('guides: one guide per country, no fallback to another country', () => {
   assert.equal(getCountryGuide('my')?.code, 'MY');
   assert.equal(getCountryGuide('pl')?.code, 'PL');
   assert.equal(getCountryGuide('mt')?.code, 'MT');
-  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY', 'PL', 'MT'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
+  assert.equal(getCountryGuide('lv')?.code, 'LV');
+  for (const c of COUNTRIES.filter((x) => !['KR', 'DE', 'JP', 'IT', 'TR', 'GB', 'AU', 'US', 'NZ', 'CN', 'CA', 'NO', 'SE', 'FI', 'LT', 'CZ', 'SI', 'FR', 'IE', 'NL', 'CH', 'HU', 'AT', 'DK', 'ES', 'MY', 'PL', 'MT', 'LV'].includes(x.code))) assert.equal(getCountryGuide(c.code), undefined, `${c.code} has no guide (no inheritance)`);
   for (const [code, g] of Object.entries(COUNTRY_GUIDES)) assert.ok(getCountry(code), `${code} is a real country`), assert.equal(g.code, code);
 });
 
@@ -3736,6 +3738,72 @@ test('Malta university layer: researched values, QS 2027 rank, per-university tu
   assert.equal(getUniversityProfile('mt', 'nope'), undefined);
   assert.ok(mt.unverified.some((x) => x.id === 'mt-bd-visa-approval-rate' && x.status === 'not-verified'));
   assert.ok(mt.unverified.some((x) => x.id === 'mt-minimum-funds-figure' && x.status === 'not-verified'));
+});
+
+// ---------------------------------------------------------------- Latvia guide
+const lvPage = (l: 'bachelors' | 'masters' | 'phd') => JSON.stringify(LV_GUIDE.degrees[l].sections, (k, v) => (k === 'sources' ? undefined : v)) + JSON.stringify(LV_GUIDE.degrees[l].intro);
+test('Latvia: its own research from Latvian official sources, other guides untouched', () => {
+  assert.doesNotMatch(JSON.stringify(LV_GUIDE, (k, v) => (k === 'sources' || k === 'source' ? undefined : v)), /TOPIK|Sperrkonto|MEXT|Chevening|UCAS|CRICOS|SEVIS|I-20|NZD|Manaaki|PGWP|IRCC|HSK|UDI|Migrationsverket|migri\.fi|infotujci\.si|srips-rs\.si|Ad Futura|eVŠ|napotnice|DPP|DPČ|Režim Student|VLS-TS|Études en France|Campus France|droits différenciés|Stamp 1G|irishimmigration\.ie|zoekjaar|MVV|Studielink|ind\.nl|schweiz-bangladesch|sem\.admin\.ch|ESKAS|oif\.gov\.hu|stipendiumhungaricum|NDGAP|migration\.gv\.at|oead\.at|bmfwf\.gv\.at|Aufenthaltsbewilligung|Red-White-Red|nyidanmark\.dk|SIRI|yellow card|CPR number|HUF \d|AUD |CAD |JPY|KRW|CZK |CHF |SEK |NOK |DKK |IPREM|autorización de estancia|Ley de Startups|\bTIE\b|EMGS|eVAL|Single Entry Visa|Graduate Pass|Student Pass|biasiswa\.mohe|UDSC|Voivodeship|Banach NAWA|mos\.cudzoziemcy|e-Konsulat|Identità|Jobsplus|MFHEA|MQF Level|eltcouncil|myscholarship\.gov\.mt/);
+  assert.doesNotMatch(JSON.stringify([KR_GUIDE, DE_GUIDE, JP_GUIDE, IT_GUIDE, TR_GUIDE, GB_GUIDE, AU_GUIDE, US_GUIDE, NZ_GUIDE, CN_GUIDE, CA_GUIDE, NO_GUIDE, SE_GUIDE, FI_GUIDE, LT_GUIDE, CZ_GUIDE, SI_GUIDE, FR_GUIDE, IE_GUIDE, NL_GUIDE, CH_GUIDE, HU_GUIDE, AT_GUIDE, DK_GUIDE, ES_GUIDE, MY_GUIDE, PL_GUIDE, MT_GUIDE]), /PMLP|OCMA|pmlp\.gov\.lv|additional assessment|Rīga Stradiņš|studyinlatvia/);
+  const hosts = new Set(guideSources([...LV_GUIDE.overview, ...LV_GUIDE.faqs, ...(LV_GUIDE.life ?? []), ...GUIDE_DEGREES.flatMap((l) => degreeAnswers(LV_GUIDE.degrees[l]))]).map((s) => new URL(s.url!).host));
+  for (const h of hosts) assert.match(h, /^(www2?\.)?(pmlp\.gov\.lv|mfa\.gov\.lv|lu\.lv|rtu\.lv|apply\.rtu\.lv|rsu\.lv|studyinlatvia\.eu|studyinlatvia\.lv|cms\.studyinlatvia\.lv)$/, `${h} is an official Latvian source`);
+  assert.ok(hosts.has('www.pmlp.gov.lv') || hosts.has('pmlp.gov.lv'));
+  assert.ok(hosts.has('www.lu.lv') || hosts.has('lu.lv'));
+});
+
+test('Latvia: key official figures, the "additional assessment" visa process, nothing invented', () => {
+  const faq = (id: string) => LV_GUIDE.faqs.find((f) => f.id === id)!;
+  assert.deepEqual(LV_GUIDE.faqs.slice(0, 5).map((f) => f.id), ['requirements', 'additional-assessment', 'cost', 'ielts', 'visa']);
+  assert.match(faq('additional-assessment').a[0].en, /Embassy of Latvia in India/);
+  assert.match(faq('work').a[0].en, /20 hours\/week/);
+  assert.match(faq('after').a[0].en, /4 months/);
+  assert.match(faq('bangladesh').a[0].en, /additional assessment/);
+  assert.equal(faq('funds').status, 'needs-review', 'the EUR 500 vs EUR 780 discrepancy is never silently resolved');
+  assert.equal(faq('scholarships').status, 'not-verified', 'no Bangladesh-specific scholarship invented');
+  for (const l of GUIDE_DEGREES) {
+    const c = LV_GUIDE.degrees[l].costs;
+    for (const x of [...c.official, ...c.estimates]) {
+      if (x.amount) assert.equal(x.amount.currency, 'EUR', `${l}/${x.id} in the source's own currency`);
+      assert.doesNotMatch(x.value.en, /BDT|taka|≈|INR|PLN|RM\b|HUF|CHF|DKK/, `${l}/${x.id} not converted`);
+    }
+  }
+});
+
+test('Latvia: degree isolation and documents', () => {
+  assert.match(lvPage('bachelors'), /English-taught programmes/);
+  assert.doesNotMatch(lvPage('masters'), /English-taught programmes/);
+  assert.doesNotMatch(lvPage('phd'), /English-taught programmes/);
+  assert.match(lvPage('phd'), /entrance examination/);
+  assert.doesNotMatch(lvPage('bachelors'), /entrance examination/);
+  assert.doesNotMatch(lvPage('masters'), /entrance examination/);
+  const docs = LV_GUIDE.documents!;
+  assert.equal(new Set(docs.map((d) => d.id)).size, docs.length);
+  for (const g of DOC_GROUPS) assert.ok(docs.some((d) => d.groups.includes(g)), `group ${g}`);
+  for (const d of docs) for (const f of [d.name, d.why, d.who, d.when, d.where, d.prepare]) assert.ok(f.en && /[ঀ-৿]/.test(f.bn), `${d.id}: bilingual`);
+  assert.ok(docs.find((d) => d.id === 'proof-of-funds')!.groups.includes('bangladesh'));
+});
+
+test('Latvia: registries, no invented Bangladesh-specific scholarship, Mino knowledge', () => {
+  const lv = UNIVERSITIES.filter((u) => u.countryCode === 'LV' && u.id.startsWith('lv-'));
+  assert.deepEqual(lv.map((u) => u.id).sort(), ['lv-rsu', 'lv-rtu', 'lv-ul']);
+  const lvScholarships = SCHOLARSHIPS.filter((s) => s.countryCode === 'LV');
+  assert.equal(lvScholarships.length, 0, 'Latvia’s scholarship registry is honestly empty — the 39 eligible countries for the Latvian state scholarship do not include Bangladesh');
+  const m = guideForMino(LV_GUIDE, 'bachelors');
+  assert.ok([...m.mostAsked, ...m.degrees.bachelors.answers].filter((i) => i.label === 'NOT VERIFIED').every((i) => !('answer' in i)));
+  assert.equal(LV_GUIDE.factors!.find((f) => f.id === 'work-during-study')!.value!.max, 20);
+  assert.equal(LV_GUIDE.factors!.find((f) => f.id === 'funds-to-show')!.status, 'needs-review');
+  assert.equal(LV_GUIDE.factors!.find((f) => f.id === 'post-study-stay')!.value!.min, 4);
+});
+
+test('Latvia university layer: researched values, QS 2027 ranks, per-university tuition, and sourcing stays honest', () => {
+  const lv = getUniLayer('lv')!;
+  assert.deepEqual(byRanking(lv.universities).map((u) => u.id), ['lv-rtu', 'lv-ul', 'lv-rsu']);
+  assert.deepEqual(byRanking(lv.universities).map((u) => u.ranking.rank), ['751-760', '781-790', '1001-1200']);
+  const rsu = getUniversityProfile('lv', 'lv-rsu')!;
+  assert.equal(rsu.tuition.money?.currency, 'EUR');
+  assert.equal(getUniversityProfile('lv', 'nope'), undefined);
+  assert.ok(lv.unverified.some((x) => x.id === 'lv-bd-visa-approval-rate' && x.status === 'not-verified'));
+  assert.ok(lv.unverified.some((x) => x.id === 'lv-subsistence-figure-discrepancy' && x.status === 'needs-review'));
 });
 
 console.log(`\n${passed} passed`);
