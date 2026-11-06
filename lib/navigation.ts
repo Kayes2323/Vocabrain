@@ -70,7 +70,7 @@ export const HOME_QUICK_ACCESS: QuickAccessItem[] = [
   { id: 'today', href: '/today', icon: CalendarCheck, tint: 'bg-brand-soft text-brand' },
   { id: 'foundation', href: '/ielts/foundation', icon: Layers, tint: 'bg-tint-lavender text-tint-lavender-fg' },
   { id: 'brain', href: '/ielts/vocabulary/notebook', icon: BrainCircuit, tint: 'bg-tint-blue text-tint-blue-fg' },
-  { id: 'readingVocab', href: '/ielts/vocabulary/reading', icon: BookOpenText, tint: 'bg-tint-green text-tint-green-fg' },
+  { id: 'readingVocab', href: '/ielts/reading', icon: BookOpenText, tint: 'bg-tint-green text-tint-green-fg' },
   { id: 'abroad', href: '/abroad', icon: Plane, tint: 'bg-tint-yellow text-tint-yellow-fg' },
 ];
 

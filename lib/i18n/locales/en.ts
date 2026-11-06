@@ -1109,7 +1109,7 @@ export const en = {
       today: { title: "Today's Learning" },
       foundation: { title: 'IELTS Foundation', body: 'Basics, step by step' },
       brain: { title: 'My Brain', body: 'Words you have learned', due: '{n} to review', words: '{n} words' },
-      readingVocab: { title: 'Reading Vocabulary', body: 'Words from your reading', fresh: '{n} new words' },
+      readingVocab: { title: 'Reading Library', body: 'Passages, open one now', fresh: '{n} new words' },
       abroad: { title: 'Study Abroad', body: 'Plan your study abroad' },
     },
     yourGoal: 'Your goal',

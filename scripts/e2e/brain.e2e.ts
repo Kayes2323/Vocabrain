@@ -80,7 +80,8 @@ async function main() {
     const brainTile = await p.locator('[data-quick="brain"]').innerText();
     const readingTile = await p.locator('[data-quick="readingVocab"]').innerText();
     check('My Brain tile: "Words you have learned"', /My Brain[\s\S]*Words you have learned/.test(brainTile), brainTile);
-    check('Reading Vocabulary tile: "Words from your reading"', /Reading Vocabulary[\s\S]*Words from your reading/.test(readingTile), readingTile);
+    check('Reading Library tile: "Passages, open one now"', /Reading Library[\s\S]*Passages, open one now/.test(readingTile), readingTile);
+    check('Reading Library tile links straight to the passage list', (await p.locator('[data-quick="readingVocab"]').getAttribute('href')) === '/ielts/reading');
     check('new student: no counts on the tiles (nothing to count yet)', (await p.locator('[data-quick-count]').count()) === 0);
     check('Practice Test and Speaking Test are not on Home', (await p.locator('[data-quick="tests"], [data-quick="speaking"]').count()) === 0);
     await p.goto(`${BASE}/ielts`, { waitUntil: 'load' });
@@ -220,7 +221,7 @@ async function main() {
     const uidBn = (await uidOf(q))!;
     console.log('\n[9] Bangla mobile');
     await q.getByTestId('quick-access').waitFor({ timeout: 60_000 });
-    check('bn Home: "আপনার শেখা শব্দ" and "Reading থেকে শেখা শব্দ"', /আপনার শেখা শব্দ/.test(await q.locator('[data-quick="brain"]').innerText()) && /Reading থেকে শেখা শব্দ/.test(await q.locator('[data-quick="readingVocab"]').innerText()));
+    check('bn Home: "আপনার শেখা শব্দ" and "Passage গুলো এখনই খুলুন"', /আপনার শেখা শব্দ/.test(await q.locator('[data-quick="brain"]').innerText()) && /Passage গুলো এখনই খুলুন/.test(await q.locator('[data-quick="readingVocab"]').innerText()));
     check('bn Home mobile: no sideways scroll', await noHorizontalScroll(q));
     await shot(q, 'brain-bn-01-home', false);
     await q.goto(`${BASE}/ielts/vocabulary/notebook`, { waitUntil: 'load' });

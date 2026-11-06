@@ -1111,7 +1111,7 @@ export const bn: LocaleDictionary = {
       today: { title: 'আজকের পড়া' },
       foundation: { title: 'IELTS Foundation', body: 'ধাপে ধাপে basics' },
       brain: { title: 'My Brain', body: 'আপনার শেখা শব্দ', due: '{n}টা review বাকি', words: '{n}টা শব্দ' },
-      readingVocab: { title: 'Reading Vocabulary', body: 'Reading থেকে শেখা শব্দ', fresh: '{n}টা নতুন শব্দ' },
+      readingVocab: { title: 'Reading Library', body: 'Passage গুলো এখনই খুলুন', fresh: '{n}টা নতুন শব্দ' },
       abroad: { title: 'Study Abroad', body: 'বিদেশে পড়ার পরিকল্পনা' },
     },
     yourGoal: 'আপনার goal',
