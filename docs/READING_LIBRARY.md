@@ -1,6 +1,6 @@
 # IELTS Reading Library
 
-20 original IELTS Academic-style passages with IELTS question types and a
+30 original IELTS Academic-style passages with IELTS question types and a
 shared, bilingual vocabulary lexicon. Route: `/ielts/reading` (list) and
 `/ielts/reading/[passageId]` (reader + questions). The three older short
 readings (`lib/content/passages.ts`) still work on the same routes and are

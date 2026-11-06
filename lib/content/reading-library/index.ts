@@ -19,13 +19,23 @@ import * as p17 from './passages/p17-self-healing';
 import * as p18 from './passages/p18-fifteen-minute-city';
 import * as p19 from './passages/p19-cultured-meat';
 import * as p20 from './passages/p20-loneliness';
+import * as p21 from './passages/p21-insulin';
+import * as p22 from './passages/p22-honeybee-navigation';
+import * as p23 from './passages/p23-timekeeping';
+import * as p24 from './passages/p24-urban-heat-islands';
+import * as p25 from './passages/p25-placebo-effect';
+import * as p26 from './passages/p26-qanats';
+import * as p27 from './passages/p27-octopus-cognition';
+import * as p28 from './passages/p28-coral-bleaching';
+import * as p29 from './passages/p29-fast-fashion';
+import * as p30 from './passages/p30-nostalgia';
 
 /**
  * The Reading Library. To add a passage: write passages/pNN-name.ts exporting
  * LEX (only words not already in the lexicon) and PASSAGE, then add it here.
  * scripts/test-reading-library.ts checks every passage before release.
  */
-const MODULES: { LEX: LexEntry[]; PASSAGE: LibraryPassage }[] = [p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20];
+const MODULES: { LEX: LexEntry[]; PASSAGE: LibraryPassage }[] = [p01, p02, p03, p04, p05, p06, p07, p08, p09, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21, p22, p23, p24, p25, p26, p27, p28, p29, p30];
 
 export const LIBRARY: LibraryPassage[] = MODULES.map((m) => m.PASSAGE);
 

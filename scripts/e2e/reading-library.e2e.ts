@@ -1,4 +1,4 @@
-// E2E: the IELTS Reading Library (20 original passages). Covers the level list,
+// E2E: the IELTS Reading Library (30 original passages). Covers the level list,
 // clickable vocabulary with context meanings (Bangla + English), the popup
 // staying on screen on a phone, Save to Brain into the existing notebook, the
 // questions with feedback, autosave across a reload, Ask Mino about a
@@ -70,7 +70,7 @@ async function main() {
     await m.goto(BASE + '/ielts/reading', { waitUntil: 'load' });
     await m.getByTestId('reading-next').waitFor({ timeout: 60_000 });
     const listed = await m.locator('a[href^="/ielts/reading/rl-"]').evaluateAll((els) => new Set(els.map((e) => e.getAttribute('href'))).size);
-    check('list: all 20 library passages are listed', listed === 20, listed);
+    check('list: all 30 library passages are listed', listed === 30, listed);
     check('list: Foundation / Intermediate / Advanced sections', (await m.getByText('Foundation', { exact: true }).count()) > 0 && (await m.getByText('Advanced', { exact: true }).count()) > 0);
     check('list: suggested passage is the first Foundation passage', (await m.getByTestId('reading-next').innerText()).includes(LIBRARY[0].title));
     check('list: legacy short readings still listed', (await m.locator(`a[href="/ielts/reading/${PASSAGES[0].id}"]`).count()) === 1);

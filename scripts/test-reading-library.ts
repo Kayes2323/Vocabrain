@@ -32,13 +32,13 @@ const words = (p: LibraryPassage) => text(p).split(/\s+/).filter(Boolean).length
 const LIMITS = { foundation: [380, 700], intermediate: [600, 1000], advanced: [750, 1150] } as const;
 const MIN_Q = { foundation: 10, intermediate: 12, advanced: 13 } as const;
 
-test('the library: 20 original passages, 6 Foundation · 8 Intermediate · 6 Advanced, no repeated topic', () => {
-  assert.equal(LIBRARY.length, 20);
+test('the library: 30 original passages, 9 Foundation · 12 Intermediate · 9 Advanced, no repeated topic', () => {
+  assert.equal(LIBRARY.length, 30);
   const by = (l: string) => LIBRARY.filter((p) => p.level === l).length;
-  assert.deepEqual([by('foundation'), by('intermediate'), by('advanced')], [6, 8, 6]);
-  assert.equal(new Set(LIBRARY.map((p) => p.id)).size, 20);
-  assert.equal(new Set(LIBRARY.map((p) => p.topic)).size, 20, 'every topic is different');
-  assert.equal(new Set(LIBRARY.map((p) => p.title)).size, 20);
+  assert.deepEqual([by('foundation'), by('intermediate'), by('advanced')], [9, 12, 9]);
+  assert.equal(new Set(LIBRARY.map((p) => p.id)).size, 30);
+  assert.equal(new Set(LIBRARY.map((p) => p.topic)).size, 30, 'every topic is different');
+  assert.equal(new Set(LIBRARY.map((p) => p.title)).size, 30);
 }, true);
 
 test('passages: length by level, 4+ paragraphs, clean text', () => {
