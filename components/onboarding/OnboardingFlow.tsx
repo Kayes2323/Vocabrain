@@ -74,7 +74,9 @@ export function OnboardingFlow() {
     step: number,
     totalSteps: steps.length,
     onBack: back,
-    onClose: () => finish('/'),
+    // Leaving early answers nothing, so the student is not marked onboarded and
+    // Home keeps inviting them. The language choice is already saved on pick.
+    onClose: () => router.replace('/'),
   };
 
   if (step === 'done') {

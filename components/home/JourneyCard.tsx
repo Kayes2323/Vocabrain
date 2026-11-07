@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Panel, ProgressBar } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { useSetLanguage } from '@/components/providers/useSetLanguage';
 import { formatBand, ieltsJourney } from '@/lib/engine';
+import { cn } from '@/lib/utils';
 import type { UserProfile } from '@/lib/models';
 import { useContinue } from '@/components/ielts/ContinueCard';
 import { JourneyStages } from './JourneyStages';
@@ -15,6 +17,8 @@ import { JourneyStages } from './JourneyStages';
 export function JourneyCard({ profile }: { profile: UserProfile }) {
   const { t } = useLocale();
   const target = profile.ielts.targetBand;
+
+  if (!profile.onboardedAt) return <WelcomeCard />;
 
   if (target === undefined) {
     return (
@@ -31,6 +35,50 @@ export function JourneyCard({ profile }: { profile: UserProfile }) {
   }
 
   return <GoalJourney profile={profile} target={target} />;
+}
+
+/**
+ * A new student is never gated into onboarding: they land in the app, can look
+ * around, and start the questions when they want. Answering them retires this
+ * card for good. Language sits here because it is a newcomer's first need.
+ */
+function WelcomeCard() {
+  const { t, locale } = useLocale();
+  const setLanguage = useSetLanguage();
+
+  return (
+    <Panel variant="brand" className="space-y-4" data-testid="welcome-card">
+      <div className="space-y-2">
+        <p className="text-lg font-semibold">{t('home.welcomeTitle')}</p>
+        <p className="text-[15px] text-foreground/80">{t('home.welcomeBody')}</p>
+      </div>
+
+      <div className="flex gap-1 rounded-xl bg-card p-1" role="group" aria-label={t('profile.language')}>
+        {(['bn', 'en'] as const).map((code) => (
+          <button
+            key={code}
+            type="button"
+            onClick={() => setLanguage(code)}
+            aria-pressed={locale === code}
+            data-language={code}
+            className={cn(
+              'h-9 flex-1 rounded-lg text-[13px] font-medium transition-colors',
+              locale === code ? 'bg-brand text-brand-foreground' : 'text-muted-foreground hover:text-foreground',
+            )}
+          >
+            {code === 'bn' ? 'বাংলা' : 'English'}
+          </button>
+        ))}
+      </div>
+
+      <Button asChild size="lg" className="w-full sm:w-auto">
+        <Link href="/onboarding" data-testid="welcome-start">
+          {t('home.welcomeCta')} <ArrowRight />
+        </Link>
+      </Button>
+      <p className="text-xs text-muted-foreground">{t('home.welcomeExplore')}</p>
+    </Panel>
+  );
 }
 
 function GoalJourney({ profile, target }: { profile: UserProfile; target: number }) {

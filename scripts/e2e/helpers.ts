@@ -64,6 +64,8 @@ export async function signUp(p: Page, name: string, email: string, lang: Lang) {
   await p.fill('#signup-email', email);
   await p.fill('#signup-password', 'secret123');
   await p.getByRole('button', { name: 'Create account', exact: true }).click();
+  // A new student lands on Home (no forced redirect) and opts in from the welcome card.
+  await p.getByTestId('welcome-start').click({ timeout: 60_000 });
   await p.waitForURL('**/onboarding', { timeout: 60_000 });
   if (lang === 'en') {
     const c = (n: string, role: 'button' | 'radio' = 'button') => p.getByRole(role, { name: n, exact: true }).click();

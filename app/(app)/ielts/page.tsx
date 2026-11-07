@@ -21,14 +21,16 @@ function SectionCard({ section, profile, tint }: { section: SectionDef; profile:
       trailing = <StatusChip tone={behind ? 'warning' : 'success'}>{formatBand(band)}</StatusChip>;
     }
   }
-  const planned = section.status === 'planned';
+  // The test library is browsable but carries no tests yet, so the card says so
+  // rather than letting a student open 48 empty entries to find out.
+  if (section.id === 'cambridge') trailing = <StatusChip>{t('common.soon')}</StatusChip>;
   return (
     <ModuleCard
       href={section.href}
       icon={section.icon}
       tint={tint}
       title={t(sectionKey(section.id, 'title'))}
-      subtitle={planned ? t('common.soon') : t(`ielts.cards.${section.id}`)}
+      subtitle={t(`ielts.cards.${section.id}`)}
       trailing={trailing}
       wrapSubtitle
     />

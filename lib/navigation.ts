@@ -13,7 +13,6 @@ import {
   CalendarCheck,
   CalendarClock,
   ClipboardCheck,
-  ClipboardList,
   FileText,
   Globe2,
   GraduationCap,
@@ -21,7 +20,6 @@ import {
   Home,
   Landmark,
   Layers,
-  Luggage,
   Mic,
   PenLine,
   Plane,
@@ -141,17 +139,11 @@ export const ABROAD_SECTION_GROUPS: SectionGroup[] = [
   },
   {
     titleKey: 'abroad.groups.apply',
-    sections: [
-      { id: 'applications', icon: ClipboardList, href: '/abroad/applications', status: 'planned', phase: 5 },
-      { id: 'documents', icon: FileText, href: '/abroad/documents', status: 'available', phase: 5 },
-    ],
+    sections: [{ id: 'documents', icon: FileText, href: '/abroad/documents', status: 'available', phase: 5 }],
   },
   {
     titleKey: 'abroad.groups.go',
-    sections: [
-      { id: 'visa', icon: ClipboardCheck, href: '/abroad/visa', status: 'available', phase: 5 },
-      { id: 'pre-departure', icon: Luggage, href: '/abroad/pre-departure', status: 'planned', phase: 5 },
-    ],
+    sections: [{ id: 'visa', icon: ClipboardCheck, href: '/abroad/visa', status: 'available', phase: 5 }],
   },
 ];
 

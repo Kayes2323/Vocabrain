@@ -5,11 +5,25 @@
 import { en } from '@/lib/i18n/locales/en';
 import { BOOKS, testSkills } from '@/lib/ielts/content';
 import { ABROAD_SECTION_GROUPS, IELTS_SECTIONS, IELTS_TOOLS, PRIMARY_NAV, type SectionDef } from '@/lib/navigation';
+import { COUNTRY_GUIDES } from '@/lib/content/country-guides';
+import { UNI_LAYERS } from '@/lib/content/university-layers';
+import { getCountry } from '@/lib/content/countries';
 
 export type FeatureStatus = 'AVAILABLE' | 'PLANNED';
 
 const sectionCopy = en.sections as unknown as Record<string, { title: string; description: string }>;
 const navCopy = en.nav as unknown as Record<string, string>;
+
+/**
+ * Country names for a registry keyed by country code, so the map can never
+ * claim coverage the app does not actually have (or miss coverage it does).
+ */
+function countryNames(registry: Record<string, unknown>): string {
+  return Object.keys(registry)
+    .map((code) => getCountry(code)?.name ?? code)
+    .sort((a, b) => a.localeCompare(b))
+    .join(', ');
+}
 
 function sectionLine(s: SectionDef): string {
   const copy = sectionCopy[s.id];
@@ -30,10 +44,10 @@ Mino [AVAILABLE] /mino: your next 3 actions, chat, "what Mino knows about you".
 Study Abroad [AVAILABLE] /abroad: journey, study-abroad profile, and:
 ${ABROAD_SECTION_GROUPS.flatMap((g) => g.sections).map(sectionLine).join('\n')}
   - Journey: 10 stages for ONE dream country (+ a shortlist); each country page (/abroad/countries/<code>) has 24 sections marked Verified / Partly verified / Not verified yet, and a 16-step roadmap (/abroad/countries/<code>/roadmap) the student ticks and dates.
-  - Universities = the student's own list (no verified university profiles yet); Scholarships and official Deadlines: none verified yet; Documents: readiness + general preparation guides; Visa: 12-part guide per country, mostly not verified yet.
-  - Verified official data (with source + date) so far: United Kingdom, Canada, Australia, Germany (living-cost money to show, work while studying, post-study work where confirmed). Other countries and tuition/scholarship/visa details: not verified yet.
+  - Universities = the student's own list, plus researched university profiles (ranking, tuition, deadlines, entry requirements) for: ${countryNames(UNI_LAYERS) || 'none yet'}. Documents: readiness + general preparation guides; Visa: 12-part guide per country.
+  - Country guides written from official government and university sources, each fact marked Verified / Partly verified / Not verified yet with its source and date: ${countryNames(COUNTRY_GUIDES) || 'none yet'}. Any other country, and anything not marked verified, is not confirmed.
 Profile [AVAILABLE] /profile: language, IELTS goal, starting point, study-abroad goal, band calculator, sign in/out.
-Not built yet (PLANNED): Foundation lessons beyond Module 1 Sentence Basics, full 4-skill mock test in one sitting, progress dashboard, mistake notebook, applications tracker, pre-departure checklist, SOP/CV builders.`;
+Not built yet (PLANNED): applications tracker, pre-departure checklist, SOP/CV builders, a separate mistake notebook (Foundation keeps your own mistakes per unit instead).`;
 }
 
 export interface AppGuide {
@@ -51,10 +65,10 @@ export const APP_GUIDES: AppGuide[] = [
   {
     id: 'reading-library',
     status: 'AVAILABLE',
-    title: 'IELTS Reading Library (20 original passages with questions)',
+    title: 'IELTS Reading Library (30 original passages with questions)',
     where: 'IELTS → Reading (/ielts/reading)',
     steps: [
-      '20 original Mino passages in IELTS Academic style, written to Cambridge-level difficulty but not copied from any published test: 6 Foundation, 8 Intermediate, 6 Advanced. Topics include wildlife, agriculture, education, health, technology, culture, psychology, history, environment, economics, space, architecture, human behaviour, climate, archaeology, innovation, science, urban development, future technology and society.',
+      '30 original Mino passages in IELTS Academic style, not copied from any published test: 9 Foundation, 12 Intermediate, 9 Advanced. Topics include wildlife, agriculture, education, health and medicine, technology, culture, psychology, history, environment, economics, space, architecture, climate, archaeology, marine science and urban development.',
       'Every word in a passage can be tapped. Underlined key words show their meaning in THIS passage from the Mino lexicon (Bangla and English, example with its Bangla, word type, synonyms, tier Core / Useful / Advanced). Any other word: Mino shows a short loading animation and then, in a card on the same page, its Bangla meaning, a simple English meaning, part of speech, its meaning in this sentence and a short example. A word is explained once per passage and then reused (no repeated AI call). Nothing opens a separate dictionary page.',
       '"Save to Brain" saves the word to the same My Brain notebook and review schedule, with the passage sentence.',
       'Each passage has 10–17 IELTS-style questions (TRUE/FALSE/NOT GIVEN, YES/NO/NOT GIVEN, multiple choice, choose TWO, matching headings, matching information, matching names, sentence / summary / note / table completion, short answer). Answers save automatically; "Check answers" shows each answer with an explanation, in Bangla when the answer was wrong.',
@@ -273,17 +287,24 @@ export const APP_GUIDES: AppGuide[] = [
   },
   {
     id: 'progress',
-    status: 'PLANNED',
-    title: 'Progress dashboard, test history and mistake notebook',
-    where: 'Not in the app yet',
-    steps: ['For now: your latest score per test shows in IELTS → Practice Tests, and word progress in My Brain.'],
+    status: 'AVAILABLE',
+    title: 'Progress dashboard',
+    where: 'IELTS → Progress (/ielts/progress)',
+    steps: [
+      'Counted from your real activity only: Foundation lessons done, words in My Brain and their stage, reading passages checked, and the tests you have submitted.',
+      'Your latest score per test also shows in IELTS → Practice Tests, and per-word progress in My Brain.',
+    ],
+    notes: ['A separate mistake notebook does not exist; Foundation keeps your own mistakes per unit instead.'],
   },
   {
     id: 'listening',
-    status: 'PLANNED',
-    title: 'Listening practice and tests',
-    where: 'Not in the app yet',
-    steps: ['Coming as part of the IELTS test engine.'],
+    status: 'AVAILABLE',
+    title: 'Listening practice',
+    where: 'IELTS → Listening (/ielts/practice/listening)',
+    steps: [
+      'Opens the listening practice hub: the listening sections of the practice tests, plus the words you saved from them.',
+      'Full listening sections with band estimates live in IELTS → Practice Tests (/ielts/tests).',
+    ],
   },
   {
     id: 'writing-test',
@@ -370,7 +391,7 @@ export const APP_GUIDES: AppGuide[] = [
     id: 'study-abroad-tools',
     status: 'PLANNED',
     title: 'Applications tracker, pre-departure checklist, SOP/CV builders',
-    where: 'Not in the app yet (shown as "Soon" in Study Abroad)',
+    where: 'Not in the app yet',
     steps: ['Mino can explain general concepts (what an SOP is, how intakes work) but not current fees, deadlines or rules.'],
   },
 ];
@@ -380,7 +401,9 @@ export function findGuide(topic: string): AppGuide[] {
   const words = q.split(/[^a-z0-9]+/).filter((w) => w.length > 2);
   const scored = APP_GUIDES.map((g) => {
     const hay = `${g.id} ${g.title} ${g.where} ${g.steps.join(' ')}`.toLowerCase();
-    return { g, score: (hay.includes(q) ? 5 : 0) + words.filter((w) => hay.includes(w)).length };
+    // A word in the title or id outranks one buried in the steps, so a guide named for the question wins ties.
+    const head = `${g.id} ${g.title}`.toLowerCase();
+    return { g, score: (hay.includes(q) ? 5 : 0) + words.filter((w) => hay.includes(w)).length + words.filter((w) => head.includes(w)).length };
   })
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score);

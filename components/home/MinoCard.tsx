@@ -17,7 +17,9 @@ import type { UserProfile } from '@/lib/models';
  */
 export function MinoCard({ profile }: { profile: UserProfile }) {
   const { t, m } = useLocale();
-  const gap = nextProfileGap(profile);
+  // Home's welcome card owns the onboarding invitation, so Mino never repeats it.
+  const next = nextProfileGap(profile);
+  const gap = next?.id === 'onboarding' ? undefined : next;
   const brain = useBrainContext();
   const name = profile.displayName;
   const dayDone = buildDailyPlan(profile, brain).tasks.every((task) => task.done);

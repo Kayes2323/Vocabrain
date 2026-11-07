@@ -8,6 +8,8 @@ import { APP_GUIDES, appMapLayer, findGuide } from '../lib/ai/server/mino/knowle
 import { buildSystemPrompt } from '../lib/ai/server/mino/prompt';
 import { addNote, MEMORY_LIMITS } from '../lib/ai/memory';
 import { IELTS_SECTIONS } from '../lib/navigation';
+import { COUNTRY_GUIDES } from '../lib/content/country-guides';
+import { getCountry } from '../lib/content/countries';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -56,10 +58,28 @@ test('app map labels planned IELTS sections as PLANNED, never AVAILABLE', () => 
   assert.match(map, /Practice Test 1 \(reading\)/);
 });
 
+test('no guide calls a built feature planned', () => {
+  // Progress and Listening both shipped while their guides still read "not in
+  // the app yet", so Mino sent students away from pages that existed.
+  for (const g of APP_GUIDES.filter((x) => x.status === 'PLANNED')) {
+    assert.ok(!pageExists(`/${g.id}`) && !pageExists(`/ielts/${g.id}`), `${g.id} is PLANNED but has a page`);
+  }
+  assert.equal(APP_GUIDES.find((g) => g.id === 'progress')?.status, 'AVAILABLE');
+  assert.equal(APP_GUIDES.find((g) => g.id === 'listening')?.status, 'AVAILABLE');
+});
+
+test('app map names every country that has a guide', () => {
+  const map = appMapLayer();
+  for (const code of Object.keys(COUNTRY_GUIDES)) {
+    const name = getCountry(code)?.name;
+    if (name) assert.ok(map.includes(name), `${code} (${name}) is missing from the app map`);
+  }
+});
+
 test('app help finds the right guide', () => {
   assert.equal(findGuide('how do I save a word to brain')[0]?.id, 'save-to-brain');
   assert.equal(findGuide('where is my vocabulary notebook')[0]?.id, 'my-brain');
-  assert.equal(findGuide('progress')[0]?.status, 'PLANNED');
+  assert.equal(findGuide('progress')[0]?.status, 'AVAILABLE');
   assert.equal(findGuide('practice test')[0]?.id, 'practice-tests');
 });
 

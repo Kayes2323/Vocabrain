@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MINO_TIMING } from '@/lib/mino/motion';
 import { minoReact } from '@/components/mino/Mino';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { BrainProvider } from '@/components/providers/BrainProvider';
@@ -25,14 +25,13 @@ const FOCUS_ROUTES = ['/setup', '/onboarding', '/ielts/diagnostic', '/review', '
 const TEST_RUNNER = /^\/ielts\/tests\/[^/]+\/[^/]+/;
 
 /**
- * Keeps the UI language in step with the profile and sends new students to
- * onboarding before anything else.
+ * Keeps the UI language in step with the profile. New students are not gated:
+ * they land in the app and Home invites them to onboarding when they want it.
  */
 function JourneyGate({ children }: { children: React.ReactNode }) {
   const { profile } = useProfile();
   const { locale, setLocale } = useLocale();
   const pathname = usePathname();
-  const router = useRouter();
 
   useEffect(() => {
     if (profile?.language && profile.language !== locale) setLocale(profile.language);
@@ -40,17 +39,11 @@ function JourneyGate({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile?.language]);
 
-  const needsOnboarding = profile !== null && !profile.onboardedAt && !pathname.startsWith('/onboarding');
-  useEffect(() => {
-    if (needsOnboarding) router.replace('/onboarding');
-  }, [needsOnboarding, router]);
-
   // Opening a feature: any visible Mino gives one subtle blink.
   useEffect(() => {
     minoReact('blink');
   }, [pathname]);
 
-  if (needsOnboarding) return <SplashScreen />;
   return <>{children}</>;
 }
 
