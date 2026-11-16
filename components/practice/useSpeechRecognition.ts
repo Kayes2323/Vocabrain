@@ -26,6 +26,12 @@ function getRecognitionCtor(): (new () => Recognition) | undefined {
 
 export const speechRecognitionSupported = () => Boolean(getRecognitionCtor());
 
+/** Phones share one microphone between apps and the speech service, so a second capture can silence the first. */
+export const isMobileDevice = () => typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
+/** What went wrong, in terms a student can act on. */
+export type SpeechError = 'permission' | 'mic' | 'network' | 'failed';
+
 /**
  * Speech-to-text for Speaking practice. Audio is processed by the browser's
  * speech service; nothing is recorded or uploaded by Mino.
@@ -34,11 +40,13 @@ export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { ke
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<SpeechError | null>(null);
   const recognition = useRef<Recognition | null>(null);
   const finalText = useRef('');
   // Browsers end recognition after a pause; for long answers keep it going until stop().
   const wanted = useRef(false);
+  // A blocked or missing microphone will not fix itself on restart; do not loop on it.
+  const fatal = useRef(false);
 
   useEffect(() => setSupported(Boolean(getRecognitionCtor())), []);
 
@@ -46,6 +54,7 @@ export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { ke
     const Ctor = getRecognitionCtor();
     if (!Ctor) return;
     setError(null);
+    fatal.current = false;
     finalText.current = '';
     setTranscript('');
     const r = new Ctor();
@@ -61,9 +70,14 @@ export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { ke
       }
       setTranscript(`${finalText.current}${interim}`.trim());
     };
-    r.onerror = (e) => setError(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'permission' : 'failed');
+    r.onerror = (e) => {
+      // Silence and a deliberate stop are normal, not failures.
+      if (e.error === 'no-speech' || e.error === 'aborted') return;
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture') fatal.current = true;
+      setError(e.error === 'not-allowed' || e.error === 'service-not-allowed' ? 'permission' : e.error === 'audio-capture' ? 'mic' : e.error === 'network' ? 'network' : 'failed');
+    };
     r.onend = () => {
-      if (keepAlive && wanted.current) {
+      if (keepAlive && wanted.current && !fatal.current) {
         try {
           r.start();
           return;
@@ -75,8 +89,13 @@ export function useSpeechRecognition(lang = 'en-US', { keepAlive = false }: { ke
     };
     recognition.current = r;
     wanted.current = true;
-    r.start();
-    setListening(true);
+    try {
+      r.start();
+      setListening(true);
+    } catch {
+      wanted.current = false;
+      setError('failed');
+    }
   }, [lang, keepAlive]);
 
   const stop = useCallback(() => {

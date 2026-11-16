@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Callout, Panel, ProgressBar } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { useSpeechRecognition } from '@/components/practice/useSpeechRecognition';
+import { isMobileDevice, useSpeechRecognition, type SpeechError } from '@/components/practice/useSpeechRecognition';
 import {
   answerStatus,
+  countSpokenWords,
   examinerLines,
   examinerScript,
   goTo,
@@ -17,6 +18,7 @@ import {
   nextNoiseFloor,
   RESUME_LINE,
   setResponse,
+  SPEAKING_MIN_WORDS,
   submit,
   type ExaminerTurn,
   type PracticeTest,
@@ -27,19 +29,33 @@ import { cn } from '@/lib/utils';
 import { openMic, preloadClips, sayLine, sleep, stopSpeaking, unlockAudio, voicesReady, type Mic as MicHandle } from './examinerVoice';
 import { formatClock } from './labels';
 
-type Stage = 'check' | 'running' | 'unheard';
+type Stage = 'check' | 'running' | 'trouble';
 type Who = 'examiner' | 'you' | 'prep' | 'idle';
+type Check = 'idle' | 'listening' | 'ok' | 'failed';
+/** Why the test stopped or the check failed; each has its own advice. */
+type Trouble = SpeechError | 'silent' | 'unheard';
 
 /** Reading time after the examiner finishes, before the microphone opens. */
 const BEAT_MS = 700;
 /** Speech-to-text delivers its last words a moment after it is told to stop. */
 const TRAILING_MS = 600;
-const wordCount = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
+/** Words that show the check was heard. */
+const CHECK_WORDS = 3;
+/** How long the check waits to be heard before it says so. */
+const CHECK_MS = 12_000;
+/** After this long with nothing heard, the screen says so while the answer is still open. */
+const HINT_MS = 6000;
+/** Answers in a row with nothing heard before the test pauses instead of carrying on without the student. */
+const MAX_MISSES = 2;
 
 /**
  * Speaking test, the way the real one runs: the examiner asks aloud, the
  * microphone opens by itself, the answer ends when the student stops talking,
  * and the next question follows. There are no buttons between questions.
+ *
+ * What the student says is only ever read by the browser's speech-to-text, so
+ * the test proves that works before it starts, shows what it hears, and stops
+ * to say so if it stops working, instead of finishing a test nobody heard.
  */
 export function ExaminerSpeaking({
   test,
@@ -47,30 +63,35 @@ export function ExaminerSpeaking({
   setSession,
   save,
   saveFinal,
-  onRestart,
   clipFor,
+  onUseTyping,
 }: {
   test: PracticeTest;
   session: TestSession;
   setSession: React.Dispatch<React.SetStateAction<TestSession | null>>;
   save: (s: TestSession) => Promise<void>;
   saveFinal: (s: TestSession) => Promise<void>;
-  onRestart: () => void;
   /** The recorded clip for a line in the voice the student chose (none: the browser voice reads it). */
   clipFor: (line: string) => string | undefined;
+  /** Carry on with the tap-and-type version, keeping the answers so far. */
+  onUseTyping: () => void;
 }) {
   const { t } = useLocale();
   const router = useRouter();
   const script = useMemo(() => examinerScript(test.sections.speaking as SpeakingSection), [test]);
   const speech = useSpeechRecognition('en-US', { keepAlive: true });
+  const { start: speechStart, stop: speechStop } = speech;
 
   const [stage, setStage] = useState<Stage>('check');
-  const [micState, setMicState] = useState<'opening' | 'ready' | 'blocked'>('opening');
-  const [heard, setHeard] = useState(false);
+  const [check, setCheck] = useState<Check>('idle');
+  const [trouble, setTrouble] = useState<Trouble>('silent');
+  const [hasMeter, setHasMeter] = useState(false);
   const [level, setLevel] = useState(0);
   const [who, setWho] = useState<Who>('idle');
   const [caption, setCaption] = useState('');
   const [captions, setCaptions] = useState(false);
+  const [hearing, setHearing] = useState('');
+  const [hint, setHint] = useState(false);
   const [turnIndex, setTurnIndex] = useState(() => Math.min(Math.max(session.currentNumber - 1, 0), script.turns.length - 1));
   const [cardVisible, setCardVisible] = useState(false);
   const [prepLeft, setPrepLeft] = useState(0);
@@ -82,6 +103,8 @@ export function ExaminerSpeaking({
   const floor = useRef(0.01);
   const transcript = useRef('');
   transcript.current = speech.transcript;
+  const speechError = useRef<SpeechError | null>(null);
+  speechError.current = speech.error;
   const latest = useRef(session);
   latest.current = session;
 
@@ -90,7 +113,7 @@ export function ExaminerSpeaking({
     return () => {
       alive.current = false;
       stopSpeaking();
-      speech.stop();
+      speechStop();
       mic.current?.close();
       mic.current = null;
     };
@@ -107,40 +130,65 @@ export function ExaminerSpeaking({
     void preloadClips(paths);
   }, [script, clipFor]);
 
-  // Microphone check: ask for access up front and let the student see it hear them.
+  // A loudness meter helps end answers sooner and shows the mic is live, but only where a second
+  // capture is safe. Phones give one microphone to one user at a time: opening it here could
+  // silence the speech-to-text, which is the part that matters. There, speech-to-text runs alone.
   useEffect(() => {
+    if (isMobileDevice()) return;
     let cancelled = false;
     openMic()
       .then((m) => {
         if (cancelled || !alive.current) return m.close();
         mic.current = m;
-        setMicState('ready');
+        setHasMeter(true);
       })
-      .catch(() => !cancelled && setMicState('blocked'));
+      .catch(() => undefined);
     return () => {
       cancelled = true;
     };
   }, []);
 
+  /** Starts the check. Runs inside the student's tap, which phones require before they will listen. */
+  const startCheck = () => {
+    unlockAudio();
+    setCheck('listening');
+    speechStart();
+  };
+
+  // The check passes only when speech-to-text itself returns words.
   useEffect(() => {
-    if (stage !== 'check' || micState !== 'ready') return;
+    if (stage !== 'check' || check !== 'listening') return;
+    const t0 = performance.now();
     const id = window.setInterval(() => {
       const rms = mic.current?.level() ?? 0;
       setLevel(rms);
-      if (isSpeechLevel(rms, floor.current)) setHeard(true);
-      else floor.current = nextNoiseFloor(floor.current, rms);
-    }, 100);
+      if (!isSpeechLevel(rms, floor.current)) floor.current = nextNoiseFloor(floor.current, rms);
+      if (countSpokenWords(transcript.current) >= CHECK_WORDS) {
+        speechStop();
+        setCheck('ok');
+      } else if (speechError.current) {
+        speechStop();
+        setTrouble(speechError.current);
+        setCheck('failed');
+      } else if (performance.now() - t0 > CHECK_MS) {
+        speechStop();
+        setTrouble('silent');
+        setCheck('failed');
+      }
+    }, 150);
     return () => window.clearInterval(id);
-  }, [stage, micState]);
+  }, [stage, check, speechStop]);
 
   /** The student's turn: open the speech-to-text, end the answer when the rules say so. */
   const listen = useCallback(
     (turn: ExaminerTurn) =>
-      new Promise<{ text: string; seconds: number }>((resolve) => {
+      new Promise<{ text: string; seconds: number; failure?: SpeechError }>((resolve) => {
         transcript.current = '';
-        speech.start();
+        speechStart();
         setWho('you');
         setCaption('');
+        setHearing('');
+        setHint(false);
         const t0 = performance.now();
         let lastActive = t0;
         let firstSpeech = 0;
@@ -151,7 +199,7 @@ export function ExaminerSpeaking({
         const id = window.setInterval(() => {
           if (!alive.current) {
             window.clearInterval(id);
-            speech.stop();
+            speechStop();
             return resolve({ text: '', seconds: 0 });
           }
           const now = performance.now();
@@ -164,22 +212,26 @@ export function ExaminerSpeaking({
             floor.current = nextNoiseFloor(floor.current, rms);
           }
           const text = transcript.current;
+          if (text !== seen) setHearing(text);
           if (loud >= 2 || (text && text !== seen)) {
             if (!spoke) firstSpeech = now;
             spoke = true;
             lastActive = now;
           }
           seen = text;
+          setHint(!text && now - t0 > HINT_MS);
 
-          const status = answerStatus({ part: turn.part, limitSeconds: turn.limitSeconds, elapsedMs: now - t0, spoke, silenceMs: now - lastActive });
+          // The speech service says it cannot work: no point waiting out the answer.
+          const failure = speechError.current && speechError.current !== 'failed' ? speechError.current : undefined;
+          const status = failure ? 'no-speech' : answerStatus({ part: turn.part, limitSeconds: turn.limitSeconds, elapsedMs: now - t0, spoke, silenceMs: now - lastActive });
           if (status === 'continue') return;
           window.clearInterval(id);
-          speech.stop();
+          speechStop();
           const seconds = spoke ? Math.max(1, Math.round((lastActive - firstSpeech) / 1000)) : 0;
-          window.setTimeout(() => resolve({ text: transcript.current.trim(), seconds }), TRAILING_MS);
+          window.setTimeout(() => resolve({ text: transcript.current.trim(), seconds, failure }), TRAILING_MS);
         }, 200);
       }),
-    [speech],
+    [speechStart, speechStop],
   );
 
   const begin = useCallback(async () => {
@@ -206,8 +258,21 @@ export function ExaminerSpeaking({
       return alive.current;
     };
 
+    /** Stops the test where it is and explains why, with the way back to the first unheard question. */
+    const pause = (reason: Trouble, rewindTo: number) => {
+      working = goTo(working, rewindTo + 1);
+      setSession(working);
+      setWho('idle');
+      setHint(false);
+      setTrouble(reason);
+      started.current = false;
+      setCheck('idle');
+      setStage('trouble');
+    };
+
     if (!(await say(startAt > 0 ? [RESUME_LINE] : script.opening))) return;
 
+    let misses = 0;
     for (let i = startAt; i < turns.length; i++) {
       const turn = turns[i];
       setTurnIndex(i);
@@ -232,10 +297,19 @@ export function ExaminerSpeaking({
       const answer = await listen(turn);
       if (!alive.current) return;
 
+      // A blocked or missing microphone cannot be waited out.
+      if (answer.failure) return pause(answer.failure, i);
+
       working = goTo(setResponse(working, turn.key, answer.text, answer.seconds), Math.min(i + 2, turns.length));
       setSession(working);
       setWho('idle');
       setCaption('');
+      setHearing('');
+      setHint(false);
+
+      // Two answers in a row with nothing heard: stop now, not twenty minutes later.
+      misses = answer.text ? 0 : misses + 1;
+      if (misses >= MAX_MISSES) return pause('silent', i - misses + 1);
       await sleep(BEAT_MS);
     }
 
@@ -243,8 +317,8 @@ export function ExaminerSpeaking({
     mic.current?.close();
     mic.current = null;
 
-    // Nothing was picked up: there is nothing to assess, so do not submit an empty attempt.
-    if (wordCount(Object.values(working.responses ?? {}).join(' ')) < 8) return setStage('unheard');
+    // Too little to assess: do not hand the student an empty result; let them put it right.
+    if (countSpokenWords(Object.values(working.responses ?? {}).join(' ')) < SPEAKING_MIN_WORDS) return pause('unheard', 0);
 
     const done = submit(working, test);
     await saveFinal(done).catch((e) => console.error('[tests] Save failed', e));
@@ -259,15 +333,21 @@ export function ExaminerSpeaking({
   const turn = script.turns[turnIndex];
   const progress = (turnIndex / script.turns.length) * 100;
 
-  if (stage === 'unheard') {
+  if (stage === 'trouble') {
     return (
-      <Shell onLeave={leave} title={t('skills.speaking')} progress={100}>
-        <Panel className="w-full space-y-4 text-center" data-testid="examiner-unheard">
+      <Shell onLeave={leave} title={t('skills.speaking')} progress={progress}>
+        <Panel className="w-full space-y-4 text-center" data-testid="examiner-trouble" data-reason={trouble}>
           <MicOff className="mx-auto size-8 text-muted-foreground" aria-hidden />
-          <h1 className="text-xl font-semibold">{t('tests.speaking.examiner.unheardTitle')}</h1>
-          <p className="text-sm text-muted-foreground">{t('tests.speaking.examiner.unheardBody')}</p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-            <Button onClick={onRestart}>{t('tests.tryAgain')}</Button>
+          <h1 className="text-xl font-semibold">{t(trouble === 'unheard' ? 'tests.speaking.examiner.unheardTitle' : 'tests.speaking.examiner.pausedTitle')}</h1>
+          <p className="text-sm text-muted-foreground">{t(trouble === 'unheard' ? 'tests.speaking.examiner.unheardBody' : 'tests.speaking.examiner.pausedBody')}</p>
+          <p className="rounded-xl bg-muted/50 px-3 py-2 text-left text-sm">{t(`tests.speaking.examiner.advice.${trouble === 'unheard' ? 'silent' : trouble}`)}</p>
+          <div className="flex flex-col gap-2">
+            <Button onClick={() => setStage('check')} data-testid="examiner-recheck">
+              {t('tests.speaking.examiner.recheck')}
+            </Button>
+            <Button variant="outline" onClick={onUseTyping} data-testid="examiner-type">
+              {t('tests.speaking.examiner.typeInstead')}
+            </Button>
             <Button variant="ghost" onClick={leave}>
               {t('tests.exit')}
             </Button>
@@ -280,32 +360,57 @@ export function ExaminerSpeaking({
   if (stage === 'check') {
     return (
       <Shell onLeave={leave} title={t('skills.speaking')} progress={0}>
-        <div className="w-full space-y-6 text-center" data-testid="examiner-check">
+        <div className="w-full space-y-6 text-center" data-testid="examiner-check" data-check={check}>
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold">{t('tests.speaking.examiner.checkTitle')}</h1>
             <p className="text-sm text-muted-foreground">{t('tests.speaking.examiner.checkBody')}</p>
           </div>
 
-          {micState === 'blocked' ? (
-            <Callout tone="warning">{t('tests.speaking.micDenied')}</Callout>
-          ) : (
-            <Panel className="space-y-3">
-              <LevelBars level={level} active={micState === 'ready'} />
-              <p className={cn('flex items-center justify-center gap-1.5 text-sm', heard ? 'font-medium text-success' : 'text-muted-foreground')} data-testid="examiner-heard">
-                {heard ? <Check className="size-4" aria-hidden /> : <Mic className="size-4" aria-hidden />}
-                {heard ? t('tests.speaking.examiner.checkHeard') : t('tests.speaking.examiner.checkSay')}
+          <Panel className="space-y-3">
+            {hasMeter && check === 'listening' && <LevelBars level={level} />}
+            {check === 'idle' && (
+              <Button size="lg" className="w-full" onClick={startCheck} data-testid="examiner-test-mic">
+                <Mic /> {t('tests.speaking.examiner.testMic')}
+              </Button>
+            )}
+            {check === 'listening' && (
+              <div className="space-y-2" data-testid="examiner-heard">
+                <p className="text-sm font-medium">{t('tests.speaking.examiner.sayThis')}</p>
+                <p className="min-h-10 rounded-xl bg-muted/50 px-3 py-2 text-sm" lang="en" aria-live="polite">
+                  {speech.transcript ? t('tests.speaking.examiner.heardText', { text: speech.transcript }) : t('tests.speaking.examiner.listeningNow')}
+                </p>
+              </div>
+            )}
+            {check === 'ok' && (
+              <p className="flex items-center justify-center gap-1.5 text-sm font-medium text-success" data-testid="examiner-heard-ok">
+                <Check className="size-4" aria-hidden /> {t('tests.speaking.examiner.checkOk')}
               </p>
-            </Panel>
+            )}
+            {check === 'failed' && (
+              <div className="space-y-3 text-left" data-testid="examiner-check-failed" data-reason={trouble}>
+                <Callout tone="warning">{t(`tests.speaking.examiner.advice.${trouble === 'unheard' ? 'silent' : trouble}`)}</Callout>
+                <Button className="w-full" onClick={startCheck} data-testid="examiner-test-again">
+                  {t('tests.tryAgain')}
+                </Button>
+              </div>
+            )}
+          </Panel>
+
+          {check === 'ok' && (
+            <>
+              <ul className="space-y-1.5 text-left text-sm text-muted-foreground">
+                <li>{t('tests.speaking.examiner.rule1')}</li>
+                <li>{t('tests.speaking.examiner.rule2')}</li>
+                <li>{t('tests.speaking.examiner.rule3')}</li>
+              </ul>
+              <Button size="lg" className="w-full" onClick={() => void begin()} data-testid="examiner-begin">
+                {t('tests.speaking.examiner.begin')}
+              </Button>
+            </>
           )}
 
-          <ul className="space-y-1.5 text-left text-sm text-muted-foreground">
-            <li>{t('tests.speaking.examiner.rule1')}</li>
-            <li>{t('tests.speaking.examiner.rule2')}</li>
-            <li>{t('tests.speaking.examiner.rule3')}</li>
-          </ul>
-
-          <Button size="lg" className="w-full" disabled={micState !== 'ready'} onClick={() => void begin()} data-testid="examiner-begin">
-            {t('tests.speaking.examiner.begin')}
+          <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={onUseTyping} data-testid="examiner-type">
+            {t('tests.speaking.examiner.typeInstead')}
           </Button>
         </div>
       </Shell>
@@ -335,6 +440,23 @@ export function ExaminerSpeaking({
         <p className="min-h-6 text-sm font-medium text-muted-foreground" role="status" aria-live="polite" data-testid="examiner-status">
           {who === 'prep' ? `${status.prep} · ${formatClock(prepLeft)}` : status[who]}
         </p>
+
+        {who === 'you' && (
+          <div className="w-full space-y-2" data-testid="examiner-hearing">
+            {hearing ? (
+              <p className="rounded-xl bg-muted/50 px-4 py-3 text-center text-sm text-muted-foreground" lang="en">
+                <span className="mb-0.5 block text-xs font-medium uppercase">{t('tests.speaking.examiner.hearingLabel')}</span>
+                {hearing.length > 160 ? `…${hearing.slice(-160)}` : hearing}
+              </p>
+            ) : (
+              hint && (
+                <div data-testid="examiner-hint">
+                  <Callout tone="warning">{t('tests.speaking.examiner.hint')}</Callout>
+                </div>
+              )
+            )}
+          </div>
+        )}
 
         {captions && caption && (
           <p className="rounded-xl bg-muted/50 px-4 py-3 text-center text-[15px]" lang="en" data-testid="examiner-caption">
@@ -395,7 +517,7 @@ function Avatar({ who, level }: { who: Who; level: number }) {
   return (
     <div className="relative flex size-36 items-center justify-center" aria-hidden>
       <span
-        className={cn('absolute inset-0 rounded-full transition-transform duration-150', listening ? 'bg-destructive/15' : who === 'examiner' ? 'bg-brand-soft motion-safe:animate-pulse' : 'bg-muted')}
+        className={cn('absolute inset-0 rounded-full transition-transform duration-150', listening ? 'bg-destructive/15 motion-safe:animate-pulse' : who === 'examiner' ? 'bg-brand-soft motion-safe:animate-pulse' : 'bg-muted')}
         style={{ transform: `scale(${scale})` }}
       />
       <span className={cn('relative flex size-24 items-center justify-center rounded-full', listening ? 'bg-destructive text-white' : who === 'examiner' ? 'bg-brand text-brand-foreground' : 'bg-card text-muted-foreground shadow-sm')}>
@@ -405,8 +527,8 @@ function Avatar({ who, level }: { who: Who; level: number }) {
   );
 }
 
-function LevelBars({ level, active }: { level: number; active: boolean }) {
-  const lit = active ? Math.min(12, Math.round(level * 60)) : 0;
+function LevelBars({ level }: { level: number }) {
+  const lit = Math.min(12, Math.round(level * 60));
   return (
     <div className="flex h-10 items-end justify-center gap-1" aria-hidden data-testid="examiner-level">
       {Array.from({ length: 12 }, (_, i) => (

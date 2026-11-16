@@ -145,3 +145,7 @@ export function examinerLines(script: ExaminerScript): string[] {
   const all = [...script.opening, RESUME_LINE, ...script.turns.flatMap((t) => [...t.lead, ...t.afterPrep]), ...script.closing];
   return [...new Set(all)];
 }
+
+/** The assessor needs at least this many spoken words across the whole test to judge anything. */
+export const SPEAKING_MIN_WORDS = 40;
+export const countSpokenWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;

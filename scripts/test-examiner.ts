@@ -4,7 +4,7 @@ import { frameRms, isSpeechLevel, nextNoiseFloor, answerStatus, examinerScript, 
 import { mock1Speaking } from '../lib/ielts/content/vb-mock/test1-writing-speaking';
 import { BOOKS } from '../lib/ielts/content';
 import { completeVoices, DEFAULT_EXAMINER_VOICE, EXAMINER_ACCENTS, EXAMINER_VOICES, getExaminerVoice, synthBody } from '../lib/ielts/examiner-voices';
-import { examinerLines, lineKey, RESUME_LINE } from '../lib/ielts/examiner';
+import { countSpokenWords, examinerLines, lineKey, RESUME_LINE, SPEAKING_MIN_WORDS } from '../lib/ielts/examiner';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -153,6 +153,14 @@ test('the default voice can say every line of every published test', () => {
     const keys = examinerLines(examinerScript(t.sections.speaking)).map(lineKey);
     assert.ok(completeVoices(voices, keys).some((v) => v.id === DEFAULT_EXAMINER_VOICE), `${t.id}: a line has no recording in the default voice (run npm run examiner-audio)`);
   }
+});
+
+test('the app refuses to submit what the assessor could not assess (same 40-word minimum)', () => {
+  assert.equal(SPEAKING_MIN_WORDS, 40);
+  assert.equal(countSpokenWords(''), 0);
+  assert.equal(countSpokenWords('  one   two\nthree '), 3);
+  const assessor = readFileSync(join(process.cwd(), 'lib', 'ai', 'server', 'assess', 'index.ts'), 'utf8');
+  assert.match(assessor, /totalWords < SPEAKING_MIN_WORDS/, 'the assessor uses the shared minimum, so the two cannot drift apart');
 });
 
 console.log(`\n${passed} passed`);

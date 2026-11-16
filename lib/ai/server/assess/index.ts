@@ -8,6 +8,7 @@ import {
   countWords,
   criteriaBand,
   SPEAKING_CRITERIA,
+  SPEAKING_MIN_WORDS,
   WRITING_CRITERIA,
   writingOverall,
   type CriterionFeedback,
@@ -168,7 +169,7 @@ export async function assessSpeaking(provider: AIProvider, test: PracticeTest, s
   }
   const names = SPEAKING_CRITERIA;
   const pronunciationNote = language === 'bn' ? 'শুধু transcript থেকে Pronunciation বিচার করা যায় না।' : 'Pronunciation cannot be judged from a transcript.';
-  if (totalWords < 40) {
+  if (totalWords < SPEAKING_MIN_WORDS) {
     const task = emptyTask('speaking', 'Speaking', names, language === 'bn' ? 'Assess করার মতো যথেষ্ট উত্তর নেই।' : 'Not enough speech to assess.');
     return { skill: 'speaking', generatedAt: new Date().toISOString(), model: 'none', overall: null, tasks: [task], notes: ['estimate', 'incomplete', 'transcript-only'] };
   }

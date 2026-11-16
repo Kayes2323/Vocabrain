@@ -105,6 +105,8 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
   const onFeedback = useCallback((feedback: ProductiveFeedback) => setSession((s) => (s ? { ...s, feedback } : s)), [setSession]);
   const { state, retry: retryAssessment } = useAssessment(session, onFeedback);
   const { supported, mode, choose } = useSpeakingMode();
+  // The student gave up on the voice examiner part-way (or at the check): carry on by tapping and typing.
+  const [typing, setTyping] = useState(false);
   const script = useMemo(() => examinerScript(section), [section]);
   const lines = useMemo(() => examinerLines(script), [script]);
   const voices = useExaminerVoices(lines);
@@ -128,7 +130,10 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
           </div>
         }
         resumable={resumable}
-        onStart={start}
+        onStart={(existing) => {
+          setTyping(false);
+          start(existing);
+        }}
       />
     );
   }
@@ -139,7 +144,7 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
 
   // Wait until we know what this browser can do, so the right runner starts the first time.
   if (supported === undefined) return <ScreenSkeleton />;
-  if (mode === 'examiner') return <ExaminerSpeaking test={test} session={session} setSession={setSession} save={save} saveFinal={saveFinal} onRestart={retry} clipFor={voices.clipFor} />;
+  if (mode === 'examiner' && !typing) return <ExaminerSpeaking test={test} session={session} setSession={setSession} save={save} saveFinal={saveFinal} clipFor={voices.clipFor} onUseTyping={() => setTyping(true)} />;
   return <ActiveSpeaking test={test} steps={steps} session={session} setSession={setSession} save={save} saveFinal={saveFinal} />;
 }
 
