@@ -24,6 +24,8 @@ function getRecognitionCtor(): (new () => Recognition) | undefined {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition;
 }
 
+export const speechRecognitionSupported = () => Boolean(getRecognitionCtor());
+
 /**
  * Speech-to-text for Speaking practice. Audio is processed by the browser's
  * speech service; nothing is recorded or uploaded by Mino.

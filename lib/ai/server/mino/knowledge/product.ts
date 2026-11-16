@@ -323,8 +323,9 @@ export const APP_GUIDES: AppGuide[] = [
     title: 'Speaking test with Mino feedback (Part 1–3)',
     where: 'IELTS → Practice Tests → Practice Test 1 · Speaking (/ielts/tests)',
     steps: [
-      'Answer aloud: Part 1 questions, a Part 2 cue card with 1 minute to prepare and up to 2 minutes to talk, then Part 3 discussion questions.',
-      'The browser records you (playback stays on your device, never uploaded) and turns speech into text; you can correct the transcript or type if speech-to-text isn’t available.',
+      'Real examiner mode (the default in Chrome and Edge): a voice asks every question aloud, the microphone opens by itself and your answer ends when you stop talking, then the next question follows. There is nothing to tap between questions. Part 1 short questions, Part 2 a cue card with 1 minute to prepare (notes allowed) and up to 2 minutes to talk, then Part 3 discussion questions. Before it starts you do a quick microphone check. Leaving saves your place and you can continue later.',
+      'If the browser cannot speak, listen and use speech-to-text, or you choose "Tap each question" on the start screen, you read each question on screen and start and stop each answer yourself, and you can play back and correct the transcript.',
+      'Your browser turns speech into text for Mino; no recording is kept or uploaded. If nothing is heard at all, the test is not submitted and you can try again.',
       'Mino then estimates Fluency & Coherence, Lexical Resource and Grammatical Range & Accuracy from the transcript. Pronunciation is not scored because it can’t be judged from text.',
     ],
   },

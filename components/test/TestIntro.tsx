@@ -13,6 +13,7 @@ export function TestIntro({
   skill,
   stats,
   bullets,
+  extra,
   resumable,
   onStart,
 }: {
@@ -22,6 +23,8 @@ export function TestIntro({
   stats: [string, string][];
   /** How this test works; defaults to timer + review. */
   bullets?: string[];
+  /** Optional choices shown just above the start button (for example a mode picker). */
+  extra?: React.ReactNode;
   resumable: TestSession | null;
   onStart: (existing?: TestSession) => void;
 }) {
@@ -58,6 +61,7 @@ export function TestIntro({
           ))}
         </ul>
         <Callout>{t('tests.notOfficial')}</Callout>
+        {extra}
         {resumable ? (
           <div className="space-y-2">
             <Button size="lg" className="w-full" onClick={() => onStart(resumable)}>

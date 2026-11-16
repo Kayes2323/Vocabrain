@@ -10,6 +10,8 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useSpeechRecognition } from '@/components/practice/useSpeechRecognition';
 import { goTo, setResponse, submit, type PracticeTest, type ProductiveFeedback, type SpeakingSection, type TestSession } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
+import { ExaminerSpeaking } from './ExaminerSpeaking';
+import { examinerSupported } from './examinerVoice';
 import { FeedbackView, useAssessment } from './FeedbackView';
 import { formatClock } from './labels';
 import { TestIntro } from './TestIntro';
@@ -36,6 +38,64 @@ function stepsFor(section: SpeakingSection): Step[] {
   );
 }
 
+type Mode = 'examiner' | 'practice';
+const MODE_KEY = 'vocabbrain:speakingMode';
+
+/**
+ * Examiner mode runs like the real test (voice, no buttons between questions);
+ * practice mode is the tap-through version. Examiner is the default wherever the
+ * browser can speak, listen and hear, and practice is the fallback everywhere else.
+ */
+function useSpeakingMode() {
+  const [supported, setSupported] = useState<boolean | undefined>(undefined);
+  const [choice, setChoice] = useState<Mode | undefined>(undefined);
+  useEffect(() => {
+    setSupported(examinerSupported());
+    try {
+      const saved = window.localStorage.getItem(MODE_KEY);
+      if (saved === 'examiner' || saved === 'practice') setChoice(saved);
+    } catch {
+      // Storage blocked: the default applies.
+    }
+  }, []);
+  const mode: Mode = supported && choice !== 'practice' ? 'examiner' : 'practice';
+  const choose = (m: Mode) => {
+    setChoice(m);
+    try {
+      window.localStorage.setItem(MODE_KEY, m);
+    } catch {
+      // Not saved; the choice still applies for this visit.
+    }
+  };
+  return { supported, mode, choose };
+}
+
+function ModePicker({ supported, mode, onChoose }: { supported: boolean | undefined; mode: Mode; onChoose: (m: Mode) => void }) {
+  const { t } = useLocale();
+  if (supported === undefined) return null;
+  if (!supported) return <Callout tone="warning">{t('tests.speaking.examiner.unsupported')}</Callout>;
+  return (
+    <div className="space-y-2" data-testid="speaking-mode">
+      <div role="radiogroup" aria-label={t('tests.speaking.examiner.modeLabel')} className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
+        {(['examiner', 'practice'] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            role="radio"
+            aria-checked={mode === m}
+            data-mode={m}
+            onClick={() => onChoose(m)}
+            className={cn('h-10 rounded-lg px-2 text-[13px] font-medium transition-colors', mode === m ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+          >
+            {t(`tests.speaking.examiner.mode.${m}`)}
+          </button>
+        ))}
+      </div>
+      <p className="px-1 text-xs text-muted-foreground">{t(`tests.speaking.examiner.modeHint.${mode}`)}</p>
+    </div>
+  );
+}
+
 export function SpeakingRunner({ test }: { test: PracticeTest }) {
   const section = test.sections.speaking as SpeakingSection;
   const steps = useMemo(() => stepsFor(section), [section]);
@@ -43,6 +103,7 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
   const { session, setSession, resumable, start, retry, save, saveFinal } = useTestSession(test, 'speaking');
   const onFeedback = useCallback((feedback: ProductiveFeedback) => setSession((s) => (s ? { ...s, feedback } : s)), [setSession]);
   const { state, retry: retryAssessment } = useAssessment(session, onFeedback);
+  const { supported, mode, choose } = useSpeakingMode();
 
   if (!session) {
     if (resumable === undefined) return <ScreenSkeleton />;
@@ -55,7 +116,8 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
           [t('tests.speaking.questions'), String(steps.length)],
           [t('tests.speaking.length'), t('common.minutes', { n: 11 })],
         ]}
-        bullets={[t('tests.speaking.introFlow'), t('tests.speaking.introPrivacy')]}
+        bullets={[t(mode === 'examiner' ? 'tests.speaking.examiner.introFlow' : 'tests.speaking.introFlow'), t('tests.speaking.introPrivacy')]}
+        extra={<ModePicker supported={supported} mode={mode} onChoose={choose} />}
         resumable={resumable}
         onStart={start}
       />
@@ -66,6 +128,9 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
     return <FeedbackView test={test} session={session} state={state} onRetryAssessment={retryAssessment} onRetryTest={retry} />;
   }
 
+  // Wait until we know what this browser can do, so the right runner starts the first time.
+  if (supported === undefined) return <ScreenSkeleton />;
+  if (mode === 'examiner') return <ExaminerSpeaking test={test} session={session} setSession={setSession} save={save} saveFinal={saveFinal} onRestart={retry} />;
   return <ActiveSpeaking test={test} steps={steps} session={session} setSession={setSession} save={save} saveFinal={saveFinal} />;
 }
 
