@@ -8,9 +8,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Callout, Panel, ProgressBar, ScreenSkeleton } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useSpeechRecognition } from '@/components/practice/useSpeechRecognition';
-import { goTo, setResponse, submit, type PracticeTest, type ProductiveFeedback, type SpeakingSection, type TestSession } from '@/lib/ielts';
+import { examinerLines, examinerScript, goTo, setResponse, submit, type PracticeTest, type ProductiveFeedback, type SpeakingSection, type TestSession } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
 import { ExaminerSpeaking } from './ExaminerSpeaking';
+import { ExaminerVoicePicker, useExaminerVoices } from './ExaminerVoicePicker';
 import { examinerSupported } from './examinerVoice';
 import { FeedbackView, useAssessment } from './FeedbackView';
 import { formatClock } from './labels';
@@ -104,6 +105,9 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
   const onFeedback = useCallback((feedback: ProductiveFeedback) => setSession((s) => (s ? { ...s, feedback } : s)), [setSession]);
   const { state, retry: retryAssessment } = useAssessment(session, onFeedback);
   const { supported, mode, choose } = useSpeakingMode();
+  const script = useMemo(() => examinerScript(section), [section]);
+  const lines = useMemo(() => examinerLines(script), [script]);
+  const voices = useExaminerVoices(lines);
 
   if (!session) {
     if (resumable === undefined) return <ScreenSkeleton />;
@@ -117,7 +121,12 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
           [t('tests.speaking.length'), t('common.minutes', { n: 11 })],
         ]}
         bullets={[t(mode === 'examiner' ? 'tests.speaking.examiner.introFlow' : 'tests.speaking.introFlow'), t('tests.speaking.introPrivacy')]}
-        extra={<ModePicker supported={supported} mode={mode} onChoose={choose} />}
+        extra={
+          <div className="space-y-4">
+            <ModePicker supported={supported} mode={mode} onChoose={choose} />
+            {supported && mode === 'examiner' && <ExaminerVoicePicker voices={voices.available} voice={voices.voice} sample={script.opening[0]} onChoose={voices.choose} />}
+          </div>
+        }
         resumable={resumable}
         onStart={start}
       />
@@ -130,7 +139,7 @@ export function SpeakingRunner({ test }: { test: PracticeTest }) {
 
   // Wait until we know what this browser can do, so the right runner starts the first time.
   if (supported === undefined) return <ScreenSkeleton />;
-  if (mode === 'examiner') return <ExaminerSpeaking test={test} session={session} setSession={setSession} save={save} saveFinal={saveFinal} onRestart={retry} />;
+  if (mode === 'examiner') return <ExaminerSpeaking test={test} session={session} setSession={setSession} save={save} saveFinal={saveFinal} onRestart={retry} clipFor={voices.clipFor} />;
   return <ActiveSpeaking test={test} steps={steps} session={session} setSession={setSession} save={save} saveFinal={saveFinal} />;
 }
 

@@ -55,6 +55,22 @@ const AFTER_PREP = [
 
 const CLOSING = ['Thank you.', 'That is the end of the speaking test.'];
 
+/** Said when a student comes back to a test that was left part-way. */
+export const RESUME_LINE = "Let's carry on.";
+
+/**
+ * Stable name for a spoken line. The recorded examiner clips are filed under
+ * it, so the same wording always finds the same clip (FNV-1a plus the length).
+ */
+export function lineKey(text: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return `${(h >>> 0).toString(16).padStart(8, '0')}-${text.length}`;
+}
+
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 const part3Lead = (topic: string | undefined) => [
@@ -122,4 +138,10 @@ export function frameRms(samples: ArrayLike<number>): number {
   let sum = 0;
   for (let i = 0; i < samples.length; i++) sum += samples[i] * samples[i];
   return Math.sqrt(sum / samples.length);
+}
+
+/** Every distinct line the examiner can say for this test, in the order it is first said. */
+export function examinerLines(script: ExaminerScript): string[] {
+  const all = [...script.opening, RESUME_LINE, ...script.turns.flatMap((t) => [...t.lead, ...t.afterPrep]), ...script.closing];
+  return [...new Set(all)];
 }

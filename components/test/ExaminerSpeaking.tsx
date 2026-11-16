@@ -10,10 +10,12 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useSpeechRecognition } from '@/components/practice/useSpeechRecognition';
 import {
   answerStatus,
+  examinerLines,
   examinerScript,
   goTo,
   isSpeechLevel,
   nextNoiseFloor,
+  RESUME_LINE,
   setResponse,
   submit,
   type ExaminerTurn,
@@ -22,7 +24,7 @@ import {
   type TestSession,
 } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
-import { openMic, sayLine, sleep, stopSpeaking, voicesReady, type Mic as MicHandle } from './examinerVoice';
+import { openMic, preloadClips, sayLine, sleep, stopSpeaking, unlockAudio, voicesReady, type Mic as MicHandle } from './examinerVoice';
 import { formatClock } from './labels';
 
 type Stage = 'check' | 'running' | 'unheard';
@@ -46,6 +48,7 @@ export function ExaminerSpeaking({
   save,
   saveFinal,
   onRestart,
+  clipFor,
 }: {
   test: PracticeTest;
   session: TestSession;
@@ -53,6 +56,8 @@ export function ExaminerSpeaking({
   save: (s: TestSession) => Promise<void>;
   saveFinal: (s: TestSession) => Promise<void>;
   onRestart: () => void;
+  /** The recorded clip for a line in the voice the student chose (none: the browser voice reads it). */
+  clipFor: (line: string) => string | undefined;
 }) {
   const { t } = useLocale();
   const router = useRouter();
@@ -95,6 +100,12 @@ export function ExaminerSpeaking({
   useEffect(() => {
     void save(session);
   }, [session.responses, session.currentNumber]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Download the chosen voice's clips while the student checks their microphone.
+  useEffect(() => {
+    const paths = examinerLines(script).map(clipFor).filter((p): p is string => Boolean(p));
+    void preloadClips(paths);
+  }, [script, clipFor]);
 
   // Microphone check: ask for access up front and let the student see it hear them.
   useEffect(() => {
@@ -174,6 +185,7 @@ export function ExaminerSpeaking({
   const begin = useCallback(async () => {
     if (started.current) return;
     started.current = true;
+    unlockAudio();
     await voicesReady();
     if (!alive.current) return;
     setStage('running');
@@ -188,13 +200,13 @@ export function ExaminerSpeaking({
         onLine?.(line);
         setWho('examiner');
         setCaption(line);
-        await sayLine(line, () => !alive.current);
+        await sayLine(line, () => !alive.current, clipFor(line));
         await sleep(250);
       }
       return alive.current;
     };
 
-    if (!(await say(startAt > 0 ? ["Let's carry on."] : script.opening))) return;
+    if (!(await say(startAt > 0 ? [RESUME_LINE] : script.opening))) return;
 
     for (let i = startAt; i < turns.length; i++) {
       const turn = turns[i];
@@ -237,7 +249,7 @@ export function ExaminerSpeaking({
     const done = submit(working, test);
     await saveFinal(done).catch((e) => console.error('[tests] Save failed', e));
     setSession(done);
-  }, [script, listen, setSession, saveFinal, test]);
+  }, [script, listen, setSession, saveFinal, test, clipFor]);
 
   const leave = () => {
     stopSpeaking();

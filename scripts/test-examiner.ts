@@ -2,6 +2,11 @@
 import assert from 'node:assert/strict';
 import { frameRms, isSpeechLevel, nextNoiseFloor, answerStatus, examinerScript, NO_SPEECH_MS, SILENCE_MS, SPEAKING_LIMITS, speechThreshold } from '../lib/ielts/examiner';
 import { mock1Speaking } from '../lib/ielts/content/vb-mock/test1-writing-speaking';
+import { BOOKS } from '../lib/ielts/content';
+import { completeVoices, DEFAULT_EXAMINER_VOICE, EXAMINER_ACCENTS, EXAMINER_VOICES, getExaminerVoice, synthBody } from '../lib/ielts/examiner-voices';
+import { examinerLines, lineKey, RESUME_LINE } from '../lib/ielts/examiner';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -92,6 +97,62 @@ test('the noise floor follows quiet moments but is never dragged up by the stude
   assert.equal(floor, 0.01, 'loud frames leave it alone');
   for (let i = 0; i < 100; i++) floor = nextNoiseFloor(floor, 0.003);
   assert.ok(floor < 0.006, 'quiet frames pull it down');
+});
+
+test('every line of every test gets its own clip name (no two lines share one)', () => {
+  const seen = new Map<string, string>();
+  for (const t of BOOKS.flatMap((b) => b.tests)) {
+    if (!t.sections.speaking) continue;
+    for (const text of examinerLines(examinerScript(t.sections.speaking))) {
+      const key = lineKey(text);
+      assert.match(key, /^[0-9a-f]{8}-\d+$/);
+      assert.ok(!seen.has(key) || seen.get(key) === text, `${key} is used by two different lines`);
+      seen.set(key, text);
+    }
+  }
+  assert.ok(seen.has(lineKey(RESUME_LINE)), 'the resume line is recorded too');
+  assert.notEqual(lineKey('Thank you.'), lineKey('Thank you!'));
+});
+
+test('voices: unique ids, grouped by accent, each accent has a voice, a default exists', () => {
+  assert.equal(new Set(EXAMINER_VOICES.map((v) => v.id)).size, EXAMINER_VOICES.length);
+  for (const v of EXAMINER_VOICES) assert.ok(v.id.startsWith(`${v.accent}-`), `${v.id} is filed under its accent`);
+  for (const a of EXAMINER_ACCENTS) assert.ok(EXAMINER_VOICES.some((v) => v.accent === a), `${a} has a voice`);
+  assert.ok(getExaminerVoice(DEFAULT_EXAMINER_VOICE));
+  assert.equal(synthBody(getExaminerVoice('british-archie')!, 'Hi.').speed, 0.92);
+  assert.equal(synthBody(getExaminerVoice('british-freddie')!, 'Hi.').speed, undefined);
+  assert.deepEqual(synthBody(getExaminerVoice('indian-dhruv')!, 'Hi.').constraints, { allowedProviders: { tts: ['azure'] } });
+});
+
+test('a voice with even one line missing is not offered, so the examiner never changes voice mid-test', () => {
+  const keys = ['a', 'b', 'c'];
+  const index = { 'british-archie': { a: 'x', b: 'x', c: 'x' }, 'british-gemma': { a: 'x', b: 'x' }, 'indian-dhruv': {} };
+  assert.deepEqual(completeVoices(index, keys).map((v) => v.id), ['british-archie']);
+  assert.deepEqual(completeVoices({}, keys), []);
+});
+
+test('the shipped manifest only lists clips that exist, filed under the voice that owns them', () => {
+  const file = join(process.cwd(), 'public', 'examiner', 'manifest.json');
+  assert.ok(existsSync(file), 'manifest.json exists');
+  const { voices } = JSON.parse(readFileSync(file, 'utf8')) as { voices: Record<string, Record<string, string>> };
+  for (const [id, clips] of Object.entries(voices)) {
+    assert.ok(getExaminerVoice(id), `${id} is a known voice`);
+    for (const [key, path] of Object.entries(clips)) {
+      assert.equal(path, `${id}/${key}.mp3`);
+      assert.ok(existsSync(join(process.cwd(), 'public', 'examiner', path)), `${path} exists`);
+    }
+  }
+  assert.ok(voices[DEFAULT_EXAMINER_VOICE], 'the default voice is recorded');
+});
+
+test('the default voice can say every line of every published test', () => {
+  const file = join(process.cwd(), 'public', 'examiner', 'manifest.json');
+  const { voices } = JSON.parse(readFileSync(file, 'utf8')) as { voices: Record<string, Record<string, string>> };
+  for (const t of BOOKS.flatMap((b) => b.tests)) {
+    if (!t.sections.speaking) continue;
+    const keys = examinerLines(examinerScript(t.sections.speaking)).map(lineKey);
+    assert.ok(completeVoices(voices, keys).some((v) => v.id === DEFAULT_EXAMINER_VOICE), `${t.id}: a line has no recording in the default voice (run npm run examiner-audio)`);
+  }
 });
 
 console.log(`\n${passed} passed`);

@@ -6,3 +6,4 @@ export * from './validate';
 export * from './analysis';
 export * from './feedback';
 export * from './examiner';
+export * from './examiner-voices';

@@ -1,4 +1,4 @@
-import { frameRms } from '@/lib/ielts';
+import { frameRms, type ClipIndex } from '@/lib/ielts';
 import { speechRecognitionSupported } from '@/components/practice/useSpeechRecognition';
 
 /** The examiner needs a voice, a microphone and speech-to-text. Without all three the tap-through mode is used. */
@@ -48,16 +48,94 @@ function speakOne(text: string): Promise<void> {
   });
 }
 
-/** Reads one line aloud, a sentence at a time (long utterances are cut short by some browsers). */
-export async function sayLine(text: string, isCancelled: () => boolean): Promise<void> {
+// ---------------------------------------------------------------- recorded examiner clips
+
+let manifest: Promise<ClipIndex> | null = null;
+
+/** The list of recorded clips. Without it (offline, not deployed) the browser voice is used. */
+export function loadClipIndex(): Promise<ClipIndex> {
+  manifest ??= fetch('/examiner/manifest.json')
+    .then((r) => (r.ok ? (r.json() as Promise<{ voices?: ClipIndex }>) : { voices: {} }))
+    .then((m) => m.voices ?? {})
+    .catch(() => ({}) as ClipIndex);
+  return manifest;
+}
+
+const clipUrls = new Map<string, string>();
+let player: HTMLAudioElement | null = null;
+// A silent, valid WAV used to unlock audio inside the student's tap (iOS and Safari need that).
+const SILENCE = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+
+/** Call this synchronously from the student's tap, before any await, so later clips may play on their own. */
+export function unlockAudio() {
+  player ??= new Audio();
+  player.src = SILENCE;
+  void player.play().catch(() => undefined);
+}
+
+/** Downloads clips ahead of time so each line starts the moment the examiner reaches it. */
+export async function preloadClips(paths: string[]): Promise<void> {
+  await Promise.all(
+    paths.map(async (path) => {
+      if (clipUrls.has(path)) return;
+      try {
+        const res = await fetch(`/examiner/${path}`);
+        if (res.ok) clipUrls.set(path, URL.createObjectURL(await res.blob()));
+      } catch {
+        // Not cached: it is fetched when played, or the browser voice covers it.
+      }
+    }),
+  );
+}
+
+/** Bumped by stopSpeaking(); a line that was cut off must not be read again in the browser voice. */
+let epoch = 0;
+let release: (() => void) | null = null;
+
+/** Plays one recorded clip to the end. Resolves false if it could not be played to the end. */
+function playClip(path: string): Promise<boolean> {
+  release?.();
+  return new Promise((resolve) => {
+    const audio = (player ??= new Audio());
+    let settled = false;
+    const finish = (ok: boolean) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(guard);
+      if (release === stop) release = null;
+      resolve(ok);
+    };
+    const stop = () => finish(false);
+    release = stop;
+    const guard = window.setTimeout(() => finish(false), 60_000);
+    audio.onended = () => finish(true);
+    audio.onerror = () => finish(false);
+    // A clip that reaches its end fires `pause` just before `ended`; only an early pause is a cut-off.
+    audio.onpause = () => !audio.ended && finish(false);
+    audio.src = clipUrls.get(path) ?? `/examiner/${path}`;
+    audio.play().catch(() => finish(false));
+  });
+}
+
+/**
+ * The examiner says one line. A recorded clip is used when there is one;
+ * otherwise (or if it cannot play) the browser's own voice reads it. A line
+ * that was stopped on purpose is never read again by the fallback.
+ */
+export async function sayLine(text: string, isCancelled: () => boolean, clip?: string): Promise<void> {
+  const started = epoch;
+  if (clip && (await playClip(clip))) return;
+  if (epoch !== started || isCancelled()) return;
   for (const part of sentences(text)) {
-    if (isCancelled()) return;
+    if (epoch !== started || isCancelled()) return;
     await speakOne(part);
     await sleep(180);
   }
 }
 
 export const stopSpeaking = () => {
+  epoch++;
+  player?.pause();
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) window.speechSynthesis.cancel();
 };
 
