@@ -1,0 +1,54 @@
+{
+  "l3": {
+    "src": "/listening/vb-mock-1/l3.mp3",
+    "duration": 304.3,
+    "cues": [
+      {
+        "at": 14,
+        "kind": "read"
+      },
+      {
+        "at": 49.3,
+        "kind": "listen"
+      },
+      {
+        "at": 159.9,
+        "kind": "read"
+      },
+      {
+        "at": 193.7,
+        "kind": "listen"
+      },
+      {
+        "at": 274.3,
+        "kind": "check"
+      }
+    ]
+  },
+  "l1": {
+    "src": "/listening/vb-mock-1/l1.mp3",
+    "duration": 316.2,
+    "cues": [
+      {
+        "at": 19.9,
+        "kind": "read"
+      },
+      {
+        "at": 54.5,
+        "kind": "listen"
+      },
+      {
+        "at": 153.5,
+        "kind": "read"
+      },
+      {
+        "at": 187,
+        "kind": "listen"
+      },
+      {
+        "at": 286.2,
+        "kind": "check"
+      }
+    ]
+  }
+}

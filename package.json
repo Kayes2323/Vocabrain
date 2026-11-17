@@ -11,6 +11,8 @@
     "test:ielts": "npx -y tsx scripts/test-ielts-engine.ts",
     "test:examiner": "npx -y tsx scripts/test-examiner.ts",
     "examiner-audio": "npx -y tsx scripts/examiner-audio.ts",
+    "listening-audio": "npx -y tsx scripts/listening-audio.ts",
+    "test:listening-audio": "npx -y tsx scripts/test-listening-audio.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
     "test:foundation-integrity": "npx -y tsx scripts/test-foundation-integrity.ts",
     "test:answers": "npx -y tsx scripts/test-answer-validation.ts",

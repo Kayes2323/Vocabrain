@@ -121,6 +121,18 @@ export interface ListeningAudio {
   script?: ScriptLine[];
   /** Short context the narrator reads first ("You will hear a phone call…"). */
   intro?: string;
+  /** What the narrator calls the recording: "conversation", "discussion", "talk". */
+  noun?: string;
+  /**
+   * The recording split into sets of questions, as in the real test: each set is
+   * announced, read in silence, then played. `fromLine` is the script line the
+   * set starts at.
+   */
+  sets?: { questions: string; fromLine: number }[];
+  /** `src` already holds the narration and the silences, so the player plays it just as it is. */
+  narrated?: boolean;
+  /** When each stage of a narrated recording starts (seconds), so the screen can say what is happening. */
+  cues?: { at: number; kind: 'read' | 'listen' | 'check' }[];
 }
 
 export interface ObjectivePart {

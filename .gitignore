@@ -14,3 +14,6 @@ out
 # E2E output
 .e2e-logs/
 .e2e-shots/
+
+# Raw recorded Listening lines (kept locally; the stitched parts are in public/listening)
+listening-work/

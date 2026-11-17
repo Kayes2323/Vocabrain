@@ -304,6 +304,7 @@ export const APP_GUIDES: AppGuide[] = [
     steps: [
       'Opens the listening practice hub: the listening sections of the practice tests, plus the words you saved from them.',
       'Full listening sections with band estimates live in IELTS → Practice Tests (/ielts/tests).',
+      'In the first practice test, Part 1 and Part 3 are real recordings in British voices: a narrator announces the part, there is half a minute of silence to read the questions, a short break before the second set of questions, and half a minute at the end to check answers. Each recording plays once, like the real test. Parts 2 and 4 still use the browser voice for now.',
     ],
   },
   {

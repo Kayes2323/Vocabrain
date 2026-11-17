@@ -1,10 +1,20 @@
-import type { ObjectiveSection } from '../../model';
+import type { ListeningAudio, ObjectiveSection } from '../../model';
+import recordings from './listening-audio.json';
 
 /**
  * Mino Academic Mock Test 1 — Listening. Original content written for
  * Mino in the style and difficulty of the IELTS Listening test
  * (4 parts, 40 questions). Not Cambridge material.
  */
+/**
+ * The recorded, narrated audio for a part, once it has been made
+ * (npm run listening-audio). Until then the part is read by the browser voice.
+ */
+const recorded = (partId: string): Pick<ListeningAudio, 'src' | 'narrated' | 'cues'> => {
+  const r = (recordings as Record<string, { src: string; cues: NonNullable<ListeningAudio['cues']> }>)[partId];
+  return r ? { src: r.src, narrated: true, cues: r.cues } : {};
+};
+
 const W = 'female' as const;
 const M = 'male' as const;
 
@@ -19,32 +29,41 @@ export const mock1Listening: ObjectiveSection = {
       title: 'Short course enrolment',
       audio: {
         intro: 'Part 1. You will hear a man phoning a college to enrol on a short course. First, you have some time to look at questions 1 to 10.',
+        noun: 'conversation',
+        ...recorded('l1'),
+        // Questions 1–5 are answered by line 12; the break comes before the location question.
+        sets: [
+          { questions: '1 to 5', fromLine: 0 },
+          { questions: '6 to 10', fromLine: 13 },
+        ],
         script: [
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Good morning, Hartley Community College, enrolment office. How can I help?' },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Hi. I'd like to sign up for one of your summer courses, the one on digital photography." },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Oh, hello. Yes, I'd like to sign up for one of your summer courses, the one on digital photography." },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "Certainly. There are still a few places left. Can I take your name first?" },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Yes, it's Daniel Ferreira." },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Could you spell your surname for me?' },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Sure. F, E, double R, E, I, R, A." },
-          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Thank you. And your address?' },
+          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Thank you. And your address, please?' },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "It's 27 Castleton Road. That's C, A, S, T, L, E, T, O, N. In Milbrook." },
-          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Lovely. And a phone number we can reach you on?' },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "My home number is changing next week, so it's better to use my mobile. That's 0 7 7 2 3, 4 1 9, 8 5 6." },
+          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Lovely, thank you. And a phone number we can reach you on?' },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Well, my home number is changing next week, so it's better to use my mobile. That's 0 7 7 2 3, 4 1 9, 8 5 6." },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "0 7 7 2 3, 4 1 9, 8 5 6. Great. Now, the course was originally going to begin on the seventh of July, but the tutor is away that week, so the first session is now on the fourteenth." },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "The fourteenth of July. That's fine. And is it still on Tuesday evenings? That's what the leaflet said." },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "The fourteenth of July. OK, that's fine. And is it still on Tuesday evenings? That's what the leaflet said." },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "It was Tuesdays last year, but this year all the sessions are on Wednesday evenings, from seven until nine." },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: 'Wednesdays suit me better, actually. Where does it take place? In the main hall?' },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "No, the main hall is being repainted over the summer. You'll be in the library building, room twelve, on the first floor." },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: 'OK. And how much does the course cost?' },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "The full fee is two hundred and ten pounds for non-residents, but as you live in Milbrook you pay the local rate, which is one hundred and eighty-five. That includes all the printing and materials." },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: 'Great. Are there any discounts? A friend mentioned something about that.' },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: 'Great, thank you. Are there any discounts? A friend mentioned something about that.' },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "We used to offer one to anyone over sixty, but now the only discount is for students in full-time education. Are you a student?" },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Unfortunately not, I finished university last year. Is there anything I need to bring?" },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Oh, unfortunately not. I finished university last year. Is there anything I need to bring?" },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "A camera with manual settings, of course. We provide memory cards, but you'll need to bring your own tripod, because some of the evening sessions are outdoors in low light." },
-          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "I've got one of those. Great." },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "Oh, I've got one of those already. Great." },
           { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "Lastly, we always ask people how they heard about the course. Was it our website?" },
           { speaker: 'Daniel', voice: M, accent: 'en-GB', text: "My friend told me the college runs courses, but it was an advertisement on the radio that actually mentioned photography." },
-          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "The radio, OK. That's everything. We'll send a confirmation text to your mobile today." },
+          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: "The radio, OK. That's everything. We'll send a confirmation text to your mobile today. Thank you for calling, and we look forward to seeing you in July." },
+          { speaker: 'Daniel', voice: M, accent: 'en-GB', text: 'Thanks very much. Goodbye.' },
+          { speaker: 'Receptionist', voice: W, accent: 'en-GB', text: 'Goodbye.' },
         ],
       },
       groups: [
@@ -229,30 +248,39 @@ export const mock1Listening: ObjectiveSection = {
       title: 'Planning a presentation',
       audio: {
         intro: 'Part 3. You will hear two environmental science students, Maya and Tom, discussing a presentation they are preparing. First, you have some time to look at questions 21 to 30.',
+        noun: 'discussion',
+        ...recorded('l3'),
+        // Questions 21–25 are answered by line 10; the break comes before the first section is discussed.
+        sets: [
+          { questions: '21 to 25', fromLine: 0 },
+          { questions: '26 to 30', fromLine: 11 },
+        ],
         script: [
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "So, Maya, before we plan the slides, remind me why we went for urban trees in the end. Was it because Dr Price suggested it?" },
-          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "She did mention it as a possible topic, but that's not really why. I did my first-year project on street planting, so we already had a lot of background material and contacts." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Right, that made sense. Now, the survey. I was worried we wouldn't get enough people to fill it in." },
-          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "That was never a problem. We had over three hundred responses, and the questions seemed clear, nobody complained. The trouble is that almost all of them came from people living in the city centre, so we can't really say anything about the suburbs." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "True. We'll have to mention that as a limitation. What about the study on cooling? The one from Rotterdam." },
-          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "The method looked fairly standard to me: thermal sensors on streets with and without trees." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Yes, and it was only published last year, so it's recent. What struck me was the size of the difference. I'd assumed shaded streets might be a degree cooler, but they measured up to four degrees. I really didn't expect that." },
-          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "It'll get the audience's attention too. Now, the cost figures. The ones we have are from that tree charity's website, and they're five years old." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "The city council publishes planting costs every year, doesn't it? We should use theirs instead." },
-          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Agreed. That's more reliable. And how shall we split the talk? I wondered if one of us should just do the slides and the other do all the speaking." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "I'd rather we both speak. Why don't we each present the sections we researched? That's roughly half each anyway." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Right, so, Maya, before we plan the slides, remind me why we went for urban trees in the end. Was it because Dr Price suggested it?" },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Well, she did mention it as a possible topic, but that's not really why. I did my first-year project on street planting, so we already had a lot of background material and contacts." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Yes, that makes sense. Now, the survey. I was worried we wouldn't get enough people to fill it in." },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "No, that was never a problem. We had over three hundred responses, and the questions seemed clear, nobody complained. The trouble is that almost all of them came from people living in the city centre, so we can't really say anything about the suburbs." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Yeah, true. We'll have to mention that as a limitation. What about the study on cooling? The one from Rotterdam." },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Well, the method looked fairly standard to me: thermal sensors on streets with and without trees." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Yes, and it was only published last year, so it's recent. What struck me was the size of the difference. I'd assumed shaded streets might be a degree cooler, but they measured up to four degrees. I really didn't expect that." },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Yes, it'll get the audience's attention too. Now, the cost figures. The ones we have are from that tree charity's website, and they're five years old." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "The city council publishes planting costs every year, doesn't it? We should use theirs instead." },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "OK, agreed, that's more reliable. And how shall we split the talk? I wondered if one of us should just do the slides and the other do all the speaking." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "I'd rather we both speak. Why don't we each present the sections we researched? That's roughly half each anyway." },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Fine. So let's go through the sections. First, the history of city parks." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Honestly, I don't think it adds much. It's interesting, but it's not really about trees and climate." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Honestly, I don't think it adds much. It's interesting, but it's not really about trees and climate." },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "I was going to suggest we check with Dr Price, but you're right. Let's just take it out." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Then the cooling effect. The Rotterdam team made a short film with a thermal camera. Could we show part of that?" },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Then the cooling effect. The Rotterdam team made a short film with a thermal camera. Could we show part of that?" },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Yes, a clip of about a minute would be much more powerful than a chart." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Air quality next. At the moment we only give one figure, for particle pollution." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Air quality next. At the moment we only give one figure, for particle pollution." },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "That's too thin. We need numbers for nitrogen dioxide as well, and a comparison between seasons." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "OK. The cost of planting section is fine in content, but it's five slides at the moment." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "OK. The cost of planting section is fine in content, but it's five slides at the moment." },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Too many. Let's cut it down to two, with the council figures." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "And the public opinion survey. I had it near the end." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "And the public opinion survey. I had it near the end." },
           { speaker: 'Maya', voice: W, accent: 'en-GB', text: "I think it'd work better as our opening. Starting with what people in the city actually think gets everyone involved straight away." },
-          { speaker: 'Tom', voice: M, accent: 'en-US', text: "Good idea. We'll open with it." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Good idea. We'll open with it." },
+          { speaker: 'Maya', voice: W, accent: 'en-GB', text: "Great. I'll start on the slides tonight, and I'll send you the first draft tomorrow." },
+          { speaker: 'Tom', voice: M, accent: 'en-GB', text: "Perfect. Thanks, Maya." },
         ],
       },
       groups: [

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Headphones, Pause, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import type { ObjectiveSection, ScriptLine } from '@/lib/ielts';
+import { READ_SECONDS, type ListeningAudio, type ObjectiveSection, type ScriptLine } from '@/lib/ielts';
 import { readJSON, writeJSON } from '@/lib/services/local-store';
 import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
@@ -18,7 +18,7 @@ type Voice = Pick<ScriptLine, 'voice' | 'accent'> & { speaker: string };
 type Step =
   | { kind: 'say'; part: number; text: string; voice: Voice }
   | { kind: 'wait'; part: number; seconds: number; reason: 'prep' | 'check' }
-  | { kind: 'audio'; part: number; src: string };
+  | { kind: 'audio'; part: number; src: string; cues?: ListeningAudio['cues'] };
 
 const NARRATOR: Voice = { speaker: 'narrator', voice: 'female', accent: 'en-GB' };
 
@@ -29,6 +29,11 @@ function buildSteps(section: ObjectiveSection): Step[] {
   const steps: Step[] = [];
   section.parts.forEach((p, part) => {
     const audio = p.audio;
+    // A narrated recording already holds the announcements, the reading time and the checking time.
+    if (audio?.narrated && audio.src) {
+      steps.push({ kind: 'audio', part, src: audio.src, cues: audio.cues });
+      return;
+    }
     for (const s of sentences(audio?.intro || `Part ${p.number}.`)) steps.push({ kind: 'say', part, text: s, voice: NARRATOR });
     steps.push({ kind: 'wait', part, seconds: PREP_SECONDS, reason: 'prep' });
     if (audio?.src) steps.push({ kind: 'audio', part, src: audio.src });
@@ -86,6 +91,8 @@ export function ListeningPlayer({
   const [step, setStep] = useState(saved.current.step);
   const [status, setStatus] = useState<Status>(saved.current.step >= steps.length ? 'done' : 'ready');
   const [waitLeft, setWaitLeft] = useState(0);
+  // Position inside a recorded part, to say what is happening (reading time, listening, checking).
+  const [clock, setClock] = useState({ t: 0, d: 0 });
   const run = useRef(0);
   const audioEl = useRef<HTMLAudioElement | null>(null);
   const utterance = useRef<SpeechSynthesisUtterance | null>(null);
@@ -145,7 +152,10 @@ export function ListeningPlayer({
           const a = new Audio(s.src);
           audioEl.current = a;
           a.currentTime = saved.current.offset ?? 0;
-          a.ontimeupdate = () => persist({ step: saved.current.step, offset: a.currentTime });
+          a.ontimeupdate = () => {
+            persist({ step: saved.current.step, offset: a.currentTime });
+            setClock({ t: a.currentTime, d: a.duration || 0 });
+          };
           a.onended = a.onerror = () => resolve();
           a.onpause = () => run.current !== id && resolve();
           void a.play().catch(() => resolve());
@@ -198,7 +208,8 @@ export function ListeningPlayer({
 
   const current = steps[Math.min(step, steps.length - 1)];
   const partNumber = section.parts[current?.part ?? 0]?.number ?? 1;
-  const progress = Math.round((Math.min(step, steps.length) / steps.length) * 100);
+  const within = current?.kind === 'audio' && clock.d > 0 ? Math.min(1, clock.t / clock.d) : 0;
+  const progress = Math.round(((Math.min(step, steps.length) + (status === 'playing' || status === 'paused' ? within : 0)) / steps.length) * 100);
 
   let label: string;
   if (status === 'unsupported') label = t('tests.listening.unsupported');
@@ -207,7 +218,13 @@ export function ListeningPlayer({
   else if (status === 'paused') label = t('tests.listening.paused');
   else if (current?.kind === 'wait')
     label = t(current.reason === 'prep' ? 'tests.listening.prep' : 'tests.listening.check', { time: formatClock(Math.max(0, waitLeft)) });
-  else label = t('tests.listening.playing', { n: partNumber });
+  else if (current?.kind === 'audio' && current.cues?.length) {
+    // Silence is only counted while it really is silence: the narrator speaks before and after it.
+    const cue = [...current.cues].reverse().find((c) => c.at <= clock.t);
+    const left = !cue ? 0 : cue.kind === 'read' ? READ_SECONDS - (clock.t - cue.at) : cue.kind === 'check' ? clock.d - clock.t : 0;
+    const time = formatClock(Math.max(0, Math.ceil(left)));
+    label = left > 0 && cue?.kind === 'read' ? t('tests.listening.prep', { time }) : left > 0 && cue?.kind === 'check' ? t('tests.listening.check', { time }) : t('tests.listening.playing', { n: partNumber });
+  } else label = t('tests.listening.playing', { n: partNumber });
 
   return (
     <div className="flex shrink-0 items-center gap-3 border-b bg-muted/40 px-3 py-2 sm:px-4" role="region" aria-label={t('tests.listening.player')}>

@@ -7,3 +7,4 @@ export * from './analysis';
 export * from './feedback';
 export * from './examiner';
 export * from './examiner-voices';
+export * from './listening-audio';
