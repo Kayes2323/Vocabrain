@@ -1,19 +1,12 @@
 import type { ListeningAudio, ObjectiveSection } from '../../model';
-import recordings from './listening-audio.json';
+import { recorded } from './recorded';
 
 /**
  * Mino Academic Mock Test 1 — Listening. Original content written for
  * Mino in the style and difficulty of the IELTS Listening test
  * (4 parts, 40 questions). Not Cambridge material.
  */
-/**
- * The recorded, narrated audio for a part, once it has been made
- * (npm run listening-audio). Until then the part is read by the browser voice.
- */
-const recorded = (partId: string): Pick<ListeningAudio, 'src' | 'narrated' | 'cues'> => {
-  const r = (recordings as Record<string, { src: string; cues: NonNullable<ListeningAudio['cues']> }>)[partId];
-  return r ? { src: r.src, narrated: true, cues: r.cues } : {};
-};
+const rec = (partId: string) => recorded('vb-mock-1', partId);
 
 const W = 'female' as const;
 const M = 'male' as const;
@@ -30,7 +23,7 @@ export const mock1Listening: ObjectiveSection = {
       audio: {
         intro: 'Part 1. You will hear a man phoning a college to enrol on a short course. First, you have some time to look at questions 1 to 10.',
         noun: 'conversation',
-        ...recorded('l1'),
+        ...rec('l1'),
         // Questions 1–5 are answered by line 12; the break comes before the location question.
         sets: [
           { questions: '1 to 5', fromLine: 0 },
@@ -138,7 +131,7 @@ export const mock1Listening: ObjectiveSection = {
       audio: {
         intro: 'Part 2. You will hear a guide talking to a group of visitors at a wetland centre. First, you have some time to look at questions 11 to 20.',
         noun: 'talk',
-        ...recorded('l2'),
+        ...rec('l2'),
         sets: [
           { questions: '11 to 14', fromLine: 0 },
           { questions: '15 to 20', fromLine: 5 },
@@ -255,7 +248,7 @@ export const mock1Listening: ObjectiveSection = {
       audio: {
         intro: 'Part 3. You will hear two environmental science students, Maya and Tom, discussing a presentation they are preparing. First, you have some time to look at questions 21 to 30.',
         noun: 'discussion',
-        ...recorded('l3'),
+        ...rec('l3'),
         // Questions 21–25 are answered by line 10; the break comes before the first section is discussed.
         sets: [
           { questions: '21 to 25', fromLine: 0 },
@@ -389,7 +382,7 @@ export const mock1Listening: ObjectiveSection = {
       audio: {
         intro: 'Part 4. You will hear a lecture on the history of glass-making. First, you have some time to look at questions 31 to 40.',
         noun: 'lecture',
-        ...recorded('l4'),
+        ...rec('l4'),
         sets: [{ questions: '31 to 40', fromLine: 0 }],
         script: [
           { speaker: 'Lecturer', voice: W, accent: 'en-GB', text: "Good afternoon. Today I want to trace the history of one of the most ordinary materials around us: glass. We often imagine that glass was first made in Egypt, and the Egyptians certainly became skilled glassmakers. But the earliest objects we have, from around four and a half thousand years ago, come from Mesopotamia, in what is now Iraq." },

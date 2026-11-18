@@ -92,9 +92,9 @@ function build(part: Planned) {
   ff(['-f', 'concat', '-safe', '0', '-i', list, '-ar', String(SAMPLE_RATE), '-ac', '1', '-c:a', 'libmp3lame', '-b:a', '64k', out]);
 
   const meta = existsSync(META) ? JSON.parse(readFileSync(META, 'utf8')) : {};
-  meta[part.partId] = { src: `/listening/${part.testId}/${part.partId}.mp3`, duration: Math.round(duration(out) * 10) / 10, cues };
+  meta[part.id] = { src: `/listening/${part.testId}/${part.partId}.mp3`, duration: Math.round(duration(out) * 10) / 10, cues };
   writeFileSync(META, `${JSON.stringify(meta, null, 2)}\n`);
-  console.log(`${part.id}: ${meta[part.partId].duration}s, ${files.length} pieces, cues ${cues.map((c) => `${c.kind}@${c.at}`).join(' ')}`);
+  console.log(`${part.id}: ${meta[part.id].duration}s, ${files.length} pieces, cues ${cues.map((c) => `${c.kind}@${c.at}`).join(' ')}`);
 }
 
 const arg = (flag: string) => {
@@ -119,9 +119,9 @@ if (process.argv.includes('--missing')) {
   for (const p of planned()) {
     const jobs = listeningJobs(p.tracks);
     const missing = jobs.filter((j) => !existsSync(join(WORK, j.path))).length;
-    const built = Boolean(meta[p.partId]);
+    const built = Boolean(meta[p.id]);
     if (!built) incomplete = true;
-    console.log(`${p.id.padEnd(16)} ${jobs.length - missing}/${jobs.length} lines recorded, ${built ? `stitched (${meta[p.partId].duration}s)` : 'not stitched'}`);
+    console.log(`${p.id.padEnd(16)} ${jobs.length - missing}/${jobs.length} lines recorded, ${built ? `stitched (${meta[p.id].duration}s)` : 'not stitched'}`);
   }
   if (process.argv.includes('--check') && incomplete) process.exitCode = 1;
 }

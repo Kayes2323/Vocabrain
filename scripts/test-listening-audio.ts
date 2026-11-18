@@ -91,9 +91,9 @@ test('the break is announced right before the speaker who starts the next set', 
 test('stitched recordings exist, match their timeline and are listed in the content', () => {
   const metaFile = join(process.cwd(), 'lib', 'ielts', 'content', 'vb-mock', 'listening-audio.json');
   const meta = JSON.parse(readFileSync(metaFile, 'utf8')) as Record<string, { src: string; duration: number; cues: { at: number; kind: string }[] }>;
-  assert.deepEqual(Object.keys(meta).sort(), castParts.map((p) => p.part.id).sort(), 'every planned part has been recorded and stitched');
+  assert.deepEqual(Object.keys(meta).sort(), castParts.map((p) => p.id).sort(), 'every planned part has been recorded and stitched');
   for (const [id, rec] of Object.entries(meta)) {
-    const p = castParts.find((x) => x.part.id === id);
+    const p = castParts.find((x) => x.id === id);
     assert.ok(p, `${id} is a planned part`);
     const file = join(process.cwd(), 'public', rec.src);
     assert.ok(existsSync(file) && statSync(file).size > 50_000, `${rec.src} exists`);
