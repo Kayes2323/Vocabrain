@@ -56,7 +56,7 @@ export const mockTest3: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock3Listening,
