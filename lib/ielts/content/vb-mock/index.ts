@@ -25,10 +25,7 @@ export const mockTest1: PracticeTest = {
   },
 };
 
-/**
- * Mino Academic Mock Test 2. Kept out of the student library (pending-review)
- * until its Reading is in and its recordings are made.
- */
+/** Mino Academic Mock Test 2: original, full-length, with recorded Listening and the voice examiner. */
 export const mockTest2: PracticeTest = {
   id: 'vb-mock-2',
   bookId: 'vb-mock',
@@ -37,7 +34,7 @@ export const mockTest2: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock2Listening,

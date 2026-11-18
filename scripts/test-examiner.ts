@@ -155,6 +155,15 @@ test('the default voice can say every line of every published test', () => {
   }
 });
 
+test('every voice can say every line of every published test, so the choice of voice never shrinks', () => {
+  const { voices } = JSON.parse(readFileSync(join(process.cwd(), 'public', 'examiner', 'manifest.json'), 'utf8')) as { voices: Record<string, Record<string, string>> };
+  for (const t of BOOKS.flatMap((b) => b.tests)) {
+    if (!t.sections.speaking) continue;
+    const keys = examinerLines(examinerScript(t.sections.speaking)).map(lineKey);
+    assert.deepEqual(completeVoices(voices, keys).map((v) => v.id).sort(), EXAMINER_VOICES.map((v) => v.id).sort(), `${t.id}: some voice is missing a line (run npm run examiner-audio)`);
+  }
+});
+
 test('the app refuses to submit what the assessor could not assess (same 40-word minimum)', () => {
   assert.equal(SPEAKING_MIN_WORDS, 40);
   assert.equal(countSpokenWords(''), 0);
