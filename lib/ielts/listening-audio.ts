@@ -24,13 +24,16 @@ export const LISTENING_VOICES: Record<string, ListeningVoice> = {
   'british-archie': { name: 'Archie', synth: { provider: 'cartesia', model: 'sonic-3.5', voice: 'ef191366-f52f-447a-a398-ed8c0f2943a1', language: 'en-GB', speed: 0.95 } },
   'british-gemma': { name: 'Gemma', synth: { provider: 'cartesia', model: 'sonic-3.5', voice: '62ae83ad-4f6a-430b-af41-a9bede9286ca', language: 'en-GB', speed: 0.95 } },
   'british-freddie': { name: 'Freddie', synth: { provider: 'gradium', model: 'default', voice: 's_k3kLBbgeK9-xUg', language: 'en-GB' } },
+  'australian-isla': { name: 'Isla', synth: { provider: 'azure', model: 'MAI-Voice-2.1', voice: 'en-AU-Isla:MAI-Voice-2.1', language: 'en-AU' } },
   'british-maeve': { name: 'Maeve', synth: { provider: 'gradium', model: 'default', voice: '6PWnV0Nq4wu7RVBT', language: 'en-GB' } },
 };
 
 /** Who speaks as whom, per part (`<test id>:<part id>`). A speaker keeps one voice for the whole part. */
 export const LISTENING_CAST: Record<string, Record<string, string>> = {
   'vb-mock-1:l1': { Receptionist: 'british-maeve', Daniel: 'british-archie' },
+  'vb-mock-1:l2': { Guide: 'australian-isla' },
   'vb-mock-1:l3': { Maya: 'british-gemma', Tom: 'british-freddie' },
+  'vb-mock-1:l4': { Lecturer: 'british-gemma' },
 };
 
 /** Silence left for reading each set of questions and for checking answers at the end. */
@@ -93,7 +96,7 @@ export function listeningTracks(audio: ListeningAudio, part: PartInfo): Track[] 
 
   const last = part.index === part.count - 1;
   tracks.push(say(`That is the end of Part ${part.number}.`));
-  tracks.push(say(last ? 'That is the end of the Listening test. You now have some time to check your answers.' : 'You now have half a minute to check your answers.'));
+  tracks.push(say(last ? 'That is the end of the Listening test. You now have half a minute to check your answers.' : 'You now have half a minute to check your answers.'));
   tracks.push({ kind: 'silence', seconds: CHECK_SECONDS, cue: 'check' });
   return tracks;
 }

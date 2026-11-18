@@ -29,8 +29,8 @@ const parseRange = (r: string) => {
 };
 const tracksOf = (p: (typeof castParts)[number]) => listeningTracks(p.part.audio!, { testId: p.testId, partId: p.part.id, number: p.part.number, index: p.index, count: p.count });
 
-test('Parts 1 and 3 are planned for recording', () => {
-  assert.deepEqual(castParts.map((p) => p.id).sort(), ['vb-mock-1:l1', 'vb-mock-1:l3']);
+test('all four parts of the first mock test are planned for recording', () => {
+  assert.deepEqual(castParts.map((p) => p.id).sort(), ['vb-mock-1:l1', 'vb-mock-1:l2', 'vb-mock-1:l3', 'vb-mock-1:l4']);
 });
 
 test('every speaker has a voice of their own, different from the narrator and from each other', () => {
@@ -56,7 +56,7 @@ test('question sets cover the whole part, in order, and each break falls after t
       assert.ok(set.fromLine < end && end <= lines.length, `${p.id}: set ${i} has lines`);
       const heard = lines.slice(set.fromLine, end).map((l) => l.text).join(' ');
       for (const n of parseRange(set.questions)) {
-        assert.ok(heard.includes(evidenceFor(p.part, n)), `${p.id}: the answer to Q${n} is spoken inside its own set (before the next break)`);
+        assert.ok(evidenceFor(p.part, n).split('…').map((x) => x.trim()).filter(Boolean).every((piece) => heard.includes(piece)), `${p.id}: the answer to Q${n} is spoken inside its own set (before the next break)`);
       }
     });
   }
@@ -70,7 +70,7 @@ test('the recording follows the real test: welcome once, each set announced then
     assert.equal(/Welcome to the Listening test/.test(text), p.index === 0, `${p.id}: welcome only at the start of the test`);
     assert.match(text, new RegExp(`Part ${p.part.number}\\.`));
     p.part.audio!.sets!.forEach((s) => assert.ok(text.includes(`questions ${s.questions}`), `${p.id}: announces questions ${s.questions}`));
-    assert.match(text, /Before you hear the rest of the (conversation|discussion)/);
+    assert.equal(/Before you hear the rest of the (conversation|discussion|talk)/.test(text), p.part.audio!.sets!.length > 1, `${p.id}: a break is announced only when there is a second set`);
     const silences = tracks.filter((t): t is Extract<typeof t, { kind: 'silence' }> => t.kind === 'silence');
     assert.deepEqual(silences.map((s) => [s.cue, s.seconds]), [...p.part.audio!.sets!.map(() => ['read', READ_SECONDS]), ['check', CHECK_SECONDS]]);
     assert.ok(tracks[tracks.length - 1].kind === 'silence' && (tracks[tracks.length - 1] as { cue: string }).cue === 'check', `${p.id}: ends with time to check`);
@@ -80,6 +80,7 @@ test('the recording follows the real test: welcome once, each set announced then
 test('the break is announced right before the speaker who starts the next set', () => {
   for (const p of castParts) {
     const audio = p.part.audio!;
+    if (audio.sets!.length < 2) continue;
     const tracks = tracksOf(p);
     const at = tracks.findIndex((t) => t.kind === 'say' && t.voice === NARRATOR && t.text.startsWith('Before you hear the rest'));
     const next = tracks.slice(at).find((t) => t.kind === 'say' && t.voice !== NARRATOR);
@@ -90,6 +91,7 @@ test('the break is announced right before the speaker who starts the next set', 
 test('stitched recordings exist, match their timeline and are listed in the content', () => {
   const metaFile = join(process.cwd(), 'lib', 'ielts', 'content', 'vb-mock', 'listening-audio.json');
   const meta = JSON.parse(readFileSync(metaFile, 'utf8')) as Record<string, { src: string; duration: number; cues: { at: number; kind: string }[] }>;
+  assert.deepEqual(Object.keys(meta).sort(), castParts.map((p) => p.part.id).sort(), 'every planned part has been recorded and stitched');
   for (const [id, rec] of Object.entries(meta)) {
     const p = castParts.find((x) => x.part.id === id);
     assert.ok(p, `${id} is a planned part`);
