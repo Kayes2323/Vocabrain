@@ -1,5 +1,6 @@
 /** IELTS engine checks (pure, no network). Run: pnpm test:ielts */
 import assert from 'node:assert/strict';
+import { bandLevel, cefrForBand } from '../lib/engine/ielts';
 import { ALL_BOOKS, BOOKS, getTest } from '../lib/ielts/content/index';
 import {
   analyseTests, answeredNumbers, countWords, createSession, expandAccepted, isPublishable, normalise, questionSlots, rawToBand,
@@ -191,6 +192,15 @@ test('analysis with no data says so', () => {
   const a = analyseTests([], getTest);
   assert.equal(a.weakAreas.length, 0);
   assert.match(a.dataNote, /No submitted practice tests yet/);
+});
+
+test('CEFR levels follow the published IELTS equivalents, and the level of a band is its whole number', () => {
+  const expected: [number, string | undefined][] = [[9, 'C2'], [8.5, 'C2'], [8, 'C1'], [7, 'C1'], [6.5, 'B2'], [5.5, 'B2'], [5, 'B1'], [4, 'B1'], [3.5, 'A2'], [3, 'A2'], [2.5, 'A1'], [1, 'A1'], [0.5, undefined], [0, undefined]];
+  for (const [band, cefr] of expected) assert.equal(cefrForBand(band), cefr, `band ${band}`);
+  assert.equal(cefrForBand(undefined), undefined);
+  assert.equal(bandLevel(6.5), 6);
+  assert.equal(bandLevel(9), 9);
+  assert.equal(bandLevel(0), 0);
 });
 
 console.log(`\n${passed} passed`);

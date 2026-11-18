@@ -11,6 +11,7 @@ import type { ObjectiveSection, PracticeTest, Question, QuestionResult, TestSess
 import { cn } from '@/lib/utils';
 import { formatClock, QUESTION_TYPE_LABELS } from './labels';
 import { FullMockNext } from './FullMockNext';
+import { ResultSheet } from './ResultSheet';
 
 /** Every accepted answer, readable: "(rubber) tyres" → "rubber tyres"; all letters for choose-TWO groups. */
 const displayAnswer = (r: QuestionResult) =>
@@ -51,6 +52,8 @@ export function ResultView({ test, section, session, onRetry }: { test: Practice
         </p>
         {session.timedOut && <StatusChip tone="warning">{t('tests.timedOut')}</StatusChip>}
       </header>
+
+      <ResultSheet testTitle={test.title} date={session.submittedAt} scores={[{ skill: section.skill, taken: true, band: result.estimatedBand }]} />
 
       {weakest && (
         <Callout tone="brand" title={t('tests.focusTitle')}>

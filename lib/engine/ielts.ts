@@ -15,6 +15,23 @@ export function overallBand(bands: SkillBands): number | undefined {
   return Math.floor(avg * 2 + 0.5) / 2;
 }
 
+/**
+ * The CEFR level that IELTS publishes as equivalent to a band: 8.5–9 C2, 7–8 C1,
+ * 5.5–6.5 B2, 4–5 B1, 3–3.5 A2, below that A1. Bands below 1 have no level.
+ */
+export function cefrForBand(band: number | undefined): 'C2' | 'C1' | 'B2' | 'B1' | 'A2' | 'A1' | undefined {
+  if (band === undefined || band < 1) return undefined;
+  if (band >= 8.5) return 'C2';
+  if (band >= 7) return 'C1';
+  if (band >= 5.5) return 'B2';
+  if (band >= 4) return 'B1';
+  if (band >= 3) return 'A2';
+  return 'A1';
+}
+
+/** The whole band (0–9) a score sits in, used to pick its plain-language level. */
+export const bandLevel = (band: number): number => Math.min(9, Math.max(0, Math.floor(band)));
+
 export function formatBand(band: number | undefined): string {
   return band === undefined ? '–' : band.toFixed(1);
 }

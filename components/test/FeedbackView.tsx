@@ -11,6 +11,7 @@ import { assessSession } from '@/lib/ai/client';
 import { formatBand } from '@/lib/engine';
 import type { PracticeTest, ProductiveFeedback, TaskFeedback, TestSession } from '@/lib/ielts';
 import { FullMockNext } from './FullMockNext';
+import { ResultSheet } from './ResultSheet';
 
 type State = { status: 'idle' | 'loading' | 'failed' | 'guest' } | { status: 'done' };
 
@@ -181,6 +182,8 @@ export function FeedbackView({
           </Button>
         </Callout>
       )}
+
+      {f && <ResultSheet testTitle={test.title} date={session.submittedAt} scores={[{ skill: session.skill, taken: true, band: f.overall ?? undefined }]} />}
 
       {f && (
         <>

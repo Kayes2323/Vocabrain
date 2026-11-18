@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
 import { BookText, ChevronRight, Headphones, Mic, PenLine, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Callout, PageHeader, Panel, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { PageHeader, Panel, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
+import { ResultSheet } from '@/components/test/ResultSheet';
 import { useTestSessions } from '@/components/test/useTestSessions';
 import { getTest, testSkills } from '@/lib/ielts/content';
 import type { IELTSSkillId, TestSession } from '@/lib/ielts';
-import { formatBand, overallBand } from '@/lib/engine';
-import type { SkillBands } from '@/lib/models';
+import { formatBand } from '@/lib/engine';
 
 const SKILL_ICON = { listening: Headphones, reading: BookText, writing: PenLine, speaking: Mic } as const;
 const SKILL_ORDER: IELTSSkillId[] = ['listening', 'reading', 'writing', 'speaking'];
@@ -46,23 +46,16 @@ export default function FullMockResultPage() {
     const session = latestSubmitted(sessions, testId, skill);
     return { skill, session, band: bandFor(session) };
   });
-  const bands: SkillBands = Object.fromEntries(perSkill.filter((p) => p.band !== undefined).map((p) => [p.skill, p.band])) as SkillBands;
-  const overall = overallBand(bands);
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8 px-4 py-6 md:py-10">
       <PageHeader title={test.title} subtitle={t('fullMock.libraryTitle')} backHref={`/ielts/full-mock-test/${testId}`} backLabel={test.title} />
 
-      <div className="space-y-4 rounded-2xl border-2 p-6 text-center">
-        <StatusChip tone="danger" className="mx-auto">
-          {t('fullMock.resultBadge')}
-        </StatusChip>
-        <div>
-          <p className="text-sm text-muted-foreground">{t('fullMock.overallBand')}</p>
-          <p className="text-5xl font-bold tabular-nums">{overall !== undefined ? formatBand(overall) : '—'}</p>
-          {overall === undefined && <p className="mt-1 text-sm text-muted-foreground">{t('fullMock.overallPending')}</p>}
-        </div>
-      </div>
+      <ResultSheet
+        testTitle={test.title}
+        date={perSkill.map((p) => p.session?.submittedAt).filter((d): d is string => !!d).sort().pop()}
+        scores={perSkill.map(({ skill, session, band }) => ({ skill, taken: !!session, band }))}
+      />
 
       <Button asChild variant="brand" className="w-full sm:w-auto">
         <Link href={`/mino?${new URLSearchParams({ ask: 'full-mock-result', test: test.title })}`}>
@@ -97,7 +90,6 @@ export default function FullMockResultPage() {
         </Panel>
       </Section>
 
-      <Callout tone="warning">{t('fullMock.disclaimer')}</Callout>
     </div>
   );
 }
