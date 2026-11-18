@@ -542,6 +542,7 @@ export const bn: LocaleDictionary = {
     askPrompt: 'আমি Foundation lesson "{lesson}" করছি। সহজ করে বুঝিয়ে দিন, আর IELTS-এ কোথায় এটা ব্যবহার করব দেখান।',
   },
   tests: {
+    highlight: { hint: 'Passage-এর কোনো অংশ select করলে highlight করা যাবে।', add: 'Highlight', clear: 'Clear', menu: 'Highlight-এর অপশন' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'সময় ধরে, automatic score আর explanation সহ।',
     libraryNote: 'আরও test আসছে। Cambridge IELTS বইগুলো শুধু licence পাওয়ার পরই যোগ হবে।',

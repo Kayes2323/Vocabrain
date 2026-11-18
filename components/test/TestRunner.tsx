@@ -14,6 +14,7 @@ import {
 import { writeJSON } from '@/lib/services/local-store';
 import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
+import { HighlightablePassage } from './HighlightablePassage';
 import { ListeningPlayer } from './ListeningPlayer';
 import { QuestionGroupView } from './QuestionGroupView';
 import { ResultView } from './ResultView';
@@ -197,12 +198,8 @@ function ActiveTest({
             <div className="mx-auto max-w-2xl space-y-4">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t('tests.passageN', { n: part.number })}</p>
               <h2 className="text-xl font-semibold">{part.passage.title}</h2>
-              {part.passage.paragraphs.map((p) => (
-                <p key={p.id} className="flex gap-3 leading-7">
-                  {p.labelled && <span className="w-5 shrink-0 font-semibold">{p.id}</span>}
-                  <span>{p.text}</span>
-                </p>
-              ))}
+              <p className="text-xs text-muted-foreground">{t('tests.highlight.hint')}</p>
+              <HighlightablePassage storageId={`${session.id}:${part.id}`} paragraphs={part.passage.paragraphs} />
             </div>
           </article>
         )}

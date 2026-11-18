@@ -540,6 +540,7 @@ export const en = {
     askPrompt: 'I’m doing the Foundation lesson "{lesson}". Can you explain it simply and show where I will use it in IELTS?',
   },
   tests: {
+    highlight: { hint: 'Select text in the passage to highlight it.', add: 'Highlight', clear: 'Clear', menu: 'Highlight options' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'Timed, auto-scored, with explanations.',
     libraryNote: 'More tests are on the way. Cambridge IELTS books will be added only with a licence.',
