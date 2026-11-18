@@ -18,6 +18,7 @@ import { ListeningPlayer } from './ListeningPlayer';
 import { QuestionGroupView } from './QuestionGroupView';
 import { ResultView } from './ResultView';
 import { TestIntro } from './TestIntro';
+import { useFullMock } from './useFullMock';
 import { clockKey, useTestSession } from './useTestSession';
 
 /** Seconds of timer progress between background saves (answers save straight away). */
@@ -75,6 +76,7 @@ function ActiveTest({
 }) {
   const { t } = useLocale();
   const router = useRouter();
+  const { full, overviewHref } = useFullMock(test, section.skill);
   const slots = useMemo(() => questionSlots(section), [section]);
   const answered = useMemo(() => answeredNumbers(section, session.answers), [section, session.answers]);
   const current = session.currentNumber;
@@ -142,7 +144,7 @@ function ActiveTest({
     <div className="fixed inset-0 z-40 flex flex-col bg-background">
       {/* Header: where am I, how much time is left */}
       <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push('/ielts/tests')}>
+        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push(full ? overviewHref : '/ielts/tests')}>
           <X />
         </Button>
         <div className="min-w-0 flex-1">
@@ -169,7 +171,7 @@ function ActiveTest({
       </header>
 
       {section.skill === 'listening' && (
-        <ListeningPlayer sessionId={session.id} section={section} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
+        <ListeningPlayer sessionId={session.id} section={section} examConditions={full} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
       )}
 
       {/* Mobile: passage and questions take turns; desktop shows both */}

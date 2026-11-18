@@ -67,17 +67,20 @@ export function useTestSession(test: PracticeTest, skill: IELTSSkillId) {
     [repository, userId],
   );
 
+  // A section taken inside a Full Mock Test keeps that context in the address.
+  const fullParam = () => (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('full') === '1' ? '&full=1' : '');
+
   const start = (existing?: TestSession) => {
     const next = existing ?? createSession(test, skill);
     setSession(next);
     if (!existing) void repository.save(userId, next);
-    router.replace(`/ielts/tests/${test.id}/${skill}?session=${next.id}`, { scroll: false });
+    router.replace(`/ielts/tests/${test.id}/${skill}?session=${next.id}${fullParam()}`, { scroll: false });
   };
 
   const retry = () => {
     setResumable(null);
     setSession(null);
-    router.replace(`/ielts/tests/${test.id}/${skill}`, { scroll: false });
+    router.replace(`/ielts/tests/${test.id}/${skill}${fullParam().replace('&', '?')}`, { scroll: false });
   };
 
   return { session, setSession, resumable, start, retry, save, saveFinal };

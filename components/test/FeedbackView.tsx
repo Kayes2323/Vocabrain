@@ -10,6 +10,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { assessSession } from '@/lib/ai/client';
 import { formatBand } from '@/lib/engine';
 import type { PracticeTest, ProductiveFeedback, TaskFeedback, TestSession } from '@/lib/ielts';
+import { FullMockNext } from './FullMockNext';
 
 type State = { status: 'idle' | 'loading' | 'failed' | 'guest' } | { status: 'done' };
 
@@ -209,6 +210,8 @@ export function FeedbackView({
           </Button>
         </>
       )}
+
+      {(f || state.status === 'failed' || state.status === 'guest') && <FullMockNext test={test} skill={session.skill} />}
     </div>
   );
 }

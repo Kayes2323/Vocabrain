@@ -10,6 +10,7 @@ import { formatBand } from '@/lib/engine';
 import type { ObjectiveSection, PracticeTest, Question, QuestionResult, TestSession } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
 import { formatClock, QUESTION_TYPE_LABELS } from './labels';
+import { FullMockNext } from './FullMockNext';
 
 /** Every accepted answer, readable: "(rubber) tyres" → "rubber tyres"; all letters for choose-TWO groups. */
 const displayAnswer = (r: QuestionResult) =>
@@ -64,6 +65,8 @@ export function ResultView({ test, section, session, onRetry }: { test: Practice
           <Sparkles /> {t('tests.askMino')}
         </Link>
       </Button>
+
+      <FullMockNext test={test} skill={section.skill} />
 
       <Section title={t(section.skill === 'reading' ? 'tests.byPassage' : 'tests.byPart')}>
         <Panel className="space-y-4">

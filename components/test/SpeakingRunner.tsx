@@ -16,6 +16,7 @@ import { examinerSupported } from './examinerVoice';
 import { FeedbackView, useAssessment } from './FeedbackView';
 import { formatClock } from './labels';
 import { TestIntro } from './TestIntro';
+import { useFullMock } from './useFullMock';
 import { useTestSession } from './useTestSession';
 
 interface Step {
@@ -167,6 +168,7 @@ function ActiveSpeaking({
 }) {
   const { t } = useLocale();
   const router = useRouter();
+  const fm = useFullMock(test, 'speaking');
   const index = Math.min(Math.max(session.currentNumber - 1, 0), steps.length - 1);
   const step = steps[index];
   const saved = session.responses?.[step.key];
@@ -255,7 +257,7 @@ function ActiveSpeaking({
   return (
     <div className="fixed inset-0 z-40 flex flex-col bg-background">
       <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push('/ielts/tests')}>
+        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push(fm.full ? fm.overviewHref : '/ielts/tests')}>
           <X />
         </Button>
         <div className="min-w-0 flex-1">

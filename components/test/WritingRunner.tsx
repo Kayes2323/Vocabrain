@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { FeedbackView, useAssessment } from './FeedbackView';
 import { formatClock } from './labels';
 import { TestIntro } from './TestIntro';
+import { useFullMock } from './useFullMock';
 import { clockKey, useTestSession } from './useTestSession';
 
 const wordsIn = (text: string) => {
@@ -78,6 +79,7 @@ function ActiveWriting({
 }) {
   const { t } = useLocale();
   const router = useRouter();
+  const fm = useFullMock(test, 'writing');
   const [taskIndex, setTaskIndex] = useState(0);
   const [confirm, setConfirm] = useState(false);
   const task = section.tasks[taskIndex];
@@ -127,7 +129,7 @@ function ActiveWriting({
   return (
     <div className="fixed inset-0 z-40 flex flex-col bg-background">
       <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4">
-        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push('/ielts/tests')}>
+        <Button variant="ghost" size="icon" aria-label={t('tests.exit')} onClick={() => router.push(fm.full ? fm.overviewHref : '/ielts/tests')}>
           <X />
         </Button>
         <div className="min-w-0 flex-1">

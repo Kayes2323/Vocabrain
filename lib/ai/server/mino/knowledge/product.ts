@@ -308,6 +308,17 @@ export const APP_GUIDES: AppGuide[] = [
     ],
   },
   {
+    id: 'full-mock-test',
+    status: 'AVAILABLE',
+    title: 'Full Mock Test (all four skills, exam-day order)',
+    where: 'IELTS → Full Mock Test (/ielts/full-mock-test)',
+    steps: [
+      'Mino Academic Mock Test 1 has all four skills in exam-day order: Listening, Reading, Writing, then Speaking, about 2 hours 45 minutes in total. The start button always opens the next section, and after each section a Next button leads on to the following one.',
+      'Exam conditions: Listening is four narrated recordings played once with no pause or replay; Reading and Writing each run on one timer and submit themselves when time is up; Speaking is the voice examiner.',
+      'After all four, the combined result page shows an overall band estimate. It is practice only, not an official IELTS score.',
+    ],
+  },
+  {
     id: 'writing-test',
     status: 'AVAILABLE',
     title: 'Writing test with Mino feedback (Task 1 + Task 2)',

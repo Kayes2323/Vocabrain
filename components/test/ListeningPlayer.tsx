@@ -76,10 +76,13 @@ type Status = 'ready' | 'playing' | 'paused' | 'done' | 'unsupported';
 export function ListeningPlayer({
   sessionId,
   section,
+  examConditions = false,
   onPartStart,
 }: {
   sessionId: string;
   section: ObjectiveSection;
+  /** Exam day: the recording runs straight through, with no pause button (leaving the page still pauses it). */
+  examConditions?: boolean;
   /** Called when the audio moves on to a new part (0-based), to show its questions. */
   onPartStart: (part: number) => void;
 }) {
@@ -237,7 +240,7 @@ export function ListeningPlayer({
           <div className={cn('h-full rounded-full bg-primary transition-[width]', status === 'done' && 'bg-emerald-500')} style={{ width: `${progress}%` }} />
         </div>
       </div>
-      {status === 'playing' && (
+      {status === 'playing' && !examConditions && (
         <Button size="sm" variant="outline" onClick={pause}>
           <Pause /> <span className="hidden sm:inline">{t('tests.listening.pause')}</span>
         </Button>

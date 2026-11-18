@@ -7,6 +7,7 @@ import { Callout, Panel } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { remainingSeconds, type IELTSSkillId, type PracticeTest, type TestSession } from '@/lib/ielts';
 import { formatClock } from './labels';
+import { useFullMock } from './useFullMock';
 
 export function TestIntro({
   test,
@@ -29,17 +30,18 @@ export function TestIntro({
   onStart: (existing?: TestSession) => void;
 }) {
   const { t } = useLocale();
+  const fm = useFullMock(test, skill);
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 py-6">
       <Button asChild variant="ghost" size="sm" className="self-start">
-        <Link href="/ielts/tests">
-          <ArrowLeft /> {t('tests.library')}
+        <Link href={fm.full ? fm.overviewHref : '/ielts/tests'}>
+          <ArrowLeft /> {fm.full ? t('fullMock.libraryTitle') : t('tests.library')}
         </Link>
       </Button>
       <div className="flex flex-1 flex-col justify-center gap-6 py-8">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">{t('tests.practiceLabel')}</p>
+          <p className="text-sm font-medium text-muted-foreground">{fm.full ? t('fullMock.sectionOf', { n: fm.step, total: fm.count }) : t('tests.practiceLabel')}</p>
           <h1 className="text-2xl font-semibold tracking-tight">
             {test.title} · {t(`skills.${skill}`)}
           </h1>
@@ -53,7 +55,7 @@ export function TestIntro({
           ))}
         </Panel>
         <ul className="space-y-2 text-sm text-muted-foreground">
-          {(bullets ?? [t('tests.introTimer'), t('tests.introReview')]).map((b, i) => (
+          {[...(bullets ?? [t('tests.introTimer'), t('tests.introReview')]), ...(fm.full ? [t(`fullMock.rule.${skill}`)] : [])].map((b, i) => (
             <li key={i} className="flex gap-2">
               {i === 0 ? <Clock className="mt-0.5 size-4 shrink-0" /> : <ListChecks className="mt-0.5 size-4 shrink-0" />}
               {b}
