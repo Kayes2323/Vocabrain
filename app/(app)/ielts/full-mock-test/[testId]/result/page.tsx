@@ -10,14 +10,14 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { ResultSheet } from '@/components/test/ResultSheet';
 import { useTestSessions } from '@/components/test/useTestSessions';
 import { getTest, testSkills } from '@/lib/ielts/content';
-import type { IELTSSkillId, TestSession } from '@/lib/ielts';
+import { isPractice, type IELTSSkillId, type TestSession } from '@/lib/ielts';
 import { formatBand } from '@/lib/engine';
 
 const SKILL_ICON = { listening: Headphones, reading: BookText, writing: PenLine, speaking: Mic } as const;
 const SKILL_ORDER: IELTSSkillId[] = ['listening', 'reading', 'writing', 'speaking'];
 
 function latestSubmitted(sessions: TestSession[], testId: string, skill: IELTSSkillId) {
-  return sessions.find((s) => s.testId === testId && s.skill === skill && s.status === 'submitted');
+  return sessions.find((s) => s.testId === testId && s.skill === skill && s.status === 'submitted' && !isPractice(s));
 }
 
 function bandFor(session: TestSession | undefined): number | undefined {

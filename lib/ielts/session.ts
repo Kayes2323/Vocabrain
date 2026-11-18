@@ -41,20 +41,31 @@ const SPEAKING_SESSION_MINUTES = 20;
 
 export const isObjective = (skill: IELTSSkillId): skill is 'listening' | 'reading' => skill === 'listening' || skill === 'reading';
 
-export function createSession(test: PracticeTest, skill: IELTSSkillId, now = new Date()): TestSession {
+export type TestMode = 'full' | 'practice';
+
+/**
+ * A practice attempt carries no exam clock. It is marked by an id suffix and a
+ * very long time limit rather than by a new field, so stored attempts keep the
+ * shape the database rules accept.
+ */
+const PRACTICE_SUFFIX = '-pr';
+const PRACTICE_LIMIT_SECONDS = 24 * 60 * 60;
+export const isPractice = (s: Pick<TestSession, 'id'>) => s.id.endsWith(PRACTICE_SUFFIX);
+
+export function createSession(test: PracticeTest, skill: IELTSSkillId, now = new Date(), mode: TestMode = 'full'): TestSession {
   const section = test.sections[skill];
   if (!section) throw new Error(`${test.id} has no ${skill} section`);
   const minutes = section.skill === 'speaking' ? SPEAKING_SESSION_MINUTES : section.timeLimitMinutes;
   const at = now.toISOString();
   return {
-    id: `${test.id}-${skill}-${now.getTime().toString(36)}`,
+    id: `${test.id}-${skill}-${now.getTime().toString(36)}${mode === 'practice' ? PRACTICE_SUFFIX : ''}`,
     testId: test.id,
     bookId: test.bookId,
     skill,
     status: 'in-progress',
     startedAt: at,
     updatedAt: at,
-    timeLimitSeconds: minutes * 60,
+    timeLimitSeconds: mode === 'practice' ? PRACTICE_LIMIT_SECONDS : minutes * 60,
     elapsedSeconds: 0,
     answers: {},
     flagged: [],

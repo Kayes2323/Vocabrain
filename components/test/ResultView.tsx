@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { formatBand } from '@/lib/engine';
-import type { ObjectiveSection, PracticeTest, Question, QuestionResult, TestSession } from '@/lib/ielts';
+import { isPractice, type ObjectiveSection, type PracticeTest, type Question, type QuestionResult, type TestSession } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
 import { formatClock, QUESTION_TYPE_LABELS } from './labels';
 import { FullMockNext } from './FullMockNext';
@@ -52,6 +52,8 @@ export function ResultView({ test, section, session, onRetry }: { test: Practice
         </p>
         {session.timedOut && <StatusChip tone="warning">{t('tests.timedOut')}</StatusChip>}
       </header>
+
+      {isPractice(session) && <Callout>{t('tests.practice.note')}</Callout>}
 
       <ResultSheet testTitle={test.title} date={session.submittedAt} scores={[{ skill: section.skill, taken: true, band: result.estimatedBand }]} />
 

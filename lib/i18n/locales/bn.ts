@@ -542,6 +542,32 @@ export const bn: LocaleDictionary = {
     askPrompt: 'আমি Foundation lesson "{lesson}" করছি। সহজ করে বুঝিয়ে দিন, আর IELTS-এ কোথায় এটা ব্যবহার করব দেখান।',
   },
   tests: {
+    mode: {
+      title: 'এই test কীভাবে দিতে চান?',
+      subtitle: 'একবার বেছে নিন। পরে অন্যভাবে আবার শুরু করা যাবে।',
+      full: {
+        title: 'Full test',
+        listening: 'Exam-এর মতো: {minutes} মিনিট, recording একবারই বাজে, pause বা replay নেই।',
+        reading: 'Exam-এর মতো: {minutes} মিনিট, একটাই timer। সময় শেষ হলে নিজে থেকে জমা হয়ে যায়।',
+      },
+      practice: {
+        title: { listening: 'একটা একটা part করে', reading: 'একটা একটা passage করে' },
+        listening: 'নিজের গতিতে: countdown নেই। pause করুন, পিছনে যান, এগিয়ে যান আর যেকোনো part-এ চলে যান।',
+        reading: 'নিজের গতিতে: countdown নেই। যখন খুশি এক passage থেকে আরেকটায় যান।',
+      },
+    },
+    practice: {
+      badge: 'Practice mode',
+      timeSpent: 'সময় গেছে',
+      resume: 'যেখানে থেমেছিলেন সেখান থেকে চালান',
+      back: '১০ সেকেন্ড পিছনে',
+      forward: '১০ সেকেন্ড সামনে',
+      seek: 'Recording-এর যেকোনো জায়গায় যান',
+      skipReading: 'পড়ার সময় বাদ দিন',
+      nextPart: 'পরের: Part {n}',
+      partEnded: 'Part {n} শেষ হয়েছে',
+      note: 'Practice mode-এ দেওয়া, exam-এর ঘড়ি ছাড়া। এখানকার band practice-এর অবস্থার একটা estimate।',
+    },
     highlight: { hint: 'Passage-এর কোনো অংশ select করলে highlight করা যাবে।', add: 'Highlight', clear: 'Clear', menu: 'Highlight-এর অপশন' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'সময় ধরে, automatic score আর explanation সহ।',

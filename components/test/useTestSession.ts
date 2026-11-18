@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createSession, type IELTSSkillId, type PracticeTest, type TestSession } from '@/lib/ielts';
+import { createSession, isPractice, type IELTSSkillId, type PracticeTest, type TestMode, type TestSession } from '@/lib/ielts';
 import { readJSON } from '@/lib/services/local-store';
 import { useTestSessions } from './useTestSessions';
 
@@ -45,7 +45,11 @@ export function useTestSession(test: PracticeTest, skill: IELTSSkillId) {
         if (cancelled) return;
         if (found?.status === 'submitted') finalised.current.add(found.id);
         if (found && (id || found.status === 'submitted')) setSession(withLocalClock(found));
-        else setResumable(found && withLocalClock(found));
+        else {
+          // Inside a Full Mock Test a practice attempt is not the one to carry on with.
+          const usable = found && !(params.get('full') === '1' && isPractice(found)) ? found : null;
+          setResumable(usable && withLocalClock(usable));
+        }
       })
       .catch((error) => {
         console.error('[tests] Load failed', error);
@@ -70,8 +74,8 @@ export function useTestSession(test: PracticeTest, skill: IELTSSkillId) {
   // A section taken inside a Full Mock Test keeps that context in the address.
   const fullParam = () => (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('full') === '1' ? '&full=1' : '');
 
-  const start = (existing?: TestSession) => {
-    const next = existing ?? createSession(test, skill);
+  const start = (existing?: TestSession, mode: TestMode = 'full') => {
+    const next = existing ?? createSession(test, skill, new Date(), mode);
     setSession(next);
     if (!existing) void repository.save(userId, next);
     router.replace(`/ielts/tests/${test.id}/${skill}?session=${next.id}${fullParam()}`, { scroll: false });

@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowLeft, Clock, ListChecks, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Clock, ListChecks, RotateCcw, Timer, Headphones, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Callout, Panel } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { remainingSeconds, type IELTSSkillId, type PracticeTest, type TestSession } from '@/lib/ielts';
+import { isPractice, remainingSeconds, type IELTSSkillId, type PracticeTest, type TestMode, type TestSession } from '@/lib/ielts';
 import { formatClock } from './labels';
 import { useFullMock } from './useFullMock';
 
@@ -27,10 +29,20 @@ export function TestIntro({
   /** Optional choices shown just above the start button (for example a mode picker). */
   extra?: React.ReactNode;
   resumable: TestSession | null;
-  onStart: (existing?: TestSession) => void;
+  /** Resume an attempt, or start a new one in the chosen mode (Listening and Reading ask first). */
+  onStart: (existing?: TestSession, mode?: TestMode) => void;
 }) {
   const { t } = useLocale();
   const fm = useFullMock(test, skill);
+  const [choosing, setChoosing] = useState(false);
+  // Listening and Reading can be taken as the full exam or one part at a time; a Full Mock Test is always the exam.
+  const asks = (skill === 'listening' || skill === 'reading') && !fm.full;
+  const minutes = test.sections[skill] && 'timeLimitMinutes' in test.sections[skill]! ? (test.sections[skill] as { timeLimitMinutes: number }).timeLimitMinutes : 0;
+  const begin = () => (asks ? setChoosing(true) : onStart(undefined, 'full'));
+  const choose = (mode: TestMode) => {
+    setChoosing(false);
+    onStart(undefined, mode);
+  };
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col px-4 py-6">
@@ -67,18 +79,43 @@ export function TestIntro({
         {resumable ? (
           <div className="space-y-2">
             <Button size="lg" className="w-full" onClick={() => onStart(resumable)}>
-              {t('tests.resume', { time: formatClock(remainingSeconds(resumable)) })}
+              {isPractice(resumable) ? t('tests.practice.resume') : t('tests.resume', { time: formatClock(remainingSeconds(resumable)) })}
             </Button>
-            <Button size="lg" variant="ghost" className="w-full" onClick={() => onStart()}>
+            <Button size="lg" variant="ghost" className="w-full" onClick={begin}>
               <RotateCcw /> {t('tests.startAgain')}
             </Button>
           </div>
         ) : (
-          <Button size="lg" className="w-full" onClick={() => onStart()}>
+          <Button size="lg" className="w-full" onClick={begin} data-testid="intro-start">
             {t('tests.start')}
           </Button>
         )}
       </div>
+
+      <Dialog open={choosing} onOpenChange={setChoosing}>
+        <DialogContent data-testid="mode-dialog">
+          <DialogHeader>
+            <DialogTitle>{t('tests.mode.title')}</DialogTitle>
+            <DialogDescription>{t('tests.mode.subtitle')}</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <button type="button" data-testid="mode-full" onClick={() => choose('full')} className="flex gap-3 rounded-xl border-2 p-4 text-left transition-colors hover:border-primary hover:bg-muted/50">
+              <Timer className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden />
+              <span>
+                <span className="block font-semibold">{t('tests.mode.full.title')}</span>
+                <span className="block text-sm text-muted-foreground">{t(`tests.mode.full.${skill}`, { minutes })}</span>
+              </span>
+            </button>
+            <button type="button" data-testid="mode-practice" onClick={() => choose('practice')} className="flex gap-3 rounded-xl border-2 p-4 text-left transition-colors hover:border-primary hover:bg-muted/50">
+              {skill === 'listening' ? <Headphones className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden /> : <BookOpen className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden />}
+              <span>
+                <span className="block font-semibold">{t(`tests.mode.practice.title.${skill}`)}</span>
+                <span className="block text-sm text-muted-foreground">{t(`tests.mode.practice.${skill}`)}</span>
+              </span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

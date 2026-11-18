@@ -9,7 +9,7 @@ import { FULL_MOCK_ORDER, fullMockHref } from '@/components/test/useFullMock';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useTestSessions } from '@/components/test/useTestSessions';
 import { getTest, testSkills } from '@/lib/ielts/content';
-import { questionSlots, type IELTSSkillId, type ObjectiveSection, type TestSession } from '@/lib/ielts';
+import { isPractice, questionSlots, type IELTSSkillId, type ObjectiveSection, type TestSession } from '@/lib/ielts';
 
 const SKILL_ICON = { listening: Headphones, reading: BookText, writing: PenLine, speaking: Mic } as const;
 const SKILL_ORDER = FULL_MOCK_ORDER;
@@ -19,7 +19,7 @@ const SPEAKING_MINUTES = 14;
 type Status = 'not-started' | 'in-progress' | 'done';
 
 function latestFor(sessions: TestSession[], testId: string, skill: IELTSSkillId) {
-  const mine = sessions.filter((s) => s.testId === testId && s.skill === skill);
+  const mine = sessions.filter((s) => s.testId === testId && s.skill === skill && !isPractice(s));
   return { active: mine.find((s) => s.status === 'in-progress'), last: mine.find((s) => s.status === 'submitted') };
 }
 

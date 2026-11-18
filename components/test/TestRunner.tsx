@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ScreenSkeleton } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
-  answeredNumbers, goTo, questionSlots, remainingSeconds, setAnswer, submit, tick, toggleFlag,
+  answeredNumbers, goTo, isPractice, questionSlots, remainingSeconds, setAnswer, submit, tick, toggleFlag,
   type AnswerValue, type ObjectiveSection, type ObjectiveSkill, type PracticeTest, type TestSession,
 } from '@/lib/ielts';
 import { writeJSON } from '@/lib/services/local-store';
@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
 import { HighlightablePassage } from './HighlightablePassage';
 import { ListeningPlayer } from './ListeningPlayer';
+import { canPractiseByPart, PracticeListeningPlayer } from './PracticeListeningPlayer';
 import { QuestionGroupView } from './QuestionGroupView';
 import { ResultView } from './ResultView';
 import { TestIntro } from './TestIntro';
@@ -86,6 +87,8 @@ function ActiveTest({
   const [mobileView, setMobileView] = useState<'passage' | 'questions'>('passage');
   const [reviewOpen, setReviewOpen] = useState(false);
   const remaining = remainingSeconds(session);
+  // Practice mode: no exam clock. The time spent counts up and nothing is submitted for the student.
+  const practice = isPractice(session);
 
   // Persist: straight away for answers/flags/position, every 15s for the timer.
   const latest = useRef(session);
@@ -121,8 +124,8 @@ function ActiveTest({
 
   // Time's up: submit automatically, as in the real test.
   useEffect(() => {
-    if (remaining === 0) setSession((s) => (s && s.status === 'in-progress' ? submit(s, test, { timedOut: true }) : s));
-  }, [remaining, setSession, test]);
+    if (!practice && remaining === 0) setSession((s) => (s && s.status === 'in-progress' ? submit(s, test, { timedOut: true }) : s));
+  }, [remaining, practice, setSession, test]);
 
   const onAnswer = useCallback((key: string, value: AnswerValue) => setSession((s) => (s ? setAnswer(s, key, value) : s)), [setSession]);
   const onFocusQuestion = useCallback((n: number) => setSession((s) => (s ? goTo(s, n) : s)), [setSession]);
@@ -152,18 +155,18 @@ function ActiveTest({
           <p className="truncate text-sm font-semibold">
             {skillLabel} · {t(section.skill === 'reading' ? 'tests.passageN' : 'tests.partN', { n: part.number })}
           </p>
-          <p className="truncate text-xs text-muted-foreground">{t('tests.practiceLabel')}</p>
+          <p className="truncate text-xs text-muted-foreground">{practice ? t('tests.practice.badge') : t('tests.practiceLabel')}</p>
         </div>
         <div
           role="timer"
-          aria-label={t('tests.timeLeft')}
+          aria-label={practice ? t('tests.practice.timeSpent') : t('tests.timeLeft')}
           className={cn(
             'flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm font-semibold tabular-nums',
-            remaining < 60 ? 'border-destructive text-destructive' : remaining < 300 && 'border-amber-500 text-amber-600 dark:text-amber-400',
+            !practice && (remaining < 60 ? 'border-destructive text-destructive' : remaining < 300 && 'border-amber-500 text-amber-600 dark:text-amber-400'),
           )}
         >
           <Clock className="size-4" />
-          {formatClock(remaining)}
+          {formatClock(practice ? session.elapsedSeconds : remaining)}
         </div>
         <Button variant="outline" size="sm" onClick={() => setReviewOpen(true)}>
           <ListChecks />
@@ -171,8 +174,28 @@ function ActiveTest({
         </Button>
       </header>
 
-      {section.skill === 'listening' && (
-        <ListeningPlayer sessionId={session.id} section={section} examConditions={full} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
+      {section.skill === 'listening' &&
+        (practice && canPractiseByPart(section) ? (
+          <PracticeListeningPlayer section={section} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
+        ) : (
+          <ListeningPlayer sessionId={session.id} section={section} examConditions={full || !practice} onPartStart={(p) => jump(slots.find((s) => s.partId === section.parts[p].id)!.number)} />
+        ))}
+
+      {practice && section.skill === 'reading' && (
+        <div className="flex shrink-0 gap-1 overflow-x-auto border-b bg-muted/40 px-3 py-2 sm:px-4" role="tablist" data-testid="practice-passages">
+          {section.parts.map((p) => (
+            <button
+              key={p.id}
+              role="tab"
+              aria-selected={p.id === part.id}
+              data-testid={`practice-passage-${p.number}`}
+              onClick={() => jump(slots.find((x) => x.partId === p.id)!.number)}
+              className={cn('shrink-0 rounded-md px-3 py-1.5 text-sm font-medium', p.id === part.id ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:bg-muted')}
+            >
+              {t('tests.passageN', { n: p.number })}
+            </button>
+          ))}
+        </div>
       )}
 
       {/* Mobile: passage and questions take turns; desktop shows both */}

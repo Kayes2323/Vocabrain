@@ -540,6 +540,32 @@ export const en = {
     askPrompt: 'I’m doing the Foundation lesson "{lesson}". Can you explain it simply and show where I will use it in IELTS?',
   },
   tests: {
+    mode: {
+      title: 'How do you want to take this test?',
+      subtitle: 'Choose once. You can start again later in the other way.',
+      full: {
+        title: 'Full test',
+        listening: 'Exam conditions: {minutes} minutes, the recording plays once straight through with no pause or replay.',
+        reading: 'Exam conditions: {minutes} minutes on one timer. It submits itself when the time is up.',
+      },
+      practice: {
+        title: { listening: 'One part at a time', reading: 'One passage at a time' },
+        listening: 'Your own pace: no countdown. Pause, go back, skip ahead and jump to any part.',
+        reading: 'Your own pace: no countdown. Move between the passages whenever you like.',
+      },
+    },
+    practice: {
+      badge: 'Practice mode',
+      timeSpent: 'Time spent',
+      resume: 'Continue where you stopped',
+      back: 'Back 10 seconds',
+      forward: 'Forward 10 seconds',
+      seek: 'Move through the recording',
+      skipReading: 'Skip reading time',
+      nextPart: 'Next: Part {n}',
+      partEnded: 'Part {n} has finished',
+      note: 'Taken in practice mode, with no exam clock. Your band here is an estimate for practice conditions.',
+    },
     highlight: { hint: 'Select text in the passage to highlight it.', add: 'Highlight', clear: 'Clear', menu: 'Highlight options' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'Timed, auto-scored, with explanations.',

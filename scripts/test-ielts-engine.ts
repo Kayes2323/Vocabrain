@@ -1,5 +1,6 @@
 /** IELTS engine checks (pure, no network). Run: pnpm test:ielts */
 import assert from 'node:assert/strict';
+import { isPractice } from '../lib/ielts/session';
 import { describeBand, gapToTarget, standingForBand } from '../lib/ielts/band-descriptors';
 import { bandLevel, cefrForBand } from '../lib/engine/ielts';
 import { ALL_BOOKS, BOOKS, getTest } from '../lib/ielts/content/index';
@@ -226,6 +227,19 @@ test('where a score puts the student, and how far the target is', () => {
   assert.equal(gapToTarget(6.5, 7), 0.5);
   assert.equal(gapToTarget(7.5, 7), 0);
   assert.equal(gapToTarget(6, undefined), undefined);
+});
+
+test('practice mode: no exam clock, marked without a new stored field, and never counted as a Full Mock attempt', () => {
+  const full = createSession(t1, 'reading');
+  const practice = createSession(t1, 'reading', new Date(), 'practice');
+  assert.equal(isPractice(full), false);
+  assert.equal(isPractice(practice), true);
+  assert.equal(full.timeLimitSeconds, reading.timeLimitMinutes * 60);
+  assert.ok(practice.timeLimitSeconds >= 12 * 3600, 'a practice attempt never runs out of time');
+  assert.equal(remainingSeconds(tick(practice, 7200)) > 0, true);
+  // Stored attempts keep exactly the same fields, which the database rules require.
+  assert.deepEqual(Object.keys(practice).sort(), Object.keys(full).sort());
+  assert.ok(practice.elapsedSeconds <= practice.timeLimitSeconds);
 });
 
 console.log(`\n${passed} passed`);
