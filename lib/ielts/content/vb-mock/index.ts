@@ -106,7 +106,7 @@ export const mockTest5: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock5Listening,
@@ -125,7 +125,7 @@ export const mockTest6: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock6Listening,
@@ -144,7 +144,7 @@ export const mockTest7: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock7Listening,
