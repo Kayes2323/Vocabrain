@@ -315,7 +315,7 @@ export const APP_GUIDES: AppGuide[] = [
     steps: [
       'Mino Academic Mock Test 1 has all four skills in exam-day order: Listening, Reading, Writing, then Speaking, about 2 hours 45 minutes in total. The start button always opens the next section, and after each section a Next button leads on to the following one.',
       'Exam conditions: Listening is four narrated recordings played once with no pause or replay; Reading and Writing each run on one timer and submit themselves when time is up; Speaking is the voice examiner.',
-      'Results come as a Mino practice result sheet, laid out like an IELTS report: candidate and date, the four module bands with their CEFR levels, and an overall band with its level. A student who sat only one module sees just that module, with the others shown as Not taken, and the overall band appears only when all four are done. The sheet can be printed or saved as PDF. It is practice only, not an official IELTS score, and has no test number or verification code.',
+      'Results come as a Mino practice result sheet in the style of an IELTS online score page: candidate and date, a card for each of the four module bands with its CEFR level, an overall band card, and then Your scores explained, a plain-language description of what each band means in that skill. A student who sat only one module sees just that module, with the others shown as Not taken, and the overall band appears only when all four are done. The sheet can be printed or saved as PDF. It is practice only, not an official IELTS score, and has no test number or verification code.',
     ],
   },
   {

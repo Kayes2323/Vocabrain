@@ -1,5 +1,6 @@
 /** IELTS engine checks (pure, no network). Run: pnpm test:ielts */
 import assert from 'node:assert/strict';
+import { describeBand } from '../lib/ielts/band-descriptors';
 import { bandLevel, cefrForBand } from '../lib/engine/ielts';
 import { ALL_BOOKS, BOOKS, getTest } from '../lib/ielts/content/index';
 import {
@@ -201,6 +202,20 @@ test('CEFR levels follow the published IELTS equivalents, and the level of a ban
   assert.equal(bandLevel(6.5), 6);
   assert.equal(bandLevel(9), 9);
   assert.equal(bandLevel(0), 0);
+});
+
+test('every skill explains every band from 2 to 9 in English and Bangla', () => {
+  for (const skill of ['listening', 'reading', 'writing', 'speaking'] as const) {
+    for (const band of [9, 8.5, 8, 7, 6.5, 6, 5.5, 5, 4, 3.5, 3, 2.5, 2, 1]) {
+      const en = describeBand(skill, band, 'en');
+      const bn = describeBand(skill, band, 'bn');
+      assert.ok(en && en.length > 20 && /^You /.test(en), `${skill} ${band} en`);
+      assert.ok(bn && /[\u0980-\u09FF]/.test(bn), `${skill} ${band} bn`);
+    }
+    assert.equal(describeBand(skill, 0.5, 'en'), undefined);
+    assert.equal(describeBand(skill, undefined, 'bn'), undefined);
+    assert.notEqual(describeBand(skill, 7, 'en'), describeBand(skill, 6, 'en'), `${skill}: neighbouring bands read differently`);
+  }
 });
 
 console.log(`\n${passed} passed`);

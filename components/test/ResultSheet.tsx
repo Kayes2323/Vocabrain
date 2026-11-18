@@ -1,16 +1,17 @@
 'use client';
 
-import { Printer } from 'lucide-react';
+import { BookOpen, Ear, MessageSquare, PenLine, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BrandMark } from '@/components/shell/BrandMark';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { bandLevel, cefrForBand, formatBand, overallBand } from '@/lib/engine';
-import type { IELTSSkillId } from '@/lib/ielts';
+import { describeBand, type IELTSSkillId } from '@/lib/ielts';
 import type { SkillBands } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
 const SKILL_ORDER: IELTSSkillId[] = ['listening', 'reading', 'writing', 'speaking'];
+const SKILL_ICON = { listening: Ear, reading: BookOpen, writing: PenLine, speaking: MessageSquare } as const;
 
 export interface SheetScore {
   skill: IELTSSkillId;
@@ -29,7 +30,7 @@ export interface SheetScore {
  * appears only when all four are done.
  */
 export function ResultSheet({ testTitle, date, scores, className }: { testTitle: string; date?: string; scores: SheetScore[]; className?: string }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const { profile } = useProfile();
   const name = profile?.displayName?.trim() || t('sheet.studentFallback');
   const byModule = new Map(scores.map((s) => [s.skill, s]));
@@ -37,26 +38,28 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
   const overall = overallBand(bands);
   const modulesTaken = scores.filter((s) => s.taken).length;
   const shownDate = date ? new Date(date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+  const explained = SKILL_ORDER.filter((skill) => byModule.get(skill)?.taken && byModule.get(skill)?.band !== undefined);
+  const lang = locale === 'bn' ? 'bn' : 'en';
 
   return (
     <section className={cn('space-y-3', className)}>
       <style>{`@media print { body * { visibility: hidden; } #result-sheet, #result-sheet * { visibility: visible; } #result-sheet { position: absolute; inset: 0 auto auto 0; width: 100%; box-shadow: none; } }`}</style>
-      <article id="result-sheet" className="relative overflow-hidden rounded-2xl border-2 bg-card shadow-sm" aria-label={t('sheet.title')}>
+      <article id="result-sheet" className="overflow-hidden rounded-2xl border bg-brand-soft shadow-sm" aria-label={t('sheet.title')}>
         <header className="flex items-center justify-between gap-3 bg-primary px-5 py-4 text-primary-foreground">
           <BrandMark className="[&>span:first-child]:bg-primary-foreground [&>span:first-child]:text-primary" />
           <p className="text-right text-xs font-semibold tracking-wide uppercase">{t('sheet.title')}</p>
         </header>
         <p className="bg-destructive/10 px-5 py-1.5 text-center text-[11px] font-semibold tracking-wide text-destructive uppercase">{t('sheet.badge')}</p>
 
-        <div className="space-y-6 p-5 sm:p-6">
-          <dl className="grid gap-x-6 gap-y-3 text-sm sm:grid-cols-2">
+        <div className="space-y-6 px-4 py-6 sm:px-6">
+          <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-xs text-muted-foreground uppercase">{t('sheet.candidate')}</dt>
-              <dd className="text-base font-semibold">{name}</dd>
+              <dd className="font-semibold">{name}</dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground uppercase">{t('sheet.test')}</dt>
-              <dd className="text-base font-semibold">{testTitle}</dd>
+              <dd className="font-semibold">{testTitle}</dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground uppercase">{t('sheet.date')}</dt>
@@ -68,44 +71,76 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
             </div>
           </dl>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Divider />
+
+          <h2 className="text-2xl leading-tight font-bold text-primary">{t('sheet.heading')}</h2>
+
+          <div className="space-y-3">
             {SKILL_ORDER.map((skill) => {
               const score = byModule.get(skill);
               const band = score?.taken ? score.band : undefined;
-              const cefr = cefrForBand(band);
-              return (
-                <div key={skill} className={cn('rounded-xl border p-3 text-center', !score?.taken && 'border-dashed bg-muted/30 text-muted-foreground')} data-testid={`sheet-${skill}`}>
-                  <p className="text-xs font-semibold tracking-wide uppercase">{t(`skills.${skill}`)}</p>
-                  <p className="my-1 text-3xl font-bold tabular-nums">{score?.taken ? formatBand(band) : '—'}</p>
-                  <p className="text-[11px] leading-tight text-muted-foreground">
-                    {!score?.taken ? t('sheet.notTaken') : band === undefined ? t('sheet.noEstimate') : `${t('sheet.cefr')} ${cefr ?? '—'}`}
-                  </p>
-                </div>
-              );
+              return <ScoreRow key={skill} skill={skill} label={t(`skills.${skill}`)} value={score?.taken ? formatBand(band) : '—'} note={!score?.taken ? t('sheet.notTaken') : band === undefined ? t('sheet.noEstimate') : `${t('sheet.cefr')} ${cefrForBand(band) ?? '—'}`} muted={!score?.taken} />;
             })}
-          </div>
-
-          <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4 text-center" data-testid="sheet-overall">
-            <p className="text-xs font-semibold tracking-wide uppercase">{t('sheet.overall')}</p>
-            <p className="my-1 text-5xl font-bold tabular-nums">{overall !== undefined ? formatBand(overall) : '—'}</p>
-            {overall !== undefined ? (
-              <>
-                <p className="text-sm font-semibold">
-                  {t(`sheet.level.${bandLevel(overall)}`)} · {t('sheet.cefr')} {cefrForBand(overall) ?? '—'}
+            <div className="flex items-center justify-between gap-3 rounded-2xl bg-card px-5 py-4 shadow-md" data-testid="sheet-overall">
+              <div className="min-w-0">
+                <p className="text-lg font-bold">{t('sheet.overall')}</p>
+                <p className="text-xs text-muted-foreground">
+                  {overall !== undefined ? `${t(`sheet.level.${bandLevel(overall)}`)} · ${t('sheet.cefr')} ${cefrForBand(overall) ?? '—'}` : t('sheet.overallNeeds')}
                 </p>
-                <p className="mx-auto mt-1 max-w-md text-xs text-muted-foreground">{t(`sheet.desc.${bandLevel(overall)}`)}</p>
-              </>
-            ) : (
-              <p className="mx-auto max-w-md text-xs text-muted-foreground">{t('sheet.overallNeeds')}</p>
-            )}
+              </div>
+              <p className="shrink-0 text-3xl font-bold tabular-nums">{overall !== undefined ? formatBand(overall) : '—'}</p>
+            </div>
           </div>
 
-          <p className="border-t pt-4 text-[11px] leading-relaxed text-muted-foreground">{t('sheet.footer')}</p>
+          {(explained.length > 0 || overall !== undefined) && (
+            <>
+              <Divider />
+              <h2 className="text-xl font-bold text-muted-foreground">{t('sheet.explained')}</h2>
+              <div className="space-y-5">
+                {explained.map((skill) => {
+                  const band = byModule.get(skill)!.band!;
+                  return (
+                    <div key={skill} className="space-y-2" data-testid={`sheet-explain-${skill}`}>
+                      <ScoreRow skill={skill} label={t(`skills.${skill}`)} value={formatBand(band)} testId={`sheet-explain-row-${skill}`} />
+                      <p className="px-1 text-sm leading-relaxed text-muted-foreground">{describeBand(skill, band, lang)}</p>
+                    </div>
+                  );
+                })}
+                {overall !== undefined && (
+                  <div className="space-y-1 px-1" data-testid="sheet-explain-overall">
+                    <p className="text-sm font-semibold">
+                      {t('sheet.overall')} {formatBand(overall)} · {t(`sheet.level.${bandLevel(overall)}`)}
+                    </p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{t(`sheet.desc.${bandLevel(overall)}`)}</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+          <Divider />
+          <p className="text-[11px] leading-relaxed text-muted-foreground">{t('sheet.footer')}</p>
         </div>
       </article>
       <Button variant="outline" size="sm" className="print:hidden" onClick={() => window.print()}>
         <Printer /> {t('sheet.print')}
       </Button>
     </section>
+  );
+}
+
+const Divider = () => <div className="border-t-[3px] border-dotted border-muted-foreground/40" aria-hidden />;
+
+function ScoreRow({ skill, label, value, note, muted, testId }: { skill: IELTSSkillId; label: string; value: string; note?: string; muted?: boolean; testId?: string }) {
+  const Icon = SKILL_ICON[skill];
+  return (
+    <div className={cn('flex items-center gap-4 rounded-2xl bg-card px-5 py-4 shadow-md', muted && 'opacity-60')} data-testid={testId ?? `sheet-${skill}`}>
+      <Icon className="size-6 shrink-0 text-brand" aria-hidden />
+      <div className="min-w-0 flex-1">
+        <p className="text-lg leading-tight">{label}</p>
+        {note && <p className="text-xs text-muted-foreground">{note}</p>}
+      </div>
+      <p className="shrink-0 text-xl font-semibold tabular-nums">{value}</p>
+    </div>
   );
 }

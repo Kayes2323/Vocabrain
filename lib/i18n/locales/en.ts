@@ -728,6 +728,8 @@ export const en = {
     askMino: 'Ask Mino about this result',
   },
   sheet: {
+    heading: 'Your full score and explanation',
+    explained: 'Your scores explained:',
     title: 'Practice Test Report',
     badge: 'Practice — not an official IELTS score',
     studentFallback: 'Mino student',

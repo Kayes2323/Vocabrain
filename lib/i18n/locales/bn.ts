@@ -730,6 +730,8 @@ export const bn: LocaleDictionary = {
     askMino: 'এই result নিয়ে Mino-কে জিজ্ঞেস করুন',
   },
   sheet: {
+    heading: 'আপনার পুরো score আর তার ব্যাখ্যা',
+    explained: 'আপনার score-এর ব্যাখ্যা:',
     title: 'Practice Test Report',
     badge: 'Practice — অফিসিয়াল IELTS স্কোর না',
     studentFallback: 'Mino student',
