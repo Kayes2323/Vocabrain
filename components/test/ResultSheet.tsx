@@ -46,7 +46,7 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
       <style>{`@media print { body * { visibility: hidden; } #result-sheet, #result-sheet * { visibility: visible; } #result-sheet { position: absolute; inset: 0 auto auto 0; width: 100%; box-shadow: none; } }`}</style>
       <article id="result-sheet" className="overflow-hidden rounded-2xl border bg-brand-soft shadow-sm" aria-label={t('sheet.title')}>
         <header className="flex items-center justify-between gap-3 bg-primary px-5 py-4 text-primary-foreground">
-          <BrandMark className="[&>span:first-child]:bg-primary-foreground [&>span:first-child]:text-primary" />
+          <BrandMark />
           <p className="text-right text-xs font-semibold tracking-wide uppercase">{t('sheet.title')}</p>
         </header>
         <p className="bg-destructive/10 px-5 py-1.5 text-center text-[11px] font-semibold tracking-wide text-destructive uppercase">{t('sheet.badge')}</p>

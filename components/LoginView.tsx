@@ -235,7 +235,7 @@ export default function LoginView() {
     <div className="flex min-h-dvh flex-col bg-background md:flex-row">
       <section className="flex flex-col justify-between gap-5 bg-primary px-6 py-6 text-primary-foreground md:w-1/2 md:gap-10 md:px-12 md:py-12">
         <div className="flex items-center justify-between gap-3">
-          <BrandMark className="[&>span:first-child]:bg-primary-foreground [&>span:first-child]:text-primary" />
+          <BrandMark />
           <LanguageToggle />
         </div>
         <div className="max-w-md space-y-6">
