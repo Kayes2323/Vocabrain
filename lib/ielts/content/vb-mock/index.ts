@@ -11,6 +11,15 @@ import { mock3Speaking, mock3Writing } from './test3-writing-speaking';
 import { mock4Listening } from './test4-listening';
 import { mock4Reading } from './test4-reading';
 import { mock4Speaking, mock4Writing } from './test4-writing-speaking';
+import { mock5Listening } from './test5-listening';
+import { mock5Reading } from './test5-reading';
+import { mock5Speaking, mock5Writing } from './test5-writing-speaking';
+import { mock6Listening } from './test6-listening';
+import { mock6Reading } from './test6-reading';
+import { mock6Speaking, mock6Writing } from './test6-writing-speaking';
+import { mock7Listening } from './test7-listening';
+import { mock7Reading } from './test7-reading';
+import { mock7Speaking, mock7Writing } from './test7-writing-speaking';
 
 /** Mino Academic Mock Test 1: original, full-length, Cambridge-level practice. */
 export const mockTest1: PracticeTest = {
@@ -85,5 +94,62 @@ export const mockTest4: PracticeTest = {
     reading: mock4Reading,
     writing: mock4Writing,
     speaking: mock4Speaking,
+  },
+};
+
+/** Mino Academic Mock Test 5: original, full-length, Cambridge-format practice (same timing, counts and question types as Cambridge 19 Test 1). Not Cambridge material. */
+export const mockTest5: PracticeTest = {
+  id: 'vb-mock-5',
+  bookId: 'vb-mock',
+  number: 5,
+  title: 'Academic Mock Test 5',
+  module: 'academic',
+  source: 'Mino',
+  sourceType: 'vocab-brain-original',
+  licenseStatus: 'pending-review',
+  dateAdded: '2026-11-18',
+  sections: {
+    listening: mock5Listening,
+    reading: mock5Reading,
+    writing: mock5Writing,
+    speaking: mock5Speaking,
+  },
+};
+
+/** Mino Academic Mock Test 6: original, full-length, Cambridge-format practice (same timing, counts and question types as Cambridge 19 Test 1). Not Cambridge material. */
+export const mockTest6: PracticeTest = {
+  id: 'vb-mock-6',
+  bookId: 'vb-mock',
+  number: 6,
+  title: 'Academic Mock Test 6',
+  module: 'academic',
+  source: 'Mino',
+  sourceType: 'vocab-brain-original',
+  licenseStatus: 'pending-review',
+  dateAdded: '2026-11-18',
+  sections: {
+    listening: mock6Listening,
+    reading: mock6Reading,
+    writing: mock6Writing,
+    speaking: mock6Speaking,
+  },
+};
+
+/** Mino Academic Mock Test 7: original, full-length, Cambridge-format practice (same timing, counts and question types as Cambridge 19 Test 1). Not Cambridge material. */
+export const mockTest7: PracticeTest = {
+  id: 'vb-mock-7',
+  bookId: 'vb-mock',
+  number: 7,
+  title: 'Academic Mock Test 7',
+  module: 'academic',
+  source: 'Mino',
+  sourceType: 'vocab-brain-original',
+  licenseStatus: 'pending-review',
+  dateAdded: '2026-11-18',
+  sections: {
+    listening: mock7Listening,
+    reading: mock7Reading,
+    writing: mock7Writing,
+    speaking: mock7Speaking,
   },
 };
