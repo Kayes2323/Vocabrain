@@ -8,6 +8,9 @@ import { mock2Speaking, mock2Writing } from './test2-writing-speaking';
 import { mock3Listening } from './test3-listening';
 import { mock3Reading } from './test3-reading';
 import { mock3Speaking, mock3Writing } from './test3-writing-speaking';
+import { mock4Listening } from './test4-listening';
+import { mock4Reading } from './test4-reading';
+import { mock4Speaking, mock4Writing } from './test4-writing-speaking';
 
 /** Mino Academic Mock Test 1: original, full-length, Cambridge-level practice. */
 export const mockTest1: PracticeTest = {
@@ -63,5 +66,24 @@ export const mockTest3: PracticeTest = {
     reading: mock3Reading,
     writing: mock3Writing,
     speaking: mock3Speaking,
+  },
+};
+
+/** Mino Academic Mock Test 4: original, full-length, Cambridge-format practice (same timing, counts and question types as Cambridge 19 Test 1). Not Cambridge material. */
+export const mockTest4: PracticeTest = {
+  id: 'vb-mock-4',
+  bookId: 'vb-mock',
+  number: 4,
+  title: 'Academic Mock Test 4',
+  module: 'academic',
+  source: 'Mino',
+  sourceType: 'vocab-brain-original',
+  licenseStatus: 'pending-review',
+  dateAdded: '2026-11-18',
+  sections: {
+    listening: mock4Listening,
+    reading: mock4Reading,
+    writing: mock4Writing,
+    speaking: mock4Speaking,
   },
 };

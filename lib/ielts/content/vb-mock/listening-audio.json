@@ -286,5 +286,101 @@
         "kind": "check"
       }
     ]
+  },
+  "vb-mock-4:l1": {
+    "src": "/listening/vb-mock-4/l1.mp3",
+    "duration": 302.8,
+    "cues": [
+      {
+        "at": 21,
+        "kind": "read"
+      },
+      {
+        "at": 55.5,
+        "kind": "listen"
+      },
+      {
+        "at": 154.4,
+        "kind": "read"
+      },
+      {
+        "at": 188.5,
+        "kind": "listen"
+      },
+      {
+        "at": 272.8,
+        "kind": "check"
+      }
+    ]
+  },
+  "vb-mock-4:l2": {
+    "src": "/listening/vb-mock-4/l2.mp3",
+    "duration": 240.4,
+    "cues": [
+      {
+        "at": 11.2,
+        "kind": "read"
+      },
+      {
+        "at": 46.4,
+        "kind": "listen"
+      },
+      {
+        "at": 105.2,
+        "kind": "read"
+      },
+      {
+        "at": 139.4,
+        "kind": "listen"
+      },
+      {
+        "at": 210.4,
+        "kind": "check"
+      }
+    ]
+  },
+  "vb-mock-4:l3": {
+    "src": "/listening/vb-mock-4/l3.mp3",
+    "duration": 244.8,
+    "cues": [
+      {
+        "at": 12.5,
+        "kind": "read"
+      },
+      {
+        "at": 48,
+        "kind": "listen"
+      },
+      {
+        "at": 122.9,
+        "kind": "read"
+      },
+      {
+        "at": 157.2,
+        "kind": "listen"
+      },
+      {
+        "at": 214.8,
+        "kind": "check"
+      }
+    ]
+  },
+  "vb-mock-4:l4": {
+    "src": "/listening/vb-mock-4/l4.mp3",
+    "duration": 201.4,
+    "cues": [
+      {
+        "at": 10.4,
+        "kind": "read"
+      },
+      {
+        "at": 45.3,
+        "kind": "listen"
+      },
+      {
+        "at": 171.4,
+        "kind": "check"
+      }
+    ]
   }
 }

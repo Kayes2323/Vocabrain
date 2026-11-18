@@ -42,6 +42,10 @@ export const LISTENING_CAST: Record<string, Record<string, string>> = {
   'vb-mock-3:l2': { Guide: 'australian-isla' },
   'vb-mock-3:l3': { Maya: 'british-gemma', Josh: 'british-freddie' },
   'vb-mock-3:l4': { Lecturer: 'british-gemma' },
+  'vb-mock-4:l1': { Rachel: 'british-maeve', Emma: 'british-gemma' },
+  'vb-mock-4:l2': { Tom: 'british-archie' },
+  'vb-mock-4:l3': { Priya: 'british-maeve', Sam: 'british-freddie' },
+  'vb-mock-4:l4': { Lecturer: 'australian-isla' },
 };
 
 /** Silence left for reading each set of questions and for checking answers at the end. */
