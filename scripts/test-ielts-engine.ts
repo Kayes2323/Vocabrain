@@ -1,6 +1,6 @@
 /** IELTS engine checks (pure, no network). Run: pnpm test:ielts */
 import assert from 'node:assert/strict';
-import { describeBand } from '../lib/ielts/band-descriptors';
+import { describeBand, gapToTarget, standingForBand } from '../lib/ielts/band-descriptors';
 import { bandLevel, cefrForBand } from '../lib/engine/ielts';
 import { ALL_BOOKS, BOOKS, getTest } from '../lib/ielts/content/index';
 import {
@@ -212,10 +212,20 @@ test('every skill explains every band from 2 to 9 in English and Bangla', () => 
       assert.ok(en && en.length > 20 && /^You /.test(en), `${skill} ${band} en`);
       assert.ok(bn && /[\u0980-\u09FF]/.test(bn), `${skill} ${band} bn`);
     }
-    assert.equal(describeBand(skill, 0.5, 'en'), undefined);
+    assert.match(describeBand(skill, 0, 'en')!, /nothing to describe/);
+    assert.match(describeBand(skill, 0.5, 'bn')!, /[\u0980-\u09FF]/);
     assert.equal(describeBand(skill, undefined, 'bn'), undefined);
     assert.notEqual(describeBand(skill, 7, 'en'), describeBand(skill, 6, 'en'), `${skill}: neighbouring bands read differently`);
   }
+});
+
+test('where a score puts the student, and how far the target is', () => {
+  const expected: [number, string][] = [[0, 'none'], [3.5, 'starting'], [4, 'building'], [5, 'building'], [5.5, 'developing'], [6, 'solid'], [6.5, 'solid'], [7, 'strong'], [9, 'strong']];
+  for (const [band, standing] of expected) assert.equal(standingForBand(band), standing, `band ${band}`);
+  assert.equal(gapToTarget(6, 7), 1);
+  assert.equal(gapToTarget(6.5, 7), 0.5);
+  assert.equal(gapToTarget(7.5, 7), 0);
+  assert.equal(gapToTarget(6, undefined), undefined);
 });
 
 console.log(`\n${passed} passed`);

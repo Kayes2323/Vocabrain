@@ -6,7 +6,7 @@ import { BrandMark } from '@/components/shell/BrandMark';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { bandLevel, cefrForBand, formatBand, overallBand } from '@/lib/engine';
-import { describeBand, type IELTSSkillId } from '@/lib/ielts';
+import { describeBand, gapToTarget, standingForBand, type IELTSSkillId } from '@/lib/ielts';
 import type { SkillBands } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
@@ -38,8 +38,8 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
   const overall = overallBand(bands);
   const modulesTaken = scores.filter((s) => s.taken).length;
   const shownDate = date ? new Date(date).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
-  const explained = SKILL_ORDER.filter((skill) => byModule.get(skill)?.taken && byModule.get(skill)?.band !== undefined);
-  const lang = locale === 'bn' ? 'bn' : 'en';
+    const lang = locale === 'bn' ? 'bn' : 'en';
+  const target = profile?.ielts?.targetBand;
 
   return (
     <section className={cn('space-y-3', className)}>
@@ -79,7 +79,7 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
             {SKILL_ORDER.map((skill) => {
               const score = byModule.get(skill);
               const band = score?.taken ? score.band : undefined;
-              return <ScoreRow key={skill} skill={skill} label={t(`skills.${skill}`)} value={score?.taken ? formatBand(band) : '—'} note={!score?.taken ? t('sheet.notTaken') : band === undefined ? t('sheet.noEstimate') : `${t('sheet.cefr')} ${cefrForBand(band) ?? '—'}`} muted={!score?.taken} />;
+              return <ScoreRow key={skill} skill={skill} label={t(`skills.${skill}`)} value={score?.taken ? formatBand(band) : '—'} note={!score?.taken ? t('sheet.notTaken') : band === undefined ? t('sheet.noEstimate') : cefrForBand(band) ? `${t('sheet.cefr')} ${cefrForBand(band)}` : t('sheet.noLevel')} muted={!score?.taken} />;
             })}
             <div className="flex items-center justify-between gap-3 rounded-2xl bg-card px-5 py-4 shadow-md" data-testid="sheet-overall">
               <div className="min-w-0">
@@ -92,26 +92,36 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
             </div>
           </div>
 
-          {(explained.length > 0 || overall !== undefined) && (
+          {modulesTaken > 0 && (
             <>
               <Divider />
               <h2 className="text-xl font-bold text-muted-foreground">{t('sheet.explained')}</h2>
-              <div className="space-y-5">
-                {explained.map((skill) => {
-                  const band = byModule.get(skill)!.band!;
+              <div className="space-y-6">
+                {SKILL_ORDER.map((skill) => {
+                  const score = byModule.get(skill);
+                  const label = t(`skills.${skill}`);
+                  if (!score?.taken) {
+                    return (
+                      <p key={skill} className="px-1 text-sm text-muted-foreground" data-testid={`sheet-explain-${skill}`}>
+                        <span className="font-semibold">{label}:</span> {t('sheet.notTakenExplain')}
+                      </p>
+                    );
+                  }
+                  const band = score.band;
                   return (
                     <div key={skill} className="space-y-2" data-testid={`sheet-explain-${skill}`}>
-                      <ScoreRow skill={skill} label={t(`skills.${skill}`)} value={formatBand(band)} testId={`sheet-explain-row-${skill}`} />
-                      <p className="px-1 text-sm leading-relaxed text-muted-foreground">{describeBand(skill, band, lang)}</p>
+                      <ScoreRow skill={skill} label={label} value={formatBand(band)} testId={`sheet-explain-row-${skill}`} />
+                      {band === undefined ? <p className="px-1 text-sm text-muted-foreground">{t('sheet.noEstimate')}</p> : <Verdict text={describeBand(skill, band, lang)} band={band} target={target} />}
                     </div>
                   );
                 })}
                 {overall !== undefined && (
-                  <div className="space-y-1 px-1" data-testid="sheet-explain-overall">
-                    <p className="text-sm font-semibold">
-                      {t('sheet.overall')} {formatBand(overall)} · {t(`sheet.level.${bandLevel(overall)}`)}
-                    </p>
-                    <p className="text-sm leading-relaxed text-muted-foreground">{t(`sheet.desc.${bandLevel(overall)}`)}</p>
+                  <div className="space-y-2" data-testid="sheet-explain-overall">
+                    <div className="flex items-center justify-between gap-3 rounded-2xl bg-card px-5 py-4 shadow-md">
+                      <p className="text-lg font-bold">{t('sheet.overall')}</p>
+                      <p className="text-xl font-bold tabular-nums">{formatBand(overall)}</p>
+                    </div>
+                    <Verdict text={t(`sheet.desc.${bandLevel(overall)}`)} band={overall} target={target} />
                   </div>
                 )}
               </div>
@@ -126,6 +136,26 @@ export function ResultSheet({ testTitle, date, scores, className }: { testTitle:
         <Printer /> {t('sheet.print')}
       </Button>
     </section>
+  );
+}
+
+/** What the band means, where the student stands, and how far the target is. */
+function Verdict({ text, band, target }: { text?: string; band: number; target?: number }) {
+  const { t } = useLocale();
+  const gap = gapToTarget(band, target);
+  return (
+    <div className="space-y-2 px-1 text-sm leading-relaxed">
+      {text && <p className="text-muted-foreground">{text}</p>}
+      <p>
+        <span className="font-semibold">{t('sheet.standingTitle')}: </span>
+        {t(`sheet.standing.${standingForBand(band)}`)}
+      </p>
+      {target !== undefined && band >= 1 && (
+        <p className="font-medium">
+          {t('sheet.target', { target: formatBand(target) })} · {gap ? t('sheet.toGo', { gap: formatBand(gap) }) : t('sheet.reached')}
+        </p>
+      )}
+    </div>
   );
 }
 
