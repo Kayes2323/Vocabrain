@@ -30,7 +30,7 @@ const parseRange = (r: string) => {
 const tracksOf = (p: (typeof castParts)[number]) => listeningTracks(p.part.audio!, { testId: p.testId, partId: p.part.id, number: p.part.number, index: p.index, count: p.count });
 
 test('every part of every Mino mock test is planned for recording', () => {
-  assert.deepEqual(castParts.map((p) => p.id).sort(), ['vb-mock-1', 'vb-mock-2'].flatMap((t) => ['l1', 'l2', 'l3', 'l4'].map((p) => `${t}:${p}`)));
+  assert.deepEqual(castParts.map((p) => p.id).sort(), ['vb-mock-1', 'vb-mock-2', 'vb-mock-3'].flatMap((t) => ['l1', 'l2', 'l3', 'l4'].map((p) => `${t}:${p}`)));
 });
 
 test('every speaker has a voice of their own, different from the narrator and from each other', () => {
