@@ -181,7 +181,7 @@ export const mockTest9: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock9Listening,
@@ -200,7 +200,7 @@ export const mockTest10: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock10Listening,
@@ -219,7 +219,7 @@ export const mockTest11: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock11Listening,
@@ -238,7 +238,7 @@ export const mockTest12: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock12Listening,
@@ -257,7 +257,7 @@ export const mockTest13: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock13Listening,
@@ -276,7 +276,7 @@ export const mockTest14: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock14Listening,
