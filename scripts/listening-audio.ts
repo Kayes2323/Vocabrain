@@ -14,7 +14,7 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BOOKS } from '../lib/ielts/content';
+import { ALL_BOOKS as BOOKS } from '../lib/ielts/content';
 import { listeningBody, listeningClipPath, listeningJobs, listeningTracks, LISTENING_CAST, type Cue, type Track } from '../lib/ielts/listening-audio';
 
 const ROOT = process.cwd();

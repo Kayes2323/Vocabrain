@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
-import { BOOKS } from '../lib/ielts/content';
+import { ALL_BOOKS as BOOKS } from '../lib/ielts/content';
 import { CHECK_SECONDS, LISTENING_CAST, LISTENING_VOICES, listeningTracks, NARRATOR, READ_SECONDS } from '../lib/ielts/listening-audio';
 import type { ObjectivePart } from '../lib/ielts';
 
