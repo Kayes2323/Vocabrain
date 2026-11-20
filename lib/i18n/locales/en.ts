@@ -566,7 +566,7 @@ export const en = {
       partEnded: 'Part {n} has finished',
       note: 'Taken in practice mode, with no exam clock. Your band here is an estimate for practice conditions.',
     },
-    highlight: { hint: 'Select text in the passage to highlight it.', add: 'Highlight', clear: 'Clear', menu: 'Highlight options' },
+    highlight: { hint: 'Select text to highlight it or add a note. Right-click works too. Click marked text to clear it or open its note.', add: 'Highlight', note: 'Notes', clear: 'Clear', menu: 'Highlight and notes', noteTitle: 'Note', notePlaceholder: 'Write your note here', save: 'Save', cancel: 'Cancel', deleteNote: 'Delete note' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'Timed, auto-scored, with explanations.',
     libraryNote: 'More tests are on the way. Cambridge IELTS books will be added only with a licence.',

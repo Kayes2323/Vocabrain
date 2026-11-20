@@ -331,3 +331,22 @@
   .mino *, .mino-mark *, .mino-status > span { animation: none !important; transition: none !important; }
   .mino-status > span:first-child { opacity: 1; }
 }
+
+/* Highlights and notes in a test (see components/test/annotationHighlights.ts). */
+::highlight(vb-hl) {
+  background-color: #fde68a;
+  color: inherit;
+}
+::highlight(vb-note) {
+  background-color: #bfdbfe;
+  color: inherit;
+  text-decoration: underline dotted;
+}
+.dark ::highlight(vb-hl) {
+  background-color: rgb(234 179 8 / 0.45);
+  color: inherit;
+}
+.dark ::highlight(vb-note) {
+  background-color: rgb(59 130 246 / 0.45);
+  color: inherit;
+}

@@ -1,6 +1,6 @@
-/** Reading-passage highlight checks (pure). Run: npm run test:highlights */
+/** Highlight and note checks (pure). Run: npm run test:highlights */
 import assert from 'node:assert/strict';
-import { addHighlight, clearHighlight, normalise, segmentsOf, touching, type Highlight } from '../lib/ielts/highlights';
+import { addHighlight, addNote, annotationAt, clearRange, fullyHighlighted, normalise, restore, setNote, touching, type Annotation } from '../lib/ielts/annotations';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -13,47 +13,70 @@ const test = (name: string, fn: () => void) => {
     process.exitCode = 1;
   }
 };
-const h = (p: string, s: number, e: number): Highlight => ({ p, s, e });
 
-test('adding joins overlapping and touching highlights in the same paragraph, and keeps paragraphs apart', () => {
-  let list = addHighlight([], h('A', 5, 10));
-  list = addHighlight(list, h('A', 8, 14));
-  list = addHighlight(list, h('A', 14, 18));
-  list = addHighlight(list, h('B', 0, 4));
-  list = addHighlight(list, h('A', 30, 35));
-  assert.deepEqual(list, [h('A', 5, 18), h('A', 30, 35), h('B', 0, 4)]);
+const TEXT = 'The cork oak can lose its outer bark without being harmed. Cork is harvested in summer.';
+const span = (s: number, e: number) => ({ s, e });
+const pairs = (list: Annotation[]) => list.map((a) => [a.s, a.e, a.note ?? null]);
+
+test('highlights that overlap or touch join into one; separate ones stay apart', () => {
+  let list = addHighlight([], span(4, 12), TEXT);
+  list = addHighlight(list, span(10, 20), TEXT);
+  list = addHighlight(list, span(20, 24), TEXT);
+  list = addHighlight(list, span(40, 50), TEXT);
+  assert.deepEqual(pairs(list), [[4, 24, null], [40, 50, null]]);
+  assert.equal(list[0].q, TEXT.slice(4, 24));
 });
 
 test('empty and reversed selections add nothing', () => {
-  assert.deepEqual(addHighlight([], h('A', 4, 4)), []);
-  assert.deepEqual(normalise([h('A', 9, 3)]), []);
+  assert.deepEqual(addHighlight([], span(5, 5), TEXT), []);
+  assert.deepEqual(normalise([{ s: 9, e: 3, q: '' }]), []);
 });
 
-test('clearing removes only the selected stretch, splitting a highlight when the selection is in the middle', () => {
-  const list = [h('A', 5, 20)];
-  assert.deepEqual(clearHighlight(list, h('A', 8, 12)), [h('A', 5, 8), h('A', 12, 20)]);
-  assert.deepEqual(clearHighlight(list, h('A', 0, 8)), [h('A', 8, 20)]);
-  assert.deepEqual(clearHighlight(list, h('A', 15, 40)), [h('A', 5, 15)]);
-  assert.deepEqual(clearHighlight(list, h('A', 5, 20)), []);
-  assert.deepEqual(clearHighlight(list, h('B', 5, 20)), list, 'another paragraph is untouched');
-  assert.deepEqual(clearHighlight(list, h('A', 25, 30)), list, 'a selection away from any highlight changes nothing');
+test('a note keeps its own range even where it overlaps a highlight', () => {
+  let list = addHighlight([], span(4, 20), TEXT);
+  list = addNote(list, span(8, 12), TEXT, 'check this');
+  assert.deepEqual(pairs(list), [[4, 20, null], [8, 12, 'check this']]);
+  list = addHighlight(list, span(18, 30), TEXT);
+  assert.deepEqual(pairs(list), [[4, 30, null], [8, 12, 'check this']]);
 });
 
-test('a selection that touches highlights finds them', () => {
-  const list = [h('A', 5, 10), h('A', 20, 25), h('B', 0, 50)];
-  assert.deepEqual(touching(list, h('A', 8, 22)), [h('A', 5, 10), h('A', 20, 25)]);
-  assert.deepEqual(touching(list, h('A', 10, 20)), [], 'touching only at the edge is not overlap');
-  assert.deepEqual(touching(list, h('C', 0, 9)), []);
+test('editing a note changes only its words; an empty note removes it', () => {
+  const list = addNote(addHighlight([], span(0, 3), TEXT), span(8, 12), TEXT, 'first');
+  assert.deepEqual(pairs(setNote(list, span(8, 12), 'second')), [[0, 3, null], [8, 12, 'second']]);
+  assert.deepEqual(pairs(setNote(list, span(8, 12), '   ')), [[0, 3, null]]);
+  assert.deepEqual(pairs(setNote(list, span(9, 12), 'nothing here')), pairs(list), 'only the exact range is edited');
 });
 
-test('a paragraph is cut into plain and highlighted pieces that put the text back together', () => {
-  const text = 'The cork oak can lose its bark without harm.';
-  const segs = segmentsOf(text, [h('1', 4, 12), h('2', 0, 3)], '1');
-  assert.deepEqual(segs.map((s) => [s.text, s.highlighted]), [['The ', false], ['cork oak', true], [' can lose its bark without harm.', false]]);
-  assert.equal(segs.map((s) => s.text).join(''), text);
-  assert.deepEqual(segmentsOf(text, [], '1').map((s) => s.highlighted), [false]);
-  const whole = segmentsOf(text, [h('1', 0, 999)], '1');
-  assert.deepEqual(whole.map((s) => [s.start, s.end, s.highlighted]), [[0, text.length, true]]);
+test('clearing removes the selected stretch from a highlight (splitting it) and any note it touches', () => {
+  const base = addHighlight([], span(5, 30), TEXT);
+  assert.deepEqual(pairs(clearRange(base, span(10, 15), TEXT)), [[5, 10, null], [15, 30, null]]);
+  assert.deepEqual(pairs(clearRange(base, span(0, 8), TEXT)), [[8, 30, null]]);
+  assert.deepEqual(pairs(clearRange(base, span(5, 30), TEXT)), []);
+  assert.deepEqual(pairs(clearRange(base, span(40, 50), TEXT)), [[5, 30, null]], 'away from any highlight nothing changes');
+  const withNote = addNote(base, span(8, 12), TEXT, 'n');
+  assert.deepEqual(pairs(clearRange(withNote, span(10, 11), TEXT)), [[5, 10, null], [11, 30, null]], 'the note touched is removed whole');
+});
+
+test('what a selection touches, whether it is all highlighted, and what lies under a point', () => {
+  const list = addNote(addHighlight([], span(5, 10), TEXT), span(20, 25), TEXT, 'x');
+  assert.equal(touching(list, span(8, 22)).length, 2);
+  assert.equal(touching(list, span(10, 20)).length, 0, 'meeting only at an edge is not touching');
+  assert.equal(fullyHighlighted(list, span(6, 9)), true);
+  assert.equal(fullyHighlighted(list, span(6, 12)), false);
+  assert.equal(fullyHighlighted(list, span(20, 24)), false, 'a note is not a highlight');
+  assert.equal(annotationAt(list, 22)?.note, 'x');
+  assert.equal(annotationAt(list, 7)?.note, undefined);
+  assert.equal(annotationAt(list, 15), undefined);
+});
+
+test('stored annotations find their place again when the text shifts, and are dropped when it is gone', () => {
+  const list = addNote(addHighlight([], span(4, 12), TEXT), span(46, 58), TEXT, 'harmed?');
+  const shifted = `Question 3. ${TEXT}`;
+  const back = restore(list, shifted);
+  assert.deepEqual(back.map((a) => shifted.slice(a.s, a.e)), [TEXT.slice(4, 12), TEXT.slice(46, 58)]);
+  assert.equal(back[1].note, 'harmed?');
+  assert.deepEqual(restore(list, TEXT).length, 2, 'unchanged text keeps everything');
+  assert.deepEqual(restore(list, 'Something else entirely.'), []);
 });
 
 console.log(`\n${passed} passed`);

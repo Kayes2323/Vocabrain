@@ -568,7 +568,7 @@ export const bn: LocaleDictionary = {
       partEnded: 'Part {n} শেষ হয়েছে',
       note: 'Practice mode-এ দেওয়া, exam-এর ঘড়ি ছাড়া। এখানকার band practice-এর অবস্থার একটা estimate।',
     },
-    highlight: { hint: 'Passage-এর কোনো অংশ select করলে highlight করা যাবে।', add: 'Highlight', clear: 'Clear', menu: 'Highlight-এর অপশন' },
+    highlight: { hint: 'যেকোনো লেখা select করে highlight করুন বা note যোগ করুন। Right-click-ও কাজ করে। মার্ক করা লেখায় click করলে সেটা মুছতে বা note খুলতে পারবেন।', add: 'Highlight', note: 'Notes', clear: 'Clear', menu: 'Highlight আর notes', noteTitle: 'Note', notePlaceholder: 'এখানে আপনার note লিখুন', save: 'Save', cancel: 'Cancel', deleteNote: 'Note মুছুন' },
     libraryTitle: 'Practice Tests',
     librarySubtitle: 'সময় ধরে, automatic score আর explanation সহ।',
     libraryNote: 'আরও test আসছে। Cambridge IELTS বইগুলো শুধু licence পাওয়ার পরই যোগ হবে।',

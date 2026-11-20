@@ -14,7 +14,7 @@ import {
 import { writeJSON } from '@/lib/services/local-store';
 import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
-import { HighlightablePassage } from './HighlightablePassage';
+import { AnnotationScope } from './AnnotationScope';
 import { ListeningPlayer } from './ListeningPlayer';
 import { canPractiseByPart, PracticeListeningPlayer } from './PracticeListeningPlayer';
 import { QuestionGroupView } from './QuestionGroupView';
@@ -218,20 +218,26 @@ function ActiveTest({
       <div className={cn('min-h-0 flex-1', part.passage && 'lg:grid lg:grid-cols-2 lg:divide-x')}>
         {part.passage && (
           <article className={cn('h-full overflow-y-auto px-4 py-6 sm:px-8', mobileView !== 'passage' && 'hidden lg:block')}>
-            <div className="mx-auto max-w-2xl space-y-4">
+            <AnnotationScope scopeId={`${session.id}:p:${part.id}`} className="mx-auto max-w-2xl space-y-4">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t('tests.passageN', { n: part.number })}</p>
               <h2 className="text-xl font-semibold">{part.passage.title}</h2>
-              <p className="text-xs text-muted-foreground">{t('tests.highlight.hint')}</p>
-              <HighlightablePassage storageId={`${session.id}:${part.id}`} paragraphs={part.passage.paragraphs} />
-            </div>
+              <p className="text-xs text-muted-foreground" data-testid="annotate-hint">{t('tests.highlight.hint')}</p>
+              {part.passage.paragraphs.map((p) => (
+                <p key={p.id} className="flex gap-3 leading-7">
+                  {p.labelled && <span className="w-5 shrink-0 font-semibold">{p.id}</span>}
+                  <span>{p.text}</span>
+                </p>
+              ))}
+            </AnnotationScope>
           </article>
         )}
         <div className={cn('h-full overflow-y-auto px-4 py-6 sm:px-8', part.passage && mobileView !== 'questions' && 'hidden lg:block')}>
-          <div className="mx-auto max-w-2xl space-y-10 pb-6">
+          <AnnotationScope scopeId={`${session.id}:q:${part.id}`} className="mx-auto max-w-2xl space-y-10 pb-6">
+            {!part.passage && <p className="text-xs text-muted-foreground" data-testid="annotate-hint">{t('tests.highlight.hint')}</p>}
             {part.groups.map((g) => (
               <QuestionGroupView key={g.id} group={g} answers={session.answers} onAnswer={onAnswer} onFocusQuestion={onFocusQuestion} current={current} />
             ))}
-          </div>
+          </AnnotationScope>
         </div>
       </div>
 
