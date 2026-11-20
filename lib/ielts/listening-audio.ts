@@ -30,10 +30,10 @@ export const LISTENING_VOICES: Record<string, ListeningVoice> = {
 
 /** Who speaks as whom, per part (`<test id>:<part id>`). A speaker keeps one voice for the whole part. */
 export const LISTENING_CAST: Record<string, Record<string, string>> = {
-  'vb-mock-1:l1': { Receptionist: 'british-maeve', Daniel: 'british-archie' },
-  'vb-mock-1:l2': { Guide: 'australian-isla' },
-  'vb-mock-1:l3': { Maya: 'british-gemma', Tom: 'british-freddie' },
-  'vb-mock-1:l4': { Lecturer: 'british-gemma' },
+  'vb-mock-1:l1': { Helen: 'british-maeve', Emma: 'british-gemma' },
+  'vb-mock-1:l2': { Guide: 'british-maeve' },
+  'vb-mock-1:l3': { Nina: 'british-gemma', Leo: 'british-freddie' },
+  'vb-mock-1:l4': { Lecturer: 'british-archie' },
   'vb-mock-2:l1': { Agent: 'british-gemma', Callum: 'british-freddie' },
   'vb-mock-2:l2': { Guide: 'australian-isla' },
   'vb-mock-2:l3': { 'Dr Hayes': 'british-freddie', Priya: 'british-maeve' },

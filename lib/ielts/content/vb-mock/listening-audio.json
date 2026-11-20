@@ -1,96 +1,96 @@
 {
   "vb-mock-1:l3": {
     "src": "/listening/vb-mock-1/l3.mp3",
-    "duration": 304.3,
+    "duration": 366.2,
     "cues": [
       {
-        "at": 14,
+        "at": 11.9,
         "kind": "read"
       },
       {
-        "at": 49.3,
+        "at": 47.4,
         "kind": "listen"
       },
       {
-        "at": 159.9,
+        "at": 207.6,
         "kind": "read"
       },
       {
-        "at": 193.7,
+        "at": 241.9,
         "kind": "listen"
       },
       {
-        "at": 274.3,
+        "at": 336.2,
         "kind": "check"
       }
     ]
   },
   "vb-mock-1:l1": {
     "src": "/listening/vb-mock-1/l1.mp3",
-    "duration": 316.2,
+    "duration": 299.8,
     "cues": [
       {
-        "at": 19.9,
+        "at": 20.8,
         "kind": "read"
       },
       {
-        "at": 54.5,
+        "at": 55.3,
         "kind": "listen"
       },
       {
-        "at": 153.5,
+        "at": 155.5,
         "kind": "read"
       },
       {
-        "at": 187,
+        "at": 189.3,
         "kind": "listen"
       },
       {
-        "at": 286.2,
+        "at": 269.8,
         "kind": "check"
       }
     ]
   },
   "vb-mock-1:l4": {
     "src": "/listening/vb-mock-1/l4.mp3",
-    "duration": 234.9,
+    "duration": 262.3,
     "cues": [
       {
-        "at": 9.7,
+        "at": 10.8,
         "kind": "read"
       },
       {
-        "at": 44.2,
+        "at": 45.7,
         "kind": "listen"
       },
       {
-        "at": 204.9,
+        "at": 232.3,
         "kind": "check"
       }
     ]
   },
   "vb-mock-1:l2": {
     "src": "/listening/vb-mock-1/l2.mp3",
-    "duration": 305.2,
+    "duration": 344.2,
     "cues": [
       {
-        "at": 10.2,
+        "at": 11.6,
         "kind": "read"
       },
       {
-        "at": 45.2,
+        "at": 46.5,
         "kind": "listen"
       },
       {
-        "at": 141.9,
+        "at": 182.1,
         "kind": "read"
       },
       {
-        "at": 175.6,
+        "at": 216.2,
         "kind": "listen"
       },
       {
-        "at": 275.2,
+        "at": 314.2,
         "kind": "check"
       }
     ]
