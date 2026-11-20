@@ -319,7 +319,7 @@ export const mockTest15: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock15Listening,
@@ -338,7 +338,7 @@ export const mockTest16: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock16Listening,
@@ -357,7 +357,7 @@ export const mockTest17: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock17Listening,
@@ -376,7 +376,7 @@ export const mockTest18: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock18Listening,
@@ -395,7 +395,7 @@ export const mockTest19: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock19Listening,
@@ -414,7 +414,7 @@ export const mockTest20: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-18',
   sections: {
     listening: mock20Listening,
@@ -433,7 +433,7 @@ export const mockTest21: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-20',
   sections: {
     listening: mock21Listening,
@@ -452,7 +452,7 @@ export const mockTest22: PracticeTest = {
   module: 'academic',
   source: 'Mino',
   sourceType: 'vocab-brain-original',
-  licenseStatus: 'pending-review',
+  licenseStatus: 'original',
   dateAdded: '2026-11-20',
   sections: {
     listening: mock22Listening,
