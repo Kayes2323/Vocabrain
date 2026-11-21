@@ -36,6 +36,7 @@
     "test:assess": "npx -y tsx scripts/test-assess.ts",
     "test:abroad": "npx -y tsx scripts/test-country-match.ts",
     "test:study-abroad": "npx -y tsx scripts/test-study-abroad.ts",
+    "test:billing": "npx -y tsx scripts/test-billing-domain.ts",
     "test:stripe-gate": "npx -y tsx scripts/test-stripe-checkout-gate.mts",
     "test:admin": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"npx -y tsx scripts/test-firebase-admin.mts\"",
     "test:mino": "npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain \"npx -y tsx scripts/test-mino-api.mts\"",
