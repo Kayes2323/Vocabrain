@@ -15,6 +15,16 @@ export function getStripe(): Stripe {
   return client;
 }
 
+/**
+ * Server-side checkout kill switch. Checkout is OFF unless the server
+ * environment variable STRIPE_CHECKOUT_ENABLED is exactly "true". Any other
+ * value, or no value, keeps it off. Hiding the button is not enough, so the
+ * checkout route checks this before it reads the request or calls Stripe.
+ */
+export function isCheckoutEnabled(): boolean {
+  return process.env.STRIPE_CHECKOUT_ENABLED === 'true';
+}
+
 // Types for Stripe integration
 export interface CheckoutSessionData {
   userId: string;

@@ -146,8 +146,9 @@ test('home Quick access: one hub with exactly 5 destinations, all existing pages
   const ielts = new Set(IELTS_SECTIONS.map((x) => x.href));
   assert.ok(ielts.has(HOME_QUICK_ACCESS.find((q) => q.id === 'foundation')!.href), 'foundation opens its IELTS page');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'brain')!.href, '/ielts/vocabulary/notebook');
-  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'readingVocab')!.href, '/ielts/vocabulary/reading');
-  for (const page of ['app/(app)/ielts/vocabulary/notebook/page.tsx', 'app/(app)/ielts/vocabulary/reading/page.tsx']) assert.ok(existsSync(join(process.cwd(), page)), page);
+  // The Reading tile opens the passage list directly (commit 4fb1cfd), not the old reading-vocabulary page.
+  assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'readingVocab')!.href, '/ielts/reading');
+  for (const page of ['app/(app)/ielts/vocabulary/notebook/page.tsx', 'app/(app)/ielts/reading/page.tsx']) assert.ok(existsSync(join(process.cwd(), page)), page);
   // Practice Test and Speaking Test left Home but stay in the IELTS section.
   assert.ok(ielts.has('/ielts/tests') && ielts.has('/ielts/practice/speaking'), 'tests and speaking are still reachable from IELTS');
   assert.equal(HOME_QUICK_ACCESS.find((q) => q.id === 'today')!.href, '/today');

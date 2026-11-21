@@ -1,10 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStripe } from '@/lib/stripe-server';
+import { getStripe, isCheckoutEnabled } from '@/lib/stripe-server';
 
 // This is an API route, not a page - don't try to generate static HTML
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  // Kill switch first: nothing below runs (no body read, no Stripe call) unless an operator enabled checkout.
+  if (!isCheckoutEnabled()) {
+    return NextResponse.json(
+      { error: 'Payments are not available yet.', code: 'checkout_disabled' },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
+
   try {
     const { userId, email, plan } = await request.json();
 
