@@ -20,6 +20,7 @@ import { mock6Speaking, mock6Writing } from './test6-writing-speaking';
 import { mock7Listening } from './test7-listening';
 import { mock7Reading } from './test7-reading';
 import { mock7Speaking, mock7Writing } from './test7-writing-speaking';
+import { mock8Listening } from './test8-listening';
 import { mock9Listening } from './test9-listening';
 import { mock9Reading } from './test9-reading';
 import { mock9Speaking, mock9Writing } from './test9-writing-speaking';
@@ -193,6 +194,22 @@ export const mockTest7: PracticeTest = {
     reading: mock7Reading,
     writing: mock7Writing,
     speaking: mock7Speaking,
+  },
+};
+
+/** Mino Academic Mock Test 8: original Listening paper. Reading, Writing and Speaking are not written yet. */
+export const mockTest8: PracticeTest = {
+  id: 'vb-mock-8',
+  bookId: 'vb-mock',
+  number: 8,
+  title: 'Academic Mock Test 8',
+  module: 'academic',
+  source: 'Mino',
+  sourceType: 'vocab-brain-original',
+  licenseStatus: 'original',
+  dateAdded: '2026-11-21',
+  sections: {
+    listening: mock8Listening,
   },
 };
 
