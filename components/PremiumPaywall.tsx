@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { AppUser } from '@/components/providers/AuthProvider';
 import { UserSubscription } from '@/lib/subscription-service';
+import { auth } from '@/lib/firebase';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { X, Check, Sparkles, Zap, TrendingUp } from 'lucide-react';
@@ -18,40 +19,35 @@ export default function PremiumPaywall({ user, subscription, onClose, onSuccess 
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('yearly');
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState<string | null>(null);
+
+  // Starts checkout. The server identifies the student from the Firebase ID token and only needs the plan.
+  // This only navigates to Stripe: Premium is never switched on from here, only by the server after payment.
   const handleCheckout = async (plan: 'monthly' | 'yearly') => {
-    if (!user?.uid || !user?.email) {
-      alert('Please log in first');
+    setError(null);
+    const current = auth?.currentUser;
+    if (!user?.uid || !current) {
+      setError('Please sign in first.');
       return;
     }
 
     setLoading(true);
     try {
-      // Call checkout API
+      const idToken = await current.getIdToken();
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.uid,
-          email: user.email,
-          plan: plan,
-        }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+        body: JSON.stringify({ plan }),
       });
+      const data = (await response.json().catch(() => null)) as { url?: unknown; error?: unknown } | null;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (!data.url) {
-        throw new Error('Checkout is not available right now');
+      if (!response.ok || typeof data?.url !== 'string' || !data.url.startsWith('https://checkout.stripe.com/')) {
+        setError(typeof data?.error === 'string' ? data.error : 'Checkout is not available right now.');
+        return;
       }
       window.location.href = data.url;
-    } catch (error) {
-      console.error('[v0] Checkout error:', error);
-      alert(error instanceof Error ? error.message : 'Failed to process checkout');
+    } catch {
+      setError('Could not reach the payment service. Check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -168,6 +164,12 @@ export default function PremiumPaywall({ user, subscription, onClose, onSuccess 
             </div>
             <p className="text-xs text-gray-500 mt-2">Billing: {selectedPlan === 'monthly' ? 'Monthly' : 'Yearly'}</p>
           </div>
+
+          {error && (
+            <p role="alert" className="mb-4 text-center text-sm text-red-600">
+              {error}
+            </p>
+          )}
 
           {/* CTA Buttons */}
           <div className="space-y-3">

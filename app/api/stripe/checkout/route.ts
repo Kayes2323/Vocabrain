@@ -1,97 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStripe, isCheckoutEnabled } from '@/lib/stripe-server';
+import { handleCheckout } from '@/lib/billing/checkout';
+import { createCheckoutDeps } from '@/lib/server/checkout-deps';
 
 // This is an API route, not a page - don't try to generate static HTML
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
+/**
+ * Starts a Stripe Checkout session for the signed-in student. All rules live in lib/billing/checkout.ts:
+ * payments are off unless STRIPE_CHECKOUT_ENABLED === "true" (and STRIPE_ALLOW_LIVE === "true" for a live key);
+ * the student is identified only by the verified Firebase ID token; the body is exactly { plan }.
+ * This route never grants Premium.
+ */
 export async function POST(request: NextRequest) {
-  // Kill switch first: nothing below runs (no body read, no Stripe call) unless an operator enabled checkout.
-  if (!isCheckoutEnabled()) {
-    return NextResponse.json(
-      { error: 'Payments are not available yet.', code: 'checkout_disabled' },
-      { status: 503, headers: { 'Cache-Control': 'no-store' } }
-    );
-  }
-
-  try {
-    const { userId, email, plan } = await request.json();
-
-    if (!userId || !email || !plan) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
-    }
-
-    // Pricing
-    const prices: Record<string, { amount: number; interval: string }> = {
-      monthly: { amount: 499, interval: 'month' }, // $4.99
-      yearly: { amount: 3999, interval: 'year' },   // $39.99
-    };
-
-    const priceInfo = prices[plan];
-    if (!priceInfo) {
-      return NextResponse.json(
-        { error: 'Invalid plan' },
-        { status: 400 }
-      );
-    }
-
-    // Create or get Stripe customer
-    let customer;
-    const existingCustomers = await getStripe().customers.list({
-      email: email,
-      limit: 1,
-    });
-
-    if (existingCustomers.data.length > 0) {
-      customer = existingCustomers.data[0];
-    } else {
-      customer = await getStripe().customers.create({
-        email: email,
-        metadata: {
-          firebaseUserId: userId,
-        },
-      });
-    }
-
-    // Create checkout session
-    const session = await getStripe().checkout.sessions.create({
-      customer: customer.id,
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Mino Premium',
-              description: `Premium access to all IELTS vocabulary lessons and features (${plan})`,
-              images: ['https://vocabrain.com/logo.png'], // Replace with actual logo
-            },
-            unit_amount: priceInfo.amount,
-            recurring: {
-              interval: priceInfo.interval as 'month' | 'year',
-              interval_count: 1,
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/?cancelled=true`,
-      metadata: {
-        firebaseUserId: userId,
-        plan: plan,
-      },
-    });
-
-    return NextResponse.json({ sessionId: session.id, url: session.url });
-  } catch (error) {
-    console.error('[v0] Checkout error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    );
-  }
+  const result = await handleCheckout(
+    { authorization: request.headers.get('authorization'), readBody: () => request.text() },
+    createCheckoutDeps(),
+  );
+  return NextResponse.json(result.body, { status: result.status, headers: { ...result.headers, 'Cache-Control': 'no-store' } });
 }
