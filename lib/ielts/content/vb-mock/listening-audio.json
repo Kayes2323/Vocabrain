@@ -473,96 +473,96 @@
   },
   "vb-mock-6:l1": {
     "src": "/listening/vb-mock-6/l1.mp3",
-    "duration": 258.9,
+    "duration": 320.8,
     "cues": [
       {
-        "at": 19.8,
+        "at": 20.7,
         "kind": "read"
       },
       {
-        "at": 54.3,
+        "at": 55.3,
         "kind": "listen"
       },
       {
-        "at": 127.4,
+        "at": 158.1,
         "kind": "read"
       },
       {
-        "at": 161.5,
+        "at": 191.5,
         "kind": "listen"
       },
       {
-        "at": 228.9,
+        "at": 290.7,
         "kind": "check"
       }
     ]
   },
   "vb-mock-6:l2": {
     "src": "/listening/vb-mock-6/l2.mp3",
-    "duration": 215.2,
+    "duration": 331.9,
     "cues": [
       {
-        "at": 11.1,
+        "at": 10.7,
         "kind": "read"
       },
       {
-        "at": 46.2,
+        "at": 45.0,
         "kind": "listen"
       },
       {
-        "at": 87.3,
+        "at": 161.4,
         "kind": "read"
       },
       {
-        "at": 121.5,
+        "at": 195.5,
         "kind": "listen"
       },
       {
-        "at": 185.2,
+        "at": 301.9,
         "kind": "check"
       }
     ]
   },
   "vb-mock-6:l3": {
     "src": "/listening/vb-mock-6/l3.mp3",
-    "duration": 234.9,
+    "duration": 395.7,
     "cues": [
       {
         "at": 11.8,
         "kind": "read"
       },
       {
-        "at": 47.2,
+        "at": 47.1,
         "kind": "listen"
       },
       {
-        "at": 123.1,
+        "at": 251.3,
         "kind": "read"
       },
       {
-        "at": 157.4,
+        "at": 285.2,
         "kind": "listen"
       },
       {
-        "at": 204.9,
+        "at": 365.6,
         "kind": "check"
       }
     ]
   },
   "vb-mock-6:l4": {
     "src": "/listening/vb-mock-6/l4.mp3",
-    "duration": 182.7,
+    "duration": 285.8,
     "cues": [
       {
-        "at": 9.7,
+        "at": 12.0,
         "kind": "read"
       },
       {
-        "at": 44.6,
+        "at": 46.6,
         "kind": "listen"
       },
       {
-        "at": 152.7,
+        "at": 255.8,
         "kind": "check"
       }
     ]
@@ -665,96 +665,96 @@
   },
   "vb-mock-9:l1": {
     "src": "/listening/vb-mock-9/l1.mp3",
-    "duration": 249.6,
+    "duration": 250.1,
     "cues": [
       {
-        "at": 19.6,
+        "at": 19.1,
         "kind": "read"
       },
       {
-        "at": 54.1,
+        "at": 53.6,
         "kind": "listen"
       },
       {
-        "at": 125.5,
+        "at": 118.9,
         "kind": "read"
       },
       {
-        "at": 159.7,
+        "at": 152.3,
         "kind": "listen"
       },
       {
-        "at": 219.6,
+        "at": 220.0,
         "kind": "check"
       }
     ]
   },
   "vb-mock-9:l2": {
     "src": "/listening/vb-mock-9/l2.mp3",
-    "duration": 210.3,
+    "duration": 289.8,
     "cues": [
       {
         "at": 10.8,
         "kind": "read"
       },
       {
-        "at": 46,
+        "at": 45.2,
         "kind": "listen"
       },
       {
-        "at": 89.4,
+        "at": 156.2,
         "kind": "read"
       },
       {
-        "at": 123.5,
+        "at": 190.3,
         "kind": "listen"
       },
       {
-        "at": 180.3,
+        "at": 259.7,
         "kind": "check"
       }
     ]
   },
   "vb-mock-9:l3": {
     "src": "/listening/vb-mock-9/l3.mp3",
-    "duration": 229.5,
+    "duration": 268.8,
     "cues": [
       {
-        "at": 12.8,
+        "at": 11.5,
         "kind": "read"
       },
       {
-        "at": 48.2,
+        "at": 46.8,
         "kind": "listen"
       },
       {
-        "at": 127.3,
+        "at": 145.2,
         "kind": "read"
       },
       {
-        "at": 161.6,
+        "at": 179.1,
         "kind": "listen"
       },
       {
-        "at": 199.5,
+        "at": 238.8,
         "kind": "check"
       }
     ]
   },
   "vb-mock-9:l4": {
     "src": "/listening/vb-mock-9/l4.mp3",
-    "duration": 170.8,
+    "duration": 240.9,
     "cues": [
       {
-        "at": 10.1,
+        "at": 11.2,
         "kind": "read"
       },
       {
-        "at": 45.1,
+        "at": 45.7,
         "kind": "listen"
       },
       {
-        "at": 140.8,
+        "at": 210.9,
         "kind": "check"
       }
     ]
