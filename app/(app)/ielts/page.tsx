@@ -1,5 +1,6 @@
 'use client';
 
+import { PenLine } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { CardGrid, ModuleCard, PageHeader, ScreenSkeleton, Section, StatusChip, type Tint } from '@/components/ds';
@@ -63,6 +64,23 @@ export default function IELTSPage() {
 
       <Section title={t('ielts.groups.practice')} variant="label" id="hub-practice">
         <CardGrid className="xl:grid-cols-2">{['listening', 'reading', 'writing', 'speaking'].map((id) => card(id, 'blue'))}</CardGrid>
+      </Section>
+
+      {/* New, in-preview feature. Kept outside the IELTS_SECTIONS registry (which
+          assumes a current/target band) since this is a self-contained prototype;
+          English-only copy for now, see the Writing Studio build report. */}
+      <Section title="New" variant="label" id="hub-writing-studio">
+        <CardGrid>
+          <ModuleCard
+            href="/ielts/writing-studio"
+            icon={PenLine}
+            tint="brand"
+            title="Mino Writing Studio"
+            subtitle="An interactive Writing trainer: lessons, a chart board, idea development, exam mode."
+            trailing={<StatusChip tone="brand">Prototype</StatusChip>}
+            wrapSubtitle
+          />
+        </CardGrid>
       </Section>
 
       <Section title={t('ielts.groups.test')} variant="label" id="hub-test">

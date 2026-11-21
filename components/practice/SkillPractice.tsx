@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BookText, ClipboardCheck, GraduationCap, Headphones, Mic, PenLine } from 'lucide-react';
+import { BookText, ClipboardCheck, GraduationCap, Headphones, Mic, PenLine, Sparkles } from 'lucide-react';
 import { ListRow, PageHeader, RowGroup, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -98,6 +98,18 @@ export function SkillPractice({ skill }: { skill: PracticeSkill }) {
           })}
         </RowGroup>
       </Section>
+
+      {skill === 'writing' && (
+        <RowGroup>
+          <ListRow
+            href="/ielts/writing-studio"
+            icon={Sparkles}
+            iconTone="brand"
+            title="Try Mino Writing Studio"
+            description="An interactive Writing trainer with lessons, a chart board and idea development — new, in preview."
+          />
+        </RowGroup>
+      )}
 
       <RowGroup>
         <ListRow href="/ielts/tests" icon={ClipboardCheck} title={t('practicePage.allTests')} description={t('practicePage.allTestsHint')} />
