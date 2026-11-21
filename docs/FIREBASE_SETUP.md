@@ -33,6 +33,21 @@ to the repository. Server-only secrets (e.g. for the Stripe webhook) go in non-p
 
 Redeploy after changing variables: `NEXT_PUBLIC_*` values are built into the app.
 
+## Firebase Admin (server-side payments)
+
+Stripe entitlements are written by the server with the Firebase Admin SDK (`lib/server/firebase-admin.ts`).
+It bypasses Security Rules, so it runs only on the server, after the caller has been verified.
+
+1. Firebase console → Project settings → Service accounts → generate a key for **this** project.
+2. Base64-encode the JSON (`base64 -w0 service-account.json`) and save it as the Vercel environment
+   variable `FIREBASE_SERVICE_ACCOUNT` (Production and Preview as needed). Delete the downloaded file.
+3. Never commit it, never paste it in chat or an issue, and never use a `NEXT_PUBLIC_` name.
+
+The app refuses to start Admin if the key's project differs from `NEXT_PUBLIC_FIREBASE_PROJECT_ID`,
+if the value is missing or malformed, or if emulator hosts are set on Vercel. Errors name the problem
+(for example `project_mismatch`) and never print the value. Locally, the emulators need no key:
+`pnpm test:admin` runs the Admin checks against them.
+
 ## 3. Deploy the security rules
 
 `firestore.rules` restricts every student to their own data. Deploy it:
