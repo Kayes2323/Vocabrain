@@ -761,96 +761,96 @@
   },
   "vb-mock-10:l1": {
     "src": "/listening/vb-mock-10/l1.mp3",
-    "duration": 259.7,
+    "duration": 270.4,
     "cues": [
       {
-        "at": 20,
+        "at": 20.3,
         "kind": "read"
       },
       {
-        "at": 54.6,
+        "at": 54.9,
         "kind": "listen"
       },
       {
-        "at": 139.6,
+        "at": 133.7,
         "kind": "read"
       },
       {
-        "at": 173.4,
+        "at": 167.5,
         "kind": "listen"
       },
       {
-        "at": 229.7,
+        "at": 240.4,
         "kind": "check"
       }
     ]
   },
   "vb-mock-10:l2": {
     "src": "/listening/vb-mock-10/l2.mp3",
-    "duration": 213.3,
+    "duration": 280.1,
     "cues": [
       {
-        "at": 10.7,
+        "at": 12.6,
         "kind": "read"
       },
       {
-        "at": 45.8,
+        "at": 47.6,
         "kind": "listen"
       },
       {
-        "at": 92.5,
+        "at": 149.7,
         "kind": "read"
       },
       {
-        "at": 126.7,
+        "at": 183.8,
         "kind": "listen"
       },
       {
-        "at": 183.3,
+        "at": 250.1,
         "kind": "check"
       }
     ]
   },
   "vb-mock-10:l3": {
     "src": "/listening/vb-mock-10/l3.mp3",
-    "duration": 225.5,
+    "duration": 267.7,
     "cues": [
       {
-        "at": 12.4,
+        "at": 13,
         "kind": "read"
       },
       {
-        "at": 47.9,
+        "at": 48.5,
         "kind": "listen"
       },
       {
-        "at": 123.9,
+        "at": 160.9,
         "kind": "read"
       },
       {
-        "at": 158.2,
+        "at": 195.2,
         "kind": "listen"
       },
       {
-        "at": 195.5,
+        "at": 237.7,
         "kind": "check"
       }
     ]
   },
   "vb-mock-10:l4": {
     "src": "/listening/vb-mock-10/l4.mp3",
-    "duration": 167,
+    "duration": 227.2,
     "cues": [
       {
-        "at": 9.6,
+        "at": 11.1,
         "kind": "read"
       },
       {
-        "at": 44.5,
+        "at": 46,
         "kind": "listen"
       },
       {
-        "at": 137,
+        "at": 197.2,
         "kind": "check"
       }
     ]
