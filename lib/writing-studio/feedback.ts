@@ -162,13 +162,21 @@ export function checkEssay(
   const suggestions: string[] = [];
 
   const meetsLength = wordCount >= minWords;
-  if (meetsLength) strengths.push(`You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
-  else mistakes.push({
-    category: 'Task response',
-    quote: `${wordCount} words`,
-    why: `Under ${minWords} words usually means an idea is underdeveloped, which costs marks for Task Achievement/Response.`,
-    fix: `Add roughly ${minWords - wordCount} more words — develop one point with an example rather than starting a new idea.`,
-  });
+  if (meetsLength) {
+    strengths.push(scope === 'introduction-only' ? `You wrote ${wordCount} words — around the suggested length for this exercise.` : `You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
+  } else if (scope === 'introduction-only') {
+    // A short introduction-only drill asks for one or two sentences, not a developed
+    // paragraph — being under the suggested length is not a fault here, so this is a
+    // neutral note, never a "Task response" mistake implying the answer is wrong.
+    suggestions.push(`Suggested length for this exercise: around ${minWords} words — not a strict requirement, as long as the paraphrase is accurate.`);
+  } else {
+    mistakes.push({
+      category: 'Task response',
+      quote: `${wordCount} words`,
+      why: `Under ${minWords} words usually means an idea is underdeveloped, which costs marks for Task Achievement/Response.`,
+      fix: `Add roughly ${minWords - wordCount} more words — develop one point with an example rather than starting a new idea.`,
+    });
+  }
 
   // A one-or-two-sentence introduction-only drill is too short to expect two
   // linking words from — that check belongs to a full response or paragraph.
@@ -308,7 +316,10 @@ export function checkEssay(
 
   // Indicative band: start mid, nudge for each signal. Deliberately coarse.
   let band = 6.0;
-  band += meetsLength ? 0.5 : -1;
+  // Being under the suggested (non-strict) length is not a fault for an introduction-only
+  // drill, so it must not drag the band down the way a real under-length response does.
+  if (scope === 'introduction-only') band += meetsLength ? 0.5 : 0;
+  else band += meetsLength ? 0.5 : -1;
   if (scope !== 'introduction-only') band += linkerHits.length >= 2 ? 0.5 : -0.5;
   band -= mistakes.filter((m) => m.category === 'Grammar' || m.category === 'Mechanics').length * 0.25;
   band += strengths.length >= 3 ? 0.5 : 0;

@@ -227,7 +227,12 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
             <Panel className="space-y-2">
               <p className="font-semibold">{lesson.finalPrompt.title}</p>
               <p className="text-[15px] text-muted-foreground">{lesson.finalPrompt.instructions}</p>
-              <StatusChip>Minimum {lesson.finalPrompt.minWords} words</StatusChip>
+              {/* A skillFocus drill (e.g. an introduction-only paraphrase exercise) isn't
+                  a full Task response — its word count is a guideline, not a hard
+                  minimum, so it must not be worded as one. */}
+              <StatusChip>
+                {lesson.finalPrompt.skillFocus ? `Suggested length: around ${lesson.finalPrompt.minWords} words` : `Minimum ${lesson.finalPrompt.minWords} words`}
+              </StatusChip>
             </Panel>
             {chart && (
               <Panel className="space-y-2">

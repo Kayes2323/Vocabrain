@@ -78,8 +78,11 @@ export function FeedbackPanel({
           <p className="text-sm text-muted-foreground">{isSkillCheck ? 'Skill check result' : feedback.source === 'ai' ? "Mino's estimated band" : 'Indicative band (practice only)'}</p>
           <p className={cn('font-semibold', isSkillCheck ? 'text-lg' : 'text-2xl')}>{isSkillCheck ? skillVerdict : feedback.band !== null ? feedback.band.toFixed(1) : '—'}</p>
         </div>
-        <StatusChip tone={feedback.meetsLength ? 'success' : 'warning'}>
-          {feedback.wordCount}/{feedback.minWords} words
+        {/* A skillFocus drill's word count is a guideline, not a hard minimum (the AI/local
+            checks below never penalise it) — so the chip must never warn purely for being
+            short, and shows the actual count without implying a pass/fail threshold. */}
+        <StatusChip tone={isSkillCheck ? 'neutral' : feedback.meetsLength ? 'success' : 'warning'}>
+          {isSkillCheck ? `${feedback.wordCount} words` : `${feedback.wordCount}/${feedback.minWords} words`}
         </StatusChip>
       </Panel>
 

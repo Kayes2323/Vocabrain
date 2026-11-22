@@ -56,6 +56,7 @@ async function main() {
     await editor.waitFor({ timeout: 15_000 });
     const writeScreenText = await page.locator('main').innerText();
     check('independent practice only asks for the introduction (no overview/body/opinion requested)', /introduction/i.test(writeScreenText) && !/write a complete/i.test(writeScreenText));
+    check('the word count is worded as a suggestion, not a hard minimum, for this skill drill', /Suggested length: around 20 words/.test(writeScreenText) && !/Minimum 20 words/.test(writeScreenText));
 
     const intro =
       'The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.';
@@ -69,6 +70,18 @@ async function main() {
     check('feedback does NOT present a decimal number as if it were a full-task IELTS band', !/\b[4-8]\.[05]\b/.test(feedbackText));
     check('feedback explicitly says this is not a full Task 1/2 response', /not a complete Task 1 or Task 2 response/.test(feedbackText));
     await shot(page, 'ws-lesson1-skill-check-feedback');
+
+    // ------------------------------------------------------------ a short-but-accurate intro must not be shown as "wrong"
+    await page.getByRole('button', { name: 'Rewrite and try again' }).click();
+    await editor.waitFor({ timeout: 15_000 });
+    const shortIntro = 'The two line graphs show the mean monthly temperature and rainfall levels in two cities over a year.';
+    await editor.fill(shortIntro);
+    await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
+    await page.getByText(/Skill check/).first().waitFor({ timeout: 60_000 });
+    const shortFeedbackText = await page.locator('main').innerText();
+    check('a genuinely under-20-word but accurate introduction shows its real word count, not an X/20 threshold format', /\b18 words\b/.test(shortFeedbackText) && !/18\/20/.test(shortFeedbackText));
+    check('the under-length skill-check answer is not shown with "underdeveloped"/under-the-minimum wording', !/underdeveloped/i.test(shortFeedbackText) && !/Under 20 words/.test(shortFeedbackText));
+    await shot(page, 'ws-lesson1-short-intro-feedback');
 
     await page.getByRole('button', { name: 'Continue', exact: true }).click();
     await page.getByText('Lesson complete').waitFor({ timeout: 15_000 });

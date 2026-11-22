@@ -123,4 +123,41 @@ test('recordLesson: a real band after a skill-check still raises bestBand normal
   assert.equal(scored.lessons['task1-full'].lastBand, 7);
 });
 
+// ---------------------------------------------------------------- Round C: a short but
+// accurate introduction-only answer must not be treated as a wrong/failing word count
+
+const INTRO_SHORT_CLEAN = 'The two line graphs show the mean monthly temperature and rainfall levels in two cities over a year.';
+
+test('introduction-only: a clean 17-19 word introduction gets NO word-count mistake (guideline, not a hard minimum)', () => {
+  const words = INTRO_SHORT_CLEAN.trim().split(/\s+/).length;
+  assert.ok(words >= 17 && words <= 19, `fixture is ${words} words, expected 17-19`);
+  const r = checkEssay(INTRO_SHORT_CLEAN, 20, 'task1', 'introduction-only');
+  assert.equal(r.meetsLength, false, 'genuinely under the suggested length');
+  assert.ok(!r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)), JSON.stringify(r.mistakes));
+  assert.ok(r.suggestions.some((s) => /Suggested length/.test(s)), 'a neutral suggestion is fine, a "mistake" implying it is wrong is not');
+});
+test('introduction-only: a 20+ word introduction still passes cleanly (no mistake, no suggestion needed)', () => {
+  const r = checkEssay(INTRO_GOOD, 20, 'task1', 'introduction-only');
+  assert.equal(r.meetsLength, true);
+  assert.ok(!r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
+  assert.ok(!r.suggestions.some((s) => /Suggested length/.test(s)), 'already meets the suggested length, so no nudge is needed');
+});
+
+test('overview-only (unchanged): a genuinely under-length answer is still flagged as a Task response mistake', () => {
+  const r = checkEssay('Short.', 10, 'task1', 'overview-only');
+  assert.ok(r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
+});
+test('full task1 (unchanged): a genuinely under-length answer is still flagged as a Task response mistake', () => {
+  const r = checkEssay('Short.', 10, 'task1', 'full');
+  assert.ok(r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
+});
+test('task2 paragraph-only (unchanged): a genuinely under-length answer is still flagged as a Task response mistake', () => {
+  const r = checkEssay('Short.', 10, 'task2', 'paragraph-only');
+  assert.ok(r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
+});
+test('task2 full (unchanged): a genuinely under-length answer is still flagged as a Task response mistake', () => {
+  const r = checkEssay('Short.', 10, 'task2', 'full');
+  assert.ok(r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
+});
+
 console.log(`\n${passed} passed`);
