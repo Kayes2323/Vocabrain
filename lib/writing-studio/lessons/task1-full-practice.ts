@@ -1,3 +1,4 @@
+import { CHART_DATASETS } from '../charts';
 import type { Lesson } from '../types';
 
 /**
@@ -74,18 +75,7 @@ export const task1FullPracticeLesson: Lesson = {
         "This is the same chart used in the Vocabulary and Grammar module, now for a full response. Work through these planning questions before you write — they map directly onto your introduction, overview and two body paragraphs.",
       material: {
         type: 'chart-board',
-        dataset: {
-          id: 'commute-methods',
-          kind: 'bar',
-          title: 'Main method of travelling to work in a city, 2010 and 2023',
-          unit: '% of commuters',
-          categories: ['Car', 'Bus', 'Bicycle', 'Train', 'Walking'],
-          series: [
-            { name: '2010', color: 'var(--chart-1)', values: [52, 24, 6, 11, 7] },
-            { name: '2023', color: 'var(--chart-2)', values: [38, 21, 19, 15, 7] },
-          ],
-          note: 'Figures are illustrative, written for this trainer; they are not real city data.',
-        },
+        dataset: CHART_DATASETS['commute-methods'],
         tasks: [
           { id: 'overview-trend', order: 1, prompt: 'What is the single biggest change across the whole chart, worth leading your overview with?', modelAnswer: 'Bicycle use grew dramatically while car use declined noticeably; the rest changed only slightly.', belongsIn: 'overview' },
           { id: 'group-decline', order: 2, prompt: 'Which method changed the most in percentage points, and by how much?', modelAnswer: 'Car use fell the most, from 52% to 38%, a drop of 14 percentage points.', belongsIn: 'body' },

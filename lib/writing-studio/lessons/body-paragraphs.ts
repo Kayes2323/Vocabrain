@@ -1,3 +1,4 @@
+import { CHART_DATASETS } from '../charts';
 import type { Lesson } from '../types';
 
 /**
@@ -75,19 +76,7 @@ export const bodyParagraphsLesson: Lesson = {
         "Let's work through this chart again, but this time focused on body-paragraph material: which countries behave alike, and which comparisons are worth making. I'll check each answer as you go.",
       material: {
         type: 'chart-board',
-        dataset: {
-          id: 'renewable-electricity',
-          kind: 'line',
-          title: 'Electricity generated from renewable sources in three countries, 2000–2020',
-          unit: '% of total electricity generation',
-          categories: ['2000', '2005', '2010', '2015', '2020'],
-          series: [
-            { name: 'Denmark', color: 'var(--chart-1)', values: [14, 21, 33, 48, 62] },
-            { name: 'Country B', color: 'var(--chart-2)', values: [6, 8, 12, 18, 27] },
-            { name: 'Country C', color: 'var(--chart-3)', values: [9, 10, 11, 13, 16] },
-          ],
-          note: 'Figures are illustrative, written for this trainer; they are not real national statistics.',
-        },
+        dataset: CHART_DATASETS['renewable-electricity'],
         tasks: [
           { id: 'group', order: 1, prompt: 'Which two countries behave most similarly to each other, and which one stands apart?', modelAnswer: 'Country B and Country C grow at broadly similar, moderate rates; Denmark stands apart with much faster growth.', belongsIn: 'body' },
           { id: 'ratio', order: 2, prompt: "Compare Denmark's 2020 figure to its 2000 figure using a precise ratio or multiple.", modelAnswer: "Denmark's 2020 figure (62%) is more than four times its 2000 figure (14%).", belongsIn: 'body' },

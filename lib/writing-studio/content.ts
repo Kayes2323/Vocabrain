@@ -9,13 +9,13 @@ import type { ExamTaskContent, ModuleSummary, VisualTrainingArea } from './types
  * button.
  */
 export const TASK1_MODULES: ModuleSummary[] = [
-  { id: 'task1-m1', number: 1, title: 'Understanding IELTS Writing Task 1', description: 'What Task 1 asks for, Task Achievement, and the basic response structure.' },
-  { id: 'task1-m2', number: 2, title: 'Understanding Visual Information', description: 'Reading line graphs, bar charts, pie charts, tables, maps and process diagrams.' },
-  { id: 'task1-m3', number: 3, title: 'Introduction Writing', description: 'Paraphrasing the question and writing a clear, accurate introduction.' },
+  { id: 'task1-m1', number: 1, title: 'Understanding IELTS Writing Task 1', description: 'What Task 1 asks for, Task Achievement, and the basic response structure.', builtLessonId: 'task1-understanding' },
+  { id: 'task1-m2', number: 2, title: 'Understanding Visual Information', description: 'Reading line graphs, bar charts, pie charts, tables, maps and process diagrams.', builtLessonId: 'visual-information' },
+  { id: 'task1-m3', number: 3, title: 'Introduction Writing', description: 'Paraphrasing the question and writing a clear, accurate introduction.', builtLessonId: 'task1-introduction' },
   { id: 'task1-m4', number: 4, title: 'Overview Mastery', description: 'Identifying the main trends and writing a strong, focused overview.', builtLessonId: 'overview-writing' },
-  { id: 'task1-m5', number: 5, title: 'Body Paragraph Development', description: 'Grouping data, making comparisons, and reporting figures with purpose.' },
-  { id: 'task1-m6', number: 6, title: 'Vocabulary and Grammar for Task 1', description: 'Trend language, comparison language, tense choice and sentence variety.' },
-  { id: 'task1-m8', number: 8, title: 'Complete Task 1 Writing', description: 'Guided, independent and timed practice producing a full response.' },
+  { id: 'task1-m5', number: 5, title: 'Body Paragraph Development', description: 'Grouping data, making comparisons, and reporting figures with purpose.', builtLessonId: 'body-paragraphs' },
+  { id: 'task1-m6', number: 6, title: 'Vocabulary and Grammar for Task 1', description: 'Trend language, comparison language, tense choice and sentence variety.', builtLessonId: 'task1-vocab-grammar' },
+  { id: 'task1-m8', number: 8, title: 'Complete Task 1 Writing', description: 'Guided, independent and timed practice producing a full response.', builtLessonId: 'task1-full-practice' },
 ];
 
 export const TASK1_VISUALS: VisualTrainingArea[] = [
@@ -30,15 +30,15 @@ export const TASK1_VISUALS: VisualTrainingArea[] = [
 
 /** Task 2 Academy curriculum (spec §7, Modules 1–9). */
 export const TASK2_MODULES: ModuleSummary[] = [
-  { id: 'task2-m1', number: 1, title: 'Understanding IELTS Writing Task 2', description: 'Essay structure and the four assessment criteria.' },
-  { id: 'task2-m2', number: 2, title: 'Understanding Question Types', description: 'Agree/Disagree, Discuss Both Views, Advantages/Disadvantages, Problem/Solution and more.' },
-  { id: 'task2-m3', number: 3, title: 'Question Analysis', description: 'Finding the topic, the exact requirement, and avoiding off-topic answers.' },
-  { id: 'task2-m4', number: 4, title: 'Idea Generation', description: 'Generating, selecting and testing ideas before you start writing.' },
+  { id: 'task2-m1', number: 1, title: 'Understanding IELTS Writing Task 2', description: 'Essay structure and the four assessment criteria.', builtLessonId: 'task2-understanding' },
+  { id: 'task2-m2', number: 2, title: 'Understanding Question Types', description: 'Agree/Disagree, Discuss Both Views, Advantages/Disadvantages, Problem/Solution and more.', builtLessonId: 'question-types' },
+  { id: 'task2-m3', number: 3, title: 'Question Analysis', description: 'Finding the topic, the exact requirement, and avoiding off-topic answers.', builtLessonId: 'question-analysis' },
+  { id: 'task2-m4', number: 4, title: 'Idea Generation', description: 'Generating, selecting and testing ideas before you start writing.', builtLessonId: 'idea-generation' },
   { id: 'task2-m5', number: 5, title: 'Paragraph Development', description: 'The IDEA → EXPLANATION → EXAMPLE → RESULT framework.', builtLessonId: 'idea-development' },
-  { id: 'task2-m6', number: 6, title: 'Introduction and Conclusion', description: 'Paraphrasing, thesis statements, and a conclusion that matches your position.' },
-  { id: 'task2-m7', number: 7, title: 'Vocabulary and Grammar', description: 'Academic vocabulary, paraphrasing, complex sentences and cohesive devices.' },
-  { id: 'task2-m8', number: 8, title: 'Full Essay Writing', description: 'Combining every part into a complete, timed essay.' },
-  { id: 'task2-m9', number: 9, title: 'High-Level Writing Performance', description: 'Argument depth, precision and accuracy for Band 7–8 as a learning goal.' },
+  { id: 'task2-m6', number: 6, title: 'Introduction and Conclusion', description: 'Paraphrasing, thesis statements, and a conclusion that matches your position.', builtLessonId: 'intro-conclusion' },
+  { id: 'task2-m7', number: 7, title: 'Vocabulary and Grammar', description: 'Academic vocabulary, paraphrasing, complex sentences and cohesive devices.', builtLessonId: 'task2-vocab-grammar' },
+  { id: 'task2-m8', number: 8, title: 'Full Essay Writing', description: 'Combining every part into a complete, timed essay.', builtLessonId: 'task2-full-practice' },
+  { id: 'task2-m9', number: 9, title: 'High-Level Writing Performance', description: 'Argument depth, precision and accuracy for Band 7–8 as a learning goal.', builtLessonId: 'high-level-writing' },
 ];
 
 export const EXAM_CONTENT: Record<'task1' | 'task2', ExamTaskContent> = {

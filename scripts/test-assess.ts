@@ -1,6 +1,6 @@
 /** Writing/Speaking assessment checks with a fake AI (no network). Run: pnpm test:assess */
 import assert from 'node:assert/strict';
-import { assessSpeaking, assessWriting } from '../lib/ai/server/assess';
+import { assessSpeaking, assessWriting, assessWritingStudioTask } from '../lib/ai/server/assess';
 import type { AIProvider, AIRunRequest } from '../lib/ai/types';
 import { createSession, setResponse, submit, writingOverall } from '../lib/ielts';
 import { getTest } from '../lib/ielts/content';
@@ -123,6 +123,43 @@ async function main() {
     const f = await assessSpeaking(fake(() => ({})), t1, submit(s, t1), 'en');
     assert.equal(calls.length, 0);
     assert.equal(f.overall, null);
+  });
+
+  await test('writing studio: free-standing task gets real criteria, chart data reaches the prompt, hallucinated quotes removed', async () => {
+    calls.length = 0;
+    const answer = `Overall, electricity use rose in both cities. ${essay(60)}`;
+    const { feedback, model } = await assessWritingStudioTask(
+      fake(() => ({
+        criteria: [
+          { criterion: 'Task Achievement', band: 6, comment: 'ok' },
+          { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'ok' },
+          { criterion: 'Lexical Resource', band: 6, comment: 'ok' },
+          { criterion: 'Grammatical Range & Accuracy', band: 6, comment: 'ok' },
+        ],
+        strengths: ['Clear overview'],
+        mistakes: [{ quote: 'Overall, electricity use rose', fix: 'Overall, electricity use increased', why: 'repeated verb' }, { quote: 'a sentence that was never written', fix: 'x', why: 'hallucinated' }],
+        actions: ['Add one more comparison'],
+        vocabulary: [{ word: 'surged', tip: 'use for a sudden rise' }],
+        betterSentences: [{ original: 'electricity use rose', improved: 'electricity consumption climbed' }],
+      })),
+      { task: 1, prompt: 'Describe the chart.', minWords: 40, chart: { caption: 'Electricity use', headers: ['', '2010', '2020'], rows: [['City A', '10%', '20%']] } },
+      answer,
+      'en',
+    );
+    assert.match(calls[0].messages[0].content, /Electricity use/, 'chart caption reached the prompt');
+    assert.match(calls[0].messages[0].content, /City A/, 'chart row reached the prompt');
+    assert.equal(feedback.criteria.length, 4);
+    assert.equal(feedback.band, 6.0, 'mean of the four bands, rounded to nearest half');
+    assert.equal(feedback.mistakes.length, 1, 'the hallucinated quote was dropped');
+    assert.equal(model, 'fake-smart');
+  });
+
+  await test('writing studio: a very short answer is not sent to the AI', async () => {
+    calls.length = 0;
+    const { feedback, model } = await assessWritingStudioTask(fake(() => ({})), { task: 2, prompt: 'Discuss.', minWords: 250 }, 'Too short.', 'en');
+    assert.equal(calls.length, 0);
+    assert.equal(feedback.band, null);
+    assert.equal(model, 'none');
   });
 
   console.log(`\n${passed} passed`);
