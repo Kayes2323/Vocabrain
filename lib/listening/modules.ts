@@ -8,6 +8,9 @@
 import { SOUND_GYM_STAGE_ORDER, type Lesson, type Module, type Stage } from './model';
 import { audioAssetsForLesson } from './audio-manifest';
 
+const speakerLine = (asset: ReturnType<typeof audioAssetsForLesson>[number]) =>
+  (asset.speakers ?? []).map((s) => `${s.identity}${s.role ? ` (${s.role})` : ''}`).join(' + ');
+
 const SOUND_GYM_LESSON_DEFS: { number: number; code: string; title: string; titleBn: string; skill: string; skillBn: string }[] = [
   { number: 1, code: 'SG-01', title: 'Word Boundary Detective', titleBn: 'Word Boundary Detective', skill: 'Speech segmentation and word-boundary recognition.', skillBn: 'কথার মধ্যে একটা শব্দ কোথায় শেষ আর পরেরটা কোথায় শুরু, সেটা ধরা।' },
   { number: 2, code: 'SG-02', title: 'Connected Speech Decoder', titleBn: 'Connected Speech Decoder', skill: 'Linking, assimilation, elision, and connected speech.', skillBn: 'Linking, assimilation, elision — শব্দ জোড়া লাগা স্বাভাবিক কথা বোঝা।' },
@@ -21,12 +24,24 @@ const SOUND_GYM_LESSON_DEFS: { number: number; code: string; title: string; titl
 function buildSoundGymLesson(def: (typeof SOUND_GYM_LESSON_DEFS)[number]): Lesson {
   const lessonId = `sg-${String(def.number).padStart(2, '0')}`;
   const assets = audioAssetsForLesson(lessonId);
-  const stages: Stage[] = SOUND_GYM_STAGE_ORDER.map((kind, i) => ({
-    id: `${lessonId}-${kind}`,
-    kind,
-    audioAssetId: assets[i]?.assetId,
-    contentStatus: 'audio-pending', // the real script/questions/audio have not been delivered in this session (see docs)
-  }));
+  const stages: Stage[] = SOUND_GYM_STAGE_ORDER.map((kind, i) => {
+    const asset = assets[i];
+    return {
+      id: `${lessonId}-${kind}`,
+      kind,
+      audioAssetId: asset?.assetId,
+      // Real audio is delivered and wired in (see lib/listening/audio-manifest.ts); the script,
+      // questions and answer key for this stage have not been delivered, so `content` stays
+      // unset rather than invented. `instructions` carries only facts the production report
+      // actually states (speaker, QA status) — never a transcript.
+      contentStatus: 'audio-delivered',
+      content: asset
+        ? {
+            instructions: `Voice: ${speakerLine(asset)}. ${asset.productionQA === 'passed' ? 'Production checks passed' : 'Audio delivered, pending a human listening check'} — ${asset.qaNote}`,
+          }
+        : undefined,
+    };
+  });
   return {
     id: lessonId,
     moduleId: 'sound-gym',
@@ -39,7 +54,7 @@ function buildSoundGymLesson(def: (typeof SOUND_GYM_LESSON_DEFS)[number]): Lesso
     difficulty: def.number <= 2 ? 1 : def.number <= 4 ? 2 : 3,
     skillTags: [def.code],
     stages,
-    status: 'audio-pending',
+    status: 'audio-delivered',
   };
 }
 
@@ -62,7 +77,7 @@ export const LISTENING_MODULES: Module[] = [
       { en: 'Numbers, names, spelling and self-correction', bn: 'Number, name, spelling আর self-correction' },
       { en: 'Natural speech, speaker tracking, accent recognition', bn: 'স্বাভাবিক কথা, speaker tracking, accent চেনা' },
     ],
-    status: 'audio-pending',
+    status: 'audio-delivered',
     lessons: SOUND_GYM_LESSONS,
   },
   {

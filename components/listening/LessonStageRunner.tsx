@@ -3,9 +3,24 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, FileClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Callout, PageHeader, Panel, ProgressBar, StatusChip } from '@/components/ds';
+import { Callout, PageHeader, Panel, ProgressBar, StatusChip, type Tone } from '@/components/ds';
 import { AudioLessonPlayer } from './AudioLessonPlayer';
-import { STAGE_LABELS, findAudioAsset, type Lesson } from '@/lib/listening';
+import { STAGE_LABELS, findAudioAsset, type ContentStatus, type Lesson } from '@/lib/listening';
+
+const STAGE_STATUS_LABEL: Record<ContentStatus, string> = {
+  'in-development': 'Content in development',
+  'audio-pending': 'Audio not delivered yet',
+  'audio-delivered': 'Audio delivered — script pending',
+  'content-ready': 'Content ready',
+  complete: 'Complete',
+};
+const STAGE_STATUS_TONE: Record<ContentStatus, Tone> = {
+  'in-development': 'neutral',
+  'audio-pending': 'neutral',
+  'audio-delivered': 'warning',
+  'content-ready': 'brand',
+  complete: 'success',
+};
 
 /**
  * Walks a lesson's stages in order (brief §8's shared framework; Sound
@@ -54,18 +69,14 @@ export function LessonStageRunner({
       <Panel className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{STAGE_LABELS[stage.kind].en}</h2>
-          <StatusChip tone={stage.contentStatus === 'complete' ? 'success' : 'neutral'}>
-            {stage.contentStatus === 'audio-pending' ? 'Content in development' : stage.contentStatus}
-          </StatusChip>
+          <StatusChip tone={STAGE_STATUS_TONE[stage.contentStatus]}>{STAGE_STATUS_LABEL[stage.contentStatus]}</StatusChip>
         </div>
 
         {asset ? <AudioLessonPlayer asset={asset} /> : null}
 
-        {stage.content?.instructions || stage.content?.questions?.length ? (
-          <div className="space-y-3 text-sm">
-            {stage.content.instructions && <p>{stage.content.instructions}</p>}
-          </div>
-        ) : (
+        {stage.content?.instructions && <p className="text-sm text-muted-foreground">{stage.content.instructions}</p>}
+
+        {!stage.content?.questions?.length && (
           <Callout>
             <div className="flex items-start gap-2">
               <FileClock className="mt-0.5 size-4 shrink-0" aria-hidden />
