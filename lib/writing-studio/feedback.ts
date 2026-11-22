@@ -170,14 +170,19 @@ export function checkEssay(
     fix: `Add roughly ${minWords - wordCount} more words — develop one point with an example rather than starting a new idea.`,
   });
 
-  const linkerHits = LINKERS.filter((l) => lower.includes(l));
-  if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
-  else mistakes.push({
-    category: 'Coherence & cohesion',
-    quote: sentences[0] ?? clean.slice(0, 60),
-    why: 'Few or no linking words were found, so ideas can read as a list rather than a connected argument.',
-    fix: 'Open at least two sentences with a linker such as "However,", "As a result," or "For example,".',
-  });
+  // A one-or-two-sentence introduction-only drill is too short to expect two
+  // linking words from — that check belongs to a full response or paragraph.
+  let linkerHits: string[] = [];
+  if (scope !== 'introduction-only') {
+    linkerHits = LINKERS.filter((l) => lower.includes(l));
+    if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
+    else mistakes.push({
+      category: 'Coherence & cohesion',
+      quote: sentences[0] ?? clean.slice(0, 60),
+      why: 'Few or no linking words were found, so ideas can read as a list rather than a connected argument.',
+      fix: 'Open at least two sentences with a linker such as "However,", "As a result," or "For example,".',
+    });
+  }
 
   if (kind === 'task1') {
     // An introduction-only task (e.g. a paraphrase drill) should NOT contain an
@@ -304,7 +309,7 @@ export function checkEssay(
   // Indicative band: start mid, nudge for each signal. Deliberately coarse.
   let band = 6.0;
   band += meetsLength ? 0.5 : -1;
-  band += linkerHits.length >= 2 ? 0.5 : -0.5;
+  if (scope !== 'introduction-only') band += linkerHits.length >= 2 ? 0.5 : -0.5;
   band -= mistakes.filter((m) => m.category === 'Grammar' || m.category === 'Mechanics').length * 0.25;
   band += strengths.length >= 3 ? 0.5 : 0;
 

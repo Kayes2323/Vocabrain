@@ -188,7 +188,7 @@ export const task1UnderstandingLesson: Lesson = {
     title: 'Write an accurate introduction',
     instructions:
       'Here is a new Task 1 question: "The graphs below show the average monthly temperature and rainfall in two cities over one year." Write ONLY the introduction — one or two sentences that paraphrase this question accurately. Keep every key fact unchanged (both cities, both measurements — temperature and rainfall — and the one-year period) while changing the wording and structure. Do not add an overview, any figures, or any opinion; those come in later lessons.',
-    minWords: 35,
+    minWords: 20,
     skillFocus: 'Paraphrasing accuracy for a Task 1 introduction',
     checkScope: 'introduction-only',
   },

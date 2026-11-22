@@ -3,6 +3,9 @@
  * Run: npx tsx scripts/test-writing-studio-feedback.ts */
 import assert from 'node:assert/strict';
 import { checkEssay, deriveScope } from '../lib/writing-studio/feedback';
+import { task1UnderstandingLesson } from '../lib/writing-studio/lessons/task1-understanding';
+import { recordLesson } from '../lib/writing-studio/progress';
+import type { WritingStudioProgress } from '../lib/models';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -54,6 +57,70 @@ test('overview-only (unchanged): still requires an overview phrase', () => {
 test('full (unchanged): still wants at least one figure in the body', () => {
   const r = checkEssay('Overall, car use fell while cycling rose.', 10, 'task1', 'full');
   assert.ok(r.mistakes.some((m) => /should support the overview with specific data/.test(m.why)));
+});
+
+// ---------------------------------------------------------------- Issue 3: introduction-only must not require linkers
+
+test('introduction-only: a clean introduction with no linking words is NOT flagged for missing linkers', () => {
+  const r = checkEssay(INTRO_GOOD, 20, 'task1', 'introduction-only');
+  assert.ok(!r.mistakes.some((m) => /linking words/.test(m.why)), JSON.stringify(r.mistakes));
+});
+test('overview-only (unchanged): still requires linking words', () => {
+  const r = checkEssay('The chart shows travel methods in a city over two years.', 10, 'task1', 'overview-only');
+  assert.ok(r.mistakes.some((m) => /linking words/.test(m.why)));
+});
+test('task2 paragraph-only (unchanged): still requires (at least two) linking words', () => {
+  const r = checkEssay(
+    'Some people enjoy city life. For example, cities offer more jobs and services. As a result, many people move there every year.',
+    10,
+    'task2',
+    'paragraph-only',
+  );
+  assert.ok(!r.mistakes.some((m) => /linking words/.test(m.why)), 'two linkers present, so it should NOT be flagged');
+  const withoutLinker = checkEssay('Some people enjoy city life. Cities offer more jobs and services, which is why many people move there every year.', 10, 'task2', 'paragraph-only');
+  assert.ok(withoutLinker.mistakes.some((m) => /linking words/.test(m.why)), 'no linker at all should still be flagged for a full task2 paragraph');
+});
+test('task2 full (unchanged): still requires linking words', () => {
+  const r = checkEssay('I believe cities are better places to live. Rural areas lack services.', 10, 'task2', 'full');
+  assert.ok(r.mistakes.some((m) => /linking words/.test(m.why)));
+});
+
+// ---------------------------------------------------------------- Issue 2: Lesson 01's real minWords accepts a clean short introduction
+
+test("Lesson 01's own minWords (not a hardcoded 35) accepts a clean ~21-word introduction", () => {
+  const minWords = task1UnderstandingLesson.finalPrompt.minWords;
+  assert.ok(minWords <= 25, `expected a pedagogically appropriate minimum for a 1-2 sentence introduction, got ${minWords}`);
+  const r = checkEssay(INTRO_GOOD, minWords, 'task1', 'introduction-only');
+  assert.equal(r.meetsLength, true, `a ${r.wordCount}-word clean introduction should meet a ${minWords}-word minimum`);
+  assert.ok(!r.mistakes.some((m) => /underdeveloped/.test(m.why)), 'should not be penalised for being short');
+});
+
+// ---------------------------------------------------------------- Issue 1: skill-check attempts must never store an IELTS band
+
+test('recordLesson: a skill-check attempt (band=null) does not create a new bestBand', () => {
+  const empty: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
+  const after = recordLesson(empty, 'task1-understanding', 1, null);
+  assert.equal(after.lessons['task1-understanding'].lastBand, null);
+  assert.equal(after.lessons['task1-understanding'].bestBand, null);
+  assert.equal(after.lessons['task1-understanding'].attempts, 1, 'attempt is still counted');
+  assert.ok(after.lessons['task1-understanding'].completedAt, 'completion is still recorded');
+});
+test('recordLesson: historical band records remain intact after a later skill-check (null) attempt', () => {
+  const empty: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
+  const scored = recordLesson(empty, 'task1-full', 1, 6.5);
+  assert.equal(scored.lessons['task1-full'].bestBand, 6.5);
+  const thenSkillCheck = recordLesson(scored, 'task1-full', 1, null);
+  assert.equal(thenSkillCheck.lessons['task1-full'].bestBand, 6.5, 'the earlier real band must not be erased or lowered');
+  assert.equal(thenSkillCheck.lessons['task1-full'].lastBand, null, 'the most recent attempt honestly had no band');
+  assert.equal(thenSkillCheck.lessons['task1-full'].attempts, 2);
+});
+test('recordLesson: a real band after a skill-check still raises bestBand normally (unaffected path)', () => {
+  const empty: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
+  const skillCheck = recordLesson(empty, 'task1-full', 1, null);
+  assert.equal(skillCheck.lessons['task1-full'].bestBand, null);
+  const scored = recordLesson(skillCheck, 'task1-full', 1, 7);
+  assert.equal(scored.lessons['task1-full'].bestBand, 7);
+  assert.equal(scored.lessons['task1-full'].lastBand, 7);
 });
 
 console.log(`\n${passed} passed`);

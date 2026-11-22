@@ -118,6 +118,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         prompt: `${lesson.finalPrompt.title}. ${lesson.finalPrompt.instructions}`,
         minWords: lesson.finalPrompt.minWords,
         chart: chart ? chartToTable(chart) : undefined,
+        skillFocus: lesson.finalPrompt.skillFocus,
       },
       essay,
       locale === 'bn' ? 'bn' : 'en',
@@ -130,9 +131,19 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
 
     const weakest = unified.criteria?.slice().sort((a, b) => (a.band ?? 9) - (b.band ?? 9))[0]?.criterion;
     const mistakeRows = unified.mistakes.map((m) => ({ category: m.category ?? weakest ?? 'General', quote: m.quote, fix: m.fix, why: m.why }));
+    // A skill drill (lesson.finalPrompt.skillFocus set) is never a full Task 1/2
+    // response, so it must never write an IELTS band into the student's lesson
+    // progress — that would silently contaminate bestBand/lastBand and every
+    // trend/independence calculation derived from them. Lesson completion and
+    // attempt counting still happen; only the band is withheld.
     updateProfile((p) => ({
       ...p,
-      writingStudio: recordMistakes(recordLesson(p.writingStudio, lesson.id, taskNum, unified.band), taskNum, unified.source, mistakeRows),
+      writingStudio: recordMistakes(
+        recordLesson(p.writingStudio, lesson.id, taskNum, lesson.finalPrompt.skillFocus ? null : unified.band),
+        taskNum,
+        unified.source,
+        mistakeRows,
+      ),
     }));
   };
 

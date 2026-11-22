@@ -162,6 +162,63 @@ async function main() {
     assert.equal(model, 'none');
   });
 
+  await test('writing studio: skillFocus reaches the system prompt and tells the model what to judge and what to ignore', async () => {
+    calls.length = 0;
+    const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;
+    await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+      { task: 1, prompt: 'Paraphrase the question.', minWords: 20, skillFocus: 'Paraphrasing accuracy for a Task 1 introduction' },
+      answer,
+      'en',
+    );
+    assert.equal(calls.length, 1);
+    assert.match(calls[0].system, /Paraphrasing accuracy for a Task 1 introduction/, 'the named skill reaches the prompt');
+    assert.match(calls[0].system, /TARGETED SKILL DRILL/);
+    assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/, 'tells the model what not to penalise');
+  });
+
+  await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
+    calls.length = 0;
+    const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        // A non-compliant model that ignores "set band to null" — the server must still zero it out.
+        criteria: [
+          { criterion: 'Task Achievement', band: 7, comment: 'Accurate paraphrase.' },
+          { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'ok' },
+          { criterion: 'Lexical Resource', band: 6, comment: 'ok' },
+          { criterion: 'Grammatical Range & Accuracy', band: 7, comment: 'ok' },
+        ],
+      })),
+      { task: 1, prompt: 'Paraphrase the question.', minWords: 20, skillFocus: 'Paraphrasing accuracy for a Task 1 introduction' },
+      answer,
+      'en',
+    );
+    assert.equal(feedback.band, null, 'band must be forced to null for a skill drill regardless of what the model returned');
+    assert.ok(feedback.criteria.every((c) => c.band === null), 'every criterion band must be forced to null too');
+  });
+
+  await test('writing studio: omitting skillFocus is fully backward-compatible with the original full-task prompt and scoring', async () => {
+    calls.length = 0;
+    const answer = `Overall, electricity use rose in both cities. ${essay(60)}`;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        criteria: [
+          { criterion: 'Task Achievement', band: 6, comment: 'ok' },
+          { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'ok' },
+          { criterion: 'Lexical Resource', band: 6, comment: 'ok' },
+          { criterion: 'Grammatical Range & Accuracy', band: 6, comment: 'ok' },
+        ],
+      })),
+      { task: 1, prompt: 'Describe the chart.', minWords: 40 },
+      answer,
+      'en',
+    );
+    assert.match(calls[0].system, /UNDER the minimum|Assess ONE Academic Writing Task/, 'the original full-task system prompt is still used');
+    assert.ok(!calls[0].system.includes('TARGETED SKILL DRILL'), 'the skill-drill prompt must not leak into a normal task');
+    assert.equal(feedback.band, 6.0, 'a real band is still produced and kept when there is no skillFocus');
+  });
+
   console.log(`\n${passed} passed`);
 }
 void main();
