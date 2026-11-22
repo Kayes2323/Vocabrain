@@ -18,6 +18,7 @@ import {
   GraduationCap,
   Headphones,
   Home,
+  Radar,
   Landmark,
   Layers,
   Mic,
@@ -98,6 +99,7 @@ export const sectionKey = (id: string, field: 'title' | 'description' | 'highlig
 
 export const IELTS_SECTIONS: SectionDef[] = [
   { id: 'foundation', icon: Layers, href: '/ielts/foundation', status: 'available', phase: 2 },
+  { id: 'listening-lab', icon: Radar, href: '/ielts/listening', status: 'available', phase: 6 },
   { id: 'plan', icon: Target, href: '/ielts/plan', status: 'available', phase: 4 },
   { id: 'listening', icon: Headphones, href: '/ielts/practice/listening', status: 'available', phase: 2 },
   { id: 'reading', icon: BookText, href: '/ielts/reading', status: 'available', phase: 3 },
