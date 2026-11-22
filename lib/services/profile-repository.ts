@@ -65,6 +65,14 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       mistakes: [...(stored.writingStudio?.mistakes ?? [])],
       exams: [...(stored.writingStudio?.exams ?? [])],
     },
+    listening: {
+      ...base.listening,
+      ...stored.listening,
+      lessons: { ...stored.listening?.lessons },
+      skills: { ...stored.listening?.skills },
+      errors: { ...stored.listening?.errors },
+      days: { ...stored.listening?.days },
+    },
   };
 }
 

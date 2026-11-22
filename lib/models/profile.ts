@@ -504,7 +504,52 @@ export interface UserProfile {
   foundation: FoundationProgress;
   vocabFoundation: VocabFoundationProgress;
   writingStudio: WritingStudioProgress;
+  /** Mino Listening (Sound Gym etc.). See lib/listening/progress.ts for the pure engine that reads/writes it. */
+  listening: ListeningProgress;
   updatedAt: ISODate;
+}
+
+/** One Sound-Gym-style lesson's recorded progress. `score`/`best` stay unset while its stages have no real questions yet. */
+export interface ListeningLessonRecord {
+  stagesCompleted: string[];
+  attempts: number;
+  score?: number;
+  best?: number;
+  completedAt?: ISODate;
+  lastPracticedAt: ISODate;
+}
+
+export interface ListeningSkillStat {
+  attempts: number;
+  correct: number;
+  lastPracticedAt?: ISODate;
+}
+
+export interface ListeningErrorRecord {
+  count: number;
+  lastAt: ISODate;
+}
+
+export interface ListeningDayActivity {
+  minutesPracticed: number;
+  lessonsTouched: number;
+}
+
+export interface ListeningInProgress {
+  lessonId: string;
+  stageId: string;
+  stageIndex: number;
+}
+
+/** Mino Listening progress (brief §9: learner/skill/error level). See lib/listening/progress.ts. */
+export interface ListeningProgress {
+  lessons: Record<string, ListeningLessonRecord>;
+  /** Keyed by skill tag, e.g. "SG-01". */
+  skills: Record<string, ListeningSkillStat>;
+  /** Keyed by error tag code, e.g. "SEG-01". */
+  errors: Record<string, ListeningErrorRecord>;
+  days: Record<string, ListeningDayActivity>;
+  inProgress?: ListeningInProgress;
 }
 
 export function emptyProfile(userId: ID): UserProfile {
@@ -517,6 +562,7 @@ export function emptyProfile(userId: ID): UserProfile {
     foundation: { lessons: {}, errors: {}, concepts: {}, mistakes: [], days: {} },
     vocabFoundation: { discovered: {}, days: {} },
     writingStudio: { lessons: {}, practice: [], mistakes: [], exams: [] },
+    listening: { lessons: {}, skills: {}, errors: {}, days: {} },
     updatedAt: new Date().toISOString(),
   };
 }
