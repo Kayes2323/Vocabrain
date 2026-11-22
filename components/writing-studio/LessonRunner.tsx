@@ -5,10 +5,15 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Check, PartyPopper, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, StatusChip } from '@/components/ds';
+import { MinoMark } from '@/components/shell/MinoMark';
 import { minoReact } from '@/components/mino/Mino';
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { writingStudioFeedback } from '@/lib/ai/client';
 import { cn } from '@/lib/utils';
-import { CHART_DATASETS } from '@/lib/writing-studio/charts';
-import { checkEssay } from '@/lib/writing-studio/feedback';
+import { CHART_DATASETS, chartToTable } from '@/lib/writing-studio/charts';
+import { checkEssay, deriveScope, fromAI, fromLocal, type UnifiedFeedback } from '@/lib/writing-studio/feedback';
+import { recordLesson, recordMistakes } from '@/lib/writing-studio/progress';
 import type { Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
 import { MaterialPanel } from './MaterialPanel';
@@ -16,7 +21,7 @@ import { TrainerPanel } from './TrainerPanel';
 import { WSChart } from './WSChart';
 import { WritingEditor } from './WritingEditor';
 
-type Phase = 'learn' | 'write' | 'feedback' | 'done';
+type Phase = 'learn' | 'write' | 'assessing' | 'feedback' | 'done';
 
 function CheckBlock({
   question,
@@ -68,12 +73,14 @@ function CheckBlock({
  * Zone for the lesson's final task.
  */
 export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyHref: string }) {
+  const { locale } = useLocale();
+  const { updateProfile } = useProfile();
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('learn');
   const [checkAnswer, setCheckAnswer] = useState<number | null>(null);
   const [boardDone, setBoardDone] = useState(false);
   const [essay, setEssay] = useState('');
-  const [feedback, setFeedback] = useState<ReturnType<typeof checkEssay> | null>(null);
+  const [feedback, setFeedback] = useState<UnifiedFeedback | null>(null);
   const [submissions, setSubmissions] = useState(0);
 
   const step = lesson.steps[stepIndex];
@@ -95,13 +102,36 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   };
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
 
-  const scope = lesson.id === 'overview-writing' ? 'overview-only' : lesson.id === 'idea-development' ? 'paragraph-only' : 'full';
+  const scope = deriveScope(lesson);
 
-  const submit = () => {
-    const result = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope);
-    setFeedback(result);
+  const taskNum: 1 | 2 = lesson.task === 'task1' ? 1 : 2;
+
+  const submit = async () => {
+    const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope);
     setSubmissions((n) => n + 1);
+    setPhase('assessing');
+
+    const chart = lesson.finalPrompt.chartId ? CHART_DATASETS[lesson.finalPrompt.chartId] : undefined;
+    const res = await writingStudioFeedback(
+      {
+        task: taskNum,
+        prompt: `${lesson.finalPrompt.title}. ${lesson.finalPrompt.instructions}`,
+        minWords: lesson.finalPrompt.minWords,
+        chart: chart ? chartToTable(chart) : undefined,
+      },
+      essay,
+      locale === 'bn' ? 'bn' : 'en',
+    );
+    const unified = res.ok ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords) : fromLocal(local, res.error);
+    setFeedback(unified);
     setPhase('feedback');
+
+    const weakest = unified.criteria?.slice().sort((a, b) => (a.band ?? 9) - (b.band ?? 9))[0]?.criterion;
+    const mistakeRows = unified.mistakes.map((m) => ({ category: m.category ?? weakest ?? 'General', quote: m.quote, fix: m.fix, why: m.why }));
+    updateProfile((p) => ({
+      ...p,
+      writingStudio: recordMistakes(recordLesson(p.writingStudio, lesson.id, taskNum, unified.band), taskNum, unified.source, mistakeRows),
+    }));
   };
 
   if (phase === 'done') {
@@ -139,6 +169,16 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
             Practise this lesson again
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  if (phase === 'assessing') {
+    return (
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-16 text-center">
+        <MinoMark size="xl" thinking />
+        <p className="font-medium">Mino is reading your answer against the IELTS criteria…</p>
+        <p className="text-sm text-muted-foreground">This usually takes a few seconds.</p>
       </div>
     );
   }

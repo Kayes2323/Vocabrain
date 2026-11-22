@@ -1,5 +1,14 @@
 import type { ChartDataset } from './types';
 
+/** Turns a chart dataset into the plain table shape Mino's AI assessment takes as task data. */
+export function chartToTable(chart: ChartDataset): { caption: string; headers: string[]; rows: string[][] } {
+  return {
+    caption: chart.title,
+    headers: ['', ...chart.series.map((s) => s.name)],
+    rows: chart.categories.map((cat, i) => [cat, ...chart.series.map((s) => `${s.values[i]}${chart.unit}`)]),
+  };
+}
+
 /**
  * Sample Task 1 chart datasets for the prototype. Original, invented figures
  * — not from a real report and not Cambridge material — written to have a

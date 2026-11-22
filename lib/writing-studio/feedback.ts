@@ -32,6 +32,62 @@ export interface EssayFeedback {
   indicativeBand: number;
 }
 
+/**
+ * What the Feedback Zone actually renders. Either real feedback from Mino
+ * (AI, by criterion) or this prototype's local checks, when Mino's feedback
+ * isn't available (not signed in, rate-limited, or no provider configured).
+ * Both are honestly labelled in the UI — neither is a real IELTS score.
+ */
+export interface UnifiedFeedback {
+  source: 'ai' | 'local';
+  band: number | null;
+  wordCount: number;
+  minWords: number;
+  meetsLength: boolean;
+  criteria?: { criterion: string; band: number | null; comment: string }[];
+  strengths: string[];
+  mistakes: { category?: string; quote: string; fix: string; why: string }[];
+  suggestions: string[];
+  vocabulary?: { word: string; tip: string }[];
+  betterSentences?: { original: string; improved: string }[];
+  /** Set when Mino's real feedback was unavailable and this fell back to the local checks. */
+  fallbackReason?: import('@/lib/ai/types').MinoErrorCode;
+}
+
+export function fromLocal(e: EssayFeedback, fallbackReason?: UnifiedFeedback['fallbackReason']): UnifiedFeedback {
+  return {
+    source: 'local',
+    band: e.indicativeBand,
+    wordCount: e.wordCount,
+    minWords: e.minWords,
+    meetsLength: e.meetsLength,
+    strengths: e.strengths,
+    mistakes: e.mistakes,
+    suggestions: e.suggestions,
+    fallbackReason,
+  };
+}
+
+export function fromAI(
+  task: import('@/lib/ielts').TaskFeedback,
+  wordCount: number,
+  minWords: number,
+): UnifiedFeedback {
+  return {
+    source: 'ai',
+    band: task.band,
+    wordCount,
+    minWords,
+    meetsLength: wordCount >= minWords,
+    criteria: task.criteria,
+    strengths: task.strengths,
+    mistakes: task.mistakes.map((m) => ({ quote: m.quote, fix: m.fix, why: m.why })),
+    suggestions: task.actions,
+    vocabulary: task.vocabulary,
+    betterSentences: task.betterSentences,
+  };
+}
+
 const LINKERS = [
   'however', 'moreover', 'furthermore', 'in addition', 'as a result', 'for example', 'for instance',
   'because', 'although', 'even though', 'therefore', 'firstly', 'secondly', 'finally', 'overall',
@@ -248,6 +304,18 @@ export function checkEssay(
  * but real overlap check (shared significant words / shorter answer's
  * significant words), not an AI judgement.
  */
+/**
+ * Which local checks apply to a lesson's final task, derived from its
+ * minimum word count rather than hardcoded by lesson id — so every new
+ * lesson gets sensible local-fallback checks automatically. A short Task 1
+ * final task (<=60 words) is overview-only practice; a short Task 2 final
+ * task (<=120 words) is a single developed paragraph, not a full essay.
+ */
+export function deriveScope(lesson: { task: 'task1' | 'task2'; finalPrompt: { minWords: number } }): 'full' | 'overview-only' | 'paragraph-only' {
+  if (lesson.task === 'task1') return lesson.finalPrompt.minWords <= 60 ? 'overview-only' : 'full';
+  return lesson.finalPrompt.minWords <= 120 ? 'paragraph-only' : 'full';
+}
+
 export function overlapsHeavily(previous: string, current: string): boolean {
   const words = (s: string) => new Set(s.toLowerCase().match(/[a-z]{4,}/g) ?? []);
   const a = words(previous);

@@ -147,6 +147,40 @@ ${JSON_SHAPE}`;
   };
 }
 
+/**
+ * Mino Writing Studio: assesses one free-standing practice answer (a lesson's
+ * final task, a practice board submission, or one exam-mode task). Unlike
+ * `assessWriting`, the prompt/minWords/chart data come straight from the
+ * caller rather than a stored TestSession, since Writing Studio answers are
+ * not part of a formal mock test.
+ */
+export async function assessWritingStudioTask(
+  provider: AIProvider,
+  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] } },
+  answer: string,
+  language: 'en' | 'bn',
+): Promise<{ feedback: TaskFeedback; model: string }> {
+  const counted = countWords(answer);
+  const words = counted.words + counted.numbers;
+  const title = `Task ${input.task}`;
+  const names = WRITING_CRITERIA[input.task];
+  if (words < 15) {
+    return { feedback: emptyTask('writing-studio', title, names, language === 'bn' ? 'Assess করার মতো যথেষ্ট লেখা নেই।' : 'Not enough writing to assess.', words), model: 'none' };
+  }
+
+  const data = input.chart ? `\nTask data (${input.chart.caption}):\n${[input.chart.headers, ...input.chart.rows].map((r) => r.join(' | ')).join('\n')}` : '';
+  const system = `You are Mino, an experienced IELTS Writing coach who knows the examiner criteria. Assess ONE Academic Writing Task ${input.task} answer written as practice inside a teaching module (it may be a short overview or a single paragraph rather than a full essay — judge only what was asked for, never penalise length beyond the stated minimum).
+Criteria (use exactly these names): ${names.join(', ')}.
+The answer has ${words} words; the minimum is ${input.minWords}. ${words < input.minWords ? `It is UNDER the minimum: this must lower ${names[0]}.` : ''}
+${input.task === 1 ? 'Task 1: check for a clear overview, key features and accurate comparisons of the data; no opinions.' : 'Task 2: check the answer addresses every part of the question with a clear position, developed ideas and support.'}
+${CALIBRATION}
+${languageRule(language)}
+Quotes in "mistakes" and "betterSentences.original" MUST be copied exactly from the answer.
+${JSON_SHAPE}`;
+  const { data: ai, model } = await runJson(provider, system, `Task:\n${input.prompt}${data}\n\nStudent's answer:\n${answer}`);
+  return { feedback: clean(ai, names, answer, 'writing-studio', title, words), model };
+}
+
 export async function assessSpeaking(provider: AIProvider, test: PracticeTest, session: TestSession, language: 'en' | 'bn'): Promise<ProductiveFeedback> {
   const section = test.sections.speaking;
   if (!section) throw new MinoError('invalid_request', 'no speaking section');

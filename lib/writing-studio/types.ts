@@ -17,15 +17,12 @@ export const INDEPENDENCE_LABEL: Record<IndependenceLevel, string> = {
   4: 'Independent',
 };
 
-/** One row in a Task's module list (Dashboard/Academy overview). */
+/** One row in a Task's module list (Dashboard/Academy overview). Static curriculum metadata only — a student's real completion is looked up separately from their profile. */
 export interface ModuleSummary {
   id: string;
   number: number;
   title: string;
   description: string;
-  lessonsTotal: number;
-  /** Mock progress for the prototype. */
-  lessonsDone: number;
   /** If set, "Open" routes to this fully built lesson. Otherwise it opens a labelled content preview. */
   builtLessonId?: string;
 }

@@ -57,6 +57,14 @@ export function withProfileDefaults(userId: string, stored: Partial<UserProfile>
       discovered: { ...stored.vocabFoundation?.discovered },
       days: { ...stored.vocabFoundation?.days },
     },
+    writingStudio: {
+      ...base.writingStudio,
+      ...stored.writingStudio,
+      lessons: { ...stored.writingStudio?.lessons },
+      practice: [...(stored.writingStudio?.practice ?? [])],
+      mistakes: [...(stored.writingStudio?.mistakes ?? [])],
+      exams: [...(stored.writingStudio?.exams ?? [])],
+    },
   };
 }
 

@@ -6,13 +6,19 @@ import { Clock, RotateCcw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Callout, Panel, Section, StatusChip } from '@/components/ds';
+import { MinoMark } from '@/components/shell/MinoMark';
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { writingStudioFeedback } from '@/lib/ai/client';
+import { writingOverall } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
+import { CHART_DATASETS, chartToTable } from '@/lib/writing-studio/charts';
 import { EXAM_CONTENT } from '@/lib/writing-studio/content';
-import { checkEssay, type EssayFeedback } from '@/lib/writing-studio/feedback';
+import { checkEssay, fromAI, fromLocal, type UnifiedFeedback } from '@/lib/writing-studio/feedback';
+import { recordExam, recordMistakes } from '@/lib/writing-studio/progress';
 import type { ExamMode } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
 import { WSChart } from './WSChart';
-import { CHART_DATASETS } from '@/lib/writing-studio/charts';
 
 function formatClock(totalSeconds: number): string {
   const m = Math.floor(totalSeconds / 60);
@@ -27,30 +33,70 @@ function formatClock(totalSeconds: number): string {
  * once time is up or the student submits.
  */
 export function ExamShell({ mode }: { mode: ExamMode }) {
+  const { locale } = useLocale();
+  const { updateProfile } = useProfile();
   const tasks = mode === 'full' ? [EXAM_CONTENT.task1, EXAM_CONTENT.task2] : [EXAM_CONTENT[mode]];
   const totalMinutes = tasks.reduce((n, t) => n + t.minutes, 0);
   const [taskIndex, setTaskIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(Object.fromEntries(tasks.map((t) => [t.task, ''])));
   const [remaining, setRemaining] = useState(totalMinutes * 60);
+  const [assessing, setAssessing] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [results, setResults] = useState<Record<string, EssayFeedback> | null>(null);
+  const [results, setResults] = useState<Record<string, UnifiedFeedback> | null>(null);
   const latest = useRef(answers);
   latest.current = answers;
+  const finishing = useRef(false);
 
-  const finish = () => {
-    const out: Record<string, EssayFeedback> = {};
-    tasks.forEach((t) => { out[t.task] = checkEssay(latest.current[t.task] ?? '', t.minWords, t.task, 'full'); });
+  const finish = async () => {
+    if (finishing.current) return;
+    finishing.current = true;
+    setAssessing(true);
+    const out: Record<string, UnifiedFeedback> = {};
+    await Promise.all(
+      tasks.map(async (t) => {
+        const text = latest.current[t.task] ?? '';
+        const local = checkEssay(text, t.minWords, t.task, 'full');
+        const taskNum: 1 | 2 = t.task === 'task1' ? 1 : 2;
+        const chart = t.chartId ? CHART_DATASETS[t.chartId] : undefined;
+        const res = await writingStudioFeedback(
+          { task: taskNum, prompt: `${t.instructions} ${t.prompt}`, minWords: t.minWords, chart: chart ? chartToTable(chart) : undefined },
+          text,
+          locale === 'bn' ? 'bn' : 'en',
+        );
+        out[t.task] = res.ok ? fromAI(res.feedback, local.wordCount, t.minWords) : fromLocal(local, res.error);
+      }),
+    );
     setResults(out);
+    setAssessing(false);
     setSubmitted(true);
+
+    const t1 = mode !== 'task2' ? out[EXAM_CONTENT.task1.task]?.band ?? null : null;
+    const t2 = mode !== 'task1' ? out[EXAM_CONTENT.task2.task]?.band ?? null : null;
+    const overall = mode === 'full' ? writingOverall(t1, t2) : (t1 ?? t2);
+    updateProfile((p) => {
+      let next = recordExam(p.writingStudio, mode, t1, t2, overall ?? null);
+      tasks.forEach((t) => {
+        const taskNum: 1 | 2 = t.task === 'task1' ? 1 : 2;
+        const r = out[t.task];
+        const weakest = r.criteria?.slice().sort((a, b) => (a.band ?? 9) - (b.band ?? 9))[0]?.criterion;
+        next = recordMistakes(
+          next,
+          taskNum,
+          r.source,
+          r.mistakes.map((m) => ({ category: m.category ?? weakest ?? 'General', quote: m.quote, fix: m.fix, why: m.why })),
+        );
+      });
+      return { ...p, writingStudio: next };
+    });
   };
 
   useEffect(() => {
-    if (submitted) return;
+    if (submitted || assessing) return;
     const id = window.setInterval(() => {
       setRemaining((r) => {
         if (r <= 1) {
           window.clearInterval(id);
-          finish();
+          void finish();
           return 0;
         }
         return r - 1;
@@ -58,20 +104,39 @@ export function ExamShell({ mode }: { mode: ExamMode }) {
     }, 1000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted]);
+  }, [submitted, assessing]);
+
+  if (assessing) {
+    return (
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-24 text-center">
+        <MinoMark size="xl" thinking />
+        <p className="font-medium">Mino is assessing your {tasks.length > 1 ? 'answers' : 'answer'}…</p>
+        <p className="text-sm text-muted-foreground">This usually takes under a minute.</p>
+      </div>
+    );
+  }
 
   if (submitted && results) {
-    const overall = tasks.length > 1 ? (results[tasks[0].task].indicativeBand + results[tasks[1].task].indicativeBand) / 2 : results[tasks[0].task].indicativeBand;
+    const t1 = mode !== 'task2' ? results[EXAM_CONTENT.task1.task]?.band ?? null : null;
+    const t2 = mode !== 'task1' ? results[EXAM_CONTENT.task2.task]?.band ?? null : null;
+    const overall = mode === 'full' ? writingOverall(t1, t2) : (t1 ?? t2);
     return (
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-8">
         <header className="space-y-1.5 text-center">
           <p className="text-sm text-muted-foreground">Exam Simulation · {mode === 'full' ? 'Full Writing test (60 min)' : tasks[0].title}</p>
-          <h1 className="text-3xl font-semibold">Indicative estimate: {Math.round(overall * 2) / 2}</h1>
+          <h1 className="text-3xl font-semibold">Indicative estimate: {overall !== null ? overall.toFixed(1) : '—'}</h1>
           <p className="text-sm text-muted-foreground">Unofficial and indicative — a practice tool, not a real examiner's score.</p>
         </header>
         {tasks.map((t) => (
           <Section key={t.task} title={t.title} variant="label">
-            <FeedbackPanel feedback={results[t.task]} onRetry={() => { setSubmitted(false); setRemaining(totalMinutes * 60); }} />
+            <FeedbackPanel
+              feedback={results[t.task]}
+              onRetry={() => {
+                setSubmitted(false);
+                setRemaining(totalMinutes * 60);
+                finishing.current = false;
+              }}
+            />
           </Section>
         ))}
         <Button asChild variant="outline" className="w-full">

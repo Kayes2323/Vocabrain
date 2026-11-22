@@ -442,6 +442,55 @@ export interface VocabFoundationProgress {
   session?: VocabSession;
 }
 
+/** One completed Mino Writing Studio lesson (learn mode, not a practice board). */
+export interface WritingStudioLessonRecord {
+  task: 1 | 2;
+  completedAt: ISODate;
+  attempts: number;
+  lastBand: number | null;
+  bestBand: number | null;
+}
+
+/** One mistake Mino (or this prototype's local checks) found in a Writing Studio answer. */
+export interface WritingStudioMistakeRecord {
+  at: ISODate;
+  task: 1 | 2;
+  source: 'ai' | 'local';
+  category: string;
+  quote: string;
+  fix: string;
+  why: string;
+}
+
+export type WritingStudioExamMode = 'task1' | 'task2' | 'full';
+
+/** One finished Exam Simulation attempt. */
+export interface WritingStudioExamRecord {
+  at: ISODate;
+  mode: WritingStudioExamMode;
+  task1Band: number | null;
+  task2Band: number | null;
+  overallBand: number | null;
+}
+
+/** One finished practice-board session (Chart Analysis Board / Idea Development Trainer). */
+export interface WritingStudioPracticeRecord {
+  at: ISODate;
+  task: 1 | 2;
+  kind: 'chart-board' | 'idea-board';
+}
+
+/** Mino Writing Studio progress. Stored in the profile (users/{uid}.app), like Foundation. */
+export interface WritingStudioProgress {
+  lessons: Record<string, WritingStudioLessonRecord>;
+  /** Most recent practice sessions, newest last (capped). */
+  practice: WritingStudioPracticeRecord[];
+  /** Most recent mistakes, newest last (capped). */
+  mistakes: WritingStudioMistakeRecord[];
+  /** Most recent exam attempts, newest last (capped). */
+  exams: WritingStudioExamRecord[];
+}
+
 export interface UserProfile {
   userId: ID;
   displayName?: string;
@@ -454,6 +503,7 @@ export interface UserProfile {
   study: StudyProgress;
   foundation: FoundationProgress;
   vocabFoundation: VocabFoundationProgress;
+  writingStudio: WritingStudioProgress;
   updatedAt: ISODate;
 }
 
@@ -466,6 +516,7 @@ export function emptyProfile(userId: ID): UserProfile {
     study: { completedTasks: {}, mockTestsCompleted: 0, days: {} },
     foundation: { lessons: {}, errors: {}, concepts: {}, mistakes: [], days: {} },
     vocabFoundation: { discovered: {}, days: {} },
+    writingStudio: { lessons: {}, practice: [], mistakes: [], exams: [] },
     updatedAt: new Date().toISOString(),
   };
 }

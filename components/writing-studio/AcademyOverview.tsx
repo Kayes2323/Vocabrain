@@ -1,9 +1,13 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, BarChart3, BookOpenCheck, ClipboardList, GraduationCap, RotateCcw, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, RowGroup, Section, StatusChip } from '@/components/ds';
+import { useProfile } from '@/components/providers/ProfileProvider';
 import { cn } from '@/lib/utils';
-import type { AcademyStats, ModuleSummary, TaskId, VisualTrainingArea } from '@/lib/writing-studio/types';
+import { deriveAcademyStats } from '@/lib/writing-studio/progress';
+import type { ModuleSummary, TaskId, VisualTrainingArea } from '@/lib/writing-studio/types';
 import { LevelBadge } from './LevelBadge';
 
 const TASK_META: Record<TaskId, { label: string; tagline: string; exam: string }> = {
@@ -15,16 +19,17 @@ export function AcademyOverview({
   task,
   modules,
   visuals,
-  stats,
 }: {
   task: TaskId;
   modules: ModuleSummary[];
   visuals?: VisualTrainingArea[];
-  stats: AcademyStats;
 }) {
+  const { profile } = useProfile();
+  const stats = deriveAcademyStats(profile?.writingStudio ?? { lessons: {}, practice: [], mistakes: [], exams: [] }, task, modules);
   const meta = TASK_META[task];
   const base = `/ielts/writing-studio/${task}`;
   const builtModule = modules.find((m) => m.builtLessonId);
+  const completedLessonIds = new Set(Object.keys(profile?.writingStudio.lessons ?? {}));
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -66,22 +71,25 @@ export function AcademyOverview({
 
       <Section title="Learning modules" variant="label">
         <RowGroup>
-          {modules.map((m) => (
-            <Link
-              key={m.id}
-              href={`${base}/lesson/${m.builtLessonId ?? m.id}`}
-              className="flex min-h-16 w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-muted/60"
-            >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">{m.number}</span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-medium leading-snug">{m.title}</p>
-                <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">{m.description}</p>
-              </div>
-              <span className={cn('shrink-0 text-xs font-medium tabular-nums', m.lessonsDone === m.lessonsTotal ? 'text-success' : 'text-muted-foreground')}>
-                {m.lessonsDone}/{m.lessonsTotal}
-              </span>
-            </Link>
-          ))}
+          {modules.map((m) => {
+            const done = !!m.builtLessonId && completedLessonIds.has(m.builtLessonId);
+            return (
+              <Link
+                key={m.id}
+                href={`${base}/lesson/${m.builtLessonId ?? m.id}`}
+                className="flex min-h-16 w-full items-center gap-3.5 px-4 py-3 text-left transition-colors hover:bg-muted/60"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">{m.number}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium leading-snug">{m.title}</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">{m.description}</p>
+                </div>
+                <span className={cn('shrink-0 text-xs font-medium', done ? 'text-success' : 'text-muted-foreground')}>
+                  {done ? 'Done' : m.builtLessonId ? 'Start' : 'Preview'}
+                </span>
+              </Link>
+            );
+          })}
         </RowGroup>
       </Section>
 

@@ -1,21 +1,34 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowRight, ClipboardList, GraduationCap, RotateCcw, Sparkles, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
-import { ACADEMY_STATS, MISTAKE_CATEGORIES, TASK1_MODULES, TASK2_MODULES } from '@/lib/writing-studio/content';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import type { WritingStudioProgress } from '@/lib/models';
+import { TASK1_MODULES, TASK2_MODULES } from '@/lib/writing-studio/content';
 import { getLesson } from '@/lib/writing-studio/lessons';
+import { deriveAcademyStats, deriveMistakeCategories } from '@/lib/writing-studio/progress';
 import { LevelBadge } from '@/components/writing-studio/LevelBadge';
+
+const EMPTY_PROGRESS: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
 
 /** Mino Writing Studio — Dashboard (spec §4). A proper home screen, not a chat window. */
 export default function WritingStudioDashboard() {
-  const task1 = ACADEMY_STATS.task1;
-  const task2 = ACADEMY_STATS.task2;
+  const { profile } = useProfile();
+  const progress = profile?.writingStudio ?? EMPTY_PROGRESS;
+  const task1 = deriveAcademyStats(progress, 'task1', TASK1_MODULES);
+  const task2 = deriveAcademyStats(progress, 'task2', TASK2_MODULES);
   const totalLessons = task1.lessonsCompleted + task2.lessonsCompleted;
   const totalPractice = task1.practiceSessions + task2.practiceSessions;
-  const topMistakes = [...MISTAKE_CATEGORIES].sort((a, b) => b.occurrences - a.occurrences).slice(0, 3);
+  const topMistakes = deriveMistakeCategories(progress, { task1: TASK1_MODULES, task2: TASK2_MODULES }, 3);
 
-  const lastLesson = getLesson('overview-writing')!;
+  const builtLessons = [...TASK1_MODULES, ...TASK2_MODULES].filter((m) => m.builtLessonId);
+  const nextBuilt = builtLessons.find((m) => !progress.lessons[m.builtLessonId!]) ?? builtLessons[builtLessons.length - 1];
+  const lastLesson = getLesson(nextBuilt?.builtLessonId ?? 'overview-writing')!;
+  const lastLessonTask = lastLesson.task === 'task1' ? 'task1' : 'task2';
+  const lessonDone = !!progress.lessons[lastLesson.id];
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -25,10 +38,11 @@ export default function WritingStudioDashboard() {
         <div className="flex items-start gap-3">
           <MinoMark size="lg" alive />
           <div className="space-y-1">
-            <p className="font-semibold">Welcome back</p>
+            <p className="font-semibold">{totalLessons === 0 ? 'Welcome' : 'Welcome back'}</p>
             <p className="text-[15px] text-foreground/90">
-              You're building steady habits in both tasks. Today, let's keep working on turning a chart into a focused
-              overview — it's the single biggest Task 1 score-changer for where you are now.
+              {totalLessons === 0
+                ? "Let's start with your first lesson — turning a chart into a focused overview is one of the biggest Task 1 score-changers."
+                : "You're building steady habits in both tasks. Pick up where you left off, or revisit a lesson Mino has already marked done."}
             </p>
           </div>
         </div>
@@ -37,13 +51,13 @@ export default function WritingStudioDashboard() {
       <Section title="Continue learning" variant="label">
         <Panel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">Task 1 Academy · Overview Mastery</p>
+            <p className="text-xs font-medium text-muted-foreground">{lastLessonTask === 'task1' ? 'Task 1 Academy' : 'Task 2 Academy'}</p>
             <p className="font-semibold">{lastLesson.title}</p>
-            <ProgressBar value={20} label="Overview Mastery module progress" size="sm" className="mt-1 max-w-56" />
+            <ProgressBar value={lessonDone ? 100 : 0} label="Lesson progress" size="sm" className="mt-1 max-w-56" />
           </div>
           <Button asChild className="shrink-0">
-            <Link href="/ielts/writing-studio/task1/lesson/overview-writing">
-              Continue lesson <ArrowRight />
+            <Link href={`/ielts/writing-studio/${lastLessonTask}/lesson/${lastLesson.id}`}>
+              {lessonDone ? 'Practise again' : 'Continue lesson'} <ArrowRight />
             </Link>
           </Button>
         </Panel>
@@ -104,9 +118,13 @@ export default function WritingStudioDashboard() {
           <div className="space-y-1.5 border-t pt-3">
             <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Recurring mistakes to watch</p>
             <div className="flex flex-wrap gap-1.5">
-              {topMistakes.map((m) => (
-                <StatusChip key={m.id} tone="warning">{m.label} · {m.occurrences}×</StatusChip>
-              ))}
+              {topMistakes.length > 0 ? (
+                topMistakes.map((m) => (
+                  <StatusChip key={m.id} tone="warning">{m.label} · {m.occurrences}×</StatusChip>
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">Finish a lesson and Mino will start tracking your recurring mistakes here.</p>
+              )}
             </div>
           </div>
           <div className="flex items-center justify-between border-t pt-3">
@@ -119,8 +137,9 @@ export default function WritingStudioDashboard() {
       <Panel className="flex items-start gap-2.5 text-sm text-muted-foreground">
         <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" />
         <p>
-          This Studio is a prototype under review. Stats and some content here use realistic sample data rather than your
-          real history, and feedback is a local practice check, not an official IELTS assessment.
+          Stats above are your real history, saved to your account. Feedback comes from Mino's AI assessment against the
+          public IELTS criteria when it's available, or a local practice check otherwise — either way, it's a practice
+          estimate, never an official IELTS score. Some modules are still being built; those open an honest preview.
         </p>
       </Panel>
     </div>
