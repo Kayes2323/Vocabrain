@@ -231,9 +231,14 @@ export function checkEssay(
         fix: 'Remove the specific figure here and keep this sentence about the overall pattern instead.',
       });
     } else if (scope === 'introduction-only') {
-      if (hasNumber) mistakes.push({
+      // An introduction legitimately restates the question's own dates ("in 2010 and
+      // 2023") and measurement word ("percentage"), so neither counts as a data figure:
+      // only a non-year figure (a decimal or a number of two or more digits) or a "%" sign does.
+      const withoutYears = clean.replace(/\b(?:1[5-9]|20)\d{2}\b/g, '');
+      const figure = withoutYears.match(/\b\d+\.\d+\b|\b\d{2,}\b/)?.[0] ?? (withoutYears.includes('%') ? '%' : '');
+      if (figure) mistakes.push({
         category: 'Task response',
-        quote: clean.match(/\b\d+(\.\d+)?\s?%?\b/)?.[0] ?? '',
+        quote: figure,
         why: 'An introduction should only paraphrase the question — specific figures belong in the body paragraphs, not here.',
         fix: 'Remove the specific figure here and keep this sentence focused on restating the task accurately.',
       });

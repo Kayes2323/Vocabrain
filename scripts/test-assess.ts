@@ -216,6 +216,21 @@ async function main() {
     assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures/);
   });
 
+  await test('writing studio: an introduction-only drill asks the model to judge genuine paraphrase vs copying and accepts restated dates', async () => {
+    calls.length = 0;
+    await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+      { task: 1, prompt: 'Write an accurate introduction.', minWords: 18, skillFocus: 'Task 1 introduction paraphrasing accuracy', checkScope: 'introduction-only' },
+      'The bar chart compares the proportions of commuters travelling by five different forms of transport in one city in 2010 and 2023.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 introduction paraphrasing accuracy/);
+    assert.match(sys, /genuine paraphrase or mostly the question's own wording copied back/);
+    assert.match(sys, /Restating the question's own dates is correct, not an added figure/);
+    assert.match(sys, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/);
+  });
+
   await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
     calls.length = 0;
     const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;
