@@ -3,6 +3,7 @@
  * Run: npx tsx scripts/test-visual-information.ts */
 import assert from 'node:assert/strict';
 import { CHART_DATASETS } from '../lib/writing-studio/charts';
+import { revealTask } from '../lib/writing-studio/chart-board';
 import { checkEssay, deriveScope } from '../lib/writing-studio/feedback';
 import { getLesson } from '../lib/writing-studio/lessons';
 import { visualInformationLesson as lesson } from '../lib/writing-studio/lessons/visual-information';
@@ -242,6 +243,42 @@ test('a skill-drill attempt (band=null) completes the lesson without touching th
   assert.ok(after.lessons[lesson.id].completedAt);
   assert.equal(after.lessons['task1-full-practice'].bestBand, 6.5);
   assert.equal(after.lessons['task1-full-practice'].lastBand, 6.5);
+});
+
+// ---------------------------------------------------------------- chart-board completion
+
+test('chart-board: completion fires only when the final unchecked task is revealed', () => {
+  let revealed: Record<string, boolean> = {};
+  const fired: boolean[] = [];
+  for (const id of ['a', 'b', 'c']) {
+    const r = revealTask(revealed, id, 3);
+    revealed = r.next;
+    fired.push(r.completedNow);
+  }
+  assert.deepEqual(fired, [false, false, true]);
+});
+test('chart-board: rechecking an already-revealed task never fires completion again, before or after the end', () => {
+  let revealed: Record<string, boolean> = {};
+  for (const id of ['a', 'b', 'c']) revealed = revealTask(revealed, id, 3).next;
+  for (const id of ['a', 'c', 'c']) {
+    const r = revealTask(revealed, id, 3);
+    assert.equal(r.completedNow, false, id);
+    assert.equal(r.next, revealed, 'state object is unchanged');
+  }
+  const mid = revealTask(revealTask({}, 'a', 3).next, 'a', 3);
+  assert.equal(mid.completedNow, false);
+  assert.deepEqual(mid.next, { a: true });
+});
+test('chart-board: the lesson\'s six-task board completes on exactly the sixth distinct reveal', () => {
+  const m = lesson.steps.find((s) => s.id === 'guided-analysis')!.material;
+  assert.ok(m && m.type === 'chart-board');
+  let revealed: Record<string, boolean> = {};
+  const done = m.tasks.map((t) => {
+    const r = revealTask(revealed, t.id, m.tasks.length);
+    revealed = r.next;
+    return r.completedNow;
+  });
+  assert.deepEqual(done, [false, false, false, false, false, true]);
 });
 
 console.log(`\n${passed} passed`);

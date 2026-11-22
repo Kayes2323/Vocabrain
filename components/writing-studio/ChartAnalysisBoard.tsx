@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Check, ChevronRight, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Panel, StatusChip } from '@/components/ds';
 import { cn } from '@/lib/utils';
+import { revealTask } from '@/lib/writing-studio/chart-board';
 import type { ChartBoardTask, ChartDataset } from '@/lib/writing-studio/types';
 import { WSChart } from './WSChart';
 
@@ -24,7 +25,7 @@ export function ChartAnalysisBoard({
 }: {
   dataset: ChartDataset;
   tasks: ChartBoardTask[];
-  /** Called once every task has been checked at least once. */
+  /** Called exactly once, when the last previously-unchecked task is revealed. */
   onComplete?: () => void;
   /** Used when embedded inside a lesson step, to keep the board shorter. */
   compact?: boolean;
@@ -36,13 +37,19 @@ export function ChartAnalysisBoard({
   const checkedCount = Object.keys(revealed).length;
   const allDone = checkedCount >= ordered.length;
 
+  // Mirrors `revealed` synchronously so a fast double-click on the last task cannot
+  // read stale state and report completion twice.
+  const revealedRef = useRef<Record<string, boolean>>({});
+
   const reveal = (id: string) => {
     // onComplete sets state in the parent (LessonRunner), so it must run in the event
     // handler, not inside a setState updater — React warns about updating another
     // component while rendering, and (in StrictMode) the updater can run twice.
-    const next = { ...revealed, [id]: true };
+    const { next, completedNow } = revealTask(revealedRef.current, id, ordered.length);
+    if (next === revealedRef.current) return;
+    revealedRef.current = next;
     setRevealed(next);
-    if (Object.keys(next).length >= ordered.length) onComplete?.();
+    if (completedNow) onComplete?.();
   };
 
   return (
