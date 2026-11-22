@@ -1,5 +1,5 @@
 export * from './model';
 export * from './modules';
-export * from './parts';
-export * from './errors';
+export * from './error-tags';
 export * from './audio-manifest';
+export * from './progress';
