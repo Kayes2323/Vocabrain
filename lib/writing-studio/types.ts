@@ -127,6 +127,21 @@ export interface FinalPrompt {
   minWords: number;
   /** Reference chart id, when the final task needs one rendered alongside the editor. */
   chartId?: string;
+  /**
+   * Set when this final task is a short, targeted skill drill (e.g. "Paraphrasing
+   * accuracy for a Task 1 introduction") rather than a full Task 1/2 response.
+   * When set, the Feedback Zone evaluates this named skill and avoids presenting
+   * a number that looks like a full-task IELTS band.
+   */
+  skillFocus?: string;
+  /**
+   * Overrides deriveScope()'s word-count guess for which local checks apply,
+   * for a final task that guess would misjudge (e.g. an introduction-only
+   * task, which must not be checked for an overview sentence or figures —
+   * those belong in later parts of a response). Leave unset for a normal
+   * full/overview/paragraph task; deriveScope() infers it from minWords.
+   */
+  checkScope?: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only';
 }
 
 export interface Lesson {

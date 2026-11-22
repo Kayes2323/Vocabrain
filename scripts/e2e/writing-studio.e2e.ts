@@ -26,7 +26,9 @@ async function main() {
     await page.goto(BASE + '/ielts/writing-studio/task1/lesson/task1-understanding', { waitUntil: 'load' });
     await page.getByText('Understanding IELTS Writing Task 1').first().waitFor({ timeout: 60_000 });
 
-    for (let i = 0; i < 10; i++) {
+    // Lesson 01 has more teaching steps than the other built lessons; give the
+    // walk-through loop enough iterations to reach the final writing task.
+    for (let i = 0; i < 20; i++) {
       const next = page.getByRole('button', { name: /^(Continue|Start writing)$/ });
       if (!(await next.count())) break;
       if (await next.isDisabled()) {
@@ -45,8 +47,8 @@ async function main() {
     await editor.fill(essay);
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
 
-    await page.getByText(/Mino's assessment|Local practice check/).first().waitFor({ timeout: 60_000 });
-    check('lesson: feedback panel appears with an honest source label (AI or local fallback)', true);
+    await page.getByText(/Mino's assessment|Local practice check|Skill check/).first().waitFor({ timeout: 60_000 });
+    check('lesson: feedback panel appears with an honest source label (AI, local fallback, or skill check)', true);
     await shot(page, 'ws-lesson-feedback');
 
     await page.getByRole('button', { name: 'Continue', exact: true }).click();

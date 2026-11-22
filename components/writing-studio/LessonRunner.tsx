@@ -118,19 +118,32 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         prompt: `${lesson.finalPrompt.title}. ${lesson.finalPrompt.instructions}`,
         minWords: lesson.finalPrompt.minWords,
         chart: chart ? chartToTable(chart) : undefined,
+        skillFocus: lesson.finalPrompt.skillFocus,
       },
       essay,
       locale === 'bn' ? 'bn' : 'en',
     );
-    const unified = res.ok ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords) : fromLocal(local, res.error);
+    const unified = res.ok
+      ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords, lesson.finalPrompt.skillFocus)
+      : fromLocal(local, res.error, lesson.finalPrompt.skillFocus);
     setFeedback(unified);
     setPhase('feedback');
 
     const weakest = unified.criteria?.slice().sort((a, b) => (a.band ?? 9) - (b.band ?? 9))[0]?.criterion;
     const mistakeRows = unified.mistakes.map((m) => ({ category: m.category ?? weakest ?? 'General', quote: m.quote, fix: m.fix, why: m.why }));
+    // A skill drill (lesson.finalPrompt.skillFocus set) is never a full Task 1/2
+    // response, so it must never write an IELTS band into the student's lesson
+    // progress — that would silently contaminate bestBand/lastBand and every
+    // trend/independence calculation derived from them. Lesson completion and
+    // attempt counting still happen; only the band is withheld.
     updateProfile((p) => ({
       ...p,
-      writingStudio: recordMistakes(recordLesson(p.writingStudio, lesson.id, taskNum, unified.band), taskNum, unified.source, mistakeRows),
+      writingStudio: recordMistakes(
+        recordLesson(p.writingStudio, lesson.id, taskNum, lesson.finalPrompt.skillFocus ? null : unified.band),
+        taskNum,
+        unified.source,
+        mistakeRows,
+      ),
     }));
   };
 
@@ -214,7 +227,12 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
             <Panel className="space-y-2">
               <p className="font-semibold">{lesson.finalPrompt.title}</p>
               <p className="text-[15px] text-muted-foreground">{lesson.finalPrompt.instructions}</p>
-              <StatusChip>Minimum {lesson.finalPrompt.minWords} words</StatusChip>
+              {/* A skillFocus drill (e.g. an introduction-only paraphrase exercise) isn't
+                  a full Task response — its word count is a guideline, not a hard
+                  minimum, so it must not be worded as one. */}
+              <StatusChip>
+                {lesson.finalPrompt.skillFocus ? `Suggested length: around ${lesson.finalPrompt.minWords} words` : `Minimum ${lesson.finalPrompt.minWords} words`}
+              </StatusChip>
             </Panel>
             {chart && (
               <Panel className="space-y-2">

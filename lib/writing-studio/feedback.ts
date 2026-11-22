@@ -52,9 +52,16 @@ export interface UnifiedFeedback {
   betterSentences?: { original: string; improved: string }[];
   /** Set when Mino's real feedback was unavailable and this fell back to the local checks. */
   fallbackReason?: import('@/lib/ai/types').MinoErrorCode;
+  /**
+   * Set when this answer was a short skill drill, not a full Task 1/2
+   * response (from the lesson's finalPrompt.skillFocus). The Feedback Zone
+   * uses this to show a skill-check verdict instead of a number that looks
+   * like a full-task IELTS band.
+   */
+  skillFocus?: string;
 }
 
-export function fromLocal(e: EssayFeedback, fallbackReason?: UnifiedFeedback['fallbackReason']): UnifiedFeedback {
+export function fromLocal(e: EssayFeedback, fallbackReason?: UnifiedFeedback['fallbackReason'], skillFocus?: string): UnifiedFeedback {
   return {
     source: 'local',
     band: e.indicativeBand,
@@ -65,6 +72,7 @@ export function fromLocal(e: EssayFeedback, fallbackReason?: UnifiedFeedback['fa
     mistakes: e.mistakes,
     suggestions: e.suggestions,
     fallbackReason,
+    skillFocus,
   };
 }
 
@@ -72,6 +80,7 @@ export function fromAI(
   task: import('@/lib/ielts').TaskFeedback,
   wordCount: number,
   minWords: number,
+  skillFocus?: string,
 ): UnifiedFeedback {
   return {
     source: 'ai',
@@ -85,6 +94,7 @@ export function fromAI(
     suggestions: task.actions,
     vocabulary: task.vocabulary,
     betterSentences: task.betterSentences,
+    skillFocus,
   };
 }
 
@@ -139,7 +149,7 @@ export function checkEssay(
   text: string,
   minWords: number,
   kind: 'task1' | 'task2',
-  scope: 'full' | 'overview-only' | 'paragraph-only' = 'full',
+  scope: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' = 'full',
 ): EssayFeedback {
   const clean = text.trim();
   const wordCount = countWords(clean);
@@ -152,32 +162,49 @@ export function checkEssay(
   const suggestions: string[] = [];
 
   const meetsLength = wordCount >= minWords;
-  if (meetsLength) strengths.push(`You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
-  else mistakes.push({
-    category: 'Task response',
-    quote: `${wordCount} words`,
-    why: `Under ${minWords} words usually means an idea is underdeveloped, which costs marks for Task Achievement/Response.`,
-    fix: `Add roughly ${minWords - wordCount} more words — develop one point with an example rather than starting a new idea.`,
-  });
+  if (meetsLength) {
+    strengths.push(scope === 'introduction-only' ? `You wrote ${wordCount} words — around the suggested length for this exercise.` : `You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
+  } else if (scope === 'introduction-only') {
+    // A short introduction-only drill asks for one or two sentences, not a developed
+    // paragraph — being under the suggested length is not a fault here, so this is a
+    // neutral note, never a "Task response" mistake implying the answer is wrong.
+    suggestions.push(`Suggested length for this exercise: around ${minWords} words — not a strict requirement, as long as the paraphrase is accurate.`);
+  } else {
+    mistakes.push({
+      category: 'Task response',
+      quote: `${wordCount} words`,
+      why: `Under ${minWords} words usually means an idea is underdeveloped, which costs marks for Task Achievement/Response.`,
+      fix: `Add roughly ${minWords - wordCount} more words — develop one point with an example rather than starting a new idea.`,
+    });
+  }
 
-  const linkerHits = LINKERS.filter((l) => lower.includes(l));
-  if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
-  else mistakes.push({
-    category: 'Coherence & cohesion',
-    quote: sentences[0] ?? clean.slice(0, 60),
-    why: 'Few or no linking words were found, so ideas can read as a list rather than a connected argument.',
-    fix: 'Open at least two sentences with a linker such as "However,", "As a result," or "For example,".',
-  });
+  // A one-or-two-sentence introduction-only drill is too short to expect two
+  // linking words from — that check belongs to a full response or paragraph.
+  let linkerHits: string[] = [];
+  if (scope !== 'introduction-only') {
+    linkerHits = LINKERS.filter((l) => lower.includes(l));
+    if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
+    else mistakes.push({
+      category: 'Coherence & cohesion',
+      quote: sentences[0] ?? clean.slice(0, 60),
+      why: 'Few or no linking words were found, so ideas can read as a list rather than a connected argument.',
+      fix: 'Open at least two sentences with a linker such as "However,", "As a result," or "For example,".',
+    });
+  }
 
   if (kind === 'task1') {
-    const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
-    if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
-    else mistakes.push({
-      category: 'Task response',
-      quote: paragraphs[1]?.slice(0, 60) ?? clean.slice(0, 60),
-      why: 'No sentence clearly stands back and summarises the main trend(s) — Task 1 needs a dedicated overview, not just a list of numbers.',
-      fix: 'Add a short paragraph that starts "Overall, ..." and names the one or two biggest patterns before the detail.',
-    });
+    // An introduction-only task (e.g. a paraphrase drill) should NOT contain an
+    // overview sentence yet — that belongs to a later, separate part of a response.
+    if (scope !== 'introduction-only') {
+      const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
+      if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
+      else mistakes.push({
+        category: 'Task response',
+        quote: paragraphs[1]?.slice(0, 60) ?? clean.slice(0, 60),
+        why: 'No sentence clearly stands back and summarises the main trend(s) — Task 1 needs a dedicated overview, not just a list of numbers.',
+        fix: 'Add a short paragraph that starts "Overall, ..." and names the one or two biggest patterns before the detail.',
+      });
+    }
     const hasNumber = /\d/.test(clean) || /per\s?cent|percent|%/.test(lower);
     if (scope === 'overview-only') {
       if (hasNumber) mistakes.push({
@@ -185,6 +212,13 @@ export function checkEssay(
         quote: clean.match(/\b\d+(\.\d+)?\s?%?\b/)?.[0] ?? '',
         why: 'An overview should stay at the level of general trends and the single most striking feature — individual figures belong in the body paragraphs.',
         fix: 'Remove the specific figure here and keep this sentence about the overall pattern instead.',
+      });
+    } else if (scope === 'introduction-only') {
+      if (hasNumber) mistakes.push({
+        category: 'Task response',
+        quote: clean.match(/\b\d+(\.\d+)?\s?%?\b/)?.[0] ?? '',
+        why: 'An introduction should only paraphrase the question — specific figures belong in the body paragraphs, not here.',
+        fix: 'Remove the specific figure here and keep this sentence focused on restating the task accurately.',
       });
     } else if (!hasNumber) {
       mistakes.push({
@@ -282,8 +316,11 @@ export function checkEssay(
 
   // Indicative band: start mid, nudge for each signal. Deliberately coarse.
   let band = 6.0;
-  band += meetsLength ? 0.5 : -1;
-  band += linkerHits.length >= 2 ? 0.5 : -0.5;
+  // Being under the suggested (non-strict) length is not a fault for an introduction-only
+  // drill, so it must not drag the band down the way a real under-length response does.
+  if (scope === 'introduction-only') band += meetsLength ? 0.5 : 0;
+  else band += meetsLength ? 0.5 : -1;
+  if (scope !== 'introduction-only') band += linkerHits.length >= 2 ? 0.5 : -0.5;
   band -= mistakes.filter((m) => m.category === 'Grammar' || m.category === 'Mechanics').length * 0.25;
   band += strengths.length >= 3 ? 0.5 : 0;
 
@@ -311,7 +348,11 @@ export function checkEssay(
  * final task (<=60 words) is overview-only practice; a short Task 2 final
  * task (<=120 words) is a single developed paragraph, not a full essay.
  */
-export function deriveScope(lesson: { task: 'task1' | 'task2'; finalPrompt: { minWords: number } }): 'full' | 'overview-only' | 'paragraph-only' {
+export function deriveScope(lesson: {
+  task: 'task1' | 'task2';
+  finalPrompt: { minWords: number; checkScope?: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' };
+}): 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' {
+  if (lesson.finalPrompt.checkScope) return lesson.finalPrompt.checkScope;
   if (lesson.task === 'task1') return lesson.finalPrompt.minWords <= 60 ? 'overview-only' : 'full';
   return lesson.finalPrompt.minWords <= 120 ? 'paragraph-only' : 'full';
 }

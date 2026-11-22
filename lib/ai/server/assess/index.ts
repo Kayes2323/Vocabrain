@@ -156,7 +156,7 @@ ${JSON_SHAPE}`;
  */
 export async function assessWritingStudioTask(
   provider: AIProvider,
-  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] } },
+  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string },
   answer: string,
   language: 'en' | 'bn',
 ): Promise<{ feedback: TaskFeedback; model: string }> {
@@ -169,7 +169,18 @@ export async function assessWritingStudioTask(
   }
 
   const data = input.chart ? `\nTask data (${input.chart.caption}):\n${[input.chart.headers, ...input.chart.rows].map((r) => r.join(' | ')).join('\n')}` : '';
-  const system = `You are Mino, an experienced IELTS Writing coach who knows the examiner criteria. Assess ONE Academic Writing Task ${input.task} answer written as practice inside a teaching module (it may be a short overview or a single paragraph rather than a full essay — judge only what was asked for, never penalise length beyond the stated minimum).
+  // A skill drill (e.g. "paraphrase just the introduction") is not a full Task
+  // response: the model must judge only the named skill, never the things a
+  // full response would need (overview, body, figures, 150/250 words).
+  const system = input.skillFocus
+    ? `You are Mino, an experienced IELTS Writing coach. The student is doing a short, TARGETED SKILL DRILL inside a teaching module, not a complete Task ${input.task} response. The skill being trained is: "${input.skillFocus}".
+Assess ONLY this skill: accurate paraphrasing, preservation of the original meaning, preservation of key information (names, dates, units, categories, numbers), grammar and natural academic wording, and avoidance of unsupported additions (opinions, invented causes, data not asked for).
+Do NOT penalise, mention as a weakness, or lower anything for: a missing overview, missing body paragraphs, missing chart figures, or not reaching a full Task ${input.task} word count (150/250 words) — none of that is being tested in this drill.
+Criteria names to use (exactly): ${names.join(', ')}. This is a skill drill, not a scored task: set every criterion's "band" to null. Put your assessment of the targeted skill in the first criterion's "comment", and your real findings into "mistakes", "strengths" and "actions".
+${languageRule(language)}
+Quotes in "mistakes" and "betterSentences.original" MUST be copied exactly from the answer.
+${JSON_SHAPE}`
+    : `You are Mino, an experienced IELTS Writing coach who knows the examiner criteria. Assess ONE Academic Writing Task ${input.task} answer written as practice inside a teaching module (it may be a short overview or a single paragraph rather than a full essay — judge only what was asked for, never penalise length beyond the stated minimum).
 Criteria (use exactly these names): ${names.join(', ')}.
 The answer has ${words} words; the minimum is ${input.minWords}. ${words < input.minWords ? `It is UNDER the minimum: this must lower ${names[0]}.` : ''}
 ${input.task === 1 ? 'Task 1: check for a clear overview, key features and accurate comparisons of the data; no opinions.' : 'Task 2: check the answer addresses every part of the question with a clear position, developed ideas and support.'}
@@ -178,7 +189,14 @@ ${languageRule(language)}
 Quotes in "mistakes" and "betterSentences.original" MUST be copied exactly from the answer.
 ${JSON_SHAPE}`;
   const { data: ai, model } = await runJson(provider, system, `Task:\n${input.prompt}${data}\n\nStudent's answer:\n${answer}`);
-  return { feedback: clean(ai, names, answer, 'writing-studio', title, words), model };
+  const feedback = clean(ai, names, answer, 'writing-studio', title, words);
+  // Defence in depth: never trust the model's compliance alone for the
+  // "no band on a skill drill" invariant — zero it out here too.
+  if (input.skillFocus) {
+    feedback.band = null;
+    feedback.criteria = feedback.criteria.map((c) => ({ ...c, band: null }));
+  }
+  return { feedback, model };
 }
 
 export async function assessSpeaking(provider: AIProvider, test: PracticeTest, session: TestSession, language: 'en' | 'bn'): Promise<ProductiveFeedback> {

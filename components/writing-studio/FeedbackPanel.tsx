@@ -43,9 +43,26 @@ export function FeedbackPanel({
   onRetry: () => void;
   onContinue?: () => void;
 }) {
+  const isSkillCheck = !!feedback.skillFocus;
+  const skillVerdict = isSkillCheck
+    ? feedback.mistakes.length === 0
+      ? 'Meets the target'
+      : feedback.mistakes.length <= 2
+        ? 'Close — a few fixes needed'
+        : 'Needs more work on this skill'
+    : null;
+
   return (
     <div className="space-y-5">
-      {feedback.source === 'ai' ? (
+      {isSkillCheck ? (
+        <Callout tone="neutral" icon={Sparkles} title={`Skill check: ${feedback.skillFocus}`}>
+          This exercise targets one specific skill, not a complete Task 1 or Task 2 response — so there is no IELTS band
+          here, only feedback on {feedback.skillFocus?.toLowerCase()}.{' '}
+          {feedback.source === 'ai'
+            ? "This is Mino's AI looking specifically at this skill — a targeted estimate, with the same limitations as any AI judgement, not a certified result."
+            : "This is this prototype's local automated checker (word count and simple text patterns) — it cannot reliably judge meaning or paraphrasing accuracy, so treat this as a partial, not a complete, assessment of the skill."}
+        </Callout>
+      ) : feedback.source === 'ai' ? (
         <Callout tone="neutral" icon={Sparkles} title="Mino's assessment — an estimate, not a real IELTS score">
           Mino judged this answer against the public IELTS criteria. The band below is a practice estimate from an AI
           model, never an official examiner's result.
@@ -58,15 +75,18 @@ export function FeedbackPanel({
 
       <Panel className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">{feedback.source === 'ai' ? "Mino's estimated band" : 'Indicative band (practice only)'}</p>
-          <p className="text-2xl font-semibold">{feedback.band !== null ? feedback.band.toFixed(1) : '—'}</p>
+          <p className="text-sm text-muted-foreground">{isSkillCheck ? 'Skill check result' : feedback.source === 'ai' ? "Mino's estimated band" : 'Indicative band (practice only)'}</p>
+          <p className={cn('font-semibold', isSkillCheck ? 'text-lg' : 'text-2xl')}>{isSkillCheck ? skillVerdict : feedback.band !== null ? feedback.band.toFixed(1) : '—'}</p>
         </div>
-        <StatusChip tone={feedback.meetsLength ? 'success' : 'warning'}>
-          {feedback.wordCount}/{feedback.minWords} words
+        {/* A skillFocus drill's word count is a guideline, not a hard minimum (the AI/local
+            checks below never penalise it) — so the chip must never warn purely for being
+            short, and shows the actual count without implying a pass/fail threshold. */}
+        <StatusChip tone={isSkillCheck ? 'neutral' : feedback.meetsLength ? 'success' : 'warning'}>
+          {isSkillCheck ? `${feedback.wordCount} words` : `${feedback.wordCount}/${feedback.minWords} words`}
         </StatusChip>
       </Panel>
 
-      {feedback.criteria && feedback.criteria.length > 0 && (
+      {!isSkillCheck && feedback.criteria && feedback.criteria.length > 0 && (
         <Section title="By criterion" variant="label">
           <div className="grid gap-2 sm:grid-cols-2">
             {feedback.criteria.map((c) => (

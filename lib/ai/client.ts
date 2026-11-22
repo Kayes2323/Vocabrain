@@ -44,7 +44,7 @@ export async function assessSession(
 
 /** Mino Writing Studio: real assessment of one practice answer (signed-in students only). */
 export async function writingStudioFeedback(
-  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] } },
+  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string },
   text: string,
   language: 'en' | 'bn',
 ): Promise<{ ok: true; feedback: import('@/lib/ielts').TaskFeedback } | { ok: false; error: import('./types').MinoErrorCode }> {
