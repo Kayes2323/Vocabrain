@@ -92,10 +92,25 @@ test('clinic correct answers are the accurate options (0-based 1, 0, 1, 0)', () 
   assert.match(c[0].options[1], /proportion of households/);
   assert.match(c[1].options[0], /Five universities and the two years/);
   assert.match(c[2].options[1], /unsupported cause/);
-  assert.match(c[3].options[0], /layout of a town centre in 1990 and 2020/);
+  assert.match(c[3].options[0], /illustrate how a town centre changed between 1990 and 2020/);
 });
 
 // ---------------------------------------------------------------- accuracy of examples
+
+test('step 8 example 1 keeps the agent: "workers manufacture glass bottles", and says so', () => {
+  const m = lesson.steps.find((x) => x.id === 'grammar-structure')!.material;
+  assert.ok(m && m.type === 'text');
+  const ex = m.paragraphs.find((p) => p.startsWith('Example 1'))!;
+  assert.ok(ex.includes('Original: "The diagram shows how workers produce glass bottles."'));
+  assert.ok(ex.includes('Alternative: "The process diagram illustrates how workers manufacture glass bottles."'));
+  assert.ok(!ex.includes('glass bottles are produced."'), 'the agent-dropping passive must not be offered as the alternative');
+  assert.match(ex, /agent \(workers\).*preserved.*meaning is unchanged/);
+  assert.match(ex, /only if it keeps the agent/);
+});
+test('no worked example drops "workers" or narrows "changes" to "layout" while claiming the meaning is unchanged', () => {
+  const t = allText();
+  assert.ok(!/layout/i.test(t), 'no example narrows "changes" to "layout"');
+});
 
 test('the commute-methods dataset is what the lesson relies on (five categories, two years, %)', () => {
   assert.equal(chart.categories.length, 5);

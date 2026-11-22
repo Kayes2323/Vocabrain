@@ -181,7 +181,7 @@ export const task1IntroductionLesson: Lesson = {
       material: {
         type: 'text',
         paragraphs: [
-          'Example 1 — Active to passive. Original: "The diagram shows how workers produce glass bottles." Alternative: "The process diagram illustrates how glass bottles are produced." The subject and grammatical focus have changed, but the meaning remains the same.',
+          'Example 1 — Keeping the agent while changing the verb. Original: "The diagram shows how workers produce glass bottles." Alternative: "The process diagram illustrates how workers manufacture glass bottles." Here "shows" becomes "illustrates", "produce" becomes the accurate synonym "manufacture", and "diagram" becomes "process diagram". The agent (workers) and the object (glass bottles) are both preserved, so the original meaning is unchanged. A passive version is also possible, but only if it keeps the agent — "glass bottles are produced by workers". Dropping "workers" would omit information that the original states.',
           'Example 2 — Verb phrase to noun phrase. Original: "The chart shows how people travelled to work." Alternative: "The chart compares commuting methods." The second sentence is more concise, but be careful: it may omit information if the original also specifies a location, period, or measurement.',
           'Example 3 — Clause to noun phrase. Original: "The table shows how many students enrolled in each course." Alternative: "The table presents student enrolment figures for each course." This is a natural grammatical transformation.',
           'Example 4 — Singular and plural accuracy. Original: "The graph compares two cities." Incorrect: "The graph compares two city." Correct: "The graph compares two cities."',
@@ -226,7 +226,7 @@ export const task1IntroductionLesson: Lesson = {
           },
           {
             phrase: 'D. Map',
-            use: 'Question: "The maps show changes to a town centre between 1990 and 2020." Introduction: "The maps compare the layout of a town centre in 1990 and 2020."',
+            use: 'Question: "The maps show changes to a town centre between 1990 and 2020." Introduction: "The maps illustrate how a town centre changed between 1990 and 2020."',
           },
           {
             phrase: 'E. Process diagram',
@@ -325,14 +325,14 @@ export const task1IntroductionLesson: Lesson = {
       check: {
         prompt: 'Which introduction is best?',
         options: [
-          'The maps compare the layout of a town centre in 1990 and 2020.',
+          'The maps illustrate how a town centre changed between 1990 and 2020.',
           'The maps explain why the town centre became more popular.',
           'The maps show the number of people living in the town.',
           'The maps compare two different countries in 2020.',
         ],
         correctIndex: 0,
         explain:
-          'It preserves the subject, visual purpose, location, and dates without adding unsupported information.',
+          'It preserves the subject (a town centre), the idea of change, and both dates, without narrowing the change to one feature or adding unsupported information.',
       },
     },
     {

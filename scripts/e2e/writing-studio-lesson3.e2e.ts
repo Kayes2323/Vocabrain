@@ -9,7 +9,7 @@ const CLINIC: { prompt: string; correct: string; explain: RegExp }[] = [
   { prompt: 'Which paraphrase preserves the measurement correctly?', correct: 'The chart illustrates the proportion of households with internet access in three countries.', explain: /can express the same measurement/ },
   { prompt: 'Which information must be preserved?', correct: 'Five universities and the two years.', explain: /five universities and two years/ },
   { prompt: 'What is the main problem?', correct: 'The student has added an unsupported cause.', explain: /must not invent explanations/ },
-  { prompt: 'Which introduction is best?', correct: 'The maps compare the layout of a town centre in 1990 and 2020.', explain: /without adding unsupported information/ },
+  { prompt: 'Which introduction is best?', correct: 'The maps illustrate how a town centre changed between 1990 and 2020.', explain: /without narrowing the change/ },
 ];
 
 async function main() {
