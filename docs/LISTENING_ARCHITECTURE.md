@@ -60,14 +60,15 @@ Diagnostic Listening → Understand the Skill → Guided Listening Lab → Conte
 Independent Challenge → IELTS Transfer Test (`SOUND_GYM_STAGE_ORDER`, `STAGE_LABELS`).
 
 **What is honestly NOT here:** the real script, transcript, questions, options, answer key,
-explanations and distractor explanations for any Sound Gym stage. The brief says to use "the existing
-content and scripts as the source of truth" from the attached ZIP's lesson reports — **no ZIP was
-received in this conversation** (checked `/mnt/user-data/uploads` and the session's attachment
-directory: both empty). Inventing that content would violate the brief's own rule ("Do not rewrite,
-paraphrase, shorten, or invent questions"). Every stage is real and positioned correctly, with its
-correct audio asset wired to it; its teaching content shows "Content in development" until the actual
-package is supplied. **Please send the ZIP (lesson reports, master delivery report, and the 36 MP3
-files) as a follow-up** — nothing else about Sound Gym needs to change to receive it (§7 below).
+explanations and distractor explanations for any Sound Gym stage.
+
+**Update (2026-11-22):** the ZIP (`mino-sound-gym-master-brief-v1-36-assets.zip`) was received and
+integrated — see §5 for exactly what it contained and what it did not. It is production/QA
+documentation for 36 delivered audio files, not the original script/question document, so the real
+script, transcript, questions and answer keys are **still** not in this codebase; only the audio
+itself, its real speaker/accent/duration/QA metadata, and a structural (not verbatim) description of
+each clip are. The brief's own "Master Audio Production Brief v1.0" — the document the delivery report
+says the scripts were reproduced from — has not been supplied.
 
 ## 4. The central content manifest (brief §2)
 
@@ -75,10 +76,10 @@ files) as a follow-up** — nothing else about Sound Gym needs to change to rece
 asset id/path, script reference, question ids, error tags, content status — always derived from
 `Module`/`Lesson`/`Stage`/`AudioAsset`, never a second copy of the same facts.
 
-## 5. Audio: the exact 36-asset mapping (brief §2)
+## 5. Audio: the exact 36-asset mapping — delivered (brief §2)
 
-`lib/listening/audio-manifest.ts` generates all 36 entries programmatically from the stage order, so
-the mapping cannot drift from the brief by a typo. Example:
+`lib/listening/audio-manifest.ts` wires all 36 assets to the stage order the brief gives, so the
+mapping cannot drift by a typo:
 
 ```
 SG01, stage 1 (Diagnostic Listening)      -> SG01-A01 -> /audio/mino/listening/sound-gym/SG01/SG01-A01.mp3
@@ -87,25 +88,48 @@ SG01, stage 2 (Understand the Skill)      -> SG01-A02 -> /audio/mino/listening/s
 SG06, stage 6 (IELTS Transfer Test)       -> SG06-A06 -> /audio/mino/listening/sound-gym/SG06/SG06-A06.mp3
 ```
 
-**No audio file was created.** `scripts/test-listening.ts` asserts none of the 36 paths exist on disk
-in `public/`, by design — the brief explicitly forbids fake audio, and this is checked, not promised.
+**All 36 files are real and delivered.** The uploaded ZIP contained the 36 MP3s, a master delivery
+report, and six per-lesson production reports. Every file was verified before import: byte-identical
+copy (checksummed against the upload), a valid playable MP3 (`ffprobe`), and now served at its exact
+manifest path (smoke-tested over HTTP on the built app). The reports' own voice-cast and duration data
+is in `lib/listening/audio-manifest.ts`'s `DELIVERED` table, not invented; `scripts/test-listening.ts`
+re-verifies file presence, size, and duration (via `ffprobe`, skipped gracefully if unavailable) on
+every run, so a future missing or swapped file fails the build instead of being silently trusted.
+The reports and the delivery summary are committed at `docs/sound-gym-production/` for traceability.
 
-### How to add the real 36 files (once supplied)
+**Production QA, exactly as the report states it — not upgraded:**
+- 34 of 36 assets are `productionQA: 'review'` — **not aurally verified**; nobody on the production
+  side could hear audio, so every clip still needs a human listen before being called reliable.
+- Only **SG03-A01** and **SG03-A06** are `'passed'` (script/structure checks only) — even these, the
+  report says, "an aural check by a listener is still recommended."
+- Each asset's real caveat (`qaNote`) is shown on its lesson stage, e.g. SG01-A04's "'an aim / a name'
+  and 'ice cream / I scream' distinction must be checked by ear."
 
-1. Drop each file at exactly the path above, e.g. `public/audio/mino/listening/sound-gym/SG01/SG01-A01.mp3`.
-   Asset ids and paths are already correct in the manifest; nothing in the manifest needs editing for
-   the files themselves to start working — `AudioLessonPlayer` just starts succeeding instead of
-   showing "Audio not available yet".
-2. The brief's lesson reports should name each clip's speaker(s) and accent, and the master delivery
-   report gives duration. Fill `AudioAsset.speakers` / `.durationSeconds` / `.scriptRef` in
-   `lib/listening/audio-manifest.ts` from those reports — never guessed.
-3. Write each stage's real `content` (`instructions`, `transcript`, `questions` with
-   `distractorExplanation` and `errorTags`) in `lib/listening/modules.ts`'s lesson builder, and flip
-   that stage's `contentStatus` to `'content-ready'` (or `'complete'` once audio + content are both
-   in). No other file changes — `LessonStageRunner` already renders real content the moment it exists.
-4. Re-run `pnpm test:listening`: the "ANTI-FABRICATION" check will now correctly report the file as
-   present; update that one assertion's expectation for the assets that have truly landed (the test
-   file says exactly this at the point of failure).
+**Known production issues (from the delivery report, needs your decision):**
+1. IPA symbols were never spoken as symbols (SG02/03/04) — e.g. `/ə/` was spoken as the word "schwa".
+2. SG01-A05: each sentence was played twice consecutively, not as a full separate second pass — confirm this is the intended repeat structure.
+3. SG01-A06: "Room 214" was sent to the voice engine as digits; its spoken form needs a listening check.
+4. SG04-A02: the single word "seat" failed repeatedly; a "sit, seat." pair-split workaround supplied the clip (same voice/speed, same words).
+5. SG04-A04: three past-tense lines were merged into one audio chunk (no pause between them) after a TTS failure on isolated fragments.
+6. SG06-A03 was already re-rendered once (168→142 wpm) to match the other SG-06 assets' pace.
+
+None of these are blocking — the audio plays — but none should be treated as confirmed-correct without
+a human listen first.
+
+### How to add the real script/questions/answer key (still pending)
+
+The only thing still missing is the actual Master Audio Production Brief v1.0 document itself
+(or an equivalent script + question bank). Once supplied:
+
+1. Write each stage's real `content` (`transcript`, `questions` with `options`, `correctAnswer`,
+   `explanation`, `distractorExplanation` and `errorTags`) in `lib/listening/modules.ts`'s lesson
+   builder — keep the existing `instructions` line (speaker + QA note) alongside it, don't replace it.
+2. Flip that stage's `contentStatus` to `'content-ready'`, and once a human has actually listened to
+   its audio and confirmed it (not just "the file plays"), the lesson/module can move to `'complete'`.
+3. No UI change needed — `LessonStageRunner` already renders `content.questions` the moment they exist
+   (`scripts/test-listening.ts`'s "no stage or lesson claims complete" test will then need updating for
+   the stages that have truly moved to `'content-ready'`/`'complete'`, exactly as its own assertions
+   describe).
 
 ## 6. The shared lesson engine (brief §8)
 
@@ -179,11 +203,18 @@ app/(app)/ielts/listening/lesson/[lessonId]/page.tsx
 app/(app)/ielts/listening/practice/page.tsx
 scripts/test-listening.ts
 docs/LISTENING_ARCHITECTURE.md   (this document)
+public/audio/mino/listening/sound-gym/SG01..SG06/SG0X-A0Y.mp3   (36 real delivered files, 21 MB)
+docs/sound-gym-production/{MINO-SOUND-GYM-MASTER-BRIEF-v1-DELIVERY-REPORT,SG01..SG06-REPORT}.md
 ```
 **Changed:** `lib/models/profile.ts` (+`listening: ListeningProgress`, +4 supporting interfaces, default
 in `emptyProfile`), `lib/services/profile-repository.ts` (deep-merge `listening` in `withProfileDefaults`),
 `lib/i18n/locales/{en,bn}.ts` (updated `sections['listening-lab']` / `ielts.cards['listening-lab']` copy;
-removed the old `listeningLab` namespace), `package.json` (+`test:listening`).
+removed the old `listeningLab` namespace), `package.json` (+`test:listening`),
+`lib/listening/model.ts` (`ContentStatus` gained `'audio-delivered'`; `AudioAsset` gained `speakers`
+identity/role, `speed`, `productionQA`, `qaNote`), `lib/listening/audio-manifest.ts` (real per-asset
+delivery data replacing the empty placeholders), `lib/listening/modules.ts` (Sound Gym's status moved
+to `'audio-delivered'`; each stage's `instructions` now names its real speaker and QA note),
+`components/listening/LessonStageRunner.tsx` (status chip covers all 5 `ContentStatus` values).
 **Untouched:** `lib/ielts/*`, `lib/foundation/*`, `lib/writing-studio/*`, Firestore rules, every other route.
 
 ## 11. Completed / incomplete / known issues (brief §15.12)
@@ -192,19 +223,21 @@ removed the old `listeningLab` namespace), `package.json` (+`test:listening`).
 - Six-module architecture, all six landing pages, navigation wiring.
 - Sound Gym's full lesson/stage structure (6×6 = 36 stages), each wired to its correct, exactly-mapped
   audio asset path.
+- **All 36 real audio files delivered, verified (checksum, `ffprobe`, HTTP smoke test) and playable**,
+  with real speaker/accent/duration/production-QA metadata from the delivery report.
 - Shared lesson-stage runner, shared audio player (full controls, honest loading/error states).
 - Shared progress & diagnostic engine with fixed mastery criteria; `profile.listening` persisted.
 - Personal Trainer dashboard and Practice Library, both reading the same records.
 - Content schema designed for all six modules' future content.
 
-**Incomplete / blocked, pending the ZIP:**
-- Sound Gym's actual scripts, transcripts, questions, answer keys, explanations and distractor
-  explanations — the brief names these as coming from the ZIP, which was not received.
-- The 36 real MP3 files — `public/audio/mino/listening/sound-gym/...` is empty.
-- Accent/speaker metadata per asset (depends on the delivery report).
-- Acceptance tests that need the above: "all 36 audio assets map... every audio file loads and
-  plays," "Sound Gym displays... the correct six learning stages" **with real content** — the
-  structural half of each is done and tested; the content half is blocked.
+**Incomplete / blocked, pending the actual script/question document:**
+- Sound Gym's real transcripts, questions, answer keys, explanations and distractor explanations —
+  the delivery report describes each clip's structure for QA, but is not itself the script/question
+  source; the brief's "Master Audio Production Brief v1.0" document has not been supplied.
+- A human aural check of all 36 clips — the delivery report itself says nobody could listen to them
+  during production; 34 are `'review'`, and even the 2 `'passed'` ones recommend a listen.
+- Acceptance tests needing the above: "Sound Gym displays... the correct six learning stages" **with
+  real teaching content** (not just structure) is still blocked; audio delivery and playback are not.
 
 **Known issues:**
 - `LessonStageRunner`'s stage dots are clickable to jump to any stage (useful for review) — this is a
@@ -212,6 +245,9 @@ removed the old `listeningLab` namespace), `package.json` (+`test:listening`).
   completion-gating logic a content package might require.
 - Copy is English-only this phase (matches the Writing Studio precedent); Bangla page copy can follow
   later without a data-model change, since module/lesson content itself is already bilingual.
+- Several production caveats need a decision before the audio is treated as final — see §5's "Known
+  production issues" list (IPA symbols not vocalised, two TTS workarounds, one re-render already done,
+  two repeat-structure interpretations to confirm).
 
 ## 12. Acceptance tests status (brief §16)
 
@@ -220,8 +256,8 @@ removed the old `listeningLab` namespace), `package.json` (+`test:listening`).
 | All six modules accessible through Listening navigation | ✅ `pnpm test:listening` |
 | Sound Gym displays all six lessons | ✅ |
 | Each Sound Gym lesson displays the correct six stages | ✅ |
-| All 36 audio assets map to the correct lesson and stage | ✅ (mapping); ❌ playback — no files delivered |
-| Every audio file loads and plays | ❌ blocked on the ZIP |
+| All 36 audio assets map to the correct lesson and stage | ✅ |
+| Every audio file loads and plays | ✅ delivered, checksummed, `ffprobe`-verified, HTTP smoke-tested on the built app; not yet aurally confirmed correct by a human (see §5) |
 | Audio controls work on mobile and desktop | ✅ component built with touch-sized controls; not device-tested |
 | Lesson completion is recorded correctly | ✅ `pnpm test:listening` (`recordStageVisit`/`isLessonComplete`) |
 | Progress is not fabricated | ✅ (empty progress yields all zeros; tested) |

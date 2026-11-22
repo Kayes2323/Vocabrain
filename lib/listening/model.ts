@@ -15,8 +15,18 @@
 
 export type ModuleId = 'sound-gym' | 'speech-decoder' | 'conversation-intelligence' | 'academic-mind' | 'accent-world' | 'ielts-transfer-zone';
 
-/** What a module/lesson/stage honestly is right now. Never set ahead of real content (docs/DESIGN_SYSTEM.md "Honest states"). */
-export type ContentStatus = 'in-development' | 'content-ready' | 'audio-pending' | 'complete';
+/**
+ * What a module/lesson/stage honestly is right now. Never set ahead of real
+ * content (docs/DESIGN_SYSTEM.md "Honest states").
+ *   in-development  — no lesson exists yet
+ *   audio-pending    — the lesson/stage structure exists; its audio file has not been delivered
+ *   audio-delivered  — a real, playable audio file exists, but the script/questions/answer key
+ *                       have not been delivered, and/or the audio itself still needs a human
+ *                       aural QA check (see AudioAsset.productionQA)
+ *   content-ready    — the real script/questions/answer key have been written in
+ *   complete         — audio delivered AND aurally confirmed AND teaching content written in
+ */
+export type ContentStatus = 'in-development' | 'audio-pending' | 'audio-delivered' | 'content-ready' | 'complete';
 
 export interface Bilingual {
   en: string;
@@ -124,15 +134,22 @@ export interface Module {
 export type Accent = 'en-GB' | 'en-US' | 'en-AU' | 'en-NZ' | 'other';
 
 export interface AudioAssetSpeaker {
+  /** The real voice name from the delivery report's cast list, e.g. "Isabella". */
+  identity: string;
   accent: Accent;
   voice: 'female' | 'male';
+  /** The in-dialogue role this speaker plays in this specific asset, e.g. "Student", "Administrator" — not every asset has one. */
+  role?: string;
 }
+
+/** Audio-production QA, exactly as the delivery report states it. Never upgraded to 'passed' on this codebase's own judgement — only when the report itself says so. */
+export type ProductionQA = 'review' | 'passed';
 
 /**
  * One of the 36 Sound Gym assets (or any future asset). `path` is the exact,
- * stable location the brief specifies; `fileDelivered` is never set by hand
- * — it is computed by checking the real file on disk (scripts/test-listening.ts),
- * so a missing file can never be reported as present.
+ * stable location the brief specifies; file presence is never asserted here
+ * — it is checked against disk in `scripts/test-listening.ts`, so a missing
+ * file can never be reported as present.
  */
 export interface AudioAsset {
   assetId: string; // "SG01-A01"
@@ -142,9 +159,15 @@ export interface AudioAsset {
   path: string; // "/audio/mino/listening/sound-gym/SG01/SG01-A01.mp3"
   /** Unset until the delivery report names who is speaking and in what accent — never guessed. */
   speakers?: AudioAssetSpeaker[];
-  /** Reference to the delivered script/transcript document, once one exists. Never invented text. */
+  /** Reference to the delivered production report document, once one exists. This describes the asset's structure, not a verbatim transcript. */
   scriptRef?: string;
   durationSeconds?: number;
+  /** TTS speed setting used, where the report states it (82/85/92 etc.). */
+  speed?: number;
+  /** The delivery report's own QA verdict for this asset — see `ProductionQA`. */
+  productionQA?: ProductionQA;
+  /** The delivery report's own note/caveat for this asset, verbatim or close to it — never paraphrased into something more reassuring. */
+  qaNote?: string;
 }
 
 /** A content manifest row: the join of everything the brief's §2 "central content manifest" asks for, derived (never duplicated) from Module/Lesson/Stage/AudioAsset. */
