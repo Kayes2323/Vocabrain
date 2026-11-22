@@ -35,8 +35,10 @@ export function TestIntro({
   const { t } = useLocale();
   const fm = useFullMock(test, skill);
   const [choosing, setChoosing] = useState(false);
-  // Listening and Reading can be taken as the full exam or one part at a time; a Full Mock Test is always the exam.
-  const asks = (skill === 'listening' || skill === 'reading') && !fm.full;
+  // Listening and Reading can always be taken as the full exam or one part at a time —
+  // inside a Full Mock Test too; a practice attempt there still counts as that section done,
+  // just honestly marked as practice rather than full exam conditions.
+  const asks = skill === 'listening' || skill === 'reading';
   const minutes = test.sections[skill] && 'timeLimitMinutes' in test.sections[skill]! ? (test.sections[skill] as { timeLimitMinutes: number }).timeLimitMinutes : 0;
   const begin = () => (asks ? setChoosing(true) : onStart(undefined, 'full'));
   const choose = (mode: TestMode) => {

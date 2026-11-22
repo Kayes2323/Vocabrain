@@ -19,7 +19,9 @@ const SPEAKING_MINUTES = 14;
 type Status = 'not-started' | 'in-progress' | 'done' | 'coming-soon';
 
 function latestFor(sessions: TestSession[], testId: string, skill: IELTSSkillId) {
-  const mine = sessions.filter((s) => s.testId === testId && s.skill === skill && !isPractice(s));
+  // A section done one part at a time (practice mode) still counts as done here,
+  // just honestly marked as practice rather than full exam conditions.
+  const mine = sessions.filter((s) => s.testId === testId && s.skill === skill);
   return { active: mine.find((s) => s.status === 'in-progress'), last: mine.find((s) => s.status === 'submitted') };
 }
 
@@ -45,7 +47,7 @@ export default function FullMockOverviewPage() {
     const { active, last } = latestFor(sessions, testId, skill);
     const status: Status = last ? 'done' : active ? 'in-progress' : 'not-started';
     const score = last?.result ? `${last.result.correct}/${last.result.total}` : undefined;
-    return { skill, status, score };
+    return { skill, status, score, practice: last ? isPractice(last) : false };
   });
   const meta = (skill: IELTSSkillId) => {
     const sec = test.sections[skill];
@@ -82,7 +84,7 @@ export default function FullMockOverviewPage() {
 
       <Section title={t('ielts.groups.test')} variant="label">
         <RowGroup>
-          {rows.map(({ skill, status, score }, i) => (
+          {rows.map(({ skill, status, score, practice }, i) => (
             <ListRow
               key={skill}
               href={status === 'coming-soon' ? undefined : fullMockHref(testId, skill)}
@@ -95,9 +97,12 @@ export default function FullMockOverviewPage() {
                 status === 'coming-soon' ? (
                   <StatusChip tone="neutral">{t('fullMock.comingSoon')}</StatusChip>
                 ) : (
-                  <StatusChip tone={status === 'done' ? 'success' : status === 'in-progress' ? 'warning' : 'neutral'}>
-                    {score ?? t(`fullMock.status.${status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'done'}`)}
-                  </StatusChip>
+                  <div className="flex items-center gap-1.5">
+                    {status === 'done' && practice && <StatusChip tone="warning">{t('tests.practice.badge')}</StatusChip>}
+                    <StatusChip tone={status === 'done' ? 'success' : status === 'in-progress' ? 'warning' : 'neutral'}>
+                      {score ?? t(`fullMock.status.${status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'done'}`)}
+                    </StatusChip>
+                  </div>
                 )
               }
             />
