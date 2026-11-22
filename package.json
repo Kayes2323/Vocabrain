@@ -15,6 +15,7 @@
     "test:listening-audio": "npx -y tsx scripts/test-listening-audio.ts",
     "test:highlights": "npx -y tsx scripts/test-highlights.ts",
     "test:foundation": "npx -y tsx scripts/test-foundation.ts",
+    "test:listening-lab": "npx -y tsx scripts/test-listening-lab.ts",
     "test:foundation-integrity": "npx -y tsx scripts/test-foundation-integrity.ts",
     "test:answers": "npx -y tsx scripts/test-answer-validation.ts",
     "audit:answers": "npx -y tsx scripts/audit-answers.ts",
