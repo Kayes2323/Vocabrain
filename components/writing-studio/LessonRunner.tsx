@@ -122,7 +122,9 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
       essay,
       locale === 'bn' ? 'bn' : 'en',
     );
-    const unified = res.ok ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords) : fromLocal(local, res.error);
+    const unified = res.ok
+      ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords, lesson.finalPrompt.skillFocus)
+      : fromLocal(local, res.error, lesson.finalPrompt.skillFocus);
     setFeedback(unified);
     setPhase('feedback');
 

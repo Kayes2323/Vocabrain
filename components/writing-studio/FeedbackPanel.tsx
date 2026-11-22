@@ -43,9 +43,23 @@ export function FeedbackPanel({
   onRetry: () => void;
   onContinue?: () => void;
 }) {
+  const isSkillCheck = !!feedback.skillFocus;
+  const skillVerdict = isSkillCheck
+    ? feedback.mistakes.length === 0
+      ? 'Meets the target'
+      : feedback.mistakes.length <= 2
+        ? 'Close — a few fixes needed'
+        : 'Needs more work on this skill'
+    : null;
+
   return (
     <div className="space-y-5">
-      {feedback.source === 'ai' ? (
+      {isSkillCheck ? (
+        <Callout tone="neutral" icon={Sparkles} title={`Skill check: ${feedback.skillFocus}`}>
+          This exercise targets one specific skill, not a complete Task 1 or Task 2 response — so there is no IELTS band
+          here, only feedback on {feedback.skillFocus?.toLowerCase()}.
+        </Callout>
+      ) : feedback.source === 'ai' ? (
         <Callout tone="neutral" icon={Sparkles} title="Mino's assessment — an estimate, not a real IELTS score">
           Mino judged this answer against the public IELTS criteria. The band below is a practice estimate from an AI
           model, never an official examiner's result.
@@ -58,15 +72,15 @@ export function FeedbackPanel({
 
       <Panel className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">{feedback.source === 'ai' ? "Mino's estimated band" : 'Indicative band (practice only)'}</p>
-          <p className="text-2xl font-semibold">{feedback.band !== null ? feedback.band.toFixed(1) : '—'}</p>
+          <p className="text-sm text-muted-foreground">{isSkillCheck ? 'Skill check result' : feedback.source === 'ai' ? "Mino's estimated band" : 'Indicative band (practice only)'}</p>
+          <p className={cn('font-semibold', isSkillCheck ? 'text-lg' : 'text-2xl')}>{isSkillCheck ? skillVerdict : feedback.band !== null ? feedback.band.toFixed(1) : '—'}</p>
         </div>
         <StatusChip tone={feedback.meetsLength ? 'success' : 'warning'}>
           {feedback.wordCount}/{feedback.minWords} words
         </StatusChip>
       </Panel>
 
-      {feedback.criteria && feedback.criteria.length > 0 && (
+      {!isSkillCheck && feedback.criteria && feedback.criteria.length > 0 && (
         <Section title="By criterion" variant="label">
           <div className="grid gap-2 sm:grid-cols-2">
             {feedback.criteria.map((c) => (
