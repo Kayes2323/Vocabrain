@@ -107,7 +107,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   const taskNum: 1 | 2 = lesson.task === 'task1' ? 1 : 2;
 
   const submit = async () => {
-    const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope);
+    const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope, !!lesson.finalPrompt.skillFocus);
     setSubmissions((n) => n + 1);
     setPhase('assessing');
 
@@ -119,6 +119,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         minWords: lesson.finalPrompt.minWords,
         chart: chart ? chartToTable(chart) : undefined,
         skillFocus: lesson.finalPrompt.skillFocus,
+        checkScope: lesson.finalPrompt.checkScope,
       },
       essay,
       locale === 'bn' ? 'bn' : 'en',

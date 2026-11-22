@@ -177,6 +177,45 @@ async function main() {
     assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/, 'tells the model what not to penalise');
   });
 
+  await test('writing studio: an overview-only skill drill is judged on the data (trend, direction, attribution, unsupported claims), not on paraphrasing', async () => {
+    calls.length = 0;
+    const answer = `Car use remained the most common way to travel to work despite falling noticeably, while cycling rose sharply and narrowed the gap.`;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }] })),
+      {
+        task: 1,
+        prompt: 'Write the main message of the chart.',
+        minWords: 20,
+        chart: { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] },
+        skillFocus: 'Chart interpretation and key-feature selection',
+        checkScope: 'overview-only',
+      },
+      answer,
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Chart interpretation and key-feature selection/);
+    assert.match(sys, /accuracy of the main trend/);
+    assert.match(sys, /correct direction of change and correct attribution/);
+    assert.match(sys, /percentage points confused with percentage growth/);
+    assert.match(sys, /missing introduction, missing body paragraphs, missing detailed figures/, 'tells the model what not to penalise');
+    assert.doesNotMatch(sys, /accurate paraphrasing/, 'must not fall back to the introduction/paraphrase drill wording');
+    assert.match(calls[0].messages[0].content as string, /Car \| 52 \| 38/, 'the chart data reaches the model so claims can be checked');
+    assert.equal(feedback.band, null, 'still never a band');
+  });
+
+  await test('writing studio: a drill with checkScope introduction-only (Lesson 01) keeps the original paraphrase wording', async () => {
+    calls.length = 0;
+    await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+      { task: 1, prompt: 'Paraphrase.', minWords: 20, skillFocus: 'Paraphrasing accuracy for a Task 1 introduction', checkScope: 'introduction-only' },
+      `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`,
+      'en',
+    );
+    assert.match(calls[0].system, /accurate paraphrasing/);
+    assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures/);
+  });
+
   await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
     calls.length = 0;
     const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;

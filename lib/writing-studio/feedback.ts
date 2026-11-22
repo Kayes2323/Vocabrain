@@ -150,6 +150,8 @@ export function checkEssay(
   minWords: number,
   kind: 'task1' | 'task2',
   scope: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' = 'full',
+  /** True when the final task is a targeted skill drill (finalPrompt.skillFocus set). */
+  skillDrill = false,
 ): EssayFeedback {
   const clean = text.trim();
   const wordCount = countWords(clean);
@@ -161,10 +163,17 @@ export function checkEssay(
   const mistakes: FoundMistake[] = [];
   const suggestions: string[] = [];
 
+  // A skill drill whose whole answer IS the overview (e.g. "write the main message of
+  // the chart in two sentences") is too short to carry a developed-response word
+  // minimum, linking-word quota, "Overall," opener or a ban on any single figure.
+  // Those belong to a full response, so this drill only treats listing figures as a fault.
+  const drillOverview = skillDrill && scope === 'overview-only';
+  const softLength = scope === 'introduction-only' || drillOverview;
+
   const meetsLength = wordCount >= minWords;
   if (meetsLength) {
-    strengths.push(scope === 'introduction-only' ? `You wrote ${wordCount} words — around the suggested length for this exercise.` : `You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
-  } else if (scope === 'introduction-only') {
+    strengths.push(softLength ? `You wrote ${wordCount} words — around the suggested length for this exercise.` : `You wrote ${wordCount} words — at or above the ${minWords}-word minimum.`);
+  } else if (softLength) {
     // A short introduction-only drill asks for one or two sentences, not a developed
     // paragraph — being under the suggested length is not a fault here, so this is a
     // neutral note, never a "Task response" mistake implying the answer is wrong.
@@ -181,7 +190,7 @@ export function checkEssay(
   // A one-or-two-sentence introduction-only drill is too short to expect two
   // linking words from — that check belongs to a full response or paragraph.
   let linkerHits: string[] = [];
-  if (scope !== 'introduction-only') {
+  if (scope !== 'introduction-only' && !drillOverview) {
     linkerHits = LINKERS.filter((l) => lower.includes(l));
     if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
     else mistakes.push({
@@ -195,7 +204,7 @@ export function checkEssay(
   if (kind === 'task1') {
     // An introduction-only task (e.g. a paraphrase drill) should NOT contain an
     // overview sentence yet — that belongs to a later, separate part of a response.
-    if (scope !== 'introduction-only') {
+    if (scope !== 'introduction-only' && !drillOverview) {
       const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
       if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
       else mistakes.push({
@@ -206,7 +215,15 @@ export function checkEssay(
       });
     }
     const hasNumber = /\d/.test(clean) || /per\s?cent|percent|%/.test(lower);
-    if (scope === 'overview-only') {
+    if (drillOverview) {
+      const figures = clean.match(/\d+(\.\d+)?/g) ?? [];
+      if (figures.length >= 3) mistakes.push({
+        category: 'Task response',
+        quote: figures.slice(0, 3).join(', '),
+        why: 'This overview lists several individual figures. An overview gives the main message; the detailed figures belong in the body paragraphs.',
+        fix: 'Replace the list of figures with the overall pattern (which category stayed highest, and which changed most).',
+      });
+    } else if (scope === 'overview-only') {
       if (hasNumber) mistakes.push({
         category: 'Task response',
         quote: clean.match(/\b\d+(\.\d+)?\s?%?\b/)?.[0] ?? '',
@@ -318,9 +335,9 @@ export function checkEssay(
   let band = 6.0;
   // Being under the suggested (non-strict) length is not a fault for an introduction-only
   // drill, so it must not drag the band down the way a real under-length response does.
-  if (scope === 'introduction-only') band += meetsLength ? 0.5 : 0;
+  if (softLength) band += meetsLength ? 0.5 : 0;
   else band += meetsLength ? 0.5 : -1;
-  if (scope !== 'introduction-only') band += linkerHits.length >= 2 ? 0.5 : -0.5;
+  if (!softLength) band += linkerHits.length >= 2 ? 0.5 : -0.5;
   band -= mistakes.filter((m) => m.category === 'Grammar' || m.category === 'Mechanics').length * 0.25;
   band += strengths.length >= 3 ? 0.5 : 0;
 

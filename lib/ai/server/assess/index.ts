@@ -156,7 +156,7 @@ ${JSON_SHAPE}`;
  */
 export async function assessWritingStudioTask(
   provider: AIProvider,
-  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string },
+  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string; checkScope?: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' },
   answer: string,
   language: 'en' | 'bn',
 ): Promise<{ feedback: TaskFeedback; model: string }> {
@@ -172,10 +172,18 @@ export async function assessWritingStudioTask(
   // A skill drill (e.g. "paraphrase just the introduction") is not a full Task
   // response: the model must judge only the named skill, never the things a
   // full response would need (overview, body, figures, 150/250 words).
+  // The default drill wording is for a paraphrase/introduction drill. A drill whose
+  // whole answer IS an overview (checkScope 'overview-only') is judged on the data
+  // instead: the overview itself is what is being tested there.
+  const drillRules =
+    input.checkScope === 'overview-only'
+      ? `Assess ONLY this skill, using the task data supplied: (1) accuracy of the main trend; (2) the key features selected (the most significant patterns, not every figure); (3) correct direction of change and correct attribution of each figure to the right category and year; (4) avoidance of unsupported claims (invented causes, opinions, trends the data does not show, percentage points confused with percentage growth, a percentage reported as a number of people); (5) clarity and concise expression.
+Check every claim against the task data and name any claim the data contradicts in "mistakes". The answer is meant to be a short overview only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, missing body paragraphs, missing detailed figures, or not reaching a full Task ${input.task} word count (150/250 words).`
+      : `Assess ONLY this skill: accurate paraphrasing, preservation of the original meaning, preservation of key information (names, dates, units, categories, numbers), grammar and natural academic wording, and avoidance of unsupported additions (opinions, invented causes, data not asked for).
+Do NOT penalise, mention as a weakness, or lower anything for: a missing overview, missing body paragraphs, missing chart figures, or not reaching a full Task ${input.task} word count (150/250 words) — none of that is being tested in this drill.`;
   const system = input.skillFocus
     ? `You are Mino, an experienced IELTS Writing coach. The student is doing a short, TARGETED SKILL DRILL inside a teaching module, not a complete Task ${input.task} response. The skill being trained is: "${input.skillFocus}".
-Assess ONLY this skill: accurate paraphrasing, preservation of the original meaning, preservation of key information (names, dates, units, categories, numbers), grammar and natural academic wording, and avoidance of unsupported additions (opinions, invented causes, data not asked for).
-Do NOT penalise, mention as a weakness, or lower anything for: a missing overview, missing body paragraphs, missing chart figures, or not reaching a full Task ${input.task} word count (150/250 words) — none of that is being tested in this drill.
+${drillRules}
 Criteria names to use (exactly): ${names.join(', ')}. This is a skill drill, not a scored task: set every criterion's "band" to null. Put your assessment of the targeted skill in the first criterion's "comment", and your real findings into "mistakes", "strengths" and "actions".
 ${languageRule(language)}
 Quotes in "mistakes" and "betterSentences.original" MUST be copied exactly from the answer.

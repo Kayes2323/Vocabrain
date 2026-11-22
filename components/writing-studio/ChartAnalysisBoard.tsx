@@ -37,11 +37,12 @@ export function ChartAnalysisBoard({
   const allDone = checkedCount >= ordered.length;
 
   const reveal = (id: string) => {
-    setRevealed((r) => {
-      const next = { ...r, [id]: true };
-      if (Object.keys(next).length >= ordered.length) onComplete?.();
-      return next;
-    });
+    // onComplete sets state in the parent (LessonRunner), so it must run in the event
+    // handler, not inside a setState updater — React warns about updating another
+    // component while rendering, and (in StrictMode) the updater can run twice.
+    const next = { ...revealed, [id]: true };
+    setRevealed(next);
+    if (Object.keys(next).length >= ordered.length) onComplete?.();
   };
 
   return (

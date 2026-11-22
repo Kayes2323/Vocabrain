@@ -25,6 +25,7 @@ const bodySchema = z.object({
   text: z.string().trim().min(1).max(4000),
   language: z.enum(['en', 'bn']),
   skillFocus: z.string().trim().min(1).max(200).optional(),
+  checkScope: z.enum(['full', 'overview-only', 'paragraph-only', 'introduction-only']).optional(),
 });
 
 export type WritingStudioFeedbackResponse = { ok: true; feedback: TaskFeedback } | { ok: false; error: MinoErrorCode };
@@ -41,11 +42,11 @@ export async function POST(request: NextRequest) {
     const student = await authenticate(request.headers.get('authorization'));
     const parsed = bodySchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) return fail('invalid_request');
-    const { task, prompt, minWords, chart, text, language, skillFocus } = parsed.data;
+    const { task, prompt, minWords, chart, text, language, skillFocus, checkScope } = parsed.data;
     checkRateLimit(student.uid);
     const provider = getProvider();
     if (!provider) throw new MinoError('not_configured', 'no provider key');
-    const { feedback, model } = await assessWritingStudioTask(provider, { task, prompt, minWords, chart, skillFocus }, text, language);
+    const { feedback, model } = await assessWritingStudioTask(provider, { task, prompt, minWords, chart, skillFocus, checkScope }, text, language);
     console.info('[mino-writing-studio]', JSON.stringify({ status: 'ok', task, model, band: feedback.band, latencyMs: Date.now() - started }));
     return NextResponse.json<WritingStudioFeedbackResponse>({ ok: true, feedback });
   } catch (error) {
