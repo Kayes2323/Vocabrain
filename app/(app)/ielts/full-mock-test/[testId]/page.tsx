@@ -16,7 +16,7 @@ const SKILL_ORDER = FULL_MOCK_ORDER;
 /** The speaking test runs 11–14 minutes; planning uses the upper end. */
 const SPEAKING_MINUTES = 14;
 
-type Status = 'not-started' | 'in-progress' | 'done';
+type Status = 'not-started' | 'in-progress' | 'done' | 'coming-soon';
 
 function latestFor(sessions: TestSession[], testId: string, skill: IELTSSkillId) {
   // A section done one part at a time (practice mode) still counts as done here,
@@ -37,28 +37,33 @@ export default function FullMockOverviewPage() {
     repository.list(userId).then(setSessions, (e) => console.error('[full-mock-test] History failed', e));
   }, [repository, userId]);
 
-  if (!test || testSkills(test).length !== 4) notFound();
+  if (!test || testSkills(test).length < 1) notFound();
   if (sessions === null) return <ScreenSkeleton />;
 
+  const missingSkills = SKILL_ORDER.filter((skill) => !test.sections[skill]);
+
   const rows = SKILL_ORDER.map((skill) => {
+    if (!test.sections[skill]) return { skill, status: 'coming-soon' as Status, score: undefined };
     const { active, last } = latestFor(sessions, testId, skill);
     const status: Status = last ? 'done' : active ? 'in-progress' : 'not-started';
     const score = last?.result ? `${last.result.correct}/${last.result.total}` : undefined;
     return { skill, status, score, practice: last ? isPractice(last) : false };
   });
   const meta = (skill: IELTSSkillId) => {
-    const sec = test.sections[skill]!;
+    const sec = test.sections[skill];
+    if (!sec) return t('fullMock.comingSoon');
     if (sec.skill === 'writing') return t('tests.rowMetaWriting', { n: sec.tasks.length, minutes: sec.timeLimitMinutes });
     if (sec.skill === 'speaking') return t('tests.rowMetaSpeaking', { n: sec.parts.length });
     return t('tests.rowMeta', { n: questionSlots(sec as ObjectiveSection).length, minutes: sec.timeLimitMinutes });
   };
   const totalMinutes = SKILL_ORDER.reduce((sum, skill) => {
-    const sec = test.sections[skill]!;
+    const sec = test.sections[skill];
+    if (!sec) return sum;
     return sum + (sec.skill === 'speaking' ? SPEAKING_MINUTES : sec.timeLimitMinutes);
   }, 0);
   const doneCount = rows.filter((r) => r.status === 'done').length;
   const allDone = doneCount === 4;
-  const next = rows.find((r) => r.status !== 'done');
+  const next = rows.find((r) => r.status !== 'done' && r.status !== 'coming-soon');
 
   return (
     <div className="space-y-8">
@@ -82,18 +87,23 @@ export default function FullMockOverviewPage() {
           {rows.map(({ skill, status, score, practice }, i) => (
             <ListRow
               key={skill}
-              href={fullMockHref(testId, skill)}
+              href={status === 'coming-soon' ? undefined : fullMockHref(testId, skill)}
               icon={SKILL_ICON[skill]}
-              iconTone={status === 'done' ? 'success' : 'brand'}
+              iconTone={status === 'done' ? 'success' : status === 'coming-soon' ? 'neutral' : 'brand'}
               title={`${i + 1}. ${t(`skills.${skill}`)}`}
               description={meta(skill)}
+              muted={status === 'coming-soon'}
               trailing={
-                <div className="flex items-center gap-1.5">
-                  {status === 'done' && practice && <StatusChip tone="warning">{t('tests.practice.badge')}</StatusChip>}
-                  <StatusChip tone={status === 'done' ? 'success' : status === 'in-progress' ? 'warning' : 'neutral'}>
-                    {score ?? t(`fullMock.status.${status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'done'}`)}
-                  </StatusChip>
-                </div>
+                status === 'coming-soon' ? (
+                  <StatusChip tone="neutral">{t('fullMock.comingSoon')}</StatusChip>
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    {status === 'done' && practice && <StatusChip tone="warning">{t('tests.practice.badge')}</StatusChip>}
+                    <StatusChip tone={status === 'done' ? 'success' : status === 'in-progress' ? 'warning' : 'neutral'}>
+                      {score ?? t(`fullMock.status.${status === 'not-started' ? 'notStarted' : status === 'in-progress' ? 'inProgress' : 'done'}`)}
+                    </StatusChip>
+                  </div>
+                )
               }
             />
           ))}
@@ -113,6 +123,10 @@ export default function FullMockOverviewPage() {
           ))}
         </ul>
       </Section>
+
+      {missingSkills.length > 0 && (
+        <Callout>{t('fullMock.partialNote', { skills: missingSkills.map((s) => t(`skills.${s}`)).join(', ') })}</Callout>
+      )}
 
       {allDone ? (
         <div className="space-y-3">
