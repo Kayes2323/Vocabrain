@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { notFound, useParams } from 'next/navigation';
 import { BookText, ChevronRight, Headphones, Mic, PenLine, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { PageHeader, Panel, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
+import { Callout, PageHeader, Panel, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { ResultSheet } from '@/components/test/ResultSheet';
 import { useTestSessions } from '@/components/test/useTestSessions';
@@ -17,7 +17,9 @@ const SKILL_ICON = { listening: Headphones, reading: BookText, writing: PenLine,
 const SKILL_ORDER: IELTSSkillId[] = ['listening', 'reading', 'writing', 'speaking'];
 
 function latestSubmitted(sessions: TestSession[], testId: string, skill: IELTSSkillId) {
-  return sessions.find((s) => s.testId === testId && s.skill === skill && s.status === 'submitted' && !isPractice(s));
+  // A section done one part at a time (practice mode) still counts here, just
+  // honestly marked as practice — see the note shown when any skill is.
+  return sessions.find((s) => s.testId === testId && s.skill === skill && s.status === 'submitted');
 }
 
 function bandFor(session: TestSession | undefined): number | undefined {
@@ -44,12 +46,15 @@ export default function FullMockResultPage() {
 
   const perSkill = SKILL_ORDER.map((skill) => {
     const session = latestSubmitted(sessions, testId, skill);
-    return { skill, session, band: bandFor(session) };
+    return { skill, session, band: bandFor(session), practice: session ? isPractice(session) : false };
   });
+  const anyPractice = perSkill.some((p) => p.practice);
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8 px-4 py-6 md:py-10">
       <PageHeader title={test.title} subtitle={t('fullMock.libraryTitle')} backHref={`/ielts/full-mock-test/${testId}`} backLabel={test.title} />
+
+      {anyPractice && <Callout>{t('tests.practice.note')}</Callout>}
 
       <ResultSheet
         testTitle={test.title}
@@ -65,7 +70,7 @@ export default function FullMockResultPage() {
 
       <Section title={t('fullMock.perSkill')}>
         <Panel className="divide-y p-0">
-          {perSkill.map(({ skill, session, band }) => {
+          {perSkill.map(({ skill, session, band, practice }) => {
             const Icon = SKILL_ICON[skill];
             return (
               <Link
@@ -77,6 +82,7 @@ export default function FullMockResultPage() {
                 <span className="min-w-0 flex-1 font-medium">{t(`skills.${skill}`)}</span>
                 {session ? (
                   <>
+                    {practice && <StatusChip tone="warning">{t('tests.practice.badge')}</StatusChip>}
                     <StatusChip tone="success">{band !== undefined ? formatBand(band) : '—'}</StatusChip>
                     <span className="text-xs text-muted-foreground">{t('fullMock.seeDetail')}</span>
                   </>
