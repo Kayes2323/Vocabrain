@@ -129,6 +129,44 @@ test('answer keys follow the CONTENT: the option at correctIndex is the correct 
     assert.ok(c.explain.length > 40, `${id}: explanation`);
   }
 });
+test('"tense-control" explanation gives each option its correct grammatical status, found by CONTENT (fails if the correct option is called incorrect)', () => {
+  const c = lesson.steps.find((x) => x.id === 'tense-control')!.check!;
+  // Locate the three options by what they say, never by position.
+  const mixed = c.options.find((o) => /^Car use declined between 2010 and 2023, while the chart illustrates/.test(o))!;
+  const presentSimple = c.options.find((o) => /^Car use declines between 2010 and 2023/.test(o))!;
+  const hadDecline = c.options.find((o) => /^Car use had decline between 2010 and 2023/.test(o))!;
+  assert.ok(mixed && presentSimple && hadDecline && new Set([mixed, presentSimple, hadDecline]).size === 3, 'all three options found by content');
+  assert.equal(c.options[c.correctIndex], mixed, 'the correct answer is the mixed past-simple / present-simple sentence');
+
+  // Split the explanation into one segment per quoted option (in the order they are quoted).
+  const at = (opt: string) => c.explain.indexOf(opt);
+  const starts = [mixed, presentSimple, hadDecline].map((o) => ({ o, i: at(o) }));
+  for (const { o, i } of starts) assert.ok(i >= 0, `the explanation quotes the option: ${o}`);
+  const ordered = starts.slice().sort((a, b) => a.i - b.i);
+  const segment = (opt: string) => {
+    const k = ordered.findIndex((x) => x.o === opt);
+    return c.explain.slice(ordered[k].i + opt.length, k + 1 < ordered.length ? ordered[k + 1].i : undefined);
+  };
+  const m = segment(mixed), p = segment(presentSimple), h = segment(hadDecline);
+
+  // Option: correct mixed tense — past simple for the change, present simple for what the chart shows.
+  assert.match(m, /\bis correct\b/);
+  assert.ok(!/incorrect|wrong|not valid/i.test(m), `the correct option must not be called incorrect: ${m}`);
+  assert.match(m, /"declined" is past simple for a completed historical change/);
+  assert.match(m, /"illustrates" is present simple for what the chart shows/);
+  // Option: present simple used for a completed historical change.
+  assert.match(p, /\bis incorrect\b/);
+  assert.match(p, /present simple does not suit a completed historical change/);
+  assert.ok(!/\bis correct\b/.test(p), p);
+  // Option: invalid verb form; past perfect would need "had declined", and is unnecessary here.
+  assert.match(h, /\bis incorrect\b/);
+  assert.match(h, /"had decline" is not a valid verb form/);
+  assert.match(h, /"had declined"/);
+  assert.match(h, /past perfect is not needed in this sentence/);
+  assert.ok(!/\bis correct\b/.test(h), h);
+  // No positional wording that could go stale if the options are reordered.
+  assert.ok(!/\b(first|second|third)\b/i.test(c.explain), 'no positional references');
+});
 test('the specified answer meaning is kept: the spec\'s letter keys map to the same correct options after balancing', () => {
   // Spec keys (A=0,B=1,C=2) -> the option that was correct there; checked by content above, restated here by the spec's own letters.
   const spec: Record<string, string> = {

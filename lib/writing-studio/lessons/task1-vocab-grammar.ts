@@ -240,7 +240,7 @@ export const task1VocabGrammarLesson: Lesson = {
         ],
         correctIndex: 0,
         explain:
-          '"Declined" describes a completed historical change, and "illustrates" describes what the chart shows, so present simple is appropriate there. The first option uses present simple for a completed historical change, and the third has an incorrect past-perfect structure.',
+          "\"Car use declined between 2010 and 2023, while the chart illustrates five transport methods.\" is correct: \"declined\" is past simple for a completed historical change, and \"illustrates\" is present simple for what the chart shows. \"Car use declines between 2010 and 2023, according to the completed historical data.\" is incorrect, because present simple does not suit a completed historical change. \"Car use had decline between 2010 and 2023.\" is incorrect: \"had decline\" is not a valid verb form. Past perfect would be \"had declined\", but past perfect is not needed in this sentence.",
       },
     },
     {
