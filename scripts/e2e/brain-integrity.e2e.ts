@@ -175,8 +175,9 @@ async function main() {
     const uid2 = (await uidOf(q))!;
     await q.getByTestId('quick-access').waitFor({ timeout: 60_000 });
     const existing = applyRecall(createBrainWord(getWordBankInfo('band6_001')!.info, { type: 'word-bank', title: 'IELTS word bank · Band 6' }, undefined, NOW), 'recall-en', true, 'abundant', NOW, 'good'); // learner already has progress on "abundant"
-    await seed(uid2, existing);
+    // Rules first, then the word: the browser never receives it, so nothing is cached on this device.
     await setRules(denyVocabRead());
+    await seed(uid2, existing);
     await q.goto(BASE + '/ielts/vocabulary/notebook', { waitUntil: 'load' });
     const err = await q.getByTestId('brain-load-error').waitFor({ timeout: 40_000 }).then(() => true, () => false);
     const body = await q.locator('body').innerText();
