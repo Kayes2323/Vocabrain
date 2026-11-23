@@ -310,6 +310,57 @@ async function main() {
     assert.ok(feedback.criteria.every((c) => c.band === null), 'every criterion band forced to null');
   });
 
+  await test('writing studio: a paragraph-only LANGUAGE drill (vocabulary/grammar focus) is judged on language, while Lesson 05\'s paragraph-development drill keeps its own rules', async () => {
+    const chart = { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] };
+    const run = async (skillFocus: string) => {
+      calls.length = 0;
+      const { feedback } = await assessWritingStudioTask(
+        fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }, { criterion: 'Lexical Resource', band: 6.5, comment: 'ok' }] })),
+        { task: 1, prompt: 'Write with Precise Vocabulary and Grammar.', minWords: 80, chart, skillFocus, checkScope: 'paragraph-only' },
+        'Car use declined from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points, whereas bicycle use increased substantially from 6% to 19%.',
+        'en',
+      );
+      return { sys: calls[0].system, feedback };
+    };
+    const lang = await run('Task 1 vocabulary precision and grammatical accuracy');
+    const sys = lang.sys;
+    assert.match(sys, /Task 1 vocabulary precision and grammatical accuracy/);
+    assert.match(sys, /TARGETED SKILL DRILL/);
+    // language criteria
+    assert.match(sys, /vocabulary accuracy — a trend verb that matches the real direction/);
+    assert.match(sys, /check EVERY figure against the task data/);
+    assert.match(sys, /percentage points used correctly \(never "13%" for a 13-percentage-point difference\)/);
+    assert.match(sys, /tense chosen by the time reference/);
+    assert.match(sys, /do NOT demand past tense for every verb/);
+    assert.match(sys, /subject–verb agreement, articles, countable\/uncountable nouns, prepositions/);
+    assert.match(sys, /comparative structures/);
+    assert.match(sys, /unsupported when the data has only two time points/);
+    assert.match(sys, /must not be read as a statistical claim/);
+    assert.match(sys, /never credit advanced vocabulary or complex grammar that is wrong/);
+    // accepts alternatives
+    assert.match(sys, /do NOT require the student to use any particular vocabulary item, a fixed number of linking words, or any specific sentence pattern/);
+    // what it must NOT penalise
+    assert.match(sys, /do NOT penalise.*missing introduction, a missing overview, not being a complete Task 1 response, not reaching a full Task 1 word count \(150\/250 words\)/i);
+    // teacher feedback
+    assert.match(sys, /quote each exact error you report and say why it is incorrect/);
+    assert.match(sys, /show a corrected version/);
+    assert.match(sys, /revise one or two priority issues themselves/);
+    assert.match(sys, /do not rewrite the whole paragraph/);
+    // not the other rubrics
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.doesNotMatch(sys, /paragraph focus and organisation/);
+    assert.doesNotMatch(sys, /accuracy of the main trend/);
+    assert.equal(lang.feedback.band, null);
+    assert.ok(lang.feedback.criteria.every((c) => c.band === null), 'every criterion band forced to null');
+    // Lesson 05's paragraph-development rubric is unchanged and is NOT the language rubric
+    const para = await run('Task 1 body paragraph development');
+    assert.match(para.sys, /paragraph focus and organisation/);
+    assert.match(para.sys, /logical grouping of related information/);
+    assert.doesNotMatch(para.sys, /vocabulary accuracy — a trend verb/);
+    assert.doesNotMatch(para.sys, /tense chosen by the time reference/);
+    assert.equal(para.feedback.band, null);
+  });
+
   await test('writing studio: introduction-only and overview-only drills are still routed to their own rules (paragraph-only did not capture them)', async () => {
     const run = async (checkScope: 'introduction-only' | 'overview-only' | 'paragraph-only' | undefined) => {
       calls.length = 0;

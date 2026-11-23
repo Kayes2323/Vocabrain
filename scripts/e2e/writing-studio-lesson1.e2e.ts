@@ -88,8 +88,8 @@ async function main() {
     check('lesson reaches "Lesson complete"', true);
 
     // ---------------------------------------------------------------- other lessons are unaffected
-    await page.goto(BASE + '/ielts/writing-studio/task1/lesson/task1-vocab-grammar', { waitUntil: 'load' });
-    await page.getByText('Precise Trend and Comparison Language', { exact: false }).first().waitFor({ timeout: 30_000 });
+    await page.goto(BASE + '/ielts/writing-studio/task2/lesson/question-types', { waitUntil: 'load' });
+    await page.getByText('Understanding Question Types', { exact: false }).first().waitFor({ timeout: 30_000 });
     for (let i = 0; i < 15; i++) {
       const next = page.getByRole('button', { name: /^(Continue|Start writing)$/ });
       if (!(await next.count())) break;
@@ -103,13 +103,13 @@ async function main() {
     const otherEditor = page.locator('#ws-editor');
     await otherEditor.waitFor({ timeout: 15_000 });
     await otherEditor.fill(
-      'The number of visitors rose sharply in the first year. Online sales increased steadily, whereas in-store sales declined by a similar amount. Average prices remained broadly stable for most of the period.',
+      'This is a discuss both views and give your own opinion question, so I would introduce both views, develop each in its own body paragraph, and state my opinion clearly. However, the structure must stay balanced because the question asks for both views and an opinion.',
     );
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
     await page.getByText(/Mino's assessment|Local practice check/).first().waitFor({ timeout: 60_000 });
     const otherFeedbackText = await page.locator('main').innerText();
     check(
-      'a lesson without skillFocus (task1-vocab-grammar) is unaffected: still shows band-based feedback, not a skill check',
+      'a lesson without skillFocus (task2 question-types) is unaffected: still shows band-based feedback, not a skill check',
       !/Skill check:/.test(otherFeedbackText),
     );
   } catch (e) {

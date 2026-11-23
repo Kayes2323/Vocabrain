@@ -148,6 +148,19 @@ ${JSON_SHAPE}`;
 }
 
 /**
+ * A paragraph-only drill whose named skill is LANGUAGE (vocabulary precision / grammatical
+ * accuracy) is judged on the language of the paragraph, not on how it is organised. Both kinds
+ * of drill share the 'paragraph-only' scope, so they are told apart by the skill name.
+ */
+const LANGUAGE_FOCUS = /\b(vocabulary|grammatical|grammar)\b/i;
+
+const LANGUAGE_DRILL_RULES = (task: 1 | 2) =>
+  `Assess ONLY this skill, using the task data supplied: the student's vocabulary precision and grammatical accuracy in ONE body paragraph. Judge: (1) vocabulary accuracy — a trend verb that matches the real direction, a magnitude word or adverb that matches the real size of the change (no exaggeration, no inappropriate synonyms), natural collocations; (2) data language — check EVERY figure against the task data, percentage points used correctly (never "13%" for a 13-percentage-point difference), accurate comparisons and any relative statements; (3) grammar — tense chosen by the time reference (completed past changes in past simple; what the chart shows may be present simple; do NOT demand past tense for every verb), subject–verb agreement, articles, countable/uncountable nouns, prepositions (from/to/by/at), comparative structures and sentence construction; (4) clarity and cohesion — meaningful connections, useful variety, no needless complexity, no repetition that obscures meaning.
+Accuracy about the data matters more than sophistication: never credit advanced vocabulary or complex grammar that is wrong or says something the data does not support. Words about pace (gradually, steadily, sharply, rapidly) describe how a change developed, so they are unsupported when the data has only two time points; "significant"/"significantly" is ordinary descriptive language here and must not be read as a statistical claim. Accept any valid alternative expression or structure: do NOT require the student to use any particular vocabulary item, a fixed number of linking words, or any specific sentence pattern.
+The answer is meant to be ONE body paragraph for a language exercise: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, a missing overview, not being a complete Task ${task} response, not reaching a full Task ${task} word count (150/250 words), or being shorter than the suggested length. Do not assess paragraph organisation beyond what affects the clarity of the language.
+Give feedback as a teacher: name the student's strongest language decision; quote each exact error you report and say why it is incorrect; show a corrected version of that phrase or sentence; ask the student to revise one or two priority issues themselves; and do not rewrite the whole paragraph for them.`;
+
+/**
  * Rules for a drill whose whole answer is ONE body paragraph (checkScope 'paragraph-only').
  * Without this branch a paragraph drill would fall through to the introduction-paraphrase
  * rules, which judge the wrong skill and tell the model to ignore the very figures and
@@ -189,7 +202,9 @@ export async function assessWritingStudioTask(
   // instead: the overview itself is what is being tested there.
   const drillRules =
     input.checkScope === 'paragraph-only'
-      ? PARAGRAPH_DRILL_RULES(input.task)
+      ? LANGUAGE_FOCUS.test(input.skillFocus ?? '')
+        ? LANGUAGE_DRILL_RULES(input.task)
+        : PARAGRAPH_DRILL_RULES(input.task)
       : input.checkScope === 'overview-only'
       ? `Assess ONLY this skill, using the task data supplied: (1) accuracy of the main trend; (2) the key features selected (the most significant patterns, not every figure); (3) correct direction of change and correct attribution of each figure to the right category and year; (4) avoidance of unsupported claims (invented causes, opinions, trends the data does not show, percentage points confused with percentage growth, a percentage reported as a number of people); (5) clarity and concise expression.
 Check every claim against the task data and name any claim the data contradicts in "mistakes". The answer is meant to be a short overview only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, missing body paragraphs, missing detailed figures, or not reaching a full Task ${input.task} word count (150/250 words).
