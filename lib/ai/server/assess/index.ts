@@ -148,6 +148,31 @@ ${JSON_SHAPE}`;
 }
 
 /**
+ * A paragraph-only drill whose named skill is LANGUAGE (vocabulary precision / grammatical
+ * accuracy) is judged on the language of the paragraph, not on how it is organised. Both kinds
+ * of drill share the 'paragraph-only' scope, so they are told apart by the skill name.
+ */
+const LANGUAGE_FOCUS = /\b(vocabulary|grammatical|grammar)\b/i;
+
+const LANGUAGE_DRILL_RULES = (task: 1 | 2) =>
+  `Assess ONLY this skill, using the task data supplied: the student's vocabulary precision and grammatical accuracy in ONE body paragraph. Judge: (1) vocabulary accuracy — a trend verb that matches the real direction, a magnitude word or adverb that matches the real size of the change (no exaggeration, no inappropriate synonyms), natural collocations; (2) data language — check EVERY figure against the task data, percentage points used correctly (never "13%" for a 13-percentage-point difference), accurate comparisons and any relative statements; (3) grammar — tense chosen by the time reference (completed past changes in past simple; what the chart shows may be present simple; do NOT demand past tense for every verb), subject–verb agreement, articles, countable/uncountable nouns, prepositions (from/to/by/at), comparative structures and sentence construction; (4) clarity and cohesion — meaningful connections, useful variety, no needless complexity, no repetition that obscures meaning.
+Accuracy about the data matters more than sophistication: never credit advanced vocabulary or complex grammar that is wrong or says something the data does not support. Words about pace (gradually, steadily, sharply, rapidly) describe how a change developed, so they are unsupported when the data has only two time points; "significant"/"significantly" is ordinary descriptive language here and must not be read as a statistical claim. Accept any valid alternative expression or structure: do NOT require the student to use any particular vocabulary item, a fixed number of linking words, or any specific sentence pattern.
+The answer is meant to be ONE body paragraph for a language exercise: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, a missing overview, not being a complete Task ${task} response, not reaching a full Task ${task} word count (150/250 words), or being shorter than the suggested length. Do not assess paragraph organisation beyond what affects the clarity of the language.
+Give feedback as a teacher: name the student's strongest language decision; quote each exact error you report and say why it is incorrect; show a corrected version of that phrase or sentence; ask the student to revise one or two priority issues themselves; and do not rewrite the whole paragraph for them.`;
+
+/**
+ * Rules for a drill whose whole answer is ONE body paragraph (checkScope 'paragraph-only').
+ * Without this branch a paragraph drill would fall through to the introduction-paraphrase
+ * rules, which judge the wrong skill and tell the model to ignore the very figures and
+ * comparisons a paragraph is about.
+ */
+const PARAGRAPH_DRILL_RULES = (task: 1 | 2) =>
+  `Assess ONLY this skill, using the task data supplied: (1) paragraph focus and organisation — one clear organising idea and a logical sequence; (2) logical grouping of related information; (3) relevance and selection of supporting details (not every figure); (4) accurate figure attribution and data interpretation — check EVERY numerical claim against the task data, name any wrong figure, year or category in "mistakes", and distinguish percentage points from relative percentage growth; (5) meaningful comparisons rather than isolated figures; (6) evidence that supports each generalisation; (7) cohesion and logical progression (linking words only where they express a real relationship); (8) repetition and unnecessary data dumping; (9) unsupported causes or claims; (10) grammar and vocabulary only insofar as they affect the paragraph's clarity.
+Accept any defensible grouping and any accurate paragraph structure: do NOT require a fixed opening sentence, a fixed number of sentences, all categories, or every figure. Never credit an unsupported causal explanation, and never credit sophisticated vocabulary when the data interpretation is wrong.
+The answer is meant to be ONE body paragraph only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, a missing overview, not being a complete Task ${task} response, not reaching a full Task ${task} word count (150/250 words), or being shorter than the suggested length. If the student wrote an introduction or an overview instead of a body paragraph, say that as the main weakness instead of assessing it as though it were the paragraph.
+Give feedback as a teacher: say what the student did correctly; name the most important weakness and quote the exact evidence from their paragraph; explain why it weakens the paragraph; give one or two actionable improvements; offer an improved example only where it genuinely helps; and ask the student to attempt the correction themselves.`;
+
+/**
  * Mino Writing Studio: assesses one free-standing practice answer (a lesson's
  * final task, a practice board submission, or one exam-mode task). Unlike
  * `assessWriting`, the prompt/minWords/chart data come straight from the
@@ -156,7 +181,7 @@ ${JSON_SHAPE}`;
  */
 export async function assessWritingStudioTask(
   provider: AIProvider,
-  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string },
+  input: { task: 1 | 2; prompt: string; minWords: number; chart?: { caption: string; headers: string[]; rows: string[][] }; skillFocus?: string; checkScope?: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only' },
   answer: string,
   language: 'en' | 'bn',
 ): Promise<{ feedback: TaskFeedback; model: string }> {
@@ -172,10 +197,24 @@ export async function assessWritingStudioTask(
   // A skill drill (e.g. "paraphrase just the introduction") is not a full Task
   // response: the model must judge only the named skill, never the things a
   // full response would need (overview, body, figures, 150/250 words).
+  // The default drill wording is for a paraphrase/introduction drill. A drill whose
+  // whole answer IS an overview (checkScope 'overview-only') is judged on the data
+  // instead: the overview itself is what is being tested there.
+  const drillRules =
+    input.checkScope === 'paragraph-only'
+      ? LANGUAGE_FOCUS.test(input.skillFocus ?? '')
+        ? LANGUAGE_DRILL_RULES(input.task)
+        : PARAGRAPH_DRILL_RULES(input.task)
+      : input.checkScope === 'overview-only'
+      ? `Assess ONLY this skill, using the task data supplied: (1) accuracy of the main trend; (2) the key features selected (the most significant patterns, not every figure); (3) correct direction of change and correct attribution of each figure to the right category and year; (4) avoidance of unsupported claims (invented causes, opinions, trends the data does not show, percentage points confused with percentage growth, a percentage reported as a number of people); (5) clarity and concise expression.
+Check every claim against the task data and name any claim the data contradicts in "mistakes". The answer is meant to be a short overview only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, missing body paragraphs, missing detailed figures, or not reaching a full Task ${input.task} word count (150/250 words).
+Judge the overview on its substance, not its wording: accept any accurate phrasing and any defensible choice of main features. Do NOT require the word "Overall" or any fixed opening, do NOT require every category to be mentioned, and do NOT mark a clear one-sentence overview down because two sentences were suggested. Do not accept a trend the data contradicts just because the grammar is sophisticated, and never credit invented causes or information the chart does not show.
+Give feedback as a teacher, not only an examiner: say what the student understood correctly; name the most important missing feature, if any; explain any incorrect interpretation against the data; show how the observations could be grouped (for example one contrast plus one stable or supporting feature); give one or two specific improvements; offer an improved example only when it genuinely helps; and encourage the student to revise the overview themselves.`
+      : `Assess ONLY this skill: accurate paraphrasing, preservation of the original meaning, preservation of key information (names, dates, units, categories, numbers), grammar and natural academic wording, and avoidance of unsupported additions (opinions, invented causes, data not asked for). Also say whether the answer is a genuine paraphrase or mostly the question's own wording copied back, and judge that the visual type, measurement, categories and time/place are all kept. Restating the question's own dates is correct, not an added figure.
+Do NOT penalise, mention as a weakness, or lower anything for: a missing overview, missing body paragraphs, missing chart figures, or not reaching a full Task ${input.task} word count (150/250 words) — none of that is being tested in this drill.`;
   const system = input.skillFocus
     ? `You are Mino, an experienced IELTS Writing coach. The student is doing a short, TARGETED SKILL DRILL inside a teaching module, not a complete Task ${input.task} response. The skill being trained is: "${input.skillFocus}".
-Assess ONLY this skill: accurate paraphrasing, preservation of the original meaning, preservation of key information (names, dates, units, categories, numbers), grammar and natural academic wording, and avoidance of unsupported additions (opinions, invented causes, data not asked for).
-Do NOT penalise, mention as a weakness, or lower anything for: a missing overview, missing body paragraphs, missing chart figures, or not reaching a full Task ${input.task} word count (150/250 words) — none of that is being tested in this drill.
+${drillRules}
 Criteria names to use (exactly): ${names.join(', ')}. This is a skill drill, not a scored task: set every criterion's "band" to null. Put your assessment of the targeted skill in the first criterion's "comment", and your real findings into "mistakes", "strengths" and "actions".
 ${languageRule(language)}
 Quotes in "mistakes" and "betterSentences.original" MUST be copied exactly from the answer.

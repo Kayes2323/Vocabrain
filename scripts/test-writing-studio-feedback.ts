@@ -160,4 +160,97 @@ test('task2 full (unchanged): a genuinely under-length answer is still flagged a
   assert.ok(r.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)));
 });
 
+// ---------------------------------------------------------------- full Task 1: the local fallback must not judge the overview by phrase-spotting
+
+const FULL_INTRO = 'The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023.';
+const FULL_BODY_1 =
+  'Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023.';
+const FULL_BODY_2 =
+  'In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years.';
+const OVERVIEW_WITH_OVERALL =
+  'Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged.';
+// An accurate overview that contains none of the predefined overview phrases ("overall", "in general", "it is clear that", ...).
+const OVERVIEW_WITHOUT_PHRASE =
+  'Car use stayed the most common form of transport even though it declined, whereas cycling grew the most and walking did not change at all.';
+// A contradictory overview that nevertheless starts with "Overall".
+const OVERVIEW_CONTRADICTORY =
+  'Overall, every transport method became more popular, and car use increased the most, while walking also rose sharply.';
+const full = (overview: string) => [FULL_INTRO, overview, FULL_BODY_1, FULL_BODY_2].join('\n\n');
+const LIMIT_NOTE = /cannot reliably tell whether your response has a clear overview, or whether it summarises the main features accurately/;
+const overviewClaims = (r: ReturnType<typeof checkEssay>) => [...r.strengths, ...r.mistakes.flatMap((m) => [m.why, m.fix, m.quote])].filter((x) => /overview/i.test(x));
+
+test('full Task 1: a valid response whose overview starts with "Overall" gets no missing-overview error and no credit for it', () => {
+  const r = checkEssay(full(OVERVIEW_WITH_OVERALL), 150, 'task1', 'full');
+  assert.equal(r.meetsLength, true);
+  assert.deepEqual(r.mistakes, [], JSON.stringify(r.mistakes));
+  assert.deepEqual(overviewClaims(r), [], 'the presence of "Overall" is not treated as proof of an overview');
+  assert.ok(r.suggestions.some((x) => LIMIT_NOTE.test(x)), 'a neutral limitation note is given instead');
+});
+test('full Task 1: a valid response with an accurate overview that uses NO predefined overview phrase gets no missing-overview error', () => {
+  const text = full(OVERVIEW_WITHOUT_PHRASE);
+  for (const p of ['overall', 'in general', 'it is clear that', 'the main feature', 'the most striking', 'a general trend']) assert.ok(!text.toLowerCase().includes(p), `fixture must not contain "${p}"`);
+  const r = checkEssay(text, 150, 'task1', 'full');
+  assert.equal(r.meetsLength, true);
+  assert.deepEqual(r.mistakes, [], JSON.stringify(r.mistakes));
+  const found: { why: string; fix: string }[] = r.mistakes;
+  assert.ok(!found.some((m) => /overview|stands back|summarises the main trend/i.test(m.why + m.fix)));
+  assert.ok(r.suggestions.some((x) => LIMIT_NOTE.test(x)));
+});
+test('full Task 1: the "with Overall" and "without a phrase" responses get the same local verdict (the checker does not read the overview)', () => {
+  const a = checkEssay(full(OVERVIEW_WITH_OVERALL), 150, 'task1', 'full');
+  const b = checkEssay(full(OVERVIEW_WITHOUT_PHRASE), 150, 'task1', 'full');
+  assert.deepEqual(a.mistakes, b.mistakes);
+  assert.deepEqual(a.suggestions.filter((x) => LIMIT_NOTE.test(x)), b.suggestions.filter((x) => LIMIT_NOTE.test(x)));
+});
+test('full Task 1: a contradictory overview is NOT declared accurate — no overview credit, and the limitation is stated instead', () => {
+  const r = checkEssay(full(OVERVIEW_CONTRADICTORY), 150, 'task1', 'full');
+  assert.deepEqual(overviewClaims(r), [], 'no strength or verdict about the overview is claimed');
+  assert.ok(!r.strengths.some((x) => /accurate|correct|clear overview|overview-style/i.test(x)), JSON.stringify(r.strengths));
+  const note = r.suggestions.find((x) => LIMIT_NOTE.test(x));
+  assert.ok(note, 'the limitation note is present');
+  assert.match(note!, /is every claim true to the chart\?/, 'asks the learner to check accuracy themselves');
+  assert.match(note!, /cannot reliably/);
+});
+test('full Task 1: the existing word-count, figure and surface checks still work', () => {
+  const short = checkEssay('Overall, car use fell from 52% to 38%. However, cycling rose from 6% to 19%, for example.', 150, 'task1', 'full');
+  assert.equal(short.meetsLength, false);
+  assert.ok(short.mistakes.some((m) => m.category === 'Task response' && /underdeveloped/.test(m.why)), '150-word rule is kept');
+  assert.ok(short.suggestions.some((x) => LIMIT_NOTE.test(x)), 'limitation note is also given on a short answer');
+  assert.ok(!short.suggestions.some((x) => /Suggested length/.test(x)), 'no soft-length drill wording on a full task');
+  const noFigures = checkEssay(full(OVERVIEW_WITH_OVERALL).replace(/\d+%/g, 'a share').replace(/\d+ percentage points/g, 'some points').replace(/\d+/g, 'some'), 150, 'task1', 'full');
+  assert.ok(noFigures.mistakes.some((m) => /specific data/.test(m.why)), 'figure check is kept');
+  const contraction = checkEssay(full(OVERVIEW_WITH_OVERALL) + " Walking isn't the only category that stayed the same.", 150, 'task1', 'full');
+  assert.ok(contraction.mistakes.some((m) => /Contractions/.test(m.why)), 'contraction check is kept');
+  const noLinkers = checkEssay('The chart shows commuters. Car use fell from 52% to 38% and bicycle use rose from 6% to 19%. ' + 'Walking was 7% in both years. '.repeat(12), 150, 'task1', 'full');
+  assert.ok(noLinkers.mistakes.some((m) => /linking words/.test(m.why)), 'linker check is kept');
+  assert.equal(typeof short.indicativeBand, 'number');
+});
+test('skill drills are unchanged: no limitation note and no overview demands for introduction-only, overview-only (drill) and paragraph-only (drill)', () => {
+  const intro = checkEssay(FULL_INTRO, 18, 'task1', 'introduction-only', true);
+  const overview = checkEssay(OVERVIEW_WITHOUT_PHRASE, 25, 'task1', 'overview-only', true);
+  const para = checkEssay(FULL_BODY_1, 80, 'task1', 'paragraph-only', true);
+  for (const r of [intro, overview, para]) {
+    assert.ok(!r.suggestions.some((x) => LIMIT_NOTE.test(x)), 'the full-task note is not shown in a drill');
+    assert.ok(!r.mistakes.some((m) => /dedicated overview|linking words/.test(m.why)), JSON.stringify(r.mistakes));
+  }
+  assert.deepEqual(intro.mistakes, []);
+  assert.deepEqual(overview.mistakes, []);
+  assert.deepEqual(para.mistakes, []);
+});
+test('non-drill overview-only and paragraph-only Task 1 keep their phrase check (only full changed)', () => {
+  const ov = checkEssay('The chart shows travel methods in a city.', 10, 'task1', 'overview-only');
+  assert.ok(ov.mistakes.some((m) => /dedicated overview/.test(m.why)));
+  const pg = checkEssay('Car use fell from 52% to 38% while bicycle use rose from 6% to 19%.', 10, 'task1', 'paragraph-only');
+  assert.ok(pg.mistakes.some((m) => /dedicated overview/.test(m.why)));
+  assert.ok(!ov.suggestions.some((x) => LIMIT_NOTE.test(x)) && !pg.suggestions.some((x) => LIMIT_NOTE.test(x)));
+  const withPhrase = checkEssay('Overall, car use fell while cycling rose.', 5, 'task1', 'overview-only');
+  assert.ok(withPhrase.strengths.some((x) => /overview-style sentence/.test(x)), 'non-full scopes still credit the phrase, as before');
+});
+test('Task 2 fallback is unchanged: no overview note, position and paragraph checks as before', () => {
+  const r = checkEssay('Some people enjoy city life. Cities offer jobs.', 10, 'task2', 'full');
+  assert.ok(!r.suggestions.some((x) => LIMIT_NOTE.test(x)));
+  assert.ok(r.mistakes.some((m) => /clear personal position/.test(m.why)));
+  assert.ok(r.mistakes.some((m) => /introduction, at least two body paragraphs/.test(m.why)));
+});
+
 console.log(`\n${passed} passed`);

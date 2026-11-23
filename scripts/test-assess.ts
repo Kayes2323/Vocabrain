@@ -177,6 +177,243 @@ async function main() {
     assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/, 'tells the model what not to penalise');
   });
 
+  await test('writing studio: an overview-only skill drill is judged on the data (trend, direction, attribution, unsupported claims), not on paraphrasing', async () => {
+    calls.length = 0;
+    const answer = `Car use remained the most common way to travel to work despite falling noticeably, while cycling rose sharply and narrowed the gap.`;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }] })),
+      {
+        task: 1,
+        prompt: 'Write the main message of the chart.',
+        minWords: 20,
+        chart: { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] },
+        skillFocus: 'Chart interpretation and key-feature selection',
+        checkScope: 'overview-only',
+      },
+      answer,
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Chart interpretation and key-feature selection/);
+    assert.match(sys, /accuracy of the main trend/);
+    assert.match(sys, /correct direction of change and correct attribution/);
+    assert.match(sys, /percentage points confused with percentage growth/);
+    assert.match(sys, /missing introduction, missing body paragraphs, missing detailed figures/, 'tells the model what not to penalise');
+    assert.doesNotMatch(sys, /accurate paraphrasing/, 'must not fall back to the introduction/paraphrase drill wording');
+    assert.match(calls[0].messages[0].content as string, /Car \| 52 \| 38/, 'the chart data reaches the model so claims can be checked');
+    assert.equal(feedback.band, null, 'still never a band');
+  });
+
+  await test('writing studio: a drill with checkScope introduction-only (Lesson 01) keeps the original paraphrase wording', async () => {
+    calls.length = 0;
+    await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+      { task: 1, prompt: 'Paraphrase.', minWords: 20, skillFocus: 'Paraphrasing accuracy for a Task 1 introduction', checkScope: 'introduction-only' },
+      `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`,
+      'en',
+    );
+    assert.match(calls[0].system, /accurate paraphrasing/);
+    assert.match(calls[0].system, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures/);
+  });
+
+  await test('writing studio: an introduction-only drill asks the model to judge genuine paraphrase vs copying and accepts restated dates', async () => {
+    calls.length = 0;
+    await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+      { task: 1, prompt: 'Write an accurate introduction.', minWords: 18, skillFocus: 'Task 1 introduction paraphrasing accuracy', checkScope: 'introduction-only' },
+      'The bar chart compares the proportions of commuters travelling by five different forms of transport in one city in 2010 and 2023.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 introduction paraphrasing accuracy/);
+    assert.match(sys, /genuine paraphrase or mostly the question's own wording copied back/);
+    assert.match(sys, /Restating the question's own dates is correct, not an added figure/);
+    assert.match(sys, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/);
+  });
+
+  await test('writing studio: the overview drill prompt scopes to feature selection, accepts valid alternatives, and coaches instead of only correcting', async () => {
+    calls.length = 0;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }] })),
+      {
+        task: 1,
+        prompt: 'Write Your Own Overview.',
+        minWords: 25,
+        chart: { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19'], ['Walking', '7', '7']] },
+        skillFocus: 'Task 1 overview feature selection and synthesis',
+        checkScope: 'overview-only',
+      },
+      'Although car use fell, it stayed the leading method, while cycling rose sharply and walking was unchanged.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 overview feature selection and synthesis/);
+    assert.match(sys, /key features selected/);
+    assert.match(sys, /accuracy of the main trend/);
+    assert.match(sys, /Check every claim against the task data/);
+    assert.match(sys, /accept any accurate phrasing and any defensible choice of main features/);
+    assert.match(sys, /do NOT require the word "Overall"/i);
+    assert.match(sys, /do NOT require every category to be mentioned/i);
+    assert.match(sys, /do NOT mark a clear one-sentence overview down/i);
+    assert.match(sys, /never credit invented causes/);
+    assert.match(sys, /as a teacher, not only an examiner/);
+    assert.match(sys, /most important missing feature/);
+    assert.match(sys, /encourage the student to revise/);
+    assert.match(sys, /do NOT penalise.*missing introduction.*missing body paragraphs.*word count \(150\/250 words\)/i, 'no full-task requirements');
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.equal(feedback.band, null, 'never a band');
+    assert.ok(feedback.criteria.every((c) => c.band === null));
+  });
+
+  await test('writing studio: a paragraph-only drill gets its own rules (NOT the introduction-paraphrase rules) and never a band', async () => {
+    calls.length = 0;
+    const chart = { caption: 'Renewable electricity, 2000-2020 (% of total generation)', headers: ['Year', 'Denmark', 'Country B', 'Country C'], rows: [['2000', '14', '6', '9'], ['2020', '62', '27', '16']] };
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        // A non-compliant model that returns real-looking bands: the server must still zero them out.
+        criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }, { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'ok' }],
+      })),
+      { task: 1, prompt: 'Write One Well-Developed Body Paragraph.', minWords: 70, chart, skillFocus: 'Task 1 body paragraph development', checkScope: 'paragraph-only' },
+      'Denmark recorded the highest proportion throughout, rising from 14% in 2000 to 62% in 2020, whereas Country C grew more gradually from 9% to 16%.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 body paragraph development/);
+    assert.match(sys, /TARGETED SKILL DRILL/);
+    // paragraph-development criteria
+    assert.match(sys, /paragraph focus and organisation/);
+    assert.match(sys, /logical grouping of related information/);
+    assert.match(sys, /relevance and selection of supporting details/);
+    assert.match(sys, /check EVERY numerical claim against the task data/);
+    assert.match(sys, /distinguish percentage points from relative percentage growth/);
+    assert.match(sys, /meaningful comparisons/);
+    assert.match(sys, /cohesion and logical progression/);
+    assert.match(sys, /repetition and unnecessary data dumping/);
+    assert.match(sys, /unsupported causes or claims/);
+    assert.match(sys, /grammar and vocabulary only insofar as they affect/);
+    // accepts alternatives
+    assert.match(sys, /Accept any defensible grouping and any accurate paragraph structure/);
+    assert.match(sys, /do NOT require a fixed opening sentence, a fixed number of sentences, all categories, or every figure/);
+    assert.match(sys, /Never credit an unsupported causal explanation/);
+    // what it must NOT penalise
+    assert.match(sys, /do NOT penalise.*missing introduction, a missing overview, not being a complete Task 1 response, not reaching a full Task 1 word count \(150\/250 words\)/i);
+    assert.match(sys, /introduction or an overview instead of a body paragraph/);
+    // teacher feedback
+    assert.match(sys, /ask the student to attempt the correction themselves/);
+    // MUST NOT be routed through the introduction-paraphrase rules, nor the overview rules
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.doesNotMatch(sys, /preservation of the original meaning/);
+    assert.doesNotMatch(sys, /missing overview, missing body paragraphs, missing chart figures/, 'the introduction drill tells the model to ignore figures — wrong for a paragraph');
+    assert.doesNotMatch(sys, /accuracy of the main trend/, 'not the overview-only rules either');
+    assert.match(calls[0].messages[0].content as string, /2000 \| 14 \| 6 \| 9/, 'the chart data reaches the model');
+    assert.equal(feedback.band, null, 'band forced to null');
+    assert.ok(feedback.criteria.every((c) => c.band === null), 'every criterion band forced to null');
+  });
+
+  await test('writing studio: a paragraph-only LANGUAGE drill (vocabulary/grammar focus) is judged on language, while Lesson 05\'s paragraph-development drill keeps its own rules', async () => {
+    const chart = { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] };
+    const run = async (skillFocus: string) => {
+      calls.length = 0;
+      const { feedback } = await assessWritingStudioTask(
+        fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }, { criterion: 'Lexical Resource', band: 6.5, comment: 'ok' }] })),
+        { task: 1, prompt: 'Write with Precise Vocabulary and Grammar.', minWords: 80, chart, skillFocus, checkScope: 'paragraph-only' },
+        'Car use declined from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points, whereas bicycle use increased substantially from 6% to 19%.',
+        'en',
+      );
+      return { sys: calls[0].system, feedback };
+    };
+    const lang = await run('Task 1 vocabulary precision and grammatical accuracy');
+    const sys = lang.sys;
+    assert.match(sys, /Task 1 vocabulary precision and grammatical accuracy/);
+    assert.match(sys, /TARGETED SKILL DRILL/);
+    // language criteria
+    assert.match(sys, /vocabulary accuracy — a trend verb that matches the real direction/);
+    assert.match(sys, /check EVERY figure against the task data/);
+    assert.match(sys, /percentage points used correctly \(never "13%" for a 13-percentage-point difference\)/);
+    assert.match(sys, /tense chosen by the time reference/);
+    assert.match(sys, /do NOT demand past tense for every verb/);
+    assert.match(sys, /subject–verb agreement, articles, countable\/uncountable nouns, prepositions/);
+    assert.match(sys, /comparative structures/);
+    assert.match(sys, /unsupported when the data has only two time points/);
+    assert.match(sys, /must not be read as a statistical claim/);
+    assert.match(sys, /never credit advanced vocabulary or complex grammar that is wrong/);
+    // accepts alternatives
+    assert.match(sys, /do NOT require the student to use any particular vocabulary item, a fixed number of linking words, or any specific sentence pattern/);
+    // what it must NOT penalise
+    assert.match(sys, /do NOT penalise.*missing introduction, a missing overview, not being a complete Task 1 response, not reaching a full Task 1 word count \(150\/250 words\)/i);
+    // teacher feedback
+    assert.match(sys, /quote each exact error you report and say why it is incorrect/);
+    assert.match(sys, /show a corrected version/);
+    assert.match(sys, /revise one or two priority issues themselves/);
+    assert.match(sys, /do not rewrite the whole paragraph/);
+    // not the other rubrics
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.doesNotMatch(sys, /paragraph focus and organisation/);
+    assert.doesNotMatch(sys, /accuracy of the main trend/);
+    assert.equal(lang.feedback.band, null);
+    assert.ok(lang.feedback.criteria.every((c) => c.band === null), 'every criterion band forced to null');
+    // Lesson 05's paragraph-development rubric is unchanged and is NOT the language rubric
+    const para = await run('Task 1 body paragraph development');
+    assert.match(para.sys, /paragraph focus and organisation/);
+    assert.match(para.sys, /logical grouping of related information/);
+    assert.doesNotMatch(para.sys, /vocabulary accuracy — a trend verb/);
+    assert.doesNotMatch(para.sys, /tense chosen by the time reference/);
+    assert.equal(para.feedback.band, null);
+  });
+
+  await test('writing studio: a lesson\'s FULL Task 1 final response (checkScope full, no skillFocus) gets the normal full-task assessment and keeps its band', async () => {
+    calls.length = 0;
+    const chart = { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] };
+    const essay = Array(26).fill('Car use fell from 52% to 38% while bicycle use rose from 6% to 19%.').join(' ');
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        criteria: [
+          { criterion: 'Task Achievement', band: 6.5, comment: 'ok' },
+          { criterion: 'Coherence & Cohesion', band: 6, comment: 'ok' },
+          { criterion: 'Lexical Resource', band: 6, comment: 'ok' },
+          { criterion: 'Grammatical Range & Accuracy', band: 6.5, comment: 'ok' },
+        ],
+      })),
+      { task: 1, prompt: 'Write a Complete Task 1 Response.', minWords: 150, chart, checkScope: 'full' },
+      essay,
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.doesNotMatch(sys, /TARGETED SKILL DRILL/);
+    assert.doesNotMatch(sys, /paragraph focus and organisation|accuracy of the main trend|accurate paraphrasing|vocabulary precision and grammatical accuracy/, 'no drill rubric leaks into a full task');
+    assert.match(sys, /Task 1: check for a clear overview, key features and accurate comparisons of the data; no opinions/);
+    assert.match(sys, /the minimum is 150/);
+    assert.match(sys, /Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy/);
+    assert.match(calls[0].messages[0].content as string, /Car \| 52 \| 38/, 'the chart data reaches the model');
+    assert.notEqual(feedback.band, null, 'a full Task 1 response keeps its (indicative) band');
+    assert.ok(feedback.criteria.some((c) => c.band !== null), 'criterion bands are kept');
+  });
+
+  await test('writing studio: introduction-only and overview-only drills are still routed to their own rules (paragraph-only did not capture them)', async () => {
+    const run = async (checkScope: 'introduction-only' | 'overview-only' | 'paragraph-only' | undefined) => {
+      calls.length = 0;
+      await assessWritingStudioTask(
+        fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+        { task: 1, prompt: 'p', minWords: 20, skillFocus: 'Some skill', checkScope },
+        'The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.',
+        'en',
+      );
+      return calls[0].system;
+    };
+    const intro = await run('introduction-only');
+    assert.match(intro, /accurate paraphrasing/);
+    assert.doesNotMatch(intro, /paragraph focus and organisation/);
+    const noScope = await run(undefined);
+    assert.match(noScope, /accurate paraphrasing/, 'a drill with no checkScope keeps the original rules');
+    assert.doesNotMatch(noScope, /paragraph focus and organisation/);
+    const overview = await run('overview-only');
+    assert.match(overview, /accuracy of the main trend/);
+    assert.doesNotMatch(overview, /paragraph focus and organisation/);
+    const paragraph = await run('paragraph-only');
+    assert.match(paragraph, /paragraph focus and organisation/);
+    assert.doesNotMatch(paragraph, /accurate paraphrasing/);
+  });
+
   await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
     calls.length = 0;
     const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;

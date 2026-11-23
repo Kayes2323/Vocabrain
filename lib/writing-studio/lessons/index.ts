@@ -7,6 +7,7 @@ import { task1IntroductionLesson } from './task1-introduction';
 import { bodyParagraphsLesson } from './body-paragraphs';
 import { task1VocabGrammarLesson } from './task1-vocab-grammar';
 import { task1FullPracticeLesson } from './task1-full-practice';
+import { task1CompleteWritingLesson } from './task1-complete-writing';
 import { task2UnderstandingLesson } from './task2-understanding';
 import { questionTypesLesson } from './question-types';
 import { questionAnalysisLesson } from './question-analysis';
@@ -25,6 +26,7 @@ export const LESSONS: Record<string, Lesson> = {
   [bodyParagraphsLesson.id]: bodyParagraphsLesson,
   [task1VocabGrammarLesson.id]: task1VocabGrammarLesson,
   [task1FullPracticeLesson.id]: task1FullPracticeLesson,
+  [task1CompleteWritingLesson.id]: task1CompleteWritingLesson,
   [task2UnderstandingLesson.id]: task2UnderstandingLesson,
   [questionTypesLesson.id]: questionTypesLesson,
   [questionAnalysisLesson.id]: questionAnalysisLesson,

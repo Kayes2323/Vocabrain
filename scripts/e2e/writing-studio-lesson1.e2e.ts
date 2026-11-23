@@ -88,8 +88,8 @@ async function main() {
     check('lesson reaches "Lesson complete"', true);
 
     // ---------------------------------------------------------------- other lessons are unaffected
-    await page.goto(BASE + '/ielts/writing-studio/task1/lesson/task1-introduction', { waitUntil: 'load' });
-    await page.getByText('Writing a Clear Introduction', { exact: false }).first().waitFor({ timeout: 30_000 });
+    await page.goto(BASE + '/ielts/writing-studio/task2/lesson/question-types', { waitUntil: 'load' });
+    await page.getByText('Understanding Question Types', { exact: false }).first().waitFor({ timeout: 30_000 });
     for (let i = 0; i < 15; i++) {
       const next = page.getByRole('button', { name: /^(Continue|Start writing)$/ });
       if (!(await next.count())) break;
@@ -103,13 +103,13 @@ async function main() {
     const otherEditor = page.locator('#ws-editor');
     await otherEditor.waitFor({ timeout: 15_000 });
     await otherEditor.fill(
-      "The given table illustrates the number of people visiting four museums in one city during 2015 and 2023. I used a vocabulary swap and a structure shift to rewrite the sentence.",
+      'This is a discuss both views and give your own opinion question, so I would introduce both views, develop each in its own body paragraph, and state my opinion clearly. However, the structure must stay balanced because the question asks for both views and an opinion.',
     );
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
     await page.getByText(/Mino's assessment|Local practice check/).first().waitFor({ timeout: 60_000 });
     const otherFeedbackText = await page.locator('main').innerText();
     check(
-      'a lesson without skillFocus (task1-introduction) is unaffected: still shows band-based feedback, not a skill check',
+      'a lesson without skillFocus (task2 question-types) is unaffected: still shows band-based feedback, not a skill check',
       !/Skill check:/.test(otherFeedbackText),
     );
   } catch (e) {
