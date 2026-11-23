@@ -143,6 +143,19 @@ test('the chart is the existing commute-methods dataset with the expected values
   }
   assert.equal(lesson.finalPrompt.chartId, 'commute-methods');
 });
+test('the opening diagnostic says "five categories" (the dataset has five), never "six", and every stated count matches the chart', () => {
+  const prompt = lesson.steps.find((s) => s.id === 'intro')!.check!.prompt;
+  assert.equal(chart.categories.length, 5);
+  assert.match(prompt, /\bfive categories\b/);
+  assert.ok(!/\bsix\b/i.test(prompt), prompt);
+  assert.match(prompt, /\btwo years\b/);
+  assert.equal(chart.series.length, 2);
+  // Every "<number word> (different) (transport) categories/methods/forms" claim about the chart must be five.
+  const counts = [...allText().matchAll(/\b(two|three|four|five|six|seven)\s+(?:different\s+)?(?:transport\s+)?(?:categories|methods|forms of transport)\b/gi)];
+  const chartClaims = counts.filter((m) => !/first three categories/i.test(allText().slice(m.index! - 10, m.index! + m[0].length + 10)));
+  for (const m of chartClaims) assert.equal(m[1].toLowerCase(), 'five', m[0]);
+  assert.ok(chartClaims.length >= 3, `expected several category-count claims, saw ${chartClaims.length}`);
+});
 test('no second dataset is defined in the lesson file', () => {
   const src = readFileSync('lib/writing-studio/lessons/overview-writing.ts', 'utf8');
   assert.ok(!/values:\s*\[/.test(src) && !/categories:\s*\[/.test(src) && !/kind:\s*'(line|bar)'/.test(src));

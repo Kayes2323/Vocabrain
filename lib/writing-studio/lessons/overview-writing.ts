@@ -45,7 +45,7 @@ export const overviewWritingLesson: Lesson = {
         ],
       },
       check: {
-        prompt: 'A chart shows six categories over two years. What should an overview mainly describe?',
+        prompt: 'A chart shows five categories over two years. What should an overview mainly describe?',
         options: [
           'Every figure shown in the chart.',
           'The most important patterns and comparisons.',
