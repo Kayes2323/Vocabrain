@@ -241,16 +241,16 @@ async function main() {
     await p.locator('#meaning-en').fill('  found everywhere  ');
     await p.getByTestId('meaning-save').click();
     await p.locator('#sentence').waitFor({ timeout: 20_000 });
-    const meant = await getDoc(`users/${uid}/vocabulary/ubiquitous`);
-    check('the learner\'s own words are saved (trimmed) — nothing invented — and the prompt now appears', meant.meaning === 'found everywhere' && !meant.meaningBn && /ubiquitous/.test(await p.locator('h1').innerText()));
+    const meant = await waitFor(async () => { const d = await getDoc(`users/${uid}/vocabulary/ubiquitous`); return d?.meaning ? d : null; });
+    check('the learner\'s own words are saved (trimmed) — nothing invented — and the prompt now appears', meant !== null && meant.meaning === 'found everywhere' && !meant.meaningBn && /ubiquitous/.test(await p.locator('h1').innerText()));
     await p.goto(BASE + `/practice/speaking?word=pervasive`, { waitUntil: 'load' });
     await p.getByTestId('meaning-editor').waitFor({ timeout: 30_000 });
     check('Speaking: the same — no "a pervasive you have noticed" prompt; it asks for the meaning', (await p.getByRole('button', { name: 'Check my answer' }).count()) === 0 && !/you have noticed in your city/.test(await p.locator('body').innerText()));
     await p.locator('#meaning-bn').fill('সব জায়গায় ছড়িয়ে থাকা');
     await p.getByTestId('meaning-save').click();
     await p.getByRole('button', { name: 'Check my answer' }).waitFor({ timeout: 20_000 });
-    const meant2 = await getDoc(`users/${uid}/vocabulary/pervasive`);
-    check('Bangla-only meaning is accepted too; the prompt then avoids assuming a part of speech', meant2.meaningBn === 'সব জায়গায় ছড়িয়ে থাকা' && !/you have noticed in your city/.test(await p.locator('h1').innerText()), await p.locator('h1').innerText());
+    const meant2 = await waitFor(async () => { const d = await getDoc(`users/${uid}/vocabulary/pervasive`); return d?.meaningBn ? d : null; });
+    check('Bangla-only meaning is accepted too; the prompt then avoids assuming a part of speech', meant2 !== null && meant2.meaningBn === 'সব জায়গায় ছড়িয়ে থাকা' && !/you have noticed in your city/.test(await p.locator('h1').innerText()), await p.locator('h1').innerText());
     await seed(uid, bare); // reset ubiquitous to bare for the auto-pick and detail checks
     await putDoc(`users/${uid}/vocabulary/ubiquitous`, bare);
     await p.goto(BASE + '/practice/writing', { waitUntil: 'load' });
@@ -264,6 +264,8 @@ async function main() {
     console.log('\n[7] Legacy migration');
     await setRules(denyVocabWriteFor('acquire'));
     await patchField(`users/${uid2}`, 'app.vocabulary.savedWordIds', ['band6_001', 'band6_002', 'band6_003', 'not-a-real-id']);
+    await q.goto(BASE + '/', { waitUntil: 'load' }); // the profile is loaded once per visit, so the next visit finds the legacy list
+    await q.getByTestId('quick-access').waitFor({ timeout: 60_000 });
     const idsNow = async () => ((await getDoc(`users/${uid2}`))?.app?.vocabulary?.savedWordIds ?? []) as string[];
     const partway = await waitFor(async () => { const ids = await idsNow(); return !ids.includes('band6_001') && !ids.includes('band6_003') ? ids : null; }, 30_000);
     check('REPRO fixed: ids whose words were confirmed are removed from the old list…', partway !== null, JSON.stringify(await idsNow()));
