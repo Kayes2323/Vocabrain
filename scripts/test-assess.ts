@@ -231,6 +231,40 @@ async function main() {
     assert.match(sys, /Do NOT penalise.*missing overview.*missing body paragraphs.*missing chart figures.*word count/);
   });
 
+  await test('writing studio: the overview drill prompt scopes to feature selection, accepts valid alternatives, and coaches instead of only correcting', async () => {
+    calls.length = 0;
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }] })),
+      {
+        task: 1,
+        prompt: 'Write Your Own Overview.',
+        minWords: 25,
+        chart: { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19'], ['Walking', '7', '7']] },
+        skillFocus: 'Task 1 overview feature selection and synthesis',
+        checkScope: 'overview-only',
+      },
+      'Although car use fell, it stayed the leading method, while cycling rose sharply and walking was unchanged.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 overview feature selection and synthesis/);
+    assert.match(sys, /key features selected/);
+    assert.match(sys, /accuracy of the main trend/);
+    assert.match(sys, /Check every claim against the task data/);
+    assert.match(sys, /accept any accurate phrasing and any defensible choice of main features/);
+    assert.match(sys, /do NOT require the word "Overall"/i);
+    assert.match(sys, /do NOT require every category to be mentioned/i);
+    assert.match(sys, /do NOT mark a clear one-sentence overview down/i);
+    assert.match(sys, /never credit invented causes/);
+    assert.match(sys, /as a teacher, not only an examiner/);
+    assert.match(sys, /most important missing feature/);
+    assert.match(sys, /encourage the student to revise/);
+    assert.match(sys, /do NOT penalise.*missing introduction.*missing body paragraphs.*word count \(150\/250 words\)/i, 'no full-task requirements');
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.equal(feedback.band, null, 'never a band');
+    assert.ok(feedback.criteria.every((c) => c.band === null));
+  });
+
   await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
     calls.length = 0;
     const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;
