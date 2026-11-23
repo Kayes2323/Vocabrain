@@ -7,6 +7,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { CHART_DATASETS } from '../lib/writing-studio/charts';
+import { TASK1_MODULES, TASK1_VISUALS, TASK2_MODULES } from '../lib/writing-studio/content';
 import { checkEssay, deriveScope } from '../lib/writing-studio/feedback';
 import { LESSONS, getLesson } from '../lib/writing-studio/lessons';
 import { task1CompleteWritingLesson as lesson } from '../lib/writing-studio/lessons/task1-complete-writing';
@@ -73,6 +74,72 @@ test('the existing capstone lesson is untouched and still separate (task1-full-p
   assert.equal(full.moduleId, 'task1-m8');
   assert.equal(full.finalPrompt.skillFocus, undefined);
   assert.notEqual(full, lesson);
+});
+
+// ---------------------------------------------------------------- Academy integration
+
+test('Academy: exactly seven Task 1 cards, numbered 1-7, with the seventh being Complete Task 1 Writing -> task1-complete-writing', () => {
+  assert.equal(TASK1_MODULES.length, 7);
+  assert.deepEqual(TASK1_MODULES.map((m) => m.number), [1, 2, 3, 4, 5, 6, 7]);
+  assert.deepEqual(TASK1_MODULES.map((m) => m.id), ['task1-m1', 'task1-m2', 'task1-m3', 'task1-m4', 'task1-m5', 'task1-m6', 'task1-m7']);
+  const seventh = TASK1_MODULES[6];
+  assert.equal(seventh.id, 'task1-m7');
+  assert.equal(seventh.number, 7);
+  assert.equal(seventh.title, 'Complete Task 1 Writing');
+  assert.equal(seventh.builtLessonId, 'task1-complete-writing');
+  assert.match(seventh.description, /analysis/i);
+  assert.match(seventh.description, /introduction/);
+  assert.match(seventh.description, /overview/);
+  assert.match(seventh.description, /body paragraphs/);
+  assert.match(seventh.description, /language/);
+  assert.match(seventh.description, /complete, coherent response/);
+  assert.equal(new Set(TASK1_MODULES.map((m) => m.id)).size, 7);
+  assert.equal(TASK1_MODULES.filter((m) => m.title === 'Complete Task 1 Writing').length, 1, 'no second "Complete Task 1 Writing" card');
+});
+test('Academy: the first six cards are unchanged', () => {
+  assert.deepEqual(
+    TASK1_MODULES.slice(0, 6).map((m) => [m.id, m.number, m.title, m.builtLessonId]),
+    [
+      ['task1-m1', 1, 'Understanding IELTS Writing Task 1', 'task1-understanding'],
+      ['task1-m2', 2, 'Understanding Visual Information', 'visual-information'],
+      ['task1-m3', 3, 'Introduction Writing', 'task1-introduction'],
+      ['task1-m4', 4, 'Overview Mastery', 'overview-writing'],
+      ['task1-m5', 5, 'Body Paragraph Development', 'body-paragraphs'],
+      ['task1-m6', 6, 'Vocabulary and Grammar for Task 1', 'task1-vocab-grammar'],
+    ],
+  );
+});
+test('Academy: every card points at a registered lesson of the same module, and no card points at task1-full-practice', () => {
+  for (const m of TASK1_MODULES) {
+    assert.ok(m.builtLessonId, `${m.id} has a built lesson`);
+    const l = getLesson(m.builtLessonId!)!;
+    assert.ok(l, `${m.id} -> ${m.builtLessonId} is registered`);
+    assert.equal(l.moduleId, m.id, `${m.id} card and lesson agree on the module id`);
+  }
+  assert.ok(!TASK1_MODULES.some((m) => m.builtLessonId === 'task1-full-practice'), 'the old capstone has no Academy card');
+  assert.ok(!TASK1_MODULES.some((m) => m.id === 'task1-m8'), 'no module 8 card');
+});
+test('Academy: the old capstone lesson is still registered (unchanged) for backwards compatibility', () => {
+  const old = getLesson('task1-full-practice')!;
+  assert.ok(old);
+  assert.equal(old.id, 'task1-full-practice');
+  assert.equal(old.moduleId, 'task1-m8');
+  assert.equal(old.title, 'Putting a Full Response Together');
+  assert.equal(old.finalPrompt.minWords, 150);
+  assert.equal(Object.values(LESSONS).filter((l) => l.id === 'task1-full-practice').length, 1);
+});
+test('Academy: Task 2 modules and the visual training areas are unchanged', () => {
+  assert.equal(TASK2_MODULES.length, 9);
+  assert.deepEqual(TASK2_MODULES.map((m) => m.number), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  assert.equal(TASK1_VISUALS.length, 7);
+  assert.deepEqual(TASK1_VISUALS.map((v) => v.id), ['line-graphs', 'bar-charts', 'pie-charts', 'tables', 'mixed-charts', 'maps', 'process-diagrams']);
+  assert.equal(TASK1_VISUALS.find((v) => v.id === 'line-graphs')!.builtLessonId, 'overview-writing');
+});
+test('Academy: the curriculum comment no longer refers to "Modules 1-6 + 8"', () => {
+  const src = readFileSync('lib/writing-studio/content.ts', 'utf8');
+  assert.ok(!/Modules 1–6 \+ 8|Modules 1-6 \+ 8|Module 7's seven/.test(src), 'stale curriculum comment removed');
+  assert.match(src, /seven modules, numbered 1-7/);
+  assert.match(src, /'task1-complete-writing' lesson/);
 });
 
 // ---------------------------------------------------------------- curriculum completeness

@@ -25,10 +25,32 @@ async function main() {
     await signUp(page, 'Nadia', `ws-lesson7-${Date.now()}@test.dev`, 'en');
     const uid = (await uidOf(page))!;
 
-    await page.goto(BASE + '/ielts/writing-studio/task1/lesson/task1-complete-writing', { waitUntil: 'load' });
+    // ---------------------------------------------------------------- the Academy: seven cards, Lesson 07 is the seventh
+    await page.goto(BASE + '/ielts/writing-studio/task1', { waitUntil: 'load' });
+    await page.getByText('Learning modules').first().waitFor({ timeout: 60_000 });
+    const lessonBase = '/ielts/writing-studio/task1/lesson/';
+    const expected = ['task1-understanding', 'visual-information', 'task1-introduction', 'overview-writing', 'body-paragraphs', 'task1-vocab-grammar', 'task1-complete-writing'];
+    const rows = page.locator('main a:has(span.rounded-full)').filter({ has: page.locator('p.font-medium') });
+    const hrefs = await rows.evaluateAll((els) => els.map((e) => (e as HTMLAnchorElement).getAttribute('href')));
+    const moduleRows = hrefs.filter((h) => h && h.startsWith(lessonBase) && expected.includes(h.slice(lessonBase.length)));
+    check('Academy: exactly seven module cards, in order, ending with Complete Task 1 Writing', JSON.stringify(moduleRows) === JSON.stringify(expected.map((id) => lessonBase + id)), JSON.stringify(hrefs));
+    const cards = await rows.evaluateAll((els) =>
+      els
+        .filter((e) => /\/task1\/lesson\//.test(e.getAttribute('href') ?? ''))
+        .map((e) => ({ n: e.querySelector('span.rounded-full')?.textContent?.trim(), title: e.querySelector('p.font-medium')?.textContent?.trim() })),
+    );
+    check('Academy: the cards are numbered 1 to 7 and the seventh is "Complete Task 1 Writing" (no card 8)', cards.length === 7 && cards.every((c, i) => c.n === String(i + 1)) && cards[6].title === 'Complete Task 1 Writing', JSON.stringify(cards));
+    const academyText = await page.locator('main').innerText();
+    check('Academy: exactly one "Complete Task 1 Writing" card and no card for the old capstone', (academyText.match(/Complete Task 1 Writing/g) ?? []).length === 1 && (await page.locator('a[href*="task1-full-practice"]').count()) === 0 && !/Guided, independent and timed practice/.test(academyText));
+    check('Academy: the module total reads 0/7 lessons for a new learner (no eighth card)', /0\/7 lessons/.test(academyText));
+    await shot(page, 'ws-lesson7-academy');
+
+    // open Lesson 07 THROUGH its Academy card, not by typing the lesson URL
+    await page.locator(`main a[href="${lessonBase}task1-complete-writing"]:has(span.rounded-full)`).click();
+    await page.waitForURL(`**${lessonBase}task1-complete-writing`, { timeout: 30_000 });
     await page.getByText('Complete Task 1 Writing').first().waitFor({ timeout: 60_000 });
     const total = lesson.steps.length;
-    check('lesson opens through the real Writing Studio lesson route with the right title', true);
+    check('Lesson 07 opens through its Academy card with the right title', true);
     check(`progress shows ${total} steps`, (await page.getByRole('progressbar', { name: `Step 1 of ${total}` }).count()) === 1);
 
     const next = () => page.getByRole('button', { name: /^(Continue|Start writing)$/ });

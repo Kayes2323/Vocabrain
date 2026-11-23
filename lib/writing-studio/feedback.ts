@@ -218,14 +218,24 @@ export function checkEssay(
     // An introduction-only task (e.g. a paraphrase drill) should NOT contain an
     // overview sentence yet — that belongs to a later, separate part of a response.
     if (scope !== 'introduction-only' && !drillOverview && !drillParagraph) {
-      const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
-      if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
-      else mistakes.push({
-        category: 'Task response',
-        quote: paragraphs[1]?.slice(0, 60) ?? clean.slice(0, 60),
-        why: 'No sentence clearly stands back and summarises the main trend(s) — Task 1 needs a dedicated overview, not just a list of numbers.',
-        fix: 'Add a short paragraph that starts "Overall, ..." and names the one or two biggest patterns before the detail.',
-      });
+      if (scope === 'full') {
+        // A full Task 1 response: whether an overview is present, and whether it is accurate, is a
+        // semantic judgement. Searching for a phrase such as "Overall" proves neither (a valid overview
+        // can be worded differently, and "Overall, …" can be wrong), so this checker neither reports a
+        // missing overview nor credits one. It says so, and asks the writer to check it themselves.
+        suggestions.push(
+          'This local checker cannot reliably tell whether your response has a clear overview, or whether it summarises the main features accurately — it only runs simple checks such as word count and figures. Please re-read it yourself: is there a short summary of the most important patterns (separate from the detailed figures), and is every claim true to the chart?',
+        );
+      } else {
+        const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
+        if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
+        else mistakes.push({
+          category: 'Task response',
+          quote: paragraphs[1]?.slice(0, 60) ?? clean.slice(0, 60),
+          why: 'No sentence clearly stands back and summarises the main trend(s) — Task 1 needs a dedicated overview, not just a list of numbers.',
+          fix: 'Add a short paragraph that starts "Overall, ..." and names the one or two biggest patterns before the detail.',
+        });
+      }
     }
     const hasNumber = /\d/.test(clean) || /per\s?cent|percent|%/.test(lower);
     if (drillOverview) {

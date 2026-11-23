@@ -1,12 +1,13 @@
 import type { ExamTaskContent, ModuleSummary, VisualTrainingArea } from './types';
 
 /**
- * Task 1 Academy curriculum (spec §6, Modules 1–6 + 8; Module 7's seven
- * visual types are listed separately below). Only "Overview Mastery"
- * carries a fully built lesson in this prototype; every other module opens
- * a labelled content-preview screen that explains what the finished lesson
- * will contain and links to the one that is built, so nothing is a dead
- * button.
+ * Task 1 Academy curriculum: seven modules, numbered 1-7 (the seven
+ * visual-specific training areas are listed separately below). Module 7
+ * ("Complete Task 1 Writing") is the capstone and points at the
+ * 'task1-complete-writing' lesson. The earlier capstone lesson
+ * 'task1-full-practice' is still registered in the lesson registry so existing
+ * progress records and direct links keep working, but it no longer has an
+ * Academy card.
  */
 export const TASK1_MODULES: ModuleSummary[] = [
   { id: 'task1-m1', number: 1, title: 'Understanding IELTS Writing Task 1', description: 'What Task 1 asks for, Task Achievement, and the basic response structure.', builtLessonId: 'task1-understanding' },
@@ -15,7 +16,7 @@ export const TASK1_MODULES: ModuleSummary[] = [
   { id: 'task1-m4', number: 4, title: 'Overview Mastery', description: 'Identifying the main trends and writing a strong, focused overview.', builtLessonId: 'overview-writing' },
   { id: 'task1-m5', number: 5, title: 'Body Paragraph Development', description: 'Grouping data, making comparisons, and reporting figures with purpose.', builtLessonId: 'body-paragraphs' },
   { id: 'task1-m6', number: 6, title: 'Vocabulary and Grammar for Task 1', description: 'Trend language, comparison language, tense choice and sentence variety.', builtLessonId: 'task1-vocab-grammar' },
-  { id: 'task1-m8', number: 8, title: 'Complete Task 1 Writing', description: 'Guided, independent and timed practice producing a full response.', builtLessonId: 'task1-full-practice' },
+  { id: 'task1-m7', number: 7, title: 'Complete Task 1 Writing', description: 'Combine analysis, an accurate introduction, an overview, body paragraphs and precise language into one complete, coherent response.', builtLessonId: 'task1-complete-writing' },
 ];
 
 export const TASK1_VISUALS: VisualTrainingArea[] = [
