@@ -361,6 +361,34 @@ async function main() {
     assert.equal(para.feedback.band, null);
   });
 
+  await test('writing studio: a lesson\'s FULL Task 1 final response (checkScope full, no skillFocus) gets the normal full-task assessment and keeps its band', async () => {
+    calls.length = 0;
+    const chart = { caption: 'Main method of travelling to work, 2010 and 2023 (% of commuters)', headers: ['Method', '2010', '2023'], rows: [['Car', '52', '38'], ['Bicycle', '6', '19']] };
+    const essay = Array(26).fill('Car use fell from 52% to 38% while bicycle use rose from 6% to 19%.').join(' ');
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        criteria: [
+          { criterion: 'Task Achievement', band: 6.5, comment: 'ok' },
+          { criterion: 'Coherence & Cohesion', band: 6, comment: 'ok' },
+          { criterion: 'Lexical Resource', band: 6, comment: 'ok' },
+          { criterion: 'Grammatical Range & Accuracy', band: 6.5, comment: 'ok' },
+        ],
+      })),
+      { task: 1, prompt: 'Write a Complete Task 1 Response.', minWords: 150, chart, checkScope: 'full' },
+      essay,
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.doesNotMatch(sys, /TARGETED SKILL DRILL/);
+    assert.doesNotMatch(sys, /paragraph focus and organisation|accuracy of the main trend|accurate paraphrasing|vocabulary precision and grammatical accuracy/, 'no drill rubric leaks into a full task');
+    assert.match(sys, /Task 1: check for a clear overview, key features and accurate comparisons of the data; no opinions/);
+    assert.match(sys, /the minimum is 150/);
+    assert.match(sys, /Task Achievement, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy/);
+    assert.match(calls[0].messages[0].content as string, /Car \| 52 \| 38/, 'the chart data reaches the model');
+    assert.notEqual(feedback.band, null, 'a full Task 1 response keeps its (indicative) band');
+    assert.ok(feedback.criteria.some((c) => c.band !== null), 'criterion bands are kept');
+  });
+
   await test('writing studio: introduction-only and overview-only drills are still routed to their own rules (paragraph-only did not capture them)', async () => {
     const run = async (checkScope: 'introduction-only' | 'overview-only' | 'paragraph-only' | undefined) => {
       calls.length = 0;

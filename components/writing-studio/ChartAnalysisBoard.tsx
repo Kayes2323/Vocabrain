@@ -103,8 +103,8 @@ export function ChartAnalysisBoard({
                       </p>
                       <p className="text-muted-foreground">
                         This belongs in the{' '}
-                        <span className={cn('font-medium', task.belongsIn === 'overview' ? 'text-brand' : 'text-tint-green-fg')}>
-                          {task.belongsIn === 'overview' ? 'overview' : 'body paragraphs'}
+                        <span className={cn('font-medium', task.belongsIn === 'body' ? 'text-tint-green-fg' : 'text-brand')}>
+                          {task.belongsIn === 'introduction' ? 'introduction' : task.belongsIn === 'overview' ? 'overview' : 'body paragraphs'}
                         </span>
                         , not the other way round.
                       </p>

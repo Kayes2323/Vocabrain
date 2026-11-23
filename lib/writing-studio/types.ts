@@ -72,7 +72,7 @@ export interface ChartBoardTask {
   /** Shown once the student checks their answer. */
   modelAnswer: string;
   /** Which part of a Task 1 response this feature belongs in. */
-  belongsIn: 'overview' | 'body';
+  belongsIn: 'introduction' | 'overview' | 'body';
 }
 
 // ---------------------------------------------------------------- Idea board
