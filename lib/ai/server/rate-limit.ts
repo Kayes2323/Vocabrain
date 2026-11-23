@@ -38,3 +38,25 @@ export function checkWordLookupLimit(uid: string, now = Date.now()) {
   wordMinute.set(uid, [...recent, now]);
   wordDay.set(uid, { date: today, count: count + 1 });
 }
+
+/**
+ * Answer evaluations (a vocabulary meaning, an idea-ladder step, a short piece
+ * of writing…) are small and frequent — a learner can check several answers a
+ * minute — so, like word lookups, they have their own, higher limit and never
+ * use up the student's Mino chat or essay-assessment allowance. Identical
+ * resubmissions are answered from the per-student cache and do not count.
+ */
+const evalMinute = new Map<string, number[]>();
+const evalDay = new Map<string, { date: string; count: number }>();
+export const EVALUATION_LIMITS = { perMinute: 30, perDay: 500 } as const;
+
+export function checkEvaluationLimit(uid: string, now = Date.now()) {
+  const recent = (evalMinute.get(uid) ?? []).filter((t) => now - t < 60_000);
+  if (recent.length >= EVALUATION_LIMITS.perMinute) throw new MinoError('rate_limited', 'evaluation per-minute');
+  const today = new Date(now).toISOString().slice(0, 10);
+  const d = evalDay.get(uid);
+  const count = d?.date === today ? d.count : 0;
+  if (count >= EVALUATION_LIMITS.perDay) throw new MinoError('rate_limited', 'evaluation per-day');
+  evalMinute.set(uid, [...recent, now]);
+  evalDay.set(uid, { date: today, count: count + 1 });
+}

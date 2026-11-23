@@ -37,6 +37,89 @@ http
         res.end(JSON.stringify({ candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5, totalTokenCount: 15 } }));
       };
 
+      if (b.generationConfig?.responseMimeType === 'application/json' && /Prompt version: mino-eval-1/.test(system)) {
+        // Mino Answer Evaluation Engine. A deterministic stand-in: it reads the answer type and the rubric the server
+        // sent (so a regression in the prompt shows up as a different reply) and decides by simple rules on the ANSWER.
+        // It does NOT judge meaning the way a live model does: these tests prove the flow, not live-model quality.
+        const user = b.contents?.[0]?.parts?.[0]?.text ?? '';
+        const answer = (user.match(/<answer>([\s\S]*?)<\/answer>/) ?? [])[1] ?? '';
+        const type = (system.match(/Answer type: (\w+)/) ?? [])[1] ?? '';
+        const bn = /friendly, respectful Bangla/.test(system);
+        const tx = (en, bnText) => (bn ? bnText : en);
+        globalThis.__evalFails ??= {};
+        // One whole failed attempt = both models in the fast chain fail (the provider falls back to the next model once),
+        // so fail the first two calls for this answer, then succeed.
+        if (/FORCE_FAIL_ONCE/.test(answer) && (globalThis.__evalFails[answer] ?? 0) < 2) {
+          globalThis.__evalFails[answer] = (globalThis.__evalFails[answer] ?? 0) + 1;
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          return res.end(JSON.stringify({ error: { message: 'simulated provider failure' } }));
+        }
+        const finish = (r) => reply([{ text: JSON.stringify({ confidence: 0.9, strengths: [], issues: [], correction: null, hint: null, errorTags: [], ...r }) }]);
+        const send = (r) => (/SLOW_ANSWER/.test(answer) ? setTimeout(() => finish(r), 7500) : finish(r));
+        const known = { 'FORCE': 1 };
+        void known;
+
+        if (type === 'introduction') {
+          if (!/Clarity of position/.test(system)) return send({ verdict: 'needs_revision', explanation: 'MOCK: the introduction rubric was not in the prompt.', nextAction: 'n/a' });
+          const hasTopic = /public transport|road/i.test(answer);
+          const hasPosition = /\b(i (strongly |firmly |partly )?(agree|disagree)|in my (view|opinion)|i believe|i would argue)\b/i.test(answer);
+          if (/this essay will discuss/i.test(answer) || !hasTopic) {
+            return send({
+              verdict: 'incorrect',
+              issues: [{ quote: /this essay will discuss this topic/i.test(answer) ? 'This essay will discuss this topic' : answer.slice(0, 40), problem: tx('This does not answer the question or state a position.', 'এটি প্রশ্নের উত্তর দেয়নি এবং কোনো অবস্থান জানায়নি।'), why: tx('It could introduce any topic: it never mentions public transport, roads or your view.', 'এটি যেকোনো বিষয়ের ভূমিকা হতে পারে।'), fix: 'Whether governments should invest more in public transport than in roads is debated. I strongly agree that they should.', tag: 'missing-position' }],
+              explanation: tx('An introduction must paraphrase this exact question and state your position.', 'ভূমিকায় এই প্রশ্নটির paraphrase ও আপনার অবস্থান থাকতে হবে।'),
+              hint: tx('Which two jobs does an introduction have?', 'ভূমিকার দুটি কাজ কী?'),
+              nextAction: tx('Rewrite it: first paraphrase the question, then say whether you agree or disagree.', 'আবার লিখুন: প্রথমে প্রশ্নটি paraphrase করুন, তারপর agree/disagree বলুন।'),
+              errorTags: ['missing-position', 'generic-introduction'],
+            });
+          }
+          if (!hasPosition) {
+            return send({
+              verdict: 'partially_correct',
+              strengths: [tx('Your paraphrase keeps the meaning of the question.', 'আপনার paraphrase প্রশ্নের অর্থ ঠিক রেখেছে।')],
+              issues: [{ problem: tx('No clear position is stated.', 'কোনো স্পষ্ট অবস্থান নেই।'), why: tx('The question asks "to what extent do you agree or disagree".', 'প্রশ্নটি জানতে চায় আপনি কতটা একমত।'), tag: 'missing-position' }],
+              explanation: tx('One of the two jobs is done: the paraphrase is accurate but your position is missing.', 'দুটি কাজের একটি হয়েছে: paraphrase ঠিক, কিন্তু অবস্থান নেই।'),
+              nextAction: tx('Add a second sentence that clearly says how far you agree or disagree.', 'আপনি কতটা একমত তা স্পষ্ট করে বলার একটি বাক্য যোগ করুন।'),
+              errorTags: ['missing-position'],
+            });
+          }
+          return send({
+            verdict: 'correct',
+            strengths: [tx('You paraphrased the question accurately.', 'আপনি প্রশ্নটি সঠিকভাবে paraphrase করেছেন।'), tx('Your position is clear.', 'আপনার অবস্থান স্পষ্ট।')],
+            explanation: tx('Both jobs are done: an accurate paraphrase, then a clear position.', 'দুটি কাজই হয়েছে।'),
+            nextAction: tx('Continue to the next lesson step.', 'পরের ধাপে যান।'),
+          });
+        }
+
+        if (type === 'idea_rung') {
+          const prev = [...user.matchAll(/<step n="(\d+)">[^>]*?-> ([\s\S]*?)<\/step>/g)];
+          const last = prev.length ? prev[prev.length - 1] : null;
+          const words = (t) => new Set((t.toLowerCase().match(/[a-z]{4,}/g) ?? []));
+          const a = words(answer);
+          const p = last ? words(last[2]) : new Set();
+          let shared = 0;
+          a.forEach((w) => p.has(w) && shared++);
+          const overlap = p.size && a.size ? shared / Math.min(a.size, p.size) : 0;
+          const addsMechanism = /\b(because|so that|which means|as a result|since|therefore)\b/i.test(answer);
+          if (last && overlap > 0.6 && !addsMechanism) {
+            return send({ verdict: 'needs_revision', issues: [{ quote: answer.slice(0, 40), problem: tx(`This only restates step ${last[1]} in different words.`, `এটি ধাপ ${last[1]}-এর কথাই আবার বলছে।`), why: tx('It adds no new information: no mechanism, detail or example.', 'নতুন কোনো তথ্য নেই।'), tag: 'repeated-idea' }], explanation: tx(`Your answer repeats step ${last[1]}.`, `আপনার উত্তর ধাপ ${last[1]} পুনরাবৃত্তি করছে।`), nextAction: tx('Go one level deeper: explain HOW or WHY, not just THAT.', 'আরও গভীরে যান: কীভাবে বা কেন বলুন।'), errorTags: ['repeated-idea'] });
+          }
+          if (answer.trim().split(/\s+/).length < 5) return send({ verdict: 'relevant_but_underdeveloped', explanation: tx('On topic, but too short to do its job.', 'প্রাসঙ্গিক, কিন্তু খুব ছোট।'), nextAction: tx('Add the specific detail this step asks for.', 'এই ধাপের জন্য নির্দিষ্ট তথ্য যোগ করুন।') });
+          return send({ verdict: 'correct', strengths: [tx('This step adds new information' + (overlap > 0.6 ? ' even though it reuses some of the same words.' : '.'), 'এই ধাপ নতুন তথ্য যোগ করেছে।')], explanation: tx('It does the job this step asks for.', 'এটি এই ধাপের কাজ করেছে।'), nextAction: tx('Move on to the next question.', 'পরের প্রশ্নে যান।') });
+        }
+
+        if (type === 'vocab_meaning') {
+          if (!/Do NOT accept an answer merely because it shares a keyword/.test(system)) return send({ verdict: 'correct', explanation: 'MOCK: keyword rule was not in the prompt.', nextAction: 'n/a' });
+          if (/\b(opposite|worse|unrelated)\b/i.test(answer)) return send({ verdict: 'incorrect', issues: [{ quote: answer.slice(0, 30), problem: tx('This is not the meaning of the word.', 'এটি শব্দটির অর্থ নয়।'), why: tx('It gives the opposite or an unrelated idea.', 'এটি বিপরীত বা সম্পর্কহীন ধারণা।'), tag: 'wrong-meaning' }], explanation: tx('The meaning you gave does not match the word.', 'আপনার দেওয়া অর্থ শব্দটির সাথে মেলে না।'), hint: tx('Think about how the word was used in its sentence.', 'বাক্যে শব্দটি কীভাবে ব্যবহৃত হয়েছিল ভাবুন।'), nextAction: tx('Read the explanation, then try the next word.', 'ব্যাখ্যা পড়ুন, তারপর পরের শব্দে যান।'), errorTags: ['wrong-meaning'] });
+          if (/\b(partly|smaller|somewhat)\b/i.test(answer)) return send({ verdict: 'partially_correct', issues: [{ quote: answer.slice(0, 30), problem: tx('An essential part of the meaning is missing.', 'অর্থের একটি গুরুত্বপূর্ণ অংশ বাদ গেছে।'), why: tx('It is close, but too vague.', 'কাছাকাছি, কিন্তু অস্পষ্ট।'), tag: 'partial-meaning' }], explanation: tx('Close, but not complete.', 'কাছাকাছি, কিন্তু সম্পূর্ণ নয়।'), nextAction: tx('Try again, including the missing part.', 'বাদ পড়া অংশসহ আবার চেষ্টা করুন।'), errorTags: ['partial-meaning'] });
+          return send({ verdict: 'correct', strengths: [tx('You captured the meaning in your own words.', 'আপনি নিজের ভাষায় অর্থটি ধরেছেন।')], explanation: tx('Your wording is different, but the meaning is right.', 'শব্দ আলাদা, কিন্তু অর্থ ঠিক।'), nextAction: tx('Rate how easy it was.', 'কতটা সহজ ছিল তা বলুন।') });
+        }
+
+        if (type === 'vocab_usage') {
+          return send({ verdict: 'correct', explanation: tx('Natural and accurate use of the word.', 'শব্দটির স্বাভাবিক ও সঠিক ব্যবহার।'), nextAction: tx('Continue.', 'এগিয়ে যান।') });
+        }
+        return send({ verdict: 'correct', explanation: 'MOCK: generic evaluation.', nextAction: 'Continue.' });
+      }
       if (b.generationConfig?.responseMimeType === 'application/json' && /Word meaning in context/.test(system)) {
         // Reading word lookups: a contextual meaning for the clicked word, in the prompt's JSON shape.
         const text = b.contents?.[0]?.parts?.[0]?.text ?? '';

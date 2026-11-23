@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, Check, PartyPopper, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, PartyPopper, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, StatusChip } from '@/components/ds';
+import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
 import { MinoMark } from '@/components/shell/MinoMark';
 import { minoReact } from '@/components/mino/Mino';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -13,6 +15,9 @@ import { writingStudioFeedback } from '@/lib/ai/client';
 import { cn } from '@/lib/utils';
 import { CHART_DATASETS, chartToTable } from '@/lib/writing-studio/charts';
 import { checkEssay, deriveScope, fromAI, fromLocal, type UnifiedFeedback } from '@/lib/writing-studio/feedback';
+import { buildLearnerContext } from '@/lib/mino-eval/context';
+import { evaluateObjective } from '@/lib/mino-eval/objective';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import { recordLesson, recordMistakes } from '@/lib/writing-studio/progress';
 import type { Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
@@ -23,15 +28,43 @@ import { WritingEditor } from './WritingEditor';
 
 type Phase = 'learn' | 'write' | 'assessing' | 'feedback' | 'done';
 
+/** Maps one of Mino's error tags to the criterion-style category Mistake Revision groups by. */
+export function categoryFromTag(tag: string | undefined, answerType: string): string {
+  const t = (tag ?? '').toLowerCase();
+  if (/grammar|tense|agreement|article|preposition|punctuation|word-order|spelling/.test(t)) return 'Grammar';
+  if (/vocab|word-choice|collocation|wrong-meaning|register/.test(t)) return 'Vocabulary';
+  if (/link|cohes|coheren|organis|paragraph-structure/.test(t)) return 'Coherence & cohesion';
+  return answerType === 'vocab_meaning' || answerType === 'vocab_usage' ? 'Vocabulary' : 'Task response';
+}
+
 function CheckBlock({
   question,
   selected,
   onSelect,
+  language,
 }: {
   question: NonNullable<Lesson['steps'][number]['check']>;
   selected: number | null;
   onSelect: (i: number) => void;
+  language: 'en' | 'bn';
 }) {
+  // Objective answers are checked instantly against the trusted answer data and
+  // Mino says why — option-specific where the lesson provides it — so the learner
+  // never has to compare their pick with an answer key.
+  const evaluation = useMemo(
+    () =>
+      selected === null
+        ? null
+        : evaluateObjective({
+            options: question.options,
+            correctIndex: question.correctIndex,
+            selectedIndex: selected,
+            explain: question.explain,
+            optionFeedback: question.optionFeedback,
+            language,
+          }),
+    [question, selected, language],
+  );
   return (
     <div className="space-y-2.5">
       <p className="font-medium">{question.prompt}</p>
@@ -60,8 +93,10 @@ function CheckBlock({
           );
         })}
       </div>
-      {selected !== null && (
-        <Callout tone={selected === question.correctIndex ? 'success' : 'warning'}>{question.explain}</Callout>
+      {evaluation && (
+        <Panel className="p-4" data-testid="mino-evaluation">
+          <EvaluationView evaluation={evaluation} language={language} />
+        </Panel>
       )}
     </div>
   );
@@ -74,7 +109,7 @@ function CheckBlock({
  */
 export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyHref: string }) {
   const { locale } = useLocale();
-  const { updateProfile } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('learn');
   const [checkAnswer, setCheckAnswer] = useState<number | null>(null);
@@ -82,6 +117,8 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   const [essay, setEssay] = useState('');
   const [feedback, setFeedback] = useState<UnifiedFeedback | null>(null);
   const [submissions, setSubmissions] = useState(0);
+  // Final tasks marked `evaluate` go through the Mino Answer Evaluation Engine (skill drills: never a band).
+  const finalEval = useMinoEvaluation();
 
   const step = lesson.steps[stepIndex];
   const isLastStep = stepIndex === lesson.steps.length - 1;
@@ -92,7 +129,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   }, [stepIndex]);
 
   const needsCheckAnswer = !!step.check && checkAnswer === null;
-  const needsBoard = (step.material?.type === 'chart-board' || step.material?.type === 'idea-board') && !boardDone;
+  const needsBoard = (step.material?.type === 'chart-board' || step.material?.type === 'idea-board' || step.material?.type === 'write-evaluate') && !boardDone;
   const nextDisabled = needsCheckAnswer || needsBoard;
 
   const goNext = () => {
@@ -106,7 +143,51 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
 
   const taskNum: 1 | 2 = lesson.task === 'task1' ? 1 : 2;
 
+  const language: 'en' | 'bn' = locale === 'bn' ? 'bn' : 'en';
+
+  /** Records a successful evaluated attempt: lesson completion (never a band) and the mistakes Mino found. */
+  const recordEvaluated = (evaluation: MinoEvaluation) => {
+    const rows = evaluation.issues.map((i) => ({
+      category: categoryFromTag(i.tag, evaluation.answerType),
+      quote: i.quote ?? '',
+      fix: i.fix ?? evaluation.correction ?? '',
+      why: i.why,
+    }));
+    updateProfile((p) => ({
+      ...p,
+      writingStudio: recordMistakes(recordLesson(p.writingStudio, lesson.id, taskNum, null), taskNum, 'ai', rows),
+    }));
+  };
+
+  const submitEvaluated = async () => {
+    const spec = lesson.finalPrompt.evaluate!;
+    setSubmissions((n) => n + 1);
+    setPhase('assessing');
+    const evaluation = await finalEval.run({
+      answerType: spec.answerType,
+      language,
+      question: spec.question,
+      answer: essay.trim(),
+      requiresPosition: spec.requiresPosition,
+      keyPoints: spec.keyPoints,
+      learner: buildLearnerContext({ mistakes: profile?.writingStudio?.mistakes, task: taskNum, lessonId: lesson.id, objective: lesson.objective }),
+    });
+    setPhase('feedback');
+    if (evaluation) recordEvaluated(evaluation);
+  };
+
+  const retryEvaluated = async () => {
+    setPhase('assessing');
+    const evaluation = await finalEval.retry();
+    setPhase('feedback');
+    if (evaluation) recordEvaluated(evaluation);
+  };
+
   const submit = async () => {
+    if (lesson.finalPrompt.evaluate) {
+      await submitEvaluated();
+      return;
+    }
     const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope, !!lesson.finalPrompt.skillFocus);
     setSubmissions((n) => n + 1);
     setPhase('assessing');
@@ -178,11 +259,20 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
               setStepIndex(0);
               setEssay('');
               setFeedback(null);
+              finalEval.reset();
             }}
           >
             Practise this lesson again
           </Button>
         </div>
+      </div>
+    );
+  }
+
+  if (phase === 'assessing' && lesson.finalPrompt.evaluate) {
+    return (
+      <div className="mx-auto max-w-xl py-16">
+        <MinoVerdictPanel state={finalEval.state} language={language} />
       </div>
     );
   }
@@ -193,6 +283,39 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         <MinoMark size="xl" thinking />
         <p className="font-medium">Mino is reading your answer against the IELTS criteria…</p>
         <p className="text-sm text-muted-foreground">This usually takes a few seconds.</p>
+      </div>
+    );
+  }
+
+  if (phase === 'feedback' && lesson.finalPrompt.evaluate) {
+    const done = finalEval.state.status === 'done' ? finalEval.state.evaluation : null;
+    return (
+      <div className="mx-auto max-w-2xl space-y-5">
+        <TrainerPanel
+          lessonTitle={lesson.title}
+          stepTitle="Mino's evaluation"
+          message={
+            done?.verdict === 'correct'
+              ? 'This does what the task asked. Read the notes below, then we will move on.'
+              : done
+                ? "Here is what I noticed and what to do next. Revise your answer and check it again — you'll learn more from the second attempt."
+                : 'I could not finish checking your answer this time. Your answer is safe — try again.'
+          }
+        />
+        <Callout tone="neutral" icon={Sparkles} title={`Skill check: ${lesson.finalPrompt.skillFocus ?? lesson.finalPrompt.title}`}>
+          This short exercise targets one skill, not a complete Task {taskNum} response, so there is no IELTS band — only Mino's evaluation of this skill.
+        </Callout>
+        <MinoVerdictPanel state={finalEval.state} language={language} onRetry={retryEvaluated} />
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+          <Button variant="outline" onClick={() => setPhase('write')} data-testid="eval-revise">
+            {done ? 'Revise and check again' : 'Edit my answer'}
+          </Button>
+          {done && (
+            <Button onClick={() => setPhase('done')} data-testid="eval-continue">
+              Continue <ArrowRight />
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -259,8 +382,8 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
       <ProgressBar value={((stepIndex + 1) / lesson.steps.length) * 100} label={`Step ${stepIndex + 1} of ${lesson.steps.length}`} size="sm" />
       <TrainerPanel lessonTitle={lesson.title} stepTitle={step.title} message={step.trainerMessage} hint={step.hint} />
 
-      {step.material && <MaterialPanel block={step.material} onBoardComplete={() => setBoardDone(true)} />}
-      {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} />}
+      {step.material && <MaterialPanel block={step.material} onBoardComplete={() => setBoardDone(true)} lessonId={lesson.id} objective={lesson.objective} />}
+      {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} language={locale === 'bn' ? 'bn' : 'en'} />}
 
       <div className="flex items-center justify-between gap-2 border-t pt-4">
         <Button variant="ghost" onClick={goBack} disabled={stepIndex === 0}>

@@ -94,12 +94,35 @@ export interface IdeaBoardQuestion {
 
 // ---------------------------------------------------------------- Lessons
 
+import type { AnswerType } from '@/lib/mino-eval/types';
+
+/**
+ * A short piece of writing the learner does inside a lesson step and Mino
+ * evaluates on the spot (the learner never compares it with a model answer).
+ * The learner may revise and check again; the step unlocks once Mino has
+ * evaluated an answer.
+ */
+export interface WriteEvaluateBlock {
+  type: 'write-evaluate';
+  /** What the learner is asked to do. */
+  prompt: string;
+  /** The question or text the answer responds to (given to Mino as context). */
+  question: string;
+  answerType: AnswerType;
+  placeholder?: string;
+  /** Whether the question requires a stated position (agree/disagree etc.). */
+  requiresPosition?: boolean;
+  /** Ideas a good answer may cover — guidance for Mino, never exact wording. */
+  keyPoints?: string[];
+}
+
 export type MaterialBlock =
   | { type: 'text'; paragraphs: string[] }
   | { type: 'examples'; good: string; weak: string; note: string }
   | { type: 'vocab'; items: { phrase: string; use: string }[] }
   | { type: 'chart-board'; dataset: ChartDataset; tasks: ChartBoardTask[] }
-  | { type: 'idea-board'; question: IdeaBoardQuestion };
+  | { type: 'idea-board'; question: IdeaBoardQuestion }
+  | WriteEvaluateBlock;
 
 export type StepKind = 'intro' | 'explain' | 'demonstrate' | 'check' | 'guided' | 'independent' | 'review';
 
@@ -107,7 +130,14 @@ export interface CheckQuestion {
   prompt: string;
   options: string[];
   correctIndex: number;
+  /** Why the correct option is correct (shown whichever option the learner picks). */
   explain: string;
+  /**
+   * Optional, parallel to `options`: for a WRONG option, the specific
+   * misconception that makes it tempting, shown when the learner picks it.
+   * Entries for the correct option are ignored.
+   */
+  optionFeedback?: (string | null)[];
 }
 
 export interface LessonStep {
@@ -142,6 +172,18 @@ export interface FinalPrompt {
    * full/overview/paragraph task; deriveScope() infers it from minWords.
    */
   checkScope?: 'full' | 'overview-only' | 'paragraph-only' | 'introduction-only';
+  /**
+   * Set when this final task is evaluated by the Mino Answer Evaluation Engine
+   * (a verdict, why, and the next step) instead of the IELTS-criteria essay
+   * assessment. It is always a skill drill: no band is shown or stored.
+   */
+  evaluate?: {
+    answerType: AnswerType;
+    /** The exact question the learner is answering. */
+    question: string;
+    requiresPosition?: boolean;
+    keyPoints?: string[];
+  };
 }
 
 export interface Lesson {

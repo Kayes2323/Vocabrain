@@ -126,3 +126,36 @@ export async function wordMeaning(
     return { ok: false, error: 'unavailable' };
   }
 }
+
+/**
+ * Mino Answer Evaluation Engine: ask Mino to evaluate one learner answer by
+ * meaning (signed-in students only). Resolves to an error — never to a guessed
+ * verdict — when the evaluation cannot be completed, so callers keep the
+ * learner's answer and offer a retry. Aborts after `timeoutMs` (default 40 s).
+ */
+export async function evaluateAnswer(
+  request: import('@/lib/mino-eval/types').EvaluationRequest,
+  options: { signal?: AbortSignal; timeoutMs?: number } = {},
+): Promise<import('@/lib/mino-eval/types').EvaluationResponse> {
+  const user = auth?.currentUser;
+  if (!user) return { ok: false, error: 'unauthenticated' };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 40_000);
+  const onAbort = () => controller.abort();
+  options.signal?.addEventListener('abort', onAbort);
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/mino/evaluate-answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+    return (await res.json().catch(() => ({ ok: false, error: 'unavailable' }))) as never;
+  } catch (e) {
+    return { ok: false, error: controller.signal.aborted && !options.signal?.aborted ? 'timeout' : 'unavailable' };
+  } finally {
+    clearTimeout(timer);
+    options.signal?.removeEventListener('abort', onAbort);
+  }
+}

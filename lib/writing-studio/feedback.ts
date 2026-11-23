@@ -402,6 +402,7 @@ export function deriveScope(lesson: {
   return lesson.finalPrompt.minWords <= 120 ? 'paragraph-only' : 'full';
 }
 
+/** @deprecated No longer used by the Idea Development Board (Mino now evaluates each rung semantically); kept for compatibility. */
 export function overlapsHeavily(previous: string, current: string): boolean {
   const words = (s: string) => new Set(s.toLowerCase().match(/[a-z]{4,}/g) ?? []);
   const a = words(previous);

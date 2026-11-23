@@ -2,6 +2,7 @@ import { Check, X } from 'lucide-react';
 import { Panel, Section } from '@/components/ds';
 import type { MaterialBlock } from '@/lib/writing-studio/types';
 import { ChartAnalysisBoard } from './ChartAnalysisBoard';
+import { EvaluatedWriteBoard } from './EvaluatedWriteBoard';
 import { IdeaDevelopmentBoard } from './IdeaDevelopmentBoard';
 
 /**
@@ -9,7 +10,18 @@ import { IdeaDevelopmentBoard } from './IdeaDevelopmentBoard';
  * current step's content rather than forcing everything into one layout
  * (spec §5B).
  */
-export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock; onBoardComplete?: () => void }) {
+export function MaterialPanel({
+  block,
+  onBoardComplete,
+  lessonId,
+  objective,
+}: {
+  block: MaterialBlock;
+  onBoardComplete?: () => void;
+  /** Lesson context passed to Mino when it evaluates the learner's writing. */
+  lessonId?: string;
+  objective?: string;
+}) {
   switch (block.type) {
     case 'text':
       return (
@@ -63,7 +75,14 @@ export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock
     case 'idea-board':
       return (
         <Section title="Idea Development Trainer" variant="label">
-          <IdeaDevelopmentBoard question={block.question} onComplete={onBoardComplete} />
+          <IdeaDevelopmentBoard question={block.question} onComplete={onBoardComplete} lessonId={lessonId} objective={objective} />
+        </Section>
+      );
+
+    case 'write-evaluate':
+      return (
+        <Section title="Write it — Mino checks it" variant="label">
+          <EvaluatedWriteBoard block={block} lessonId={lessonId} objective={objective} onEvaluated={onBoardComplete} />
         </Section>
       );
   }

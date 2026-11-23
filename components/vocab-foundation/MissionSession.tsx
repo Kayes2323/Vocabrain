@@ -12,7 +12,10 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { speakWord } from '@/components/reading/speak';
 import { vocabFeedback } from '@/lib/ai/client';
 import type { VocabFeedback } from '@/lib/ai/server/assess/vocab';
-import { checkSentence, createBrainWord, evaluateRecall, makeCloze, type RecallVerdict } from '@/lib/engine';
+import { checkSentence, createBrainWord, evaluateRecall, makeCloze, routeRecall, type RecallVerdict } from '@/lib/engine';
+import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import { localDateKey } from '@/lib/engine/dates';
 import type { BrainWord } from '@/lib/models';
 import {
@@ -233,11 +236,15 @@ function DiscoverStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }
 
 type RecallState =
   | { stage: 'ask'; attempt: 0 | 1 }
+  /** Mino is evaluating a meaning given in the student's own words. */
+  | { stage: 'checking'; attempt: 0 | 1 }
   | { stage: 'self' }
   | { stage: 'result'; correct: boolean; kind: 'first' | 'clue' | 'revealed' | 'close' };
 
 function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' | 'completion'; onNext: () => void }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
+  const mino = useMinoEvaluation();
+  const [minoEval, setMinoEval] = useState<MinoEvaluation | null>(null);
   const text = useText();
   const brain = useBrain();
   const { update } = useVocabFoundation();
@@ -256,21 +263,58 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
     update((v) => bumpDay(recordSessionResult(v, `recall:${kind}:${fw.id}`, correct, answer), { recalls: 1, recallCorrect: correct ? 1 : 0 }));
   };
 
-  const check = (giveUp = false) => {
-    const v: RecallVerdict = giveUp ? 'wrong' : evaluateRecall(word, exercise, answer);
-    if (state.stage !== 'ask') return;
+  const advance = (v: 'correct' | 'close' | 'wrong') => {
+    if (state.stage !== 'ask' && state.stage !== 'checking') return;
+    const attempt = state.attempt;
     if (v === 'correct' || v === 'close') {
       // Right on the first try is a real recall; with a clue it counts as "needs more practice".
-      record(state.attempt === 0);
-      setState({ stage: 'result', correct: true, kind: state.attempt === 0 ? (v === 'close' ? 'close' : 'first') : 'clue' });
-    } else if (v === 'check' && state.attempt === 0) {
-      setState({ stage: 'self' });
-    } else if (state.attempt === 0) {
+      record(attempt === 0);
+      setState({ stage: 'result', correct: true, kind: attempt === 0 ? (v === 'close' ? 'close' : 'first') : 'clue' });
+    } else if (attempt === 0) {
       setState({ stage: 'ask', attempt: 1 });
       setAnswer('');
     } else {
       record(false);
       setState({ stage: 'result', correct: false, kind: 'revealed' });
+    }
+  };
+
+  const applyEvaluation = (evaluation: MinoEvaluation) => {
+    setMinoEval(evaluation);
+    advance(evaluation.verdict === 'correct' ? 'correct' : 'wrong');
+  };
+
+  const check = async (giveUp = false) => {
+    if (state.stage !== 'ask') return;
+    // A meaning in the student's own words is evaluated by Mino (never left for the student to compare with the answer).
+    const route = giveUp ? null : exercise === 'meaning' ? routeRecall(word, 'meaning', answer) : null;
+    if (route && route.kind === 'mino') {
+      const attempt = state.attempt;
+      setState({ stage: 'checking', attempt });
+      const evaluation = await mino.run({
+        answerType: route.answerType,
+        language: locale === 'bn' ? 'bn' : 'en',
+        question: route.question,
+        answer: answer.trim(),
+        vocab: { word: fw.word, partOfSpeech: word.partOfSpeech, meaning: word.meaning || undefined, meaningBn: word.meaningBn || undefined, synonyms: word.synonyms.slice(0, 12), collocations: word.collocations.slice(0, 12) },
+        learner: { lessonId: 'vocabulary-foundation-recall', objective: 'Recall the meaning of a Foundation word', recentMistakes: [] },
+      });
+      if (evaluation) applyEvaluation(evaluation);
+      // on failure the panel below offers Retry (the answer is kept) or an explicit self-check
+      return;
+    }
+    const v: RecallVerdict = giveUp ? 'wrong' : route && route.kind === 'local' ? route.verdict : evaluateRecall(word, exercise, answer);
+    if (v === 'correct' || v === 'close') advance(v);
+    else if (v === 'check' && state.attempt === 0) setState({ stage: 'self' });
+    else advance('wrong');
+  };
+
+  const retryMino = async () => {
+    const attempt = state.stage === 'checking' ? state.attempt : 0;
+    const evaluation = await mino.retry();
+    if (evaluation) {
+      setState({ stage: 'checking', attempt });
+      applyEvaluation(evaluation);
     }
   };
 
@@ -295,8 +339,25 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
         </div>
       )}
 
+      {state.stage === 'checking' && (
+        <div className="space-y-2">
+          <Input value={answer} readOnly aria-label={t('vocabFoundation.session.answerPlaceholder')} className="h-13 text-base" />
+          <MinoVerdictPanel state={mino.state} language={locale === 'bn' ? 'bn' : 'en'} onRetry={() => void retryMino()} />
+          {mino.state.status === 'error' && (
+            <Button variant="ghost" size="sm" onClick={() => { mino.reset(); setState({ stage: 'self' }); }} data-testid="foundation-self-check">
+              {locale === 'bn' ? 'নিজে মিলিয়ে দেখব (Mino যাচাই করেনি)' : 'Check it myself instead (not evaluated by Mino)'}
+            </Button>
+          )}
+        </div>
+      )}
+
       {state.stage === 'ask' && state.attempt === 1 && (
         <div role="status" className="space-y-1.5 rounded-xl bg-amber-500/10 p-4 animate-in fade-in duration-300">
+          {minoEval && (
+            <div className="mb-2 rounded-lg border bg-card p-3" data-testid="foundation-mino-evaluation">
+              <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
+            </div>
+          )}
           <p className="font-semibold">{t('vocabFoundation.session.almost')}</p>
           <p className="flex gap-2 text-[15px]">
             <Lightbulb className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
@@ -358,6 +419,12 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
               {t('vocabFoundation.session.selfNo')}
             </Button>
           </div>
+        </div>
+      )}
+
+      {done && minoEval && (
+        <div className="rounded-xl border bg-card p-4" data-testid="foundation-mino-evaluation">
+          <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
         </div>
       )}
 

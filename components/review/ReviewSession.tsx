@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, CircleAlert, Sparkles, X, XCircle } from 'lucide-react';
+import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
 import { Button } from '@/components/ui/button';
 import { EmptyState, ProgressBar, ScreenSkeleton } from '@/components/ds';
 import { meanings } from '@/components/brain/meaning';
@@ -22,8 +24,10 @@ import {
   makeCloze,
   markActivityDone,
   nextExercise,
+  routeRecall,
   type RecallVerdict,
 } from '@/lib/engine';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import type { BrainWord, Locale, RecallExercise, RecallRating } from '@/lib/models';
 import { cn } from '@/lib/utils';
 
@@ -72,6 +76,9 @@ export function ReviewSession() {
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [started, setStarted] = useState(false);
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
+  // Answers whose correctness depends on meaning are evaluated by Mino (never left for the student to compare).
+  const mino = useMinoEvaluation();
+  const [minoEval, setMinoEval] = useState<MinoEvaluation | null>(null);
 
   const due = useMemo(() => dueWords(brain.words), [brain.words]);
   const failedCount = due.filter((w) => w.consecutiveFailures > 0).length;
@@ -205,18 +212,69 @@ export function ReviewSession() {
     setAnswer('');
     setVerdict(null);
     setHint(false);
+    mino.reset();
+    setMinoEval(null);
     setIndex(index + 1);
   };
 
+  const language: 'en' | 'bn' = locale === 'bn' ? 'bn' : 'en';
+
+  /** Mino evaluates the meaning of the answer; correct is instant to the learner once it returns, anything else is not recalled. */
+  const askMino = async (route: Extract<ReturnType<typeof routeRecall>, { kind: 'mino' }>) => {
+    const history = word.recallHistory ?? [];
+    const evaluation = await mino.run({
+      answerType: route.answerType,
+      language,
+      question: route.question,
+      answer: answer.trim(),
+      vocab: {
+        word: word.word,
+        partOfSpeech: word.partOfSpeech,
+        meaning: word.meaning || undefined,
+        meaningBn: word.meaningBn || undefined,
+        synonyms: word.synonyms.slice(0, 12),
+        collocations: word.collocations.slice(0, 12),
+      },
+      learner: {
+        lessonId: 'vocabulary-recall',
+        objective: 'Recall the meaning and the use of a saved word',
+        recentMistakes: [],
+        wordHistory: history.length ? { attempts: history.length, misses: history.filter((h) => !h.correct).length } : undefined,
+      },
+    });
+    if (evaluation) await applyEvaluation(evaluation); // on failure the panel offers Retry (the answer is kept) or an explicit self-check
+  };
+
+  const applyEvaluation = async (evaluation: MinoEvaluation) => {
+    setMinoEval(evaluation);
+    if (evaluation.verdict === 'correct') {
+      setVerdict('correct');
+    } else {
+      // Partly right or wrong: not recalled yet, so it comes back later. Mino has said exactly why.
+      setVerdict('wrong');
+      await record(false);
+    }
+  };
+
   const check = async () => {
-    const v = evaluateRecall(word, card.exercise, answer);
+    const route = routeRecall(word, card.exercise, answer);
     // An own sentence without the word (or too short) is not a wrong answer yet: ask for a full sentence.
-    if (card.exercise === 'sentence' && v === 'wrong') {
-      setHint(true);
+    if (route.kind === 'local') {
+      if (card.exercise === 'sentence' && route.verdict === 'wrong') {
+        setHint(true);
+        return;
+      }
+      setVerdict(route.verdict);
+      if (route.verdict === 'wrong') await record(false);
       return;
     }
-    setVerdict(v);
-    if (v === 'wrong') await record(false);
+    await askMino(route);
+  };
+
+  /** Mino could not evaluate this answer; the learner explicitly chooses to compare it themselves (not evaluated). */
+  const selfCheckInstead = () => {
+    mino.reset();
+    setVerdict('check');
   };
 
   const rate = async (rating: RecallRating) => {
@@ -345,7 +403,7 @@ export function ReviewSession() {
                   setAnswer(e.target.value);
                   setHint(false);
                 }}
-                readOnly={verdict !== null}
+                readOnly={verdict !== null || mino.busy}
                 rows={3}
                 lang="en"
                 placeholder={t('review.placeholderSentence')}
@@ -367,7 +425,7 @@ export function ReviewSession() {
                 ref={inputRef}
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
-                readOnly={verdict !== null}
+                readOnly={verdict !== null || mino.busy}
                 autoComplete="off"
                 autoCapitalize="none"
                 spellCheck={false}
@@ -381,24 +439,41 @@ export function ReviewSession() {
             </>
           )}
 
+          {/* Mino's evaluation while it works, or a clear failure with Retry — never a guessed verdict. */}
+          {verdict === null && (mino.state.status === 'evaluating' || mino.state.status === 'error') && (
+            <div className="space-y-2">
+              <MinoVerdictPanel state={mino.state} language={language} onRetry={() => void mino.retry().then((ev) => ev && void applyEvaluation(ev))} />
+              {mino.state.status === 'error' && (
+                <Button type="button" variant="ghost" size="sm" onClick={selfCheckInstead} data-testid="recall-self-check">
+                  {language === 'bn' ? 'নিজে মিলিয়ে দেখব (Mino যাচাই করেনি)' : 'Check it myself instead (not evaluated by Mino)'}
+                </Button>
+              )}
+            </div>
+          )}
+
           {/* Then the action. */}
           {verdict === null ? (
             <div className="grid grid-cols-[1fr_auto] gap-2">
-              <Button type="submit" size="lg" disabled={!answer.trim()} data-testid="recall-check">
+              <Button type="submit" size="lg" disabled={!answer.trim() || mino.busy} data-testid="recall-check">
                 {t('review.check')}
               </Button>
-              <Button type="button" variant="ghost" size="lg" onClick={dontKnow}>
+              <Button type="button" variant="ghost" size="lg" onClick={dontKnow} disabled={mino.busy}>
                 {t('review.dontKnow')}
               </Button>
             </div>
           ) : (
             <div className="space-y-3" aria-live="polite" data-verdict={verdict}>
-              {(verdict === 'correct' || verdict === 'close') && (
+              {minoEval && (
+                <div className="rounded-xl border bg-card p-4" data-testid="recall-mino-evaluation">
+                  <EvaluationView evaluation={minoEval} language={language} />
+                </div>
+              )}
+              {!minoEval && (verdict === 'correct' || verdict === 'close') && (
                 <p className="flex items-center gap-2 font-medium text-success">
                   <CheckCircle2 className="size-5" /> {verdict === 'correct' ? t('review.correct') : t('review.close')}
                 </p>
               )}
-              {(verdict === 'wrong' || verdict === 'dontknow') && (
+              {!minoEval && (verdict === 'wrong' || verdict === 'dontknow') && (
                 <p className="flex items-center gap-2 font-medium text-destructive">
                   <XCircle className="size-5" /> {t('review.wrong')}
                 </p>

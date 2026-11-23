@@ -105,6 +105,41 @@ export function evaluateRecall(word: BrainWord, exercise: RecallExercise, answer
 }
 
 /**
+ * Where a recall answer is judged. Objective answers (an exact word, an exact
+ * meaning, a listed synonym, a multiple-choice pick) are graded here, instantly.
+ * Answers whose correctness depends on MEANING — a meaning in the student's own
+ * words, a synonym that is not on the list, a sentence using the word — go to
+ * Mino's answer evaluation, so the student is told whether it is right and why,
+ * instead of being asked to compare with the model answer themselves.
+ *
+ * A meaning is never accepted just because it shares a keyword with the trusted
+ * meaning: only an exact match is instant; everything else is evaluated.
+ */
+export type RecallRoute =
+  | { kind: 'local'; verdict: Exclude<RecallVerdict, 'check'> }
+  | { kind: 'mino'; answerType: 'vocab_meaning' | 'vocab_usage'; question: string };
+
+export function routeRecall(word: BrainWord, exercise: RecallExercise, answer: string): RecallRoute {
+  const trimmed = answer.trim();
+  if (!trimmed) return { kind: 'local', verdict: 'wrong' };
+
+  if (exercise === 'meaning') {
+    const a = normalize(trimmed);
+    const exact = [word.meaning, word.meaningBn].filter(Boolean).map((m) => normalize(m!));
+    const bnParts = (word.meaningBn ?? '').split(/[\/,،]/).map((p) => normalize(p)).filter((p) => p.length >= 2);
+    if (exact.includes(a) || bnParts.includes(a)) return { kind: 'local', verdict: 'correct' };
+    return { kind: 'mino', answerType: 'vocab_meaning', question: `What does "${word.word}" mean?` };
+  }
+
+  const v = evaluateRecall(word, exercise, trimmed);
+  if (v !== 'check') return { kind: 'local', verdict: v };
+  if (exercise === 'synonym') return { kind: 'mino', answerType: 'vocab_meaning', question: `Give a word or short phrase with the same meaning as "${word.word}".` };
+  if (exercise === 'sentence') return { kind: 'mino', answerType: 'vocab_usage', question: `Write a sentence that uses the word "${word.word}" correctly.` };
+  // Any other exercise has no semantic path: treat an uncertain answer as not recalled rather than guessing.
+  return { kind: 'local', verdict: 'wrong' };
+}
+
+/**
  * Four meanings for a "choose the meaning" question: the word's own and three
  * from other saved words, in a stable order per word. Undefined when there are
  * not enough different meanings to choose from.

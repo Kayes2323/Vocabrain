@@ -1,46 +1,62 @@
 'use client';
 
-import { useState } from 'react';
-import { AlertTriangle, ArrowRight, Check } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Callout, Panel, ProgressBar } from '@/components/ds';
-import { overlapsHeavily } from '@/lib/writing-studio/feedback';
+import { MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
+import { useLocale } from '@/components/providers/LocaleProvider';
+import { useProfile } from '@/components/providers/ProfileProvider';
+import { buildLearnerContext } from '@/lib/mino-eval/context';
+import { STATUS_TEXT } from '@/lib/mino-eval/labels';
 import type { IdeaBoardQuestion } from '@/lib/writing-studio/types';
 
 /**
  * Task 2's flagship interactive feature (spec §7, "Idea Development
- * Trainer"). One rung of the ladder at a time; Mino never writes the
- * paragraph for the student, only asks the next question and flags an
- * answer that mostly repeats the one before it.
+ * Trainer"). One rung of the ladder at a time. Mino never writes the paragraph
+ * for the student; it EVALUATES each answer: does this rung do the job its
+ * question asks for (a mechanism, not a restatement; a specific example that
+ * supports the explanation; a result that follows)? A rung that merely reuses
+ * words from the previous one is not penalised — only one that adds nothing.
+ * If the evaluation cannot be completed there is no verdict: the learner can
+ * retry, or move on explicitly without Mino's check.
  */
 export function IdeaDevelopmentBoard({
   question,
   onComplete,
+  lessonId,
+  objective,
 }: {
   question: IdeaBoardQuestion;
   onComplete?: (answers: string[]) => void;
+  lessonId?: string;
+  objective?: string;
 }) {
+  const { locale } = useLocale();
+  const { profile } = useProfile();
+  const language = locale === 'bn' ? 'bn' : 'en';
+  const tx = STATUS_TEXT[language];
   const ladder = [...question.ladder].sort((a, b) => a.order - b.order);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<string[]>(Array(ladder.length).fill(''));
   const [draft, setDraft] = useState('');
-  const [warning, setWarning] = useState(false);
   const [done, setDone] = useState(false);
+  const { state, run, retry, reset, busy } = useMinoEvaluation();
+  const checkedDraft = useRef('');
 
   const current = ladder[index];
   const isLast = index === ladder.length - 1;
+  const verdict = state.status === 'done' ? state.evaluation.verdict : null;
+  const passed = verdict === 'correct';
+  const needsOpinion = question.questionType === 'agree-disagree' || question.questionType === 'discuss-both';
 
-  const submitRung = () => {
-    const previous = index > 0 ? answers[index - 1] : '';
-    if (previous && overlapsHeavily(previous, draft)) {
-      setWarning(true);
-      return;
-    }
+  const advance = (accepted: string) => {
     const next = [...answers];
-    next[index] = draft;
+    next[index] = accepted;
     setAnswers(next);
-    setWarning(false);
+    reset();
     if (isLast) {
       setDone(true);
       onComplete?.(next);
@@ -48,6 +64,26 @@ export function IdeaDevelopmentBoard({
       setIndex(index + 1);
       setDraft('');
     }
+  };
+
+  const check = async () => {
+    const text = draft.trim();
+    if (text.length < 3) return;
+    checkedDraft.current = text;
+    await run({
+      answerType: 'idea_rung',
+      language,
+      question: question.prompt,
+      answer: text,
+      requiresPosition: needsOpinion,
+      rung: {
+        prompt: current.prompt,
+        hint: current.hint,
+        order: current.order,
+        previous: ladder.slice(0, index).map((r, i) => ({ prompt: r.prompt, answer: answers[i] })),
+      },
+      learner: buildLearnerContext({ mistakes: profile?.writingStudio?.mistakes, task: 2, lessonId, objective }),
+    });
   };
 
   if (done) {
@@ -68,8 +104,10 @@ export function IdeaDevelopmentBoard({
     );
   }
 
+  const changedSinceCheck = state.status === 'done' && draft.trim() !== checkedDraft.current;
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-testid="idea-board">
       <Panel variant="muted" className="space-y-1 p-3.5">
         <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">The question</p>
         <p className="text-sm" lang="en">{question.prompt}</p>
@@ -83,19 +121,35 @@ export function IdeaDevelopmentBoard({
         <Textarea
           rows={3}
           value={draft}
-          onChange={(e) => { setDraft(e.target.value); setWarning(false); }}
+          onChange={(e) => setDraft(e.target.value)}
           placeholder={current.placeholder}
           className="rounded-lg bg-card text-sm"
           lang="en"
+          id="idea-rung-answer"
+          aria-label={current.prompt}
+          disabled={busy}
         />
-        {warning && (
-          <Callout tone="warning" icon={AlertTriangle}>
-            This looks very close to your last answer. Try to add something new — go one level deeper, rather than restating the same point.
-          </Callout>
-        )}
-        <Button onClick={submitRung} disabled={draft.trim().length < 3} className="w-full sm:w-auto">
-          {isLast ? <Check /> : <ArrowRight />} {isLast ? 'Finish the ladder' : 'Next question'}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={check} disabled={busy || draft.trim().length < 3 || (state.status === 'done' && !changedSinceCheck)} data-testid="idea-check">
+            {state.status === 'done' ? <RotateCcw /> : <Check />} {state.status === 'done' ? tx.revise : 'Ask Mino to check this step'}
+          </Button>
+          {passed && !changedSinceCheck && (
+            <Button variant="default" onClick={() => advance(draft.trim())} data-testid="idea-next">
+              {isLast ? <Check /> : <ArrowRight />} {isLast ? 'Finish the ladder' : 'Next question'}
+            </Button>
+          )}
+          {verdict && !passed && !changedSinceCheck && (
+            <Button variant="ghost" onClick={() => advance(draft.trim())} data-testid="idea-move-on">
+              Move on anyway
+            </Button>
+          )}
+          {state.status === 'error' && (
+            <Button variant="ghost" onClick={() => advance(draft.trim())} data-testid="idea-move-on-unchecked">
+              Move on without Mino's check
+            </Button>
+          )}
+        </div>
+        <MinoVerdictPanel state={state} language={language} onRetry={retry} />
       </Panel>
 
       {index > 0 && (
