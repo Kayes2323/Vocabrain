@@ -9,6 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { EmptyState, ScreenSkeleton } from '@/components/ds';
 import { meanings } from '@/components/brain/meaning';
 import { MinoSays } from '@/components/mino/MinoSays';
+import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -19,16 +22,20 @@ import { useBrainGate } from '@/components/brain/BrainGate';
 import { PracticeShell } from './PracticeShell';
 import { pickWord } from './pickWord';
 
+type CheckResult = { source: 'mino'; correct: boolean } | { source: 'fallback'; check: UsageCheck };
+
 export function WritingPractice() {
   const params = useSearchParams();
   const leave = useLeave('/');
   const { t, locale } = useLocale();
   const brain = useBrain();
   const { updateProfile } = useProfile();
+  const mino = useMinoEvaluation();
+  const [minoEval, setMinoEval] = useState<MinoEvaluation | null>(null);
   const [done, setDone] = useState<string[]>([]);
   const [requested, setRequested] = useState<string | null>(params.get('word'));
   const [text, setText] = useState('');
-  const [result, setResult] = useState<UsageCheck | null>(null);
+  const [result, setResult] = useState<CheckResult | null>(null);
 
   const gate = useBrainGate();
   if (gate) return gate;
@@ -67,11 +74,45 @@ export function WritingPractice() {
 
   const { primary } = meanings(word, locale);
 
-  const check = async () => {
-    const r = checkSentence(word, text);
-    setResult(r);
-    await brain.recordUsage(word.id, { mode: 'writing', text, correct: r.correct, feedback: r.feedback }).catch(() => undefined);
+  const record = async (correct: boolean, feedback: string[] = []) => {
+    await brain.recordUsage(word.id, { mode: 'writing', text, correct, feedback }).catch(() => undefined);
     updateProfile((p) => markActivityDone(p, 'writing'));
+  };
+
+  const applyEvaluation = (evaluation: MinoEvaluation) => {
+    setMinoEval(evaluation);
+    const correct = evaluation.verdict === 'correct';
+    setResult({ source: 'mino', correct });
+    void record(correct);
+  };
+
+  // Every sentence is evaluated by Mino for meaning, grammar and natural usage —
+  // word-presence alone is never enough. On failure the panel below offers Retry
+  // (the sentence is kept) or an explicit, labelled local check.
+  const check = async () => {
+    const evaluation = await mino.run({
+      answerType: 'vocab_usage',
+      language: locale === 'bn' ? 'bn' : 'en',
+      question: `Write a sentence that uses the word "${word.word}" correctly.`,
+      answer: text.trim(),
+      vocab: {
+        word: word.word,
+        partOfSpeech: word.partOfSpeech,
+        meaning: word.meaning || undefined,
+        meaningBn: word.meaningBn || undefined,
+        synonyms: word.synonyms.slice(0, 12),
+        collocations: word.collocations.slice(0, 12),
+      },
+      learner: { lessonId: 'writing-practice', objective: 'Use a saved word naturally in an original sentence', recentMistakes: [] },
+    });
+    if (evaluation) applyEvaluation(evaluation);
+  };
+
+  const selfCheckInstead = () => {
+    mino.reset();
+    const r = checkSentence(word, text);
+    setResult({ source: 'fallback', check: r });
+    void record(r.correct, r.feedback);
   };
 
   const nextWord = () => {
@@ -79,6 +120,8 @@ export function WritingPractice() {
     setRequested(null);
     setText('');
     setResult(null);
+    setMinoEval(null);
+    mino.reset();
   };
 
   return (
@@ -118,18 +161,36 @@ export function WritingPractice() {
         />
       </div>
 
-      {result === null ? (
+      {result === null && (mino.state.status === 'evaluating' || mino.state.status === 'error') && (
+        <div className="space-y-2">
+          <MinoVerdictPanel state={mino.state} language={locale === 'bn' ? 'bn' : 'en'} onRetry={() => void mino.retry().then((ev) => ev && applyEvaluation(ev))} />
+          {mino.state.status === 'error' && (
+            <Button type="button" variant="ghost" size="sm" onClick={selfCheckInstead} data-testid="writing-practice-self-check">
+              {locale === 'bn' ? 'নিজে মিলিয়ে দেখব (Mino যাচাই করেনি)' : 'Check it myself instead (not evaluated by Mino)'}
+            </Button>
+          )}
+        </div>
+      )}
+      {result === null && mino.state.status !== 'evaluating' && mino.state.status !== 'error' ? (
         <Button size="lg" className="w-full" onClick={check} disabled={text.trim().length < 3}>
           {t('practice.checkSentence')}
         </Button>
-      ) : (
+      ) : result !== null ? (
         <div className="space-y-4" aria-live="polite">
-          <MinoSays>
-            {result.feedback
-              .map((key) => t(key, { word: word.word, collocation: result.collocation ?? '' }))
-              .join(' ')}
-          </MinoSays>
-          <p className="text-xs text-muted-foreground">{t('practice.quickCheckNote')}</p>
+          {result.source === 'mino' && minoEval ? (
+            <div className="rounded-xl border bg-card p-4" data-testid="writing-practice-mino-evaluation">
+              <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
+            </div>
+          ) : result.source === 'fallback' ? (
+            <>
+              <MinoSays>
+                {result.check.feedback
+                  .map((key) => t(key, { word: word.word, collocation: result.check.collocation ?? '' }))
+                  .join(' ')}
+              </MinoSays>
+              <p className="text-xs text-muted-foreground">{t('practice.quickCheckNote')}</p>
+            </>
+          ) : null}
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
@@ -148,7 +209,7 @@ export function WritingPractice() {
             {t('practice.done')}
           </Button>
         </div>
-      )}
+      ) : null}
     </PracticeShell>
   );
 }

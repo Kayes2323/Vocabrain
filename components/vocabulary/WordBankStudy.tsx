@@ -5,11 +5,9 @@ import { Bookmark, BookmarkCheck, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Panel, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { useProfile } from '@/components/providers/ProfileProvider';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { getWordBankInfo } from '@/lib/content/dictionary';
 import { wordId } from '@/lib/engine';
-import { recordRecall } from '@/lib/engine';
 import type { IELTSWord } from '@/lib/ielts-vocabulary';
 import { Flashcard } from './Flashcard';
 import { RecallButtons, StudyNav, StudyProgress } from './StudyControls';
@@ -36,7 +34,6 @@ function ChipList({ label, items }: { label: string; items: string[] }) {
 
 export function WordBankStudy({ band, words }: WordBankStudyProps) {
   const { t } = useLocale();
-  const { updateProfile } = useProfile();
   const brain = useBrain();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -81,7 +78,10 @@ export function WordBankStudy({ band, words }: WordBankStudyProps) {
         {revealed && (
           <RecallButtons
             onAnswer={(knew) => {
-              updateProfile((p) => recordRecall(p, word.id, knew ? 'recalled' : 'missed'));
+              // Only a word already in My Brain has a schedule to update — this flip-card
+              // self-report feeds the SAME BrainWord record every other surface reads, not
+              // a separate counter nothing else sees.
+              if (saved) void brain.recordRecall(brainId, 'meaning', knew).catch(() => undefined);
               go(index + 1);
             }}
           />

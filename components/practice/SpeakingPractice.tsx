@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Callout, EmptyState, ScreenSkeleton } from '@/components/ds';
 import { MinoSays } from '@/components/mino/MinoSays';
+import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
+import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -20,20 +23,23 @@ import { PracticeShell } from './PracticeShell';
 import { pickWord } from './pickWord';
 import { useSpeechRecognition } from './useSpeechRecognition';
 
-type Phase = 'answer' | 'confirm' | 'result';
+type Phase = 'answer' | 'selfcheck' | 'result';
+type Outcome = { kind: 'missing' } | { kind: 'mino'; correct: boolean } | { kind: 'fallback'; correct: boolean };
 
 export function SpeakingPractice() {
   const params = useSearchParams();
   const leave = useLeave('/');
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const brain = useBrain();
   const { updateProfile } = useProfile();
   const speech = useSpeechRecognition('en-US');
+  const mino = useMinoEvaluation();
+  const [minoEval, setMinoEval] = useState<MinoEvaluation | null>(null);
   const [done, setDone] = useState<string[]>([]);
   const [requested, setRequested] = useState<string | null>(params.get('word'));
   const [typing, setTyping] = useState(false);
   const [phase, setPhase] = useState<Phase>('answer');
-  const [outcome, setOutcome] = useState<'used' | 'natural' | 'missing' | 'unnatural' | null>(null);
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
 
   const gate = useBrainGate();
   if (gate) return gate;
@@ -73,29 +79,59 @@ export function SpeakingPractice() {
   const prompt = speakingPrompt(word, done.length);
   const answer = speech.transcript;
 
+  const record = async (correct: boolean, feedback: string[] = []) => {
+    await brain.recordUsage(word.id, { mode: 'speaking', text: answer, correct, feedback }).catch(() => undefined);
+    updateProfile((p) => markActivityDone(p, 'speaking'));
+  };
+
+  const applyEvaluation = (evaluation: MinoEvaluation) => {
+    setMinoEval(evaluation);
+    const correct = evaluation.verdict === 'correct';
+    setOutcome({ kind: 'mino', correct });
+    setPhase('result');
+    void record(correct);
+  };
+
+  // The word's literal presence in the transcript is an instant, objective check.
+  // Whether it was used CORRECTLY (meaning, grammar) is judged by Mino from the
+  // transcript — never a self-report, and pronunciation is never inferred from text
+  // (see the speaking_usage rubric). On failure the panel below offers Retry or an
+  // explicit, labelled local check.
   const submit = async () => {
     speech.stop();
     if (!containsWord(answer, word.lemma)) {
-      setOutcome('missing');
+      setOutcome({ kind: 'missing' });
       setPhase('result');
-      await brain.recordUsage(word.id, { mode: 'speaking', text: answer, correct: false, feedback: ['practice.speaking.missing'] }).catch(() => undefined);
-      updateProfile((p) => markActivityDone(p, 'speaking'));
+      void record(false, ['practice.speaking.missing']);
       return;
     }
-    setOutcome('used');
-    setPhase('confirm');
+    const evaluation = await mino.run({
+      answerType: 'speaking_usage',
+      language: locale === 'bn' ? 'bn' : 'en',
+      question: t(prompt.key, prompt.vars),
+      answer: answer.trim(),
+      vocab: {
+        word: word.word,
+        partOfSpeech: word.partOfSpeech,
+        meaning: word.meaning || undefined,
+        meaningBn: word.meaningBn || undefined,
+        synonyms: word.synonyms.slice(0, 12),
+        collocations: word.collocations.slice(0, 12),
+      },
+      learner: { lessonId: 'speaking-practice', objective: 'Use a saved word correctly while speaking', recentMistakes: [] },
+    });
+    if (evaluation) applyEvaluation(evaluation);
   };
 
-  const confirm = async (natural: boolean) => {
-    setOutcome(natural ? 'natural' : 'unnatural');
+  const selfCheckInstead = () => {
+    mino.reset();
+    setPhase('selfcheck');
+  };
+
+  const confirmSelfCheck = (natural: boolean) => {
+    setOutcome({ kind: 'fallback', correct: natural });
     setPhase('result');
-    await brain.recordUsage(word.id, {
-      mode: 'speaking',
-      text: answer,
-      correct: natural,
-      feedback: [natural ? 'practice.speaking.natural' : 'practice.speaking.unnatural'],
-    }).catch(() => undefined);
-    updateProfile((p) => markActivityDone(p, 'speaking'));
+    void record(natural, [natural ? 'practice.speaking.natural' : 'practice.speaking.unnatural']);
   };
 
   const reset = (nextWord: boolean) => {
@@ -106,6 +142,8 @@ export function SpeakingPractice() {
     speech.setTranscript('');
     setPhase('answer');
     setOutcome(null);
+    setMinoEval(null);
+    mino.reset();
   };
 
   return (
@@ -154,7 +192,18 @@ export function SpeakingPractice() {
             />
           )}
 
-          <Button size="lg" className="w-full" onClick={submit} disabled={answer.trim().length < 3}>
+          {(mino.state.status === 'evaluating' || mino.state.status === 'error') && (
+            <div className="space-y-2">
+              <MinoVerdictPanel state={mino.state} language={locale === 'bn' ? 'bn' : 'en'} onRetry={() => void mino.retry().then((ev) => ev && applyEvaluation(ev))} />
+              {mino.state.status === 'error' && (
+                <Button type="button" variant="ghost" size="sm" onClick={selfCheckInstead} data-testid="speaking-practice-self-check">
+                  {locale === 'bn' ? 'নিজে মিলিয়ে দেখব (Mino যাচাই করেনি)' : 'Check it myself instead (not evaluated by Mino)'}
+                </Button>
+              )}
+            </div>
+          )}
+
+          <Button size="lg" className="w-full" onClick={submit} disabled={answer.trim().length < 3 || mino.busy}>
             {t('practice.checkAnswer')}
           </Button>
           {speech.supported && !typing && (
@@ -165,7 +214,7 @@ export function SpeakingPractice() {
         </div>
       )}
 
-      {phase === 'confirm' && (
+      {phase === 'selfcheck' && (
         <div className="space-y-4">
           <p className="flex items-center gap-2 font-medium text-success">
             <CheckCircle2 className="size-5" /> {t('practice.speaking.usedIt', { word: word.word })}
@@ -173,12 +222,13 @@ export function SpeakingPractice() {
           <p className="rounded-xl bg-muted/70 px-4 py-3 text-[15px]" lang="en">
             {answer}
           </p>
+          <p className="text-xs text-muted-foreground">{locale === 'bn' ? 'Mino যাচাই করতে পারেনি — এটি নিজে মিলিয়ে দেখা, মূল্যায়ন নয়।' : 'Mino could not evaluate this — this is your own check, not a Mino evaluation.'}</p>
           <p className="font-medium">{t('practice.speaking.naturalQuestion')}</p>
           <div className="grid grid-cols-2 gap-2">
-            <Button variant="outline" size="lg" onClick={() => confirm(false)}>
+            <Button variant="outline" size="lg" onClick={() => confirmSelfCheck(false)}>
               {t('practice.speaking.notReally')}
             </Button>
-            <Button size="lg" onClick={() => confirm(true)}>
+            <Button size="lg" onClick={() => confirmSelfCheck(true)}>
               {t('practice.speaking.yes')}
             </Button>
           </div>
@@ -187,12 +237,23 @@ export function SpeakingPractice() {
 
       {phase === 'result' && outcome && (
         <div className="space-y-4" aria-live="polite">
-          {outcome === 'missing' && (
+          {outcome.kind === 'missing' && (
             <p className="flex items-center gap-2 font-medium text-destructive">
               <XCircle className="size-5" /> {t('practice.speaking.notUsed', { word: word.word })}
             </p>
           )}
-          <MinoSays>{t(`practice.speaking.${outcome === 'missing' ? 'missing' : outcome}`, { word: word.word, collocation: word.collocations[0] ?? word.word })}</MinoSays>
+          {outcome.kind === 'mino' && minoEval ? (
+            <div className="rounded-xl border bg-card p-4" data-testid="speaking-practice-mino-evaluation">
+              <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
+            </div>
+          ) : (
+            <MinoSays>
+              {t(`practice.speaking.${outcome.kind === 'missing' ? 'missing' : outcome.correct ? 'natural' : 'unnatural'}`, {
+                word: word.word,
+                collocation: word.collocations[0] ?? word.word,
+              })}
+            </MinoSays>
+          )}
           <div className="grid grid-cols-2 gap-2">
             <Button variant="outline" size="lg" onClick={() => reset(false)}>
               {t('practice.tryAgain')}

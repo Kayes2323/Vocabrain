@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { PartyPopper } from 'lucide-react';
+import { Bookmark, BookmarkCheck, PartyPopper } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState, Panel } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { useProfile } from '@/components/providers/ProfileProvider';
-import { lessonWordKey, recordRecall } from '@/lib/engine';
+import { useBrain } from '@/components/providers/BrainProvider';
+import { lookupLocal } from '@/lib/content/dictionary';
+import { wordId } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 import type { Lesson } from '@/lib/vocabulary';
 import { Flashcard } from './Flashcard';
@@ -21,7 +22,7 @@ interface LessonStudyProps {
 
 export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
   const { t } = useLocale();
-  const { updateProfile } = useProfile();
+  const brain = useBrain();
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -34,7 +35,11 @@ export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
 
   const answer = (knew: boolean) => {
     const word = lesson.words[index];
-    updateProfile((p) => recordRecall(p, lessonWordKey(lesson.lessonId, word.word), knew ? 'recalled' : 'missed'));
+    const brainId = wordId(word.word.toLowerCase());
+    // Only a word saved to My Brain has a schedule to update — this flip-card
+    // self-report feeds the SAME BrainWord record every other surface reads,
+    // not a separate counter nothing else sees.
+    if (brain.has(brainId)) void brain.recordRecall(brainId, 'meaning', knew).catch(() => undefined);
     setRecalled((prev) => {
       const next = new Set(prev);
       if (knew) next.add(index);
@@ -75,6 +80,13 @@ export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
   }
 
   const word = lesson.words[index];
+  const brainId = wordId(word.word.toLowerCase());
+  const saved = brain.has(brainId);
+  const toggleSave = () => {
+    if (saved) return void brain.remove(brainId).catch(() => undefined);
+    const info = lookupLocal(word.word);
+    if (info) void brain.save(info, { type: 'word-bank', title: t('vocabulary.lesson.title', { n: lesson.lessonId }) }, word.example).catch(() => undefined);
+  };
 
   return (
     <div className="max-w-xl space-y-5">
@@ -96,6 +108,10 @@ export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
       />
 
       {revealed && <RecallButtons onAnswer={answer} />}
+      <Button variant={saved ? 'secondary' : 'outline'} size="lg" className="w-full" onClick={toggleSave} aria-pressed={saved}>
+        {saved ? <BookmarkCheck className="text-brand" /> : <Bookmark />}
+        {saved ? t('vocabulary.bank.savedToBrain') : t('vocabulary.bank.save')}
+      </Button>
       <StudyNav index={index} total={lesson.words.length} onPrev={() => go(index - 1)} onNext={() => go(index + 1)} />
 
       <Panel className="space-y-3">

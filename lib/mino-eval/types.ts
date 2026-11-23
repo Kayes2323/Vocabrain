@@ -16,6 +16,7 @@ export const ANSWER_TYPES = [
   'multiple_choice',
   'vocab_meaning',
   'vocab_usage',
+  'speaking_usage',
   'short_answer',
   'sentence',
   'paraphrase',
@@ -40,6 +41,8 @@ export const VERDICTS_BY_TYPE: Record<AnswerType, readonly Verdict[]> = {
   multiple_choice: ['correct', 'incorrect'],
   vocab_meaning: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
   vocab_usage: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  // Transcript-only: judges meaning/grammar of the SAID word, never pronunciation (see RUBRIC).
+  speaking_usage: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
   short_answer: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
   sentence: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
   paraphrase: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],

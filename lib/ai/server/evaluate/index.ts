@@ -64,6 +64,10 @@ const RUBRIC: Record<AnswerType, string> = {
   vocab_usage: `Skill: using the target word in a sentence. Judge the SENTENCE separately from the dictionary meaning: is the word used with the right meaning, the right part of speech, a natural collocation and correct grammar around it?
 - correct: natural and accurate use. partially_correct: understandable, but a slip with meaning, collocation, form or grammar around the word. incorrect: the word is missing, or used with the wrong meaning.
 - The learner's ideas are their own; do not judge whether you agree with them.`,
+  speaking_usage: `Skill: using the target word correctly while speaking. The <answer> is a speech-to-text TRANSCRIPT of what the learner said — judge ONLY whether the word was used with the right meaning, the right part of speech and correct grammar/word order in what they said.
+- correct: natural and accurate use of the word's meaning and grammar in the utterance. partially_correct: understandable, but a slip with meaning, form or grammar around the word. incorrect: the word is missing from the transcript, or used with the wrong meaning.
+- You are NEVER given audio and must NEVER judge, mention, or imply anything about pronunciation, accent, intonation or how it sounded — a transcript cannot show that. Judge the words and grammar only, exactly as if reading written text.
+- Transcripts can contain speech-to-text errors (wrong homophone, missing punctuation, run-on text); be lenient about mechanics that are clearly a transcription artefact, not something the learner could have controlled.`,
   short_answer: `Skill: short answer. Decide whether the answer correctly and sufficiently answers the question. <key_points>, if present, are ideas a good answer may cover — not exact wording. partially_correct: on the right track but incomplete or imprecise. incorrect: wrong or irrelevant.`,
   sentence: `Skill: writing a sentence. Judge meaning, grammar, word choice and naturalness against the task in <question>. correct: accurate and natural. needs_revision: understandable but with a specific fixable problem. partially_correct: only part of the task is met. incorrect: does not do the task.`,
   paraphrase: `Skill: paraphrasing. Does the answer keep the exact meaning of the original text in <question> while changing wording and structure naturally?
@@ -198,7 +202,7 @@ export function toEvaluation(req: EvaluationRequest, raw: unknown, model: string
   };
 }
 
-const SHORT: AnswerType[] = ['vocab_meaning', 'vocab_usage', 'short_answer', 'sentence', 'paraphrase', 'idea', 'idea_rung', 'introduction', 'conclusion'];
+const SHORT: AnswerType[] = ['vocab_meaning', 'vocab_usage', 'speaking_usage', 'short_answer', 'sentence', 'paraphrase', 'idea', 'idea_rung', 'introduction', 'conclusion'];
 
 export function tierFor(answerType: AnswerType): ModelTier {
   // Short answers use the fast tier so the learner is not kept waiting.

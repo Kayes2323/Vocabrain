@@ -11,8 +11,6 @@ import { useBrain } from '@/components/providers/BrainProvider';
 import { useBrainGate } from '@/components/brain/BrainGate';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { speakWord } from '@/components/reading/speak';
-import { vocabFeedback } from '@/lib/ai/client';
-import type { VocabFeedback } from '@/lib/ai/server/assess/vocab';
 import { checkSentence, createBrainWord, evaluateRecall, makeCloze, routeRecall, type RecallVerdict } from '@/lib/engine';
 import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
 import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
@@ -466,34 +464,60 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
 // ------------------------------------------------------------------ use
 
 type UseResult =
-  | { source: 'mino'; feedback: VocabFeedback; correct: boolean }
-  | { source: 'fallback'; guest: boolean; keys: string[]; collocation?: string; correct: boolean };
+  | { source: 'mino'; correct: boolean }
+  | { source: 'fallback'; keys: string[]; collocation?: string; correct: boolean };
 
 function UseStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }) {
   const { t, locale } = useLocale();
   const text = useText();
   const brain = useBrain();
   const { update } = useVocabFoundation();
+  const mino = useMinoEvaluation();
+  const [minoEval, setMinoEval] = useState<MinoEvaluation | null>(null);
   const [sentence, setSentence] = useState('');
-  const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<UseResult | null>(null);
+  const word: BrainWord = brain.get(fw.id) ?? createBrainWord(toWordInfo(fw), SOURCE, fw.context);
 
+  const record = (correct: boolean, feedback: string[] = []) => {
+    if (brain.has(fw.id)) void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct, feedback }).catch(() => undefined);
+    update((v) => bumpDay(recordSessionResult(v, `use:${fw.id}`, correct, sentence.trim()), { sentences: 1, sentencesCorrect: correct ? 1 : 0 }));
+  };
+
+  const applyEvaluation = (evaluation: MinoEvaluation) => {
+    setMinoEval(evaluation);
+    const correct = evaluation.verdict === 'correct';
+    record(correct);
+    setResult({ source: 'mino', correct });
+  };
+
+  // Every "use it in a sentence" answer is evaluated by Mino for meaning, grammar and
+  // natural usage — word-presence alone is never enough. On failure the panel below
+  // offers Retry (the sentence is kept) or an explicit, labelled local check.
   const submit = async () => {
-    setLoading(true);
-    const res = await vocabFeedback(fw.id, sentence.trim(), locale === 'bn' ? 'bn' : 'en');
-    let r: UseResult;
-    if (res.ok) {
-      r = { source: 'mino', feedback: res.feedback, correct: res.feedback.verdict !== 'needs-work' };
-    } else {
-      // The loop never depends on the AI: a rule-based check keeps it going.
-      const word = brain.get(fw.id) ?? createBrainWord(toWordInfo(fw), SOURCE, fw.context);
-      const c = checkSentence(word, sentence);
-      r = { source: 'fallback', guest: res.error === 'unauthenticated', keys: c.feedback, collocation: c.collocation, correct: c.correct };
-    }
-    setResult(r);
-    setLoading(false);
-    if (brain.has(fw.id)) void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct: r.correct, feedback: r.source === 'fallback' ? r.keys : [] }).catch(() => undefined);
-    update((v) => bumpDay(recordSessionResult(v, `use:${fw.id}`, r.correct, sentence.trim()), { sentences: 1, sentencesCorrect: r.correct ? 1 : 0 }));
+    const evaluation = await mino.run({
+      answerType: 'vocab_usage',
+      language: locale === 'bn' ? 'bn' : 'en',
+      question: `Write a sentence that uses the word "${fw.word}" correctly.`,
+      answer: sentence.trim(),
+      vocab: {
+        word: fw.word,
+        partOfSpeech: word.partOfSpeech,
+        meaning: word.meaning || undefined,
+        meaningBn: word.meaningBn || undefined,
+        synonyms: word.synonyms.slice(0, 12),
+        collocations: word.collocations.slice(0, 12),
+      },
+      learner: { lessonId: 'vocabulary-foundation-use', objective: 'Use a Foundation word naturally in an original sentence', recentMistakes: [] },
+    });
+    if (evaluation) applyEvaluation(evaluation);
+  };
+
+  /** Mino could not evaluate this answer; the learner explicitly chooses a local, labelled check instead. */
+  const selfCheckInstead = () => {
+    mino.reset();
+    const c = checkSentence(word, sentence);
+    setResult({ source: 'fallback', keys: c.feedback, collocation: c.collocation, correct: c.correct });
+    record(c.correct, c.feedback);
   };
 
   return (
@@ -512,41 +536,42 @@ function UseStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }) {
       <Textarea
         value={sentence}
         onChange={(e) => setSentence(e.target.value)}
-        disabled={Boolean(result) || loading}
+        disabled={Boolean(result) || mino.busy}
         placeholder={t('vocabFoundation.session.sentencePlaceholder')}
         aria-label={t('vocabFoundation.session.sentencePlaceholder')}
         rows={3}
         lang="en"
         className="text-base"
       />
-      {!result && (
-        <Button size="lg" className="h-13 w-full text-base" disabled={sentence.trim().length < 3 || loading} onClick={submit}>
-          <Sparkles className={cn(loading && 'animate-pulse')} /> {loading ? t('vocabFoundation.session.minoChecking') : t('vocabFoundation.session.getFeedback')}
+      {!result && (mino.state.status === 'evaluating' || mino.state.status === 'error') && (
+        <div className="space-y-2">
+          <MinoVerdictPanel state={mino.state} language={locale === 'bn' ? 'bn' : 'en'} onRetry={() => void mino.retry().then((ev) => ev && applyEvaluation(ev))} />
+          {mino.state.status === 'error' && (
+            <Button type="button" variant="ghost" size="sm" onClick={selfCheckInstead} data-testid="foundation-use-self-check">
+              {locale === 'bn' ? 'নিজে মিলিয়ে দেখব (Mino যাচাই করেনি)' : 'Check it myself instead (not evaluated by Mino)'}
+            </Button>
+          )}
+        </div>
+      )}
+      {!result && mino.state.status !== 'evaluating' && mino.state.status !== 'error' && (
+        <Button size="lg" className="h-13 w-full text-base" disabled={sentence.trim().length < 3} onClick={submit}>
+          <Sparkles /> {t('vocabFoundation.session.getFeedback')}
         </Button>
       )}
       {result && (
         <div role="status" className={cn('space-y-2 rounded-xl p-4 animate-in fade-in duration-300', result.correct ? 'bg-success/10' : 'bg-amber-500/10')}>
-          {result.source === 'mino' ? (
+          {result.source === 'mino' && minoEval ? (
+            <div data-testid="foundation-use-mino-evaluation">
+              <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
+            </div>
+          ) : result.source === 'fallback' ? (
             <>
-              <p className="flex items-center gap-1.5 font-semibold">
-                <Sparkles className="size-4 text-brand" aria-hidden /> {t(`vocabFoundation.session.verdict.${result.feedback.verdict}`)}
-              </p>
-              <p>{result.feedback.feedback}</p>
-              {result.feedback.improved && (
-                <p>
-                  <span className="font-semibold">{t('vocabFoundation.session.improved')}: </span>
-                  <span lang="en">{result.feedback.improved}</span>
-                </p>
-              )}
-            </>
-          ) : (
-            <>
-              <p className="text-sm text-muted-foreground">{result.guest ? t('vocabFoundation.session.quickCheckGuest') : t('vocabFoundation.session.quickCheck')}</p>
+              <p className="text-sm text-muted-foreground">{t('vocabFoundation.session.quickCheck')}</p>
               {result.keys.map((k) => (
                 <p key={k}>{t(k, { word: fw.word, collocation: result.collocation ?? '' })}</p>
               ))}
             </>
-          )}
+          ) : null}
         </div>
       )}
       {result && (
