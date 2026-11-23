@@ -60,7 +60,7 @@ export function FeedbackPanel({
           here, only feedback on {feedback.skillFocus?.toLowerCase()}.{' '}
           {feedback.source === 'ai'
             ? "This is Mino's AI looking specifically at this skill — a targeted estimate, with the same limitations as any AI judgement, not a certified result."
-            : "This is this prototype's local automated checker (word count and simple text patterns) — it cannot reliably judge meaning or paraphrasing accuracy, so treat this as a partial, not a complete, assessment of the skill."}
+            : "This is this prototype's local automated checker (word count and simple text patterns) — it cannot reliably judge meaning (such as paraphrasing accuracy, which features matter, or whether a comparison is correct). That needs Mino's AI, so treat this as a partial, not a complete, assessment of the skill."}
         </Callout>
       ) : feedback.source === 'ai' ? (
         <Callout tone="neutral" icon={Sparkles} title="Mino's assessment — an estimate, not a real IELTS score">

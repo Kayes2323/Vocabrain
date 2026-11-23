@@ -265,6 +265,76 @@ async function main() {
     assert.ok(feedback.criteria.every((c) => c.band === null));
   });
 
+  await test('writing studio: a paragraph-only drill gets its own rules (NOT the introduction-paraphrase rules) and never a band', async () => {
+    calls.length = 0;
+    const chart = { caption: 'Renewable electricity, 2000-2020 (% of total generation)', headers: ['Year', 'Denmark', 'Country B', 'Country C'], rows: [['2000', '14', '6', '9'], ['2020', '62', '27', '16']] };
+    const { feedback } = await assessWritingStudioTask(
+      fake(() => ({
+        // A non-compliant model that returns real-looking bands: the server must still zero them out.
+        criteria: [{ criterion: 'Task Achievement', band: 7, comment: 'ok' }, { criterion: 'Coherence & Cohesion', band: 6.5, comment: 'ok' }],
+      })),
+      { task: 1, prompt: 'Write One Well-Developed Body Paragraph.', minWords: 70, chart, skillFocus: 'Task 1 body paragraph development', checkScope: 'paragraph-only' },
+      'Denmark recorded the highest proportion throughout, rising from 14% in 2000 to 62% in 2020, whereas Country C grew more gradually from 9% to 16%.',
+      'en',
+    );
+    const sys = calls[0].system;
+    assert.match(sys, /Task 1 body paragraph development/);
+    assert.match(sys, /TARGETED SKILL DRILL/);
+    // paragraph-development criteria
+    assert.match(sys, /paragraph focus and organisation/);
+    assert.match(sys, /logical grouping of related information/);
+    assert.match(sys, /relevance and selection of supporting details/);
+    assert.match(sys, /check EVERY numerical claim against the task data/);
+    assert.match(sys, /distinguish percentage points from relative percentage growth/);
+    assert.match(sys, /meaningful comparisons/);
+    assert.match(sys, /cohesion and logical progression/);
+    assert.match(sys, /repetition and unnecessary data dumping/);
+    assert.match(sys, /unsupported causes or claims/);
+    assert.match(sys, /grammar and vocabulary only insofar as they affect/);
+    // accepts alternatives
+    assert.match(sys, /Accept any defensible grouping and any accurate paragraph structure/);
+    assert.match(sys, /do NOT require a fixed opening sentence, a fixed number of sentences, all categories, or every figure/);
+    assert.match(sys, /Never credit an unsupported causal explanation/);
+    // what it must NOT penalise
+    assert.match(sys, /do NOT penalise.*missing introduction, a missing overview, not being a complete Task 1 response, not reaching a full Task 1 word count \(150\/250 words\)/i);
+    assert.match(sys, /introduction or an overview instead of a body paragraph/);
+    // teacher feedback
+    assert.match(sys, /ask the student to attempt the correction themselves/);
+    // MUST NOT be routed through the introduction-paraphrase rules, nor the overview rules
+    assert.doesNotMatch(sys, /accurate paraphrasing/);
+    assert.doesNotMatch(sys, /preservation of the original meaning/);
+    assert.doesNotMatch(sys, /missing overview, missing body paragraphs, missing chart figures/, 'the introduction drill tells the model to ignore figures — wrong for a paragraph');
+    assert.doesNotMatch(sys, /accuracy of the main trend/, 'not the overview-only rules either');
+    assert.match(calls[0].messages[0].content as string, /2000 \| 14 \| 6 \| 9/, 'the chart data reaches the model');
+    assert.equal(feedback.band, null, 'band forced to null');
+    assert.ok(feedback.criteria.every((c) => c.band === null), 'every criterion band forced to null');
+  });
+
+  await test('writing studio: introduction-only and overview-only drills are still routed to their own rules (paragraph-only did not capture them)', async () => {
+    const run = async (checkScope: 'introduction-only' | 'overview-only' | 'paragraph-only' | undefined) => {
+      calls.length = 0;
+      await assessWritingStudioTask(
+        fake(() => ({ criteria: [{ criterion: 'Task Achievement', band: 6, comment: 'ok' }] })),
+        { task: 1, prompt: 'p', minWords: 20, skillFocus: 'Some skill', checkScope },
+        'The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.',
+        'en',
+      );
+      return calls[0].system;
+    };
+    const intro = await run('introduction-only');
+    assert.match(intro, /accurate paraphrasing/);
+    assert.doesNotMatch(intro, /paragraph focus and organisation/);
+    const noScope = await run(undefined);
+    assert.match(noScope, /accurate paraphrasing/, 'a drill with no checkScope keeps the original rules');
+    assert.doesNotMatch(noScope, /paragraph focus and organisation/);
+    const overview = await run('overview-only');
+    assert.match(overview, /accuracy of the main trend/);
+    assert.doesNotMatch(overview, /paragraph focus and organisation/);
+    const paragraph = await run('paragraph-only');
+    assert.match(paragraph, /paragraph focus and organisation/);
+    assert.doesNotMatch(paragraph, /accurate paraphrasing/);
+  });
+
   await test('writing studio: skillFocus never produces a stored band, even if the AI ignores the instruction and returns real-looking bands', async () => {
     calls.length = 0;
     const answer = `The two line graphs illustrate the mean monthly temperature and the amount of rainfall recorded in two cities across a twelve-month period.`;

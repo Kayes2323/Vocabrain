@@ -148,6 +148,18 @@ ${JSON_SHAPE}`;
 }
 
 /**
+ * Rules for a drill whose whole answer is ONE body paragraph (checkScope 'paragraph-only').
+ * Without this branch a paragraph drill would fall through to the introduction-paraphrase
+ * rules, which judge the wrong skill and tell the model to ignore the very figures and
+ * comparisons a paragraph is about.
+ */
+const PARAGRAPH_DRILL_RULES = (task: 1 | 2) =>
+  `Assess ONLY this skill, using the task data supplied: (1) paragraph focus and organisation — one clear organising idea and a logical sequence; (2) logical grouping of related information; (3) relevance and selection of supporting details (not every figure); (4) accurate figure attribution and data interpretation — check EVERY numerical claim against the task data, name any wrong figure, year or category in "mistakes", and distinguish percentage points from relative percentage growth; (5) meaningful comparisons rather than isolated figures; (6) evidence that supports each generalisation; (7) cohesion and logical progression (linking words only where they express a real relationship); (8) repetition and unnecessary data dumping; (9) unsupported causes or claims; (10) grammar and vocabulary only insofar as they affect the paragraph's clarity.
+Accept any defensible grouping and any accurate paragraph structure: do NOT require a fixed opening sentence, a fixed number of sentences, all categories, or every figure. Never credit an unsupported causal explanation, and never credit sophisticated vocabulary when the data interpretation is wrong.
+The answer is meant to be ONE body paragraph only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, a missing overview, not being a complete Task ${task} response, not reaching a full Task ${task} word count (150/250 words), or being shorter than the suggested length. If the student wrote an introduction or an overview instead of a body paragraph, say that as the main weakness instead of assessing it as though it were the paragraph.
+Give feedback as a teacher: say what the student did correctly; name the most important weakness and quote the exact evidence from their paragraph; explain why it weakens the paragraph; give one or two actionable improvements; offer an improved example only where it genuinely helps; and ask the student to attempt the correction themselves.`;
+
+/**
  * Mino Writing Studio: assesses one free-standing practice answer (a lesson's
  * final task, a practice board submission, or one exam-mode task). Unlike
  * `assessWriting`, the prompt/minWords/chart data come straight from the
@@ -176,7 +188,9 @@ export async function assessWritingStudioTask(
   // whole answer IS an overview (checkScope 'overview-only') is judged on the data
   // instead: the overview itself is what is being tested there.
   const drillRules =
-    input.checkScope === 'overview-only'
+    input.checkScope === 'paragraph-only'
+      ? PARAGRAPH_DRILL_RULES(input.task)
+      : input.checkScope === 'overview-only'
       ? `Assess ONLY this skill, using the task data supplied: (1) accuracy of the main trend; (2) the key features selected (the most significant patterns, not every figure); (3) correct direction of change and correct attribution of each figure to the right category and year; (4) avoidance of unsupported claims (invented causes, opinions, trends the data does not show, percentage points confused with percentage growth, a percentage reported as a number of people); (5) clarity and concise expression.
 Check every claim against the task data and name any claim the data contradicts in "mistakes". The answer is meant to be a short overview only: do NOT penalise, mention as a weakness, or lower anything for a missing introduction, missing body paragraphs, missing detailed figures, or not reaching a full Task ${input.task} word count (150/250 words).
 Judge the overview on its substance, not its wording: accept any accurate phrasing and any defensible choice of main features. Do NOT require the word "Overall" or any fixed opening, do NOT require every category to be mentioned, and do NOT mark a clear one-sentence overview down because two sentences were suggested. Do not accept a trend the data contradicts just because the grammar is sophisticated, and never credit invented causes or information the chart does not show.

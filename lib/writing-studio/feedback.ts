@@ -168,7 +168,11 @@ export function checkEssay(
   // minimum, linking-word quota, "Overall," opener or a ban on any single figure.
   // Those belong to a full response, so this drill only treats listing figures as a fault.
   const drillOverview = skillDrill && scope === 'overview-only';
-  const softLength = scope === 'introduction-only' || drillOverview;
+  // Likewise a Task 1 skill drill that asks for ONE body paragraph: the answer has no
+  // overview or introduction to carry, and a body paragraph connects ideas through
+  // meaningful comparison ("whereas", "by comparison"), not a quota of listed linkers.
+  const drillParagraph = skillDrill && kind === 'task1' && scope === 'paragraph-only';
+  const softLength = scope === 'introduction-only' || drillOverview || drillParagraph;
 
   const meetsLength = wordCount >= minWords;
   if (meetsLength) {
@@ -190,7 +194,7 @@ export function checkEssay(
   // A one-or-two-sentence introduction-only drill is too short to expect two
   // linking words from — that check belongs to a full response or paragraph.
   let linkerHits: string[] = [];
-  if (scope !== 'introduction-only' && !drillOverview) {
+  if (scope !== 'introduction-only' && !drillOverview && !drillParagraph) {
     linkerHits = LINKERS.filter((l) => lower.includes(l));
     if (linkerHits.length >= 2) strengths.push(`You linked ideas with words like "${linkerHits.slice(0, 2).join('", "')}" — that helps Coherence & Cohesion.`);
     else mistakes.push({
@@ -204,7 +208,7 @@ export function checkEssay(
   if (kind === 'task1') {
     // An introduction-only task (e.g. a paraphrase drill) should NOT contain an
     // overview sentence yet — that belongs to a later, separate part of a response.
-    if (scope !== 'introduction-only' && !drillOverview) {
+    if (scope !== 'introduction-only' && !drillOverview && !drillParagraph) {
       const hasOverview = OVERVIEW_PHRASES.some((p) => lower.includes(p));
       if (hasOverview) strengths.push('You included an overview-style sentence — this is what examiners look for first in Task 1.');
       else mistakes.push({
