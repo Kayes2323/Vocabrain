@@ -37,7 +37,7 @@ function ChipList({ label, items }: { label: string; items: string[] }) {
 }
 
 type Phase = 'ask' | 'checking' | 'selfcheck' | 'result';
-type Outcome = { kind: 'exact' } | { kind: 'mino'; verdict: 'correct' | 'partial' | 'wrong' } | { kind: 'self'; correct: boolean } | { kind: 'skip' };
+type Outcome = { kind: 'exact' } | { kind: 'mino'; verdict: 'correct' | 'partial' | 'wrong' | 'uncertain' } | { kind: 'self'; correct: boolean } | { kind: 'skip' };
 
 export function WordBankStudy({ band, words }: WordBankStudyProps) {
   const { t, locale } = useLocale();
@@ -84,9 +84,11 @@ export function WordBankStudy({ band, words }: WordBankStudyProps) {
   const applyEvaluation = (evaluation: MinoEvaluation) => {
     setMinoEval(evaluation);
     const result = recallOutcomeFromVerdict(evaluation.verdict);
-    setOutcome({ kind: 'mino', verdict: result === true ? 'correct' : result === 'partial' ? 'partial' : 'wrong' });
+    setOutcome({ kind: 'mino', verdict: result === true ? 'correct' : result === 'partial' ? 'partial' : result === 'uncertain' ? 'uncertain' : 'wrong' });
     setPhase('result');
-    record(result);
+    // Mino genuinely could not judge this answer: not a verified result, so nothing is recorded
+    // and the word's schedule is left exactly as it was — never silently marked wrong.
+    if (result !== 'uncertain') record(result);
   };
 
   // An exact match of the trusted meaning is graded instantly; anything else — a meaning in the

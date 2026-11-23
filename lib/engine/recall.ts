@@ -20,6 +20,13 @@ export interface RecallSubject {
   meaning: string;
   meaningBn?: string;
   synonyms: string[];
+  /**
+   * Extra exact-answer variants curated for this word (a known, reliable
+   * transliteration, a common alternative phrasing…), accepted instantly like
+   * the trusted meaning itself. Never invented automatically — only ever
+   * populated where a human has confirmed the variant is reliable.
+   */
+  acceptedAnswers?: string[];
 }
 
 const STOPWORDS = new Set(
@@ -139,10 +146,17 @@ export function routeRecall(word: RecallSubject, exercise: RecallExercise, answe
   if (!trimmed) return { kind: 'local', verdict: 'wrong' };
 
   if (exercise === 'meaning') {
-    const a = normalize(trimmed);
-    const exact = [word.meaning, word.meaningBn].filter(Boolean).map((m) => normalize(m!));
-    const bnParts = (word.meaningBn ?? '').split(/[\/,،]/).map((p) => normalize(p)).filter((p) => p.length >= 2);
-    if (exact.includes(a) || bnParts.includes(a)) return { kind: 'local', verdict: 'correct' };
+    // Tier 1 (instant, no AI): the trusted meaning in either language, one of its Bangla
+    // alternatives, a listed synonym, or a curated accepted-answer variant — exact, or within
+    // one typo the way a single word is matched elsewhere. Never a looser, keyword-style match:
+    // that is exactly how an opposite or unrelated meaning used to slip through.
+    const bnParts = (word.meaningBn ?? '').split(/[\/,،]/).map((p) => p.trim()).filter((p) => p.length >= 2);
+    const candidates = [word.meaning, word.meaningBn, ...bnParts, ...word.synonyms, ...(word.acceptedAnswers ?? [])].filter(
+      (c): c is string => Boolean(c && c.trim()),
+    );
+    if (candidates.some((c) => matchesWord(trimmed, c) !== 'wrong')) return { kind: 'local', verdict: 'correct' };
+    // Tier 2: everything else — a meaning in the student's own words, a paraphrase, a
+    // Bangla/English/mixed or Romanized-Bangla answer — is judged by Mino, never guessed locally.
     return { kind: 'mino', answerType: 'vocab_meaning', question: `What does "${word.word}" mean?` };
   }
 

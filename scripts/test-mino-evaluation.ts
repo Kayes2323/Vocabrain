@@ -8,7 +8,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { cacheClear, cacheGet, cacheKey, cachePut } from '../lib/ai/server/evaluate/cache';
-import { buildSystemPrompt, buildUserMessage, clampVerdict, evaluateAnswerAI, scrub, tierFor, verifyQuote } from '../lib/ai/server/evaluate';
+import { buildLiteSystemPrompt, buildSystemPrompt, buildUserMessage, clampVerdict, evaluateAnswerAI, evaluateVocabMeaningFast, scrub, tierFor, verifyQuote } from '../lib/ai/server/evaluate';
 import { MinoError } from '../lib/ai/server/errors';
 import { EVALUATION_LIMITS, checkEvaluationLimit, checkRateLimit } from '../lib/ai/server/rate-limit';
 import { LIMITS } from '../lib/ai/server/config';
@@ -19,7 +19,7 @@ import { buildLearnerContext } from '../lib/mino-eval/context';
 import { STATUS_TEXT, verdictLabel, verdictTone } from '../lib/mino-eval/labels';
 import { evaluateObjective } from '../lib/mino-eval/objective';
 import { mistakeRowsFromEvaluation, newMistakeRows, passesSkillCheck, categoryFromTag } from '../lib/mino-eval/progress';
-import { ANSWER_TYPES, VERDICTS_BY_TYPE, evaluationRequestSchema, type EvaluationRequest } from '../lib/mino-eval/types';
+import { ANSWER_TYPES, VERDICTS_BY_TYPE, evaluationRequestSchema, type EvaluationRequest, type MinoEvaluation } from '../lib/mino-eval/types';
 import { TASK2_MODULES, TASK1_MODULES } from '../lib/writing-studio/content';
 import { LESSONS, getLesson } from '../lib/writing-studio/lessons';
 import { task2UnderstandingLesson as lesson } from '../lib/writing-studio/lessons/task2-understanding';
@@ -66,6 +66,8 @@ const ok = (over: Record<string, unknown> = {}) => ({
   errorTags: [],
   ...over,
 });
+
+const okLite = (over: Record<string, unknown> = {}) => ({ verdict: 'correct', confidence: 0.8, explanation: 'It expresses the meaning.', nextAction: 'Continue.', ...over });
 
 const vocab = { word: 'mitigate', partOfSpeech: 'verb', meaning: 'to make something less severe or harmful', meaningBn: 'প্রশমিত করা', synonyms: ['alleviate', 'reduce'], collocations: ['mitigate the effects of'] };
 const base = (over: Partial<EvaluationRequest> = {}): EvaluationRequest => ({ answerType: 'short_answer', language: 'en', question: 'Q?', answer: 'An answer.', ...over } as EvaluationRequest);
@@ -525,7 +527,7 @@ const MCQ = {
     assert.equal(recallOutcomeFromVerdict('correct'), true);
     assert.equal(recallOutcomeFromVerdict('partially_correct'), 'partial');
     assert.equal(recallOutcomeFromVerdict('incorrect'), false);
-    assert.equal(recallOutcomeFromVerdict('unable_to_evaluate'), false);
+    assert.equal(recallOutcomeFromVerdict('unable_to_evaluate'), 'uncertain', 'an answer Mino could not judge is never silently treated as wrong');
   });
 
   // ---------------------------------------------------------------- golden-benchmark-style categories
@@ -594,6 +596,109 @@ const MCQ = {
     assert.match(prompt, /TRANSCRIPT/);
     assert.match(prompt, /NEVER[\s\S]*pronunciation/i);
     assert.equal(tierFor('speaking_usage'), 'fast');
+  });
+
+  // ---------------------------------------------------------------- hybrid evaluation: Tier 1 (instant) / Tier 2 (lite AI) / Tier 3 (deep)
+  const hatchling = {
+    word: 'hatchling',
+    lemma: 'hatchling',
+    meaning: 'a young bird or animal that has just hatched from an egg',
+    meaningBn: 'ডিম ফুটে বের হওয়া বাচ্চা',
+    synonyms: ['nestling'],
+    collocations: [] as string[],
+  };
+
+  await test('Tier 1: the exact trusted meaning (English or Bangla) and a listed synonym are graded instantly, with no AI request', () => {
+    calls.length = 0;
+    assert.deepEqual(routeRecall(hatchling, 'meaning', 'a young bird or animal that has just hatched from an egg'), { kind: 'local', verdict: 'correct' });
+    assert.deepEqual(routeRecall(hatchling, 'meaning', 'ডিম ফুটে বের হওয়া বাচ্চা'), { kind: 'local', verdict: 'correct' });
+    assert.deepEqual(routeRecall(hatchling, 'meaning', 'nestling'), { kind: 'local', verdict: 'correct' }, 'a listed synonym is accepted for the meaning exercise too');
+    assert.equal(calls.length, 0, 'Tier 1 never calls the AI provider');
+  });
+
+  await test('Tier 1: a curated accepted-answer variant and a safe one-typo variant are graded instantly; nothing fuzzier is', () => {
+    const withVariant = { ...hatchling, acceptedAnswers: ['dim fute bachcha'] };
+    assert.deepEqual(routeRecall(withVariant, 'meaning', 'dim fute bachcha'), { kind: 'local', verdict: 'correct' }, 'a curated, reliable variant is instant');
+    assert.deepEqual(routeRecall(withVariant, 'meaning', 'nestlng'), { kind: 'local', verdict: 'correct' }, 'one dropped letter in a listed synonym is still instant');
+    // Nowhere near any trusted candidate: never guessed locally, always goes to Mino.
+    assert.equal(routeRecall(withVariant, 'meaning', 'a baby bird').kind, 'mino');
+    assert.equal(routeRecall(withVariant, 'meaning', 'adult bird').kind, 'mino');
+  });
+
+  await test('Tier 2 golden benchmark (hatchling): Bangla, Romanized Bangla, partial, incorrect and opposite answers each reach the lightweight vocab_meaning path and keep its verdict (fake model — proves the plumbing and the prompt, not live semantic judgement)', async () => {
+    const req = (answer: string) => base({ answerType: 'vocab_meaning', language: 'en', answer, vocab: hatchling });
+    assert.equal(routeRecall(hatchling, 'meaning', 'dim theke fota').kind, 'mino', 'a Romanized-Bangla paraphrase is never guessed locally');
+
+    const correctBn = await evaluateVocabMeaningFast(model(() => okLite()), req('ডিম ফুটে বের হওয়া বাচ্চা'));
+    assert.equal(correctBn.verdict, 'correct'); assert.equal(correctBn.isCorrect, true); assert.equal(correctBn.answerType, 'vocab_meaning'); assert.equal(correctBn.source, 'ai');
+
+    const correctRomanized = await evaluateVocabMeaningFast(model(() => okLite({ explanation: 'Romanized Bangla, but it names a baby bird just hatched.' })), req('dim theke fota'));
+    assert.equal(correctRomanized.verdict, 'correct');
+
+    const incorrect = await evaluateVocabMeaningFast(model(() => okLite({ verdict: 'incorrect', explanation: 'That is a grown bird, not one freshly hatched.' })), req('adult bird'));
+    assert.equal(incorrect.verdict, 'incorrect'); assert.equal(incorrect.isCorrect, false);
+
+    const opposite = await evaluateVocabMeaningFast(model(() => okLite({ verdict: 'incorrect', explanation: 'An adult bird is the opposite of a hatchling.' })), req('পূর্ণবয়স্ক পাখি'));
+    assert.equal(opposite.verdict, 'incorrect', 'an opposite meaning is incorrect, never partially_correct or correct');
+
+    const partial = await evaluateVocabMeaningFast(model(() => okLite({ verdict: 'partially_correct', explanation: 'Names the egg, but a hatchling is the baby that comes out of it.' })), req('ডিম'));
+    assert.equal(partial.verdict, 'partially_correct'); assert.equal(partial.isCorrect, null);
+
+    const uncertain = await evaluateVocabMeaningFast(model(() => okLite({ verdict: 'unable_to_evaluate', explanation: 'That is not a real attempt.' })), req('???'));
+    assert.equal(uncertain.verdict, 'unable_to_evaluate');
+  });
+
+  await test('Tier 2 is a genuinely lighter path than Tier 3: a much smaller prompt and a much smaller/faster request than the full writing-feedback evaluator', () => {
+    const liteSystem = buildLiteSystemPrompt('en');
+    const fullSystem = buildSystemPrompt(base({ answerType: 'vocab_meaning', vocab: hatchling }));
+    assert.ok(liteSystem.length < fullSystem.length * 0.6, `lite prompt (${liteSystem.length} chars) should be well under the full prompt (${fullSystem.length} chars)`);
+    assert.match(liteSystem, /Romanized Bangla/i);
+    assert.match(liteSystem, /Do NOT accept an answer merely because it shares a keyword/, 'keeps the same anti-keyword-matching safety rule as the full rubric');
+    assert.match(liteSystem, /Answer type: vocab_meaning/);
+
+    calls.length = 0;
+    void evaluateVocabMeaningFast(model(() => okLite()), base({ answerType: 'vocab_meaning', vocab: hatchling }));
+    assert.equal(calls.length, 1);
+    assert.ok(calls[0].maxOutputTokens! <= 300, 'a short structured reply needs far fewer output tokens than full issues/strengths/correction');
+    assert.ok(calls[0].timeoutMs! <= 6_000, 'a lightweight check gets a tight timeout so a stuck request fails fast enough to retry');
+    assert.equal(calls[0].tier, 'fast');
+  });
+
+  await test('Tier 3 is unchanged and still used for everything that is not plain word-meaning recall', () => {
+    assert.equal(tierFor('vocab_usage'), 'fast');
+    assert.equal(tierFor('speaking_usage'), 'fast');
+    assert.equal(tierFor('essay'), 'smart');
+    const route = readFileSync('app/api/mino/evaluate-answer/route.ts', 'utf8');
+    assert.match(route, /req\.answerType === 'vocab_meaning'\s*\?\s*await evaluateVocabMeaningFast/, 'only vocab_meaning is routed to the lite evaluator');
+    assert.match(route, /await evaluateAnswerAI\(provider, req\)/, 'every other answer type keeps the full evaluator — sentence, usage, writing, speaking transcripts and essays still get deep analysis');
+  });
+
+  await test('Tier 2 failure/timeout never becomes a verdict, and a malformed reply is rejected — exactly like Tier 3', async () => {
+    await assert.rejects(evaluateVocabMeaningFast(failing('timeout'), base({ answerType: 'vocab_meaning', vocab: hatchling })), (e) => e instanceof MinoError);
+    await assert.rejects(evaluateVocabMeaningFast(failing('provider_busy'), base({ answerType: 'vocab_meaning', vocab: hatchling })), (e) => e instanceof MinoError);
+    await assert.rejects(evaluateVocabMeaningFast(model(() => 'not valid json'), base({ answerType: 'vocab_meaning', vocab: hatchling })), (e) => e instanceof MinoError);
+    await assert.rejects(evaluateVocabMeaningFast(model(() => ({ verdict: 'yes', explanation: 'x' })), base({ answerType: 'vocab_meaning', vocab: hatchling })), (e) => e instanceof MinoError, 'an unknown verdict value is rejected, not guessed');
+  });
+
+  await test('caching is per-user and per-request even for the lite path (shared cache module, already keyed by uid + full request)', () => {
+    cacheClear();
+    const reqA = base({ answerType: 'vocab_meaning', answer: 'ডিম ফুটে বের হওয়া বাচ্চা', vocab: hatchling });
+    const keyUser1 = cacheKey('user-1', reqA);
+    const keyUser2 = cacheKey('user-2', reqA);
+    assert.notEqual(keyUser1, keyUser2, 'two different students asking the identical question never share a cache entry');
+    const evaluation: MinoEvaluation = { verdict: 'correct', answerType: 'vocab_meaning', isCorrect: true, confidence: 0.8, strengths: [], issues: [], explanation: 'e', correction: null, hint: null, nextAction: 'n', errorTags: [], latencyMs: 5, source: 'ai' };
+    cachePut(keyUser1, evaluation);
+    assert.ok(cacheGet(keyUser1), 'the same student resubmitting the same attempt gets the cached result, not a duplicate AI call');
+    assert.equal(cacheGet(keyUser2), undefined, "another student's identical question is never served from the first student's cache entry");
+  });
+
+  await test('SRS integrity: an answer Mino could not evaluate is never recorded as a recall attempt in WordBankStudy, LessonStudy or Today\'s Recall (source-level audit)', () => {
+    for (const file of ['components/review/ReviewSession.tsx', 'components/vocabulary/WordBankStudy.tsx', 'components/vocabulary/LessonStudy.tsx']) {
+      const src = readFileSync(file, 'utf8');
+      assert.match(src, /recallOutcomeFromVerdict/, `${file} uses the shared verdict-to-outcome mapping`);
+      assert.match(src, /'uncertain'/, `${file} has a distinct branch for an unevaluable answer`);
+      assert.ok(/if \(result !== 'uncertain'\) record\(result\)|if \(outcome === 'uncertain'\)|if \(result === 'uncertain'\) return;/.test(src), `${file} skips the Brain write when Mino could not evaluate the answer`);
+    }
   });
 
   // ---------------------------------------------------------------- Task 2 Lesson 01

@@ -2119,6 +2119,7 @@ export const bn: LocaleDictionary = {
     correct: 'ঠিক হয়েছে।',
     close: 'ঠিক। বানানটা একবার দেখুন।',
     partial: 'আংশিক ঠিক — নিচে Mino-র মন্তব্য দেখুন।',
+    uncertain: 'Mino এই উত্তরটা পড়তে পারেনি — এটা আপনার বিপক্ষে গণনা হয়নি। পরেরবার একটা real answer লিখার চেষ্টা করুন।',
     wrong: 'এবার হয়নি। Answer:',
     selfCheck: 'Answer-এর সাথে মিলিয়ে দেখুন। কেমন হলো?',
     saveFailed: 'আপনার উত্তর এখনো save করা যায়নি।',

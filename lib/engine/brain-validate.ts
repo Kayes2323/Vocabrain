@@ -49,7 +49,7 @@ export function brainWordIssues(raw: unknown): BrainIssue[] {
   if ('confidence' in d && d.confidence !== undefined && !(typeof d.confidence === 'number' && d.confidence >= 0 && d.confidence <= 100)) bad('confidence', 'must be 0–100');
   for (const f of ['meaning', 'meaningBn', 'lemma', 'partOfSpeech', 'exampleSentence'] as const) if (f in d && d[f] !== undefined && !isText(d[f], 1000)) bad(f, 'text too long');
   if ('originalSentence' in d && d.originalSentence !== undefined && !isText(d.originalSentence, 2000)) bad('originalSentence', 'text too long');
-  for (const f of ['synonyms', 'antonyms', 'collocations'] as const) if (f in d && !isList(d[f])) bad(f, 'must be a short list of short text');
+  for (const f of ['synonyms', 'antonyms', 'collocations', 'acceptedAnswers'] as const) if (f in d && !isList(d[f])) bad(f, 'must be a short list of short text');
   if ('recallHistory' in d && !(Array.isArray(d.recallHistory) && d.recallHistory.length <= RECALL_HISTORY_MAX)) bad('recallHistory', `at most ${RECALL_HISTORY_MAX} attempts`);
   if ('usageHistory' in d && !(Array.isArray(d.usageHistory) && d.usageHistory.length <= USAGE_HISTORY_MAX)) bad('usageHistory', `at most ${USAGE_HISTORY_MAX} attempts`);
   return issues;

@@ -68,6 +68,7 @@ export function createBrainWord(info: WordInfo, source: WordSource, originalSent
     antonyms: info.antonyms,
     collocations: info.collocations,
     exampleSentence: info.exampleSentence,
+    ...(info.acceptedAnswers?.length ? { acceptedAnswers: info.acceptedAnswers } : {}),
     status: 'new',
     createdAt: iso,
     updatedAt: iso,
@@ -116,10 +117,18 @@ export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutive
  */
 export type RecallOutcome = boolean | 'partial';
 
-/** A Mino verdict, as the signal {@link applyRecall} should schedule on — never a bare right/wrong collapse. */
-export function recallOutcomeFromVerdict(verdict: MinoVerdict): RecallOutcome {
+/**
+ * A Mino verdict, as the signal {@link applyRecall} should schedule on. `'uncertain'` (Mino's
+ * `unable_to_evaluate` — an empty, gibberish or unreadable answer Mino genuinely could not judge)
+ * is deliberately NOT a {@link RecallOutcome}: it is not a verified result, so it must never reach
+ * `applyRecall` at all. A caller that gets `'uncertain'` back skips the Brain write entirely —
+ * the attempt is neither a success nor a failure, and the learner is asked to try again, never
+ * silently marked wrong for an answer Mino could not actually read.
+ */
+export function recallOutcomeFromVerdict(verdict: MinoVerdict): RecallOutcome | 'uncertain' {
   if (verdict === 'correct') return true;
   if (verdict === 'partially_correct') return 'partial';
+  if (verdict === 'unable_to_evaluate') return 'uncertain';
   return false;
 }
 

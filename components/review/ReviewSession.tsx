@@ -64,7 +64,7 @@ function canAsk(w: BrainWord): boolean {
   return hasUsableMeaning(w) || Boolean(w.originalSentence && makeCloze(w.originalSentence, w.lemma));
 }
 
-type Verdict = RecallVerdict | 'dontknow' | 'partial';
+type Verdict = RecallVerdict | 'dontknow' | 'partial' | 'uncertain';
 
 /**
  * Today's Recall: the student retrieves each due word from memory (question →
@@ -315,10 +315,17 @@ export function ReviewSession() {
       await recordAnswered();
       return;
     }
-    // Partly right, wrong, or unable to evaluate: not recalled yet, so it comes back later. Mino
-    // has said exactly why. A partially correct answer gets its own scheduler signal — it is never
-    // scheduled identically to a fully wrong one.
     const outcome = recallOutcomeFromVerdict(evaluation.verdict);
+    if (outcome === 'uncertain') {
+      // Mino genuinely could not judge this answer (empty, gibberish, unreadable) — not a
+      // verified result, so nothing is recorded and the word's schedule is left exactly as it
+      // was. An unreadable answer must never silently become a wrong one.
+      setVerdict('uncertain');
+      return;
+    }
+    // Partly right or wrong: not recalled yet, so it comes back later. Mino has said exactly why.
+    // A partially correct answer gets its own scheduler signal — it is never scheduled identically
+    // to a fully wrong one.
     setVerdict(outcome === 'partial' ? 'partial' : 'wrong');
     await record(outcome);
   };
@@ -441,7 +448,7 @@ export function ReviewSession() {
           onSubmit={(e) => {
             e.preventDefault();
             if (verdict === null) void check();
-            else if (verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial') next();
+            else if (verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial' || verdict === 'uncertain') next();
             else void rate('good');
           }}
           className="space-y-3"
@@ -520,7 +527,7 @@ export function ReviewSession() {
                   'h-12 w-full rounded-xl border bg-card px-4 text-base outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40',
                   (verdict === 'correct' || verdict === 'close') && 'border-success',
                   (verdict === 'wrong' || verdict === 'dontknow') && 'border-destructive',
-                  verdict === 'partial' && 'border-warning',
+                  (verdict === 'partial' || verdict === 'uncertain') && 'border-warning',
                 )}
               />
             </>
@@ -570,6 +577,11 @@ export function ReviewSession() {
                   <CircleAlert className="size-5" /> {t('review.partial')}
                 </p>
               )}
+              {!minoEval && verdict === 'uncertain' && (
+                <p className="flex items-center gap-2 font-medium text-warning">
+                  <CircleAlert className="size-5" /> {t('review.uncertain')}
+                </p>
+              )}
               {verdict === 'check' && (
                 <p className="flex items-center gap-2 font-medium">
                   <CircleAlert className="size-5 text-warning" /> {t('review.selfCheck')}
@@ -581,7 +593,7 @@ export function ReviewSession() {
                   <Sparkles className="size-4" aria-hidden /> {t('review.sentenceMino')}
                 </Link>
               )}
-              {verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial' ? (
+              {verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial' || verdict === 'uncertain' ? (
                 <Button type="submit" size="lg" className="w-full" data-testid="recall-next">
                   {last ? t('review.finish') : t('review.next')}
                 </Button>

@@ -2120,6 +2120,7 @@ export const en = {
     correct: 'Correct.',
     close: 'Correct. Check the spelling.',
     partial: 'Partly right — see what Mino says below.',
+    uncertain: 'Mino could not read that answer — it was not counted against you. Try writing a real attempt next time.',
     wrong: 'Not this time. The answer:',
     selfCheck: 'Compare with the answer. How did it go?',
     saveFailed: 'Your answer couldn’t be saved yet.',

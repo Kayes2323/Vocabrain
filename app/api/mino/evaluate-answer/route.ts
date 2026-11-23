@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticate } from '@/lib/ai/server/auth';
 import { cacheGet, cacheKey, cachePut } from '@/lib/ai/server/evaluate/cache';
-import { evaluateAnswerAI } from '@/lib/ai/server/evaluate';
+import { evaluateAnswerAI, evaluateVocabMeaningFast } from '@/lib/ai/server/evaluate';
 import { HTTP_STATUS, MinoError } from '@/lib/ai/server/errors';
 import { getProvider } from '@/lib/ai/server/providers';
 import { checkEvaluationLimit } from '@/lib/ai/server/rate-limit';
@@ -38,11 +38,22 @@ export async function POST(request: NextRequest) {
     checkEvaluationLimit(student.uid);
     const provider = getProvider();
     if (!provider) throw new MinoError('not_configured', 'no provider key');
-    const evaluation = await evaluateAnswerAI(provider, req);
+    // Tier 2: ordinary vocabulary meaning recall gets the fast, lightweight check — never the
+    // full writing-feedback pipeline (Tier 3), which is reserved for sentence/usage/writing/
+    // speaking/essay answers that genuinely need structured issues and a correction.
+    const evaluation = req.answerType === 'vocab_meaning' ? await evaluateVocabMeaningFast(provider, req) : await evaluateAnswerAI(provider, req);
     cachePut(key, evaluation);
     console.info(
       '[mino-evaluate]',
-      JSON.stringify({ status: 'ok', type: req.answerType, verdict: evaluation.verdict, model: evaluation.model, modelMs: evaluation.latencyMs, latencyMs: Date.now() - started }),
+      JSON.stringify({
+        status: 'ok',
+        type: req.answerType,
+        tier: req.answerType === 'vocab_meaning' ? 'lite' : 'full',
+        verdict: evaluation.verdict,
+        model: evaluation.model,
+        modelMs: evaluation.latencyMs,
+        latencyMs: Date.now() - started,
+      }),
     );
     return NextResponse.json<EvaluationResponse>({ ok: true, evaluation });
   } catch (error) {

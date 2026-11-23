@@ -24,7 +24,7 @@ interface LessonStudyProps {
 }
 
 type Phase = 'ask' | 'checking' | 'selfcheck' | 'result';
-type Outcome = { kind: 'exact' } | { kind: 'mino'; verdict: 'correct' | 'partial' | 'wrong' } | { kind: 'self'; correct: boolean } | { kind: 'skip' };
+type Outcome = { kind: 'exact' } | { kind: 'mino'; verdict: 'correct' | 'partial' | 'wrong' | 'uncertain' } | { kind: 'self'; correct: boolean } | { kind: 'skip' };
 
 const succeeded = (o: Outcome) => o.kind === 'exact' || (o.kind === 'mino' && o.verdict === 'correct') || (o.kind === 'self' && o.correct);
 
@@ -84,9 +84,10 @@ export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
   const applyEvaluation = (evaluation: MinoEvaluation) => {
     setMinoEval(evaluation);
     const result = recallOutcomeFromVerdict(evaluation.verdict);
-    const o: Outcome = { kind: 'mino', verdict: result === true ? 'correct' : result === 'partial' ? 'partial' : 'wrong' };
+    const o: Outcome = { kind: 'mino', verdict: result === true ? 'correct' : result === 'partial' ? 'partial' : result === 'uncertain' ? 'uncertain' : 'wrong' };
     setOutcome(o);
     setPhase('result');
+    if (result === 'uncertain') return; // Mino could not judge this: not a verified result, so nothing is recorded or counted either way.
     finish(o);
     record(result);
   };

@@ -83,6 +83,9 @@ export interface BrainWord {
   antonyms: string[];
   collocations: string[];
   exampleSentence?: string;
+  /** Extra, human-curated exact-answer variants (a known reliable transliteration, an
+   * accepted alternative phrasing…), accepted instantly alongside the trusted meaning. */
+  acceptedAnswers?: string[];
   /** Derived from the fields below on every write (see lib/engine/brain.ts). */
   status: WordStatus;
   createdAt: ISODate;
@@ -115,6 +118,9 @@ export interface WordInfo {
   antonyms: string[];
   collocations: string[];
   exampleSentence?: string;
+  /** Extra, human-curated exact-answer variants (a known reliable transliteration, an
+   * accepted alternative phrasing…), accepted instantly alongside the trusted meaning. */
+  acceptedAnswers?: string[];
   /** Where the definition came from, e.g. "Mino glossary". */
   dictionarySource: 'glossary' | 'word-bank' | 'dictionary-api' | 'mino' | 'none';
 }
