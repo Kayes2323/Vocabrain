@@ -1,6 +1,6 @@
 import type { BrainWord, RecallExercise, RecallRating, UsageAttempt, WordInfo, WordSource } from '@/lib/models';
 import type { BrainRepository } from '@/lib/services/brain-repository';
-import { applyRating, applyRecall, applyUsage, createBrainWord, wordId } from './brain';
+import { applyRating, applyRecall, applyUsage, createBrainWord, wordId, type RecallOutcome } from './brain';
 import { BrainValidationError, assertValidBrainWord, sanitizeBrainWord } from './brain-validate';
 
 /**
@@ -216,7 +216,7 @@ export class BrainStore {
   }
 
   /** The answer is stored on its own; the same attemptId twice stores it once. */
-  recordRecall(id: string, exercise: RecallExercise, correct: boolean, answer?: string, rating?: RecallRating, attemptId?: string) {
+  recordRecall(id: string, exercise: RecallExercise, correct: RecallOutcome, answer?: string, rating?: RecallRating, attemptId?: string) {
     return this.update(id, (w) => applyRecall(w, exercise, correct, answer, this.now(), rating, attemptId));
   }
 

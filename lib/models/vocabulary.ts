@@ -49,6 +49,8 @@ export interface RecallAttempt {
   at: ISODate;
   exercise: RecallExercise;
   correct: boolean;
+  /** Mino judged this a partially correct answer: not a success, but not treated as a plain miss either. */
+  partial?: boolean;
   answer?: string;
   /** The learner's self-rating. Absent = the answer was recorded but not (yet) rated. */
   rating?: RecallRating;

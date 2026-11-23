@@ -7,6 +7,21 @@ import type { BrainWord, RecallExercise } from '@/lib/models';
  */
 export type RecallVerdict = 'correct' | 'close' | 'wrong' | 'check';
 
+/**
+ * The fields recall routing and grading actually read. A full {@link BrainWord}
+ * satisfies this, but so does a lighter word from a study feature (WordBank,
+ * a vocabulary lesson) that was never saved to the Brain — letting those
+ * surfaces route a genuine answer through the same local/Mino check without
+ * first forcing the word into a full Brain record.
+ */
+export interface RecallSubject {
+  word: string;
+  lemma: string;
+  meaning: string;
+  meaningBn?: string;
+  synonyms: string[];
+}
+
 const STOPWORDS = new Set(
   'a an the to of in on at for and or but is are was were be been being it its this that with as by from something someone very more most can could will would do does did not no into than then so such about which what who'.split(
     ' ',
@@ -63,7 +78,7 @@ function contentWords(text: string): string[] {
     .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
 }
 
-export function evaluateRecall(word: BrainWord, exercise: RecallExercise, answer: string): RecallVerdict {
+export function evaluateRecall(word: RecallSubject, exercise: RecallExercise, answer: string): RecallVerdict {
   const trimmed = answer.trim();
   if (!trimmed) return 'wrong';
 
@@ -119,7 +134,7 @@ export type RecallRoute =
   | { kind: 'local'; verdict: Exclude<RecallVerdict, 'check'> }
   | { kind: 'mino'; answerType: 'vocab_meaning' | 'vocab_usage'; question: string };
 
-export function routeRecall(word: BrainWord, exercise: RecallExercise, answer: string): RecallRoute {
+export function routeRecall(word: RecallSubject, exercise: RecallExercise, answer: string): RecallRoute {
   const trimmed = answer.trim();
   if (!trimmed) return { kind: 'local', verdict: 'wrong' };
 

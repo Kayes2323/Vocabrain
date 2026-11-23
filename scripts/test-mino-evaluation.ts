@@ -13,7 +13,7 @@ import { MinoError } from '../lib/ai/server/errors';
 import { EVALUATION_LIMITS, checkEvaluationLimit, checkRateLimit } from '../lib/ai/server/rate-limit';
 import { LIMITS } from '../lib/ai/server/config';
 import type { AIProvider, AIRunRequest } from '../lib/ai/types';
-import { createBrainWord, evaluateRecall, routeRecall } from '../lib/engine';
+import { applyRecall, createBrainWord, evaluateRecall, recallOutcomeFromVerdict, routeRecall } from '../lib/engine';
 import { LIBRARY } from '../lib/content/reading-library';
 import { buildLearnerContext } from '../lib/mino-eval/context';
 import { STATUS_TEXT, verdictLabel, verdictTone } from '../lib/mino-eval/labels';
@@ -482,17 +482,50 @@ const MCQ = {
     assert.match(shortTierLine, /'speaking_usage'/, 'speaking_usage uses the fast tier like other short answers');
   });
 
-  await test('WordBankStudy and LessonStudy flip-card recall now updates the real Brain SRS record, not the legacy per-feature counter (source-level audit)', () => {
+  await test('WordBankStudy and LessonStudy ask for a genuine recall attempt before revealing, and route it through routeRecall/Mino — flipping the card is never itself an attempt (source-level audit)', () => {
     const bank = readFileSync('components/vocabulary/WordBankStudy.tsx', 'utf8');
     assert.ok(!/\brecordRecall\(p,/.test(bank), 'the legacy profile-counter recordRecall is no longer called');
-    assert.match(bank, /brain\.recordRecall\(brainId, 'meaning', knew\)/);
+    assert.ok(!/RecallButtons/.test(bank), 'the old reveal-then-self-report buttons are gone from the primary path');
+    assert.match(bank, /routeRecall\(subject, 'meaning', answer\)/, 'checking an answer goes through the same local/Mino router every other recall surface uses');
+    assert.match(bank, /brain\.recordRecall\(brainId, 'meaning', result,/, 'the SRS write carries the real outcome (true, false or \'partial\'), not a hardcoded self-report');
     assert.match(bank, /if \(saved\)/, 'only a word already saved to My Brain gets its schedule updated');
+    assert.match(bank, /recorded\.current/, 'an attempt is recorded at most once per card, even across retries');
+    assert.match(bank, /showAnswer/, 'a word can still be viewed without being quizzed, but that path never records an attempt');
+    assert.ok(!/showAnswer = \(\) => \{\s*[^}]*record\(/.test(bank), 'viewing the answer never itself calls record(...)');
+    assert.match(bank, /wordbank-self-check/, 'a self-check exists only as an explicit, labelled fallback when Mino fails');
 
     const lesson = readFileSync('components/vocabulary/LessonStudy.tsx', 'utf8');
     assert.ok(!/\brecordRecall\(p,/.test(lesson), 'the legacy profile-counter recordRecall is no longer called');
-    assert.match(lesson, /brain\.recordRecall\(brainId, 'meaning', knew\)/);
-    assert.match(lesson, /if \(brain\.has\(brainId\)\)/, 'only a word already saved to My Brain gets its schedule updated');
-    assert.match(lesson, /lookupLocal\(word\.word\)/, 'a real Save to Brain action now exists for lesson words too');
+    assert.ok(!/RecallButtons/.test(lesson), 'the old reveal-then-self-report buttons are gone from the primary path');
+    assert.match(lesson, /routeRecall\(subject, 'meaning', answer\)/, 'checking an answer goes through the same local/Mino router every other recall surface uses');
+    assert.match(lesson, /brain\.recordRecall\(brainId, 'meaning', result,/, 'the SRS write carries the real outcome (true, false or \'partial\'), not a hardcoded self-report');
+    assert.match(lesson, /if \(saved\)/, 'only a word already saved to My Brain gets its schedule updated');
+    assert.match(lesson, /recorded\.current/, 'an attempt is recorded at most once per card, even across retries');
+    assert.match(lesson, /lookupLocal\(word\.word\)/, 'a real Save to Brain action still exists for lesson words');
+    assert.match(lesson, /lesson-self-check/, 'a self-check exists only as an explicit, labelled fallback when Mino fails');
+  });
+
+  await test('golden benchmark: a partially correct recall answer gets its own scheduler signal — never the same stage reset as a fully wrong answer, never the same credit as a fully correct one', () => {
+    const base0 = createBrainWord({ word: 'mitigate', lemma: 'mitigate', meaning: 'to make something less severe', synonyms: [], antonyms: [], collocations: [], dictionarySource: 'word-bank' }, { type: 'word-bank', title: 't' }, undefined);
+    // Build up some real stage first (so a reset-to-0 is actually observable).
+    const afterTwoCorrect = applyRecall(applyRecall(base0, 'meaning', true, 'to lessen'), 'meaning', true, 'to lessen');
+    assert.ok(afterTwoCorrect.stage >= 2, 'sanity: two correct recalls raised the stage');
+
+    const afterPartial = applyRecall(afterTwoCorrect, 'meaning', 'partial', 'to reduce a bit');
+    const afterWrong = applyRecall(afterTwoCorrect, 'meaning', false, 'to increase');
+
+    assert.equal(afterPartial.stage, afterTwoCorrect.stage, 'partial credit never advances the stage like a full success');
+    assert.equal(afterPartial.successfulRecallCount, afterTwoCorrect.successfulRecallCount, 'partial credit is never counted as a successful recall');
+    assert.ok(afterPartial.stage > afterWrong.stage, 'partial credit keeps the stage instead of resetting to 0 like a full miss');
+    assert.equal(afterWrong.stage, 0);
+    assert.equal(afterPartial.consecutiveFailures, afterTwoCorrect.consecutiveFailures, 'a partial answer does not extend the failure streak the way a flat-out wrong answer does');
+    assert.equal(afterWrong.consecutiveFailures, afterTwoCorrect.consecutiveFailures + 1);
+    assert.equal(afterPartial.recallHistory.at(-1)?.correct, false, 'the stored attempt is still honestly not a success');
+    assert.equal(afterPartial.recallHistory.at(-1)?.partial, true, 'the attempt is flagged as partial credit, not silently collapsed into plain wrong');
+    assert.equal(recallOutcomeFromVerdict('correct'), true);
+    assert.equal(recallOutcomeFromVerdict('partially_correct'), 'partial');
+    assert.equal(recallOutcomeFromVerdict('incorrect'), false);
+    assert.equal(recallOutcomeFromVerdict('unable_to_evaluate'), false);
   });
 
   // ---------------------------------------------------------------- golden-benchmark-style categories

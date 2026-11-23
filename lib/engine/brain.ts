@@ -1,4 +1,5 @@
 import type { BrainWord, RecallAttempt, RecallExercise, RecallRating, RecallSnapshot, UsageAttempt, WordInfo, WordSource, WordStatus } from '@/lib/models';
+import type { Verdict as MinoVerdict } from '@/lib/mino-eval/types';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -110,19 +111,40 @@ export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutive
 }
 
 /**
+ * A recall's outcome: a plain success/failure, or `'partial'` for an answer
+ * Mino judged partially correct — not a success, but not a plain miss either.
+ */
+export type RecallOutcome = boolean | 'partial';
+
+/** A Mino verdict, as the signal {@link applyRecall} should schedule on — never a bare right/wrong collapse. */
+export function recallOutcomeFromVerdict(verdict: MinoVerdict): RecallOutcome {
+  if (verdict === 'correct') return true;
+  if (verdict === 'partially_correct') return 'partial';
+  return false;
+}
+
+/**
  * One recall. The answer's correctness is the main signal; a rating (when the
  * student gives one) only tunes the spacing: Again counts as not recalled,
  * Hard keeps the word at its current step, Easy stretches the next interval.
+ *
+ * A `'partial'` outcome (Mino judged the answer partially correct) is never
+ * scheduled like a full success — it never advances the stage or counts as a
+ * successful recall — but it is also not treated like a flat miss: the stage
+ * is kept rather than reset to 0, and it does not extend the failure streak
+ * that triggers the steeper same-day backoff, since some of the answer was
+ * genuinely retained.
  */
-export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswer: boolean, answer: string | undefined, now = new Date(), rating?: RecallRating, attemptId?: string): BrainWord {
+export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswer: RecallOutcome, answer: string | undefined, now = new Date(), rating?: RecallRating, attemptId?: string): BrainWord {
   // The same card recorded twice (a retry after a slow save, a double tap) is one attempt.
   if (attemptId && w.recallHistory.some((a) => a.id === attemptId)) return w;
-  const correct = correctAnswer && rating !== 'again';
+  const partial = correctAnswer === 'partial';
+  const correct = correctAnswer === true && rating !== 'again';
   // An answer recorded without a rating keeps what it needs to take a rating later, exactly.
   const before: RecallSnapshot | undefined = rating
     ? undefined
     : { stage: w.stage, nextReviewAt: w.nextReviewAt, ...(w.lastReviewedAt ? { lastReviewedAt: w.lastReviewedAt } : {}), recallCount: w.recallCount, successfulRecallCount: w.successfulRecallCount, consecutiveFailures: w.consecutiveFailures };
-  const stage = !correct ? 0 : rating === 'hard' ? Math.max(w.stage, 1) : Math.min(w.stage + 1, MAX_STAGE);
+  const stage = !correct ? (partial ? w.stage : 0) : rating === 'hard' ? Math.max(w.stage, 1) : Math.min(w.stage + 1, MAX_STAGE);
   return withStatus({
     ...w,
     stage,
@@ -131,10 +153,19 @@ export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswe
     updatedAt: now.toISOString(),
     recallCount: w.recallCount + 1,
     successfulRecallCount: w.successfulRecallCount + (correct ? 1 : 0),
-    consecutiveFailures: correct ? 0 : w.consecutiveFailures + 1,
+    consecutiveFailures: correct ? 0 : partial ? w.consecutiveFailures : w.consecutiveFailures + 1,
     recallHistory: [
       ...w.recallHistory,
-      { ...(attemptId ? { id: attemptId } : {}), at: now.toISOString(), exercise, correct, answer: answer?.slice(0, 200), ...(rating ? { rating, ratedAt: now.toISOString() } : {}), ...(before ? { before } : {}) },
+      {
+        ...(attemptId ? { id: attemptId } : {}),
+        at: now.toISOString(),
+        exercise,
+        correct,
+        ...(partial ? { partial: true } : {}),
+        answer: answer?.slice(0, 200),
+        ...(rating ? { rating, ratedAt: now.toISOString() } : {}),
+        ...(before ? { before } : {}),
+      },
     ].slice(-HISTORY_LIMIT),
   });
 }

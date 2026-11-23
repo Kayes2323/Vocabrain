@@ -27,7 +27,9 @@ import {
   makeCloze,
   markActivityDone,
   nextExercise,
+  recallOutcomeFromVerdict,
   routeRecall,
+  type RecallOutcome,
   type RecallVerdict,
 } from '@/lib/engine';
 import type { MinoEvaluation } from '@/lib/mino-eval/types';
@@ -62,7 +64,7 @@ function canAsk(w: BrainWord): boolean {
   return hasUsableMeaning(w) || Boolean(w.originalSentence && makeCloze(w.originalSentence, w.lemma));
 }
 
-type Verdict = RecallVerdict | 'dontknow';
+type Verdict = RecallVerdict | 'dontknow' | 'partial';
 
 /**
  * Today's Recall: the student retrieves each due word from memory (question →
@@ -251,11 +253,12 @@ export function ReviewSession() {
   };
 
   /** The answer is stored the moment its result is known. The self-rating that may follow is only a refinement of it. */
-  const record = async (correct: boolean, rating?: RecallRating) => {
+  const record = async (correct: RecallOutcome, rating?: RecallRating) => {
+    const success = correct === true && rating !== 'again';
     // Only the first attempt in a session counts towards the result summary.
-    setResults((r) => (card.id in r ? r : { ...r, [card.id]: correct && rating !== 'again' }));
+    setResults((r) => (card.id in r ? r : { ...r, [card.id]: success }));
     await store(() => brain.recordRecall(word.id, card.exercise, correct, answer, rating, card.attemptId));
-    if ((!correct || rating === 'again') && !card.retry) {
+    if (!success && !card.retry) {
       retries.current += 1;
       setQueue((q) => [...(q ?? []), { ...buildCard(word, brain.words, locale, `${sessionKey.current}:r${retries.current}`), retry: true }]);
     }
@@ -310,11 +313,14 @@ export function ReviewSession() {
     if (evaluation.verdict === 'correct') {
       setVerdict('correct');
       await recordAnswered();
-    } else {
-      // Partly right or wrong: not recalled yet, so it comes back later. Mino has said exactly why.
-      setVerdict('wrong');
-      await record(false);
+      return;
     }
+    // Partly right, wrong, or unable to evaluate: not recalled yet, so it comes back later. Mino
+    // has said exactly why. A partially correct answer gets its own scheduler signal — it is never
+    // scheduled identically to a fully wrong one.
+    const outcome = recallOutcomeFromVerdict(evaluation.verdict);
+    setVerdict(outcome === 'partial' ? 'partial' : 'wrong');
+    await record(outcome);
   };
 
   const check = async () => {
@@ -435,7 +441,7 @@ export function ReviewSession() {
           onSubmit={(e) => {
             e.preventDefault();
             if (verdict === null) void check();
-            else if (verdict === 'wrong' || verdict === 'dontknow') next();
+            else if (verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial') next();
             else void rate('good');
           }}
           className="space-y-3"
@@ -514,6 +520,7 @@ export function ReviewSession() {
                   'h-12 w-full rounded-xl border bg-card px-4 text-base outline-none focus-visible:ring-[3px] focus-visible:ring-ring/40',
                   (verdict === 'correct' || verdict === 'close') && 'border-success',
                   (verdict === 'wrong' || verdict === 'dontknow') && 'border-destructive',
+                  verdict === 'partial' && 'border-warning',
                 )}
               />
             </>
@@ -558,6 +565,11 @@ export function ReviewSession() {
                   <XCircle className="size-5" /> {t('review.wrong')}
                 </p>
               )}
+              {!minoEval && verdict === 'partial' && (
+                <p className="flex items-center gap-2 font-medium text-warning">
+                  <CircleAlert className="size-5" /> {t('review.partial')}
+                </p>
+              )}
               {verdict === 'check' && (
                 <p className="flex items-center gap-2 font-medium">
                   <CircleAlert className="size-5 text-warning" /> {t('review.selfCheck')}
@@ -569,7 +581,7 @@ export function ReviewSession() {
                   <Sparkles className="size-4" aria-hidden /> {t('review.sentenceMino')}
                 </Link>
               )}
-              {verdict === 'wrong' || verdict === 'dontknow' ? (
+              {verdict === 'wrong' || verdict === 'dontknow' || verdict === 'partial' ? (
                 <Button type="submit" size="lg" className="w-full" data-testid="recall-next">
                   {last ? t('review.finish') : t('review.next')}
                 </Button>

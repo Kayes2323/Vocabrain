@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import { BrainStore, brainView, type BrainView } from '@/lib/engine';
+import { BrainStore, brainView, type BrainView, type RecallOutcome } from '@/lib/engine';
 import { getWordBankInfo } from '@/lib/content/dictionary';
 import type { BrainWord, RecallExercise, RecallRating, UsageAttempt, WordInfo, WordSource } from '@/lib/models';
 import type { BrainRepository } from '@/lib/services/brain-repository';
@@ -28,7 +28,7 @@ interface BrainState {
   /** Save to Brain. Returns the saved (or already existing) word; rejects if it could not be stored. */
   save: (info: WordInfo, source: WordSource, originalSentence?: string) => Promise<BrainWord>;
   /** Stores an answer. Passing the same `attemptId` again is safe: it is stored once. */
-  recordRecall: (id: string, exercise: RecallExercise, correct: boolean, answer?: string, rating?: RecallRating, attemptId?: string) => Promise<void>;
+  recordRecall: (id: string, exercise: RecallExercise, correct: RecallOutcome, answer?: string, rating?: RecallRating, attemptId?: string) => Promise<void>;
   /** Adds the learner's self-rating to an answer that is already stored. */
   rateRecall: (id: string, attemptId: string, rating: RecallRating) => Promise<void>;
   recordUsage: (id: string, attempt: Omit<UsageAttempt, 'at'>) => Promise<void>;
