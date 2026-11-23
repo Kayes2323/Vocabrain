@@ -49,7 +49,8 @@ export const bodyParagraphsLesson: Lesson = {
           "Denmark's share rose from 14% in 2000 to 62% in 2020, representing an increase of 48 percentage points.",
         ],
         correctIndex: 2,
-        explain: 'It provides specific evidence and a precise comparison. The first is an overview-style statement; the third is an introduction.',
+        explain:
+          "\"Denmark's share rose from 14% in 2000 to 62% in 2020, representing an increase of 48 percentage points.\" is the body-paragraph sentence: it gives specific evidence and a precise comparison. \"Overall, Denmark experienced the most significant growth.\" is an overview-style statement. \"The chart illustrates renewable electricity generation in three countries.\" is an introduction-style statement.",
       },
     },
     {

@@ -136,6 +136,37 @@ test('answer keys follow the CONTENT: in every check the option at correctIndex 
     assert.equal(c.options.length, 1 + wrong.length, `${id}: no unexpected options`);
   }
 });
+test('"intro" explanation assigns the right role to each option by CONTENT, so it fails if options are reordered or a role is mislabelled', () => {
+  const c = lesson.steps.find((s) => s.id === 'intro')!.check!;
+  const { correct } = ROLES.intro;
+  // Find each option by what it says (never by position).
+  const bodyOpt = c.options.find((o) => correct.test(o))!;
+  const overviewOpt = c.options.find((o) => /^Overall, Denmark/.test(o))!;
+  const introOpt = c.options.find((o) => /^The chart illustrates/.test(o))!;
+  assert.ok(bodyOpt && overviewOpt && introOpt && new Set([bodyOpt, overviewOpt, introOpt]).size === 3, 'all three options are found by content');
+  assert.equal(c.options[c.correctIndex], bodyOpt, 'the correct answer is the body-paragraph sentence');
+  // The explanation must quote every option; the role statement that follows each quote (up to the
+  // next quoted option) must name that option's own role.
+  const clauseAround = (opt: string) => {
+    const quote = opt.replace(/\.$/, '');
+    const at = c.explain.indexOf(quote);
+    assert.ok(at >= 0, `the explanation quotes the option: ${opt}`);
+    const after = c.explain.slice(at + quote.length);
+    const next = after.search(/\s"/);
+    return next === -1 ? after : after.slice(0, next);
+  };
+  const body = clauseAround(bodyOpt);
+  const overview = clauseAround(overviewOpt);
+  const intro = clauseAround(introOpt);
+  assert.match(body, /body[- ]paragraph/i);
+  assert.match(body, /specific evidence/);
+  assert.ok(!/overview|introduction/i.test(body), `the correct option must not be labelled overview/introduction: ${body}`);
+  assert.match(overview, /overview-style/);
+  assert.ok(!/introduction|body[- ]paragraph/i.test(overview), `overview option mislabelled: ${overview}`);
+  assert.match(intro, /introduction-style/);
+  assert.ok(!/overview|body[- ]paragraph/i.test(intro), `introduction option mislabelled: ${intro}`);
+  assert.ok(!/\b(first|second|third)\b/i.test(c.explain), 'no positional references that go stale when options are reordered');
+});
 test('the facts behind the correct answers and the data-based distractors hold in the dataset', () => {
   assert.equal(val('Denmark', '2000'), 14); assert.equal(val('Denmark', '2020'), 62); assert.equal(rise('Denmark'), 48);
   assert.equal(rise('Country B'), 21);
