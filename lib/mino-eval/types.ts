@@ -28,7 +28,7 @@ export const ANSWER_TYPES = [
 ] as const;
 export type AnswerType = (typeof ANSWER_TYPES)[number];
 
-export const VERDICTS = ['correct', 'partially_correct', 'incorrect', 'needs_revision', 'relevant_but_underdeveloped'] as const;
+export const VERDICTS = ['correct', 'partially_correct', 'incorrect', 'needs_revision', 'relevant_but_underdeveloped', 'unable_to_evaluate'] as const;
 export type Verdict = (typeof VERDICTS)[number];
 
 /**
@@ -38,17 +38,17 @@ export type Verdict = (typeof VERDICTS)[number];
  */
 export const VERDICTS_BY_TYPE: Record<AnswerType, readonly Verdict[]> = {
   multiple_choice: ['correct', 'incorrect'],
-  vocab_meaning: ['correct', 'partially_correct', 'incorrect'],
-  vocab_usage: ['correct', 'partially_correct', 'incorrect'],
-  short_answer: ['correct', 'partially_correct', 'incorrect'],
-  sentence: ['correct', 'needs_revision', 'partially_correct', 'incorrect'],
-  paraphrase: ['correct', 'needs_revision', 'partially_correct', 'incorrect'],
-  idea: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect'],
-  idea_rung: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect'],
-  paragraph: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect'],
-  introduction: ['correct', 'needs_revision', 'partially_correct', 'incorrect'],
-  conclusion: ['correct', 'needs_revision', 'partially_correct', 'incorrect'],
-  essay: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect'],
+  vocab_meaning: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  vocab_usage: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  short_answer: ['correct', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  sentence: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  paraphrase: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  idea: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect', 'unable_to_evaluate'],
+  idea_rung: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect', 'unable_to_evaluate'],
+  paragraph: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect', 'unable_to_evaluate'],
+  introduction: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  conclusion: ['correct', 'needs_revision', 'partially_correct', 'incorrect', 'unable_to_evaluate'],
+  essay: ['correct', 'relevant_but_underdeveloped', 'needs_revision', 'incorrect', 'unable_to_evaluate'],
 };
 
 /** Answer types whose answer is checked locally, with no AI request. */

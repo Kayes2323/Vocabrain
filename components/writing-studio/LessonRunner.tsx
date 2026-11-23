@@ -19,6 +19,7 @@ import { buildLearnerContext } from '@/lib/mino-eval/context';
 import { evaluateObjective } from '@/lib/mino-eval/objective';
 import type { MinoEvaluation } from '@/lib/mino-eval/types';
 import { recordLesson, recordMistakes } from '@/lib/writing-studio/progress';
+import { mistakeRowsFromEvaluation, newMistakeRows, passesSkillCheck } from '@/lib/mino-eval/progress';
 import type { Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
 import { MaterialPanel } from './MaterialPanel';
@@ -27,15 +28,6 @@ import { WSChart } from './WSChart';
 import { WritingEditor } from './WritingEditor';
 
 type Phase = 'learn' | 'write' | 'assessing' | 'feedback' | 'done';
-
-/** Maps one of Mino's error tags to the criterion-style category Mistake Revision groups by. */
-export function categoryFromTag(tag: string | undefined, answerType: string): string {
-  const t = (tag ?? '').toLowerCase();
-  if (/grammar|tense|agreement|article|preposition|punctuation|word-order|spelling/.test(t)) return 'Grammar';
-  if (/vocab|word-choice|collocation|wrong-meaning|register/.test(t)) return 'Vocabulary';
-  if (/link|cohes|coheren|organis|paragraph-structure/.test(t)) return 'Coherence & cohesion';
-  return answerType === 'vocab_meaning' || answerType === 'vocab_usage' ? 'Vocabulary' : 'Task response';
-}
 
 function CheckBlock({
   question,
@@ -145,18 +137,19 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
 
   const language: 'en' | 'bn' = locale === 'bn' ? 'bn' : 'en';
 
-  /** Records a successful evaluated attempt: lesson completion (never a band) and the mistakes Mino found. */
+  /**
+   * Records an evaluated attempt. The mistakes Mino found are saved (without repeating ones already saved);
+   * the lesson is marked complete — never with a band — only when the verdict is a pass.
+   */
   const recordEvaluated = (evaluation: MinoEvaluation) => {
-    const rows = evaluation.issues.map((i) => ({
-      category: categoryFromTag(i.tag, evaluation.answerType),
-      quote: i.quote ?? '',
-      fix: i.fix ?? evaluation.correction ?? '',
-      why: i.why,
-    }));
-    updateProfile((p) => ({
-      ...p,
-      writingStudio: recordMistakes(recordLesson(p.writingStudio, lesson.id, taskNum, null), taskNum, 'ai', rows),
-    }));
+    if (evaluation.verdict === 'unable_to_evaluate') return; // nothing was assessed, so nothing is recorded
+    const rows = mistakeRowsFromEvaluation(evaluation);
+    const pass = passesSkillCheck(evaluation);
+    updateProfile((p) => {
+      const ws = pass ? recordLesson(p.writingStudio, lesson.id, taskNum, null) : p.writingStudio;
+      const fresh = newMistakeRows(ws?.mistakes ?? [], rows);
+      return { ...p, writingStudio: fresh.length ? recordMistakes(ws, taskNum, 'ai', fresh) : ws };
+    });
   };
 
   const submitEvaluated = async () => {
@@ -295,9 +288,11 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
           lessonTitle={lesson.title}
           stepTitle="Mino's evaluation"
           message={
-            done?.verdict === 'correct'
+            done && passesSkillCheck(done)
               ? 'This does what the task asked. Read the notes below, then we will move on.'
-              : done
+              : done?.verdict === 'unable_to_evaluate'
+                ? 'I could not treat that as an answer to the task. Write a real attempt and check it again.'
+                : done
                 ? "Here is what I noticed and what to do next. Revise your answer and check it again — you'll learn more from the second attempt."
                 : 'I could not finish checking your answer this time. Your answer is safe — try again.'
           }
@@ -310,7 +305,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
           <Button variant="outline" onClick={() => setPhase('write')} data-testid="eval-revise">
             {done ? 'Revise and check again' : 'Edit my answer'}
           </Button>
-          {done && (
+          {done && passesSkillCheck(done) && (
             <Button onClick={() => setPhase('done')} data-testid="eval-continue">
               Continue <ArrowRight />
             </Button>

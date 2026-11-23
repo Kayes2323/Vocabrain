@@ -50,3 +50,10 @@ The waiting state is Mino's thinking animation with honest status text — no fa
 
 Not yet migrated: see the audit in the Task 2 Lesson 01 delivery report (Foundation exercise feedback, the Foundation
 "use it" sentence step and full essays already have their own Mino assessments; they keep them).
+
+## QA repair (Task 2 Lesson 01)
+
+- **`unable_to_evaluate` verdict** (prompt `mino-eval-2`): for empty/gibberish/non-English answers or text that is an instruction to Mino rather than an attempt. Never a pass, never recorded as progress or as a mistake.
+- **Introduction rubric**: any defensible stance is a valid position (agree, disagree, or a clearly stated partial view); a restated question or "this essay will discuss…" is a *missing* position; a paraphrase that changes meaning is not correct even if fluent; length and vocabulary are never rewarded by themselves.
+- **Progress rules** (`lib/mino-eval/progress.ts`): a skill check *passes* on `correct` or `needs_revision`. Only a pass marks the lesson complete (never with a band) and offers Continue; partial/incorrect/underdeveloped/unable answers ask the learner to revise. Mistakes Mino finds are saved for personalisation but not repeated when the same mistake is re-checked. The guided-practice step unlocks on any real assessment, not on `unable_to_evaluate`.
+- **Live check**: `GEMINI_API_KEY=… npx tsx scripts/live-eval-lesson1.ts` runs 10 controlled introductions against the real provider and prints verdict + latency (exit 2 with no key).

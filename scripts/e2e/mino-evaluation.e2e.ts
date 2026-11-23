@@ -129,7 +129,10 @@ async function main() {
     check('final: a skill check, not a band (no IELTS band number anywhere)', /Skill check: Task 2 introduction structure and position clarity/.test(fb1) && /no IELTS band/.test(fb1) && !/\b[4-9]\.[05]\b/.test(fb1));
     await shot(p, 'mino-eval-A-final-incorrect');
     let state = await ws(uid);
-    check('progress: the attempt is recorded with NO band, and Mino\'s mistakes are saved for personalisation', state?.lessons?.['task2-understanding']?.attempts === 1 && state.lessons['task2-understanding'].lastBand == null && state.lessons['task2-understanding'].bestBand == null && (state.mistakes?.length ?? 0) >= 1 && state.mistakes[0].source === 'ai', JSON.stringify(state?.lessons?.['task2-understanding']));
+    for (let i = 0; i < 20 && !(state?.mistakes?.length); i++) { await sleep(400); state = await ws(uid); }
+    check('progress: an incorrect attempt saves Mino\'s mistakes for personalisation but does NOT complete the lesson', (state?.mistakes?.length ?? 0) >= 1 && state.mistakes[0].source === 'ai' && !state.lessons?.['task2-understanding'], JSON.stringify(state?.lessons));
+    check('gating: no Continue offered after an incorrect verdict', (await p.getByTestId('eval-continue').count()) === 0);
+    const mistakesAfterFirst = state.mistakes.length;
 
     console.log('\n[A8] Revise: the answer is preserved, and a good introduction is evaluated as correct');
     await p.getByTestId('eval-revise').click();
@@ -143,9 +146,9 @@ async function main() {
     await p.getByTestId('eval-continue').click();
     await p.getByText('Lesson complete').waitFor({ timeout: 15_000 });
     check('lesson reaches "Lesson complete"', true);
-    for (let i = 0; i < 20; i++) { state = await ws(uid); if (state?.lessons?.['task2-understanding']?.attempts === 2) break; await sleep(400); }
+    for (let i = 0; i < 20; i++) { state = await ws(uid); if (state?.lessons?.['task2-understanding']?.attempts === 1) break; await sleep(400); }
     const rec = state?.lessons?.['task2-understanding'];
-    check('progress: two attempts, still NO band, no exam or Task 1 records created', rec?.attempts === 2 && rec.lastBand == null && rec.bestBand == null && !(state.exams?.length) && !state.lessons['task1-complete-writing'], JSON.stringify(state?.lessons));
+    check('progress: completed once on the pass, still NO band, no exam or Task 1 records created', rec?.attempts === 1 && rec.lastBand == null && rec.bestBand == null && !(state.exams?.length) && !state.lessons['task1-complete-writing'], JSON.stringify(state?.lessons));
 
     // ================================================================ [B] Idea Development Board
     console.log('\n[B] Idea Development Board: Mino evaluates each rung');

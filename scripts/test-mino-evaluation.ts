@@ -18,6 +18,7 @@ import { LIBRARY } from '../lib/content/reading-library';
 import { buildLearnerContext } from '../lib/mino-eval/context';
 import { STATUS_TEXT, verdictLabel, verdictTone } from '../lib/mino-eval/labels';
 import { evaluateObjective } from '../lib/mino-eval/objective';
+import { mistakeRowsFromEvaluation, newMistakeRows, passesSkillCheck, categoryFromTag } from '../lib/mino-eval/progress';
 import { ANSWER_TYPES, VERDICTS_BY_TYPE, evaluationRequestSchema, type EvaluationRequest } from '../lib/mino-eval/types';
 import { TASK2_MODULES, TASK1_MODULES } from '../lib/writing-studio/content';
 import { LESSONS, getLesson } from '../lib/writing-studio/lessons';
@@ -196,12 +197,12 @@ const MCQ = {
     const sys = buildSystemPrompt(req); const user = buildUserMessage(req);
     assert.match(sys, /Meaning preservation and accuracy of the paraphrase/);
     assert.match(sys, /Clarity of position/);
-    assert.match(sys, /"this essay will discuss…" or a generic statement is NOT a position/);
+    assert.match(sys, /"This essay will discuss…", a restatement of the question, or a generic statement is NOT a position/);
     assert.match(sys, /Relevance to the EXACT question/);
     assert.match(sys, /Grammar and sentence construction/);
     assert.match(sys, /Vocabulary precision/);
     assert.match(sys, /Do NOT require a fixed template or exactly two sentences, and do NOT assess body paragraphs, a conclusion, the 250-word minimum or give a band/);
-    assert.match(sys, /Allowed verdicts for this answer type: correct, needs_revision, partially_correct, incorrect/);
+    assert.match(sys, /Allowed verdicts for this answer type: correct, needs_revision, partially_correct, incorrect, unable_to_evaluate/);
     assert.match(user, /<requires_position>true<\/requires_position>/);
   });
   await test('every prompt carries the safety and honesty rules: learner text is data, quotes must be exact, no forced single answer', () => {
@@ -550,7 +551,7 @@ const MCQ = {
     assert.deepEqual(after.lessons['task2-full-practice'], earlier.lessons['task2-full-practice']);
     assert.deepEqual(after.exams, earlier.exams);
     const src = readFileSync('components/writing-studio/LessonRunner.tsx', 'utf8');
-    assert.match(src, /recordLesson\(p\.writingStudio, lesson\.id, taskNum, null\), taskNum, 'ai', rows/, 'the evaluated path always records a null band');
+    assert.match(src, /recordLesson\(p\.writingStudio, lesson\.id, taskNum, null\)/, 'the evaluated path always records a null band'); assert.ok(!/recordLesson\([^)]*,\s*[0-9.]+\)/.test(src.slice(src.indexOf('recordEvaluated'), src.indexOf('submitEvaluated'))), 'no band passed in the evaluated path');
     assert.match(src, /if \(lesson\.finalPrompt\.evaluate\) \{\s*await submitEvaluated\(\);\s*return;/);
     assert.match(src, /setPhase\('write'\)/, 'the learner can return to the editor with the answer preserved');
     assert.ok(!/essay\b.*setEssay\(''\)/.test(src.slice(src.indexOf('const submitEvaluated'), src.indexOf('const submit = async'))), 'submitting never clears the answer');
@@ -581,6 +582,40 @@ const MCQ = {
     assert.match(runner, /write-evaluate/, 'evaluated writing steps unlock only after Mino evaluates');
     const material = readFileSync('components/writing-studio/MaterialPanel.tsx', 'utf8');
     assert.match(material, /case 'write-evaluate'/); assert.match(material, /case 'idea-board'/);
+  });
+  await test('QA: unable_to_evaluate exists for every semantic type, is never clamped into a pass, and the prompt tells Mino when to use it', () => {
+    for (const t of ANSWER_TYPES.filter((x) => x !== 'multiple_choice')) {
+      assert.ok(VERDICTS_BY_TYPE[t].includes('unable_to_evaluate'), t);
+      assert.equal(clampVerdict(t, 'unable_to_evaluate'), 'unable_to_evaluate');
+    }
+    assert.equal(passesSkillCheck({ verdict: 'unable_to_evaluate' }), false);
+    assert.match(verdictLabel('unable_to_evaluate', 'introduction', 'en'), /could not evaluate/i);
+    const prompt = buildSystemPrompt({ answerType: 'introduction', language: 'en', question: 'Q', answer: 'A', requiresPosition: true } as EvaluationRequest);
+    assert.match(prompt, /unable_to_evaluate/);
+    assert.match(prompt, /partial\/balanced view/, 'a partial stance is a valid position');
+    assert.match(prompt, /Never reward length/);
+    assert.match(prompt, /changes the meaning/);
+  });
+  await test('QA: only correct / needs_revision pass a skill check; partial, incorrect and underdeveloped do not', () => {
+    for (const v of ['correct', 'needs_revision'] as const) assert.equal(passesSkillCheck({ verdict: v }), true, v);
+    for (const v of ['partially_correct', 'incorrect', 'relevant_but_underdeveloped', 'unable_to_evaluate'] as const) assert.equal(passesSkillCheck({ verdict: v }), false, v);
+  });
+  await test('QA: repeating an unchanged mistake is not saved twice, a new one is', () => {
+    const ev = { answerType: 'introduction', correction: null, issues: [{ quote: 'This essay will discuss', problem: 'p', why: 'No position', fix: 'I agree…', tag: 'missing-position' }] } as never;
+    const rows = mistakeRowsFromEvaluation(ev);
+    assert.equal(rows.length, 1); assert.equal(rows[0].category, 'Task response');
+    assert.equal(newMistakeRows([], rows).length, 1);
+    const saved = [{ category: rows[0].category, quote: rows[0].quote, fix: rows[0].fix, why: rows[0].why }] as never;
+    assert.equal(newMistakeRows(saved, rows).length, 0, 'same mistake on re-check');
+    assert.equal(newMistakeRows(saved, [{ ...rows[0], why: 'Different problem' }]).length, 1, 'a different mistake is kept');
+    assert.equal(newMistakeRows([], [rows[0], rows[0]]).length, 1, 'duplicates inside one evaluation collapse');
+    assert.equal(categoryFromTag('word-order', 'introduction'), 'Grammar');
+  });
+  await test('QA: runner and board gate progress on pass verdicts and guard double submits (source audit)', () => {
+    const runner = readFileSync('components/writing-studio/LessonRunner.tsx', 'utf8');
+    assert.match(runner, /passesSkillCheck\(done\)/); assert.match(runner, /unable_to_evaluate/);
+    const board = readFileSync('components/writing-studio/EvaluatedWriteBoard.tsx', 'utf8');
+    assert.match(board, /text\.length < 3 \|\| busy/); assert.match(board, /unable_to_evaluate/);
   });
 
   console.log(`\n${passed} passed`);

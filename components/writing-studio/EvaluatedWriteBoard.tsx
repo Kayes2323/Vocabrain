@@ -11,6 +11,9 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { STATUS_TEXT } from '@/lib/mino-eval/labels';
 import { buildLearnerContext } from '@/lib/mino-eval/context';
+import { mistakeRowsFromEvaluation, newMistakeRows } from '@/lib/mino-eval/progress';
+import type { MinoEvaluation } from '@/lib/mino-eval/types';
+import { recordMistakes } from '@/lib/writing-studio/progress';
 import type { WriteEvaluateBlock } from '@/lib/writing-studio/types';
 
 /**
@@ -33,16 +36,27 @@ export function EvaluatedWriteBoard({
   onEvaluated?: () => void;
 }) {
   const { locale } = useLocale();
-  const { profile } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const language = locale === 'bn' ? 'bn' : 'en';
   const [answer, setAnswer] = useState('');
   const { state, run, retry, busy } = useMinoEvaluation();
   const evaluatedAnswer = useRef('');
   const tx = STATUS_TEXT[language];
 
+  /** Saves new mistakes Mino found (no repeats) and unlocks the step when the answer was actually assessed. */
+  const handle = (evaluation: MinoEvaluation) => {
+    if (evaluation.verdict === 'unable_to_evaluate') return;
+    const rows = mistakeRowsFromEvaluation(evaluation);
+    updateProfile((p) => {
+      const fresh = newMistakeRows(p.writingStudio?.mistakes ?? [], rows);
+      return fresh.length ? { ...p, writingStudio: recordMistakes(p.writingStudio, 2, 'ai', fresh) } : p;
+    });
+    onEvaluated?.();
+  };
+
   const submit = async () => {
     const text = answer.trim();
-    if (text.length < 3) return;
+    if (text.length < 3 || busy) return;
     evaluatedAnswer.current = text;
     const evaluation = await run({
       answerType: block.answerType,
@@ -53,12 +67,12 @@ export function EvaluatedWriteBoard({
       keyPoints: block.keyPoints,
       learner: buildLearnerContext({ mistakes: profile?.writingStudio?.mistakes, task: 2, lessonId, objective }),
     });
-    if (evaluation) onEvaluated?.();
+    if (evaluation) handle(evaluation);
   };
 
   const retryAndNotify = async () => {
     const evaluation = await retry();
-    if (evaluation) onEvaluated?.();
+    if (evaluation) handle(evaluation);
   };
 
   const changedSinceCheck = state.status === 'done' && answer.trim() !== evaluatedAnswer.current;

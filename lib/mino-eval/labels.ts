@@ -10,6 +10,7 @@ const VERDICT_LABEL: Record<EvalLang, Record<Verdict, string>> = {
     partially_correct: 'Partially correct',
     relevant_but_underdeveloped: 'Relevant, but underdeveloped',
     incorrect: 'Incorrect or irrelevant',
+    unable_to_evaluate: 'Mino could not evaluate this as an answer',
   },
   bn: {
     correct: 'সঠিক ও কার্যকর',
@@ -17,6 +18,7 @@ const VERDICT_LABEL: Record<EvalLang, Record<Verdict, string>> = {
     partially_correct: 'আংশিক সঠিক',
     relevant_but_underdeveloped: 'প্রাসঙ্গিক, কিন্তু আরও বিকশিত করা দরকার',
     incorrect: 'ভুল বা অপ্রাসঙ্গিক',
+    unable_to_evaluate: 'Mino এটিকে উত্তর হিসেবে যাচাই করতে পারেনি',
   },
 };
 
@@ -36,6 +38,8 @@ export function verdictTone(verdict: Verdict): VerdictTone {
       return 'success';
     case 'incorrect':
       return 'destructive';
+    case 'unable_to_evaluate':
+      return 'neutral';
     default:
       return 'warning';
   }

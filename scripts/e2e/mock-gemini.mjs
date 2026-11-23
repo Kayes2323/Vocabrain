@@ -37,7 +37,7 @@ http
         res.end(JSON.stringify({ candidates: [{ content: { role: 'model', parts }, finishReason: 'STOP' }], usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5, totalTokenCount: 15 } }));
       };
 
-      if (b.generationConfig?.responseMimeType === 'application/json' && /Prompt version: mino-eval-1/.test(system)) {
+      if (b.generationConfig?.responseMimeType === 'application/json' && /Prompt version: mino-eval-\d+/.test(system)) {
         // Mino Answer Evaluation Engine. A deterministic stand-in: it reads the answer type and the rubric the server
         // sent (so a regression in the prompt shows up as a different reply) and decides by simple rules on the ANSWER.
         // It does NOT judge meaning the way a live model does: these tests prove the flow, not live-model quality.
