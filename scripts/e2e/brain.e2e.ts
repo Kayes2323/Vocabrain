@@ -158,7 +158,7 @@ async function main() {
     check('Today’s Recall: "4 words ready" + Start Recall', (await p.getByTestId('recall-ready').innerText()).startsWith('4 words ready') && (await p.getByTestId('start-recall').getAttribute('href')) === '/review');
     const row = await p.locator(`[data-word="${id1}"]`).innerText();
     check('notebook row: word, part of speech, meaning, source passage', row.includes(v1.lemma) && row.includes(LEXICON[v1.lemma].pos) && row.includes(p1.title), row);
-    check('notebook: 4 filters with counts', (await p.locator('[data-filter]').evaluateAll((els) => els.map((e) => e.textContent))).join('|') === 'All 4|Learning 4|Review 4|Mastered 0');
+    check('notebook: 5 filters with counts; the Learning tab matches the Learning tile (new words are in New, not Learning)', (await p.locator('[data-filter]').evaluateAll((els) => els.map((e) => e.textContent!.replace(/\s+/g, ' ').trim()))).join('|') === 'All 4|New 4|Learning 0|Review 4|Mastered 0');
     await p.locator('[data-filter="mastered"]').click();
     check('Mastered filter: honest empty text', /No mastered words yet/.test(await p.getByTestId('filter-empty').innerText()));
     await p.locator('[data-filter="all"]').click();
