@@ -21,6 +21,7 @@ export function toWordInfo(w: FoundationWord): WordInfo {
     antonyms: w.antonyms ?? [],
     collocations: w.collocations,
     exampleSentence: w.examples[0],
+    ...(w.acceptedAnswers?.length ? { acceptedAnswers: w.acceptedAnswers } : {}),
     dictionarySource: 'glossary',
   };
 }

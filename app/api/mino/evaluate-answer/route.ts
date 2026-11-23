@@ -20,18 +20,33 @@ const fail = (code: MinoErrorCode) => NextResponse.json<EvaluationResponse>({ ok
  * fallback verdict: if the provider fails the caller gets an error and the
  * learner retries, so an unreliable guess is never shown as Mino's evaluation.
  */
+const tierOf = (answerType: string) => (answerType === 'vocab_meaning' ? 'lite' : 'full');
+
+/**
+ * Logs one evaluation outcome: tier, status, verdict (if any) and latency only — never the
+ * learner's answer, never a provider key, never the student's uid. This is the whole of this
+ * endpoint's telemetry; it is enough to compute, per tier, success/failure/timeout rates and
+ * latency percentiles from log aggregation once this runs against a real provider (see the
+ * honesty note in the final report: this sandbox has no provider key, so these fields are
+ * never populated with live numbers here).
+ */
+const logOutcome = (fields: Record<string, unknown>) => console.info('[mino-evaluate]', JSON.stringify(fields));
+
 export async function POST(request: NextRequest) {
   const started = Date.now();
+  let answerType: string | undefined;
   try {
     const student = await authenticate(request.headers.get('authorization'));
     const parsed = evaluationRequestSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) return fail('invalid_request');
     const req = parsed.data;
+    answerType = req.answerType;
+    const tier = tierOf(req.answerType);
 
     const key = cacheKey(student.uid, req);
     const hit = cacheGet(key);
     if (hit) {
-      console.info('[mino-evaluate]', JSON.stringify({ status: 'cache', type: req.answerType, verdict: hit.verdict, latencyMs: Date.now() - started }));
+      logOutcome({ status: 'cache', type: req.answerType, tier, verdict: hit.verdict, latencyMs: Date.now() - started });
       return NextResponse.json<EvaluationResponse>({ ok: true, evaluation: { ...hit, latencyMs: Date.now() - started } });
     }
 
@@ -41,24 +56,16 @@ export async function POST(request: NextRequest) {
     // Tier 2: ordinary vocabulary meaning recall gets the fast, lightweight check — never the
     // full writing-feedback pipeline (Tier 3), which is reserved for sentence/usage/writing/
     // speaking/essay answers that genuinely need structured issues and a correction.
-    const evaluation = req.answerType === 'vocab_meaning' ? await evaluateVocabMeaningFast(provider, req) : await evaluateAnswerAI(provider, req);
+    const evaluation = tier === 'lite' ? await evaluateVocabMeaningFast(provider, req) : await evaluateAnswerAI(provider, req);
     cachePut(key, evaluation);
-    console.info(
-      '[mino-evaluate]',
-      JSON.stringify({
-        status: 'ok',
-        type: req.answerType,
-        tier: req.answerType === 'vocab_meaning' ? 'lite' : 'full',
-        verdict: evaluation.verdict,
-        model: evaluation.model,
-        modelMs: evaluation.latencyMs,
-        latencyMs: Date.now() - started,
-      }),
-    );
+    logOutcome({ status: 'ok', type: req.answerType, tier, verdict: evaluation.verdict, model: evaluation.model, modelMs: evaluation.latencyMs, latencyMs: Date.now() - started });
     return NextResponse.json<EvaluationResponse>({ ok: true, evaluation });
   } catch (error) {
     const code: MinoErrorCode = error instanceof MinoError ? error.code : 'unavailable';
-    console.warn('[mino-evaluate]', JSON.stringify({ status: code, latencyMs: Date.now() - started }));
+    // 'timeout' and 'provider_busy' are the codes a real deployment's timeout/failure rate is
+    // computed from; they are attributed per tier here so Tier 1 (never reaches this route),
+    // Tier 2 and Tier 3 failure rates can be told apart.
+    logOutcome({ status: code, type: answerType, tier: answerType ? tierOf(answerType) : undefined, latencyMs: Date.now() - started });
     return fail(code);
   }
 }

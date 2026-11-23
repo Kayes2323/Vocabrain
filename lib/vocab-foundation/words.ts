@@ -20,6 +20,10 @@ export interface FoundationWord {
   /** "What do you think it means?" — guessed from context before any explanation. */
   guess: { options: L[]; answer: number };
   meaning: L;
+  /** Extra, curated exact-answer variants (a reliable Romanized Bangla spelling of the
+   * meaning, a short alternate phrasing), accepted instantly alongside `meaning`.
+   * AI-authored with care; not independently human-reviewed. */
+  acceptedAnswers?: string[];
   explanation: L;
   examples: string[];
   collocations: string[];
@@ -53,6 +57,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('large or important enough to be noticed', 'উল্লেখযোগ্য / চোখে পড়ার মতো বড় বা গুরুত্বপূর্ণ'),
+    acceptedAnswers: ['ullekhjogyo', 'chokhe porar moto boro'],
     explanation: l(
       'Use it when a change, difference or effect is big enough to matter — not just "big".',
       'কোনো পরিবর্তন, পার্থক্য বা প্রভাব যখন গুরুত্ব পাওয়ার মতো বড় — শুধু "বড়" না, তখন এটা ব্যবহার করুন।',
@@ -90,6 +95,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('to become less, smaller or weaker; a fall', 'কমে যাওয়া / হ্রাস পাওয়া; হ্রাস'),
+    acceptedAnswers: ['kome jaoya', 'hraash paoya'],
     explanation: l(
       'A formal way to say "go down". As a noun: "a decline in sales".',
       '"go down"-এর formal রূপ। Noun হিসেবে: "a decline in sales"।',
@@ -123,6 +129,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 2,
     },
     meaning: l('an advantage or helpful effect; to be helped by something', 'সুবিধা / উপকার; উপকৃত হওয়া'),
+    acceptedAnswers: ['shubidha', 'upokar'],
     explanation: l(
       'Noun: "the benefits of exercise". Verb: "students benefit FROM small classes".',
       'Noun: "the benefits of exercise"। Verb: "students benefit FROM small classes"।',
@@ -156,6 +163,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 0,
     },
     meaning: l('a strong effect or influence on something', 'প্রভাব / জোরালো প্রভাব'),
+    acceptedAnswers: ['probhab', 'jorallo probhab'],
     explanation: l(
       'Say "have an impact ON something". Add an adjective to show if it is good or bad: positive, negative, serious.',
       '"have an impact ON something" বলুন। ভালো না খারাপ বোঝাতে adjective দিন: positive, negative, serious।',
@@ -188,6 +196,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 0,
     },
     meaning: l('the opportunity or right to use or reach something', 'সুযোগ / প্রবেশাধিকার'),
+    acceptedAnswers: ['shujog', 'probeshadhikar'],
     explanation: l(
       'Always "access TO something": access to education, access to clean water.',
       'সবসময় "access TO something": access to education, access to clean water।',
@@ -216,6 +225,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('to help to cause something, or to give something to help', 'অবদান রাখা / কারণ হিসেবে ভূমিকা রাখা'),
+    acceptedAnswers: ['obodan rakha'],
     explanation: l(
       '"contribute TO something". It can be positive (to growth) or negative (to pollution).',
       '"contribute TO something"। ভালো (growth-এ) বা খারাপ (pollution-এ) দুটোই হতে পারে।',
@@ -244,6 +254,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('able to continue for a long time without damaging the environment', 'টেকসই / পরিবেশের ক্ষতি না করে দীর্ঘদিন চলতে পারে এমন'),
+    acceptedAnswers: ['teksoi'],
     explanation: l(
       'Mostly about the environment and resources: sustainable energy, sustainable farming.',
       'মূলত পরিবেশ আর সম্পদ নিয়ে: sustainable energy, sustainable farming।',
@@ -277,6 +288,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 0,
     },
     meaning: l('extremely important, because other things depend on it', 'অত্যন্ত গুরুত্বপূর্ণ / নির্ণায়ক'),
+    acceptedAnswers: ['ottonto gurutupurno'],
     explanation: l(
       'Stronger than "important". Common patterns: "crucial for / to something", "It is crucial that…".',
       '"important"-এর চেয়ে জোরালো। Common pattern: "crucial for / to something", "It is crucial that…"।',
@@ -309,6 +321,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('a result of an action or situation, often a bad one', 'ফলাফল / পরিণতি'),
+    acceptedAnswers: ['folafol', 'porinoti'],
     explanation: l(
       'Usually about results we should think about: "serious consequences", "the consequences of…". The linking word "as a consequence" = as a result.',
       'সাধারণত এমন ফলাফল যা নিয়ে ভাবা দরকার: "serious consequences", "the consequences of…"। Linking word "as a consequence" = as a result।',
@@ -341,6 +354,7 @@ export const FOUNDATION_WORDS: FoundationWord[] = [
       answer: 1,
     },
     meaning: l('to have enough money or time to do or buy something', 'সামর্থ্য থাকা / খরচ বহন করতে পারা'),
+    acceptedAnswers: ['shamorthyo thaka'],
     explanation: l(
       'Usually with can / can’t / be able to: "I can’t afford a new laptop", "afford TO do something".',
       'সাধারণত can / can’t / be able to-এর সাথে: "I can’t afford a new laptop", "afford TO do something"।',

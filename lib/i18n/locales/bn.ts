@@ -100,6 +100,8 @@ export const bn: LocaleDictionary = {
       clue: 'Clue',
       tryAgain: 'আবার try করুন',
       withClue: 'Clue দিয়ে ঠিক হয়েছে। এটা শিগগির আবার আসবে।',
+      partial: 'আংশিক ঠিক — নিচে Mino-র মন্তব্য দেখুন।',
+      uncertainNotice: 'Mino এটা পড়তে পারেনি। আবার চেষ্টা করুন — এটা আপনার বিপক্ষে গণনা হয়নি।',
       reveal: 'এই যে answer',
       selfCheck: 'আপনি কি একই জিনিস বোঝাতে চেয়েছিলেন?',
       selfYes: 'হ্যাঁ, পেরেছি',

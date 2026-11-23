@@ -14,6 +14,11 @@ export interface IELTSWord {
   category: string;
   memoryTip: string;
   exampleSentence: string;
+  /** Extra, curated exact-answer variants (a Bangla translation, a short English
+   * paraphrase, a known reliable Romanized Bangla spelling), accepted instantly
+   * alongside the trusted definition. AI-authored with care; not independently
+   * human-reviewed. Only added where a variant is genuinely common and reliable. */
+  acceptedAnswers?: string[];
 }
 
 export const IELTS_VOCABULARY: IELTSWord[] = [
@@ -30,7 +35,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Quantity & Amount',
     memoryTip: 'Think "A BUNCH DANCE" - lots of dancers (abundance)',
-    exampleSentence: 'Countries with abundant oil reserves have significant economic power.'
+    exampleSentence: 'Countries with abundant oil reserves have significant economic power.',
+    acceptedAnswers: ['প্রচুর', 'there is a large amount of it', 'prochur']
   },
   {
     id: 'band6_002',
@@ -44,7 +50,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Obtain/Get',
     memoryTip: '"A QUIT HIRE" - you hire people to get things for you',
-    exampleSentence: 'She acquired new skills through online learning.'
+    exampleSentence: 'She acquired new skills through online learning.',
+    acceptedAnswers: ['অর্জন করা', 'to get something, often by effort', 'orjon kora']
   },
   {
     id: 'band6_003',
@@ -58,7 +65,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Negative/Bad',
     memoryTip: 'AD-VERSE = "against verse" - opposing direction',
-    exampleSentence: 'Smoking has adverse effects on your health.'
+    exampleSentence: 'Smoking has adverse effects on your health.',
+    acceptedAnswers: ['প্রতিকূল', 'harmful or working against you', 'protikul']
   },
   {
     id: 'band6_004',
@@ -72,7 +80,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Distribution/Assignment',
     memoryTip: '"A LOCK ATE" - lock things away for specific use',
-    exampleSentence: 'Each department is allocated a specific budget.'
+    exampleSentence: 'Each department is allocated a specific budget.',
+    acceptedAnswers: ['বরাদ্দ করা', 'to give something out for a specific use', 'boraddo kora']
   },
   {
     id: 'band6_005',
@@ -86,7 +95,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Choice/Options',
     memoryTip: '"ALTER NATIVE" - change to a native/natural way',
-    exampleSentence: 'If this plan fails, we need an alternative strategy.'
+    exampleSentence: 'If this plan fails, we need an alternative strategy.',
+    acceptedAnswers: ['বিকল্প', 'another option instead of the usual one', 'bikolpo']
   },
   {
     id: 'band6_006',
@@ -100,7 +110,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Examination/Study',
     memoryTip: '"AN-ALE-SIZE" - size up an ale by breaking it down',
-    exampleSentence: 'We need to analyze the market trends before investing.'
+    exampleSentence: 'We need to analyze the market trends before investing.',
+    acceptedAnswers: ['বিশ্লেষণ করা', 'to look at something closely to understand it', 'bisleshon kora']
   },
   {
     id: 'band6_007',
@@ -114,7 +125,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Obvious/Clear',
     memoryTip: '"A-PARENT" - see what your parent is doing',
-    exampleSentence: 'The apparent reason for the delay was mechanical failure.'
+    exampleSentence: 'The apparent reason for the delay was mechanical failure.',
+    acceptedAnswers: ['স্পষ্ট', 'clearly seen or understood', 'spasto']
   },
   {
     id: 'band6_008',
@@ -128,7 +140,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Value/Gratitude',
     memoryTip: '"A PRICE-SHEET" - know the value from a price list',
-    exampleSentence: 'Property values appreciate over time in good neighborhoods.'
+    exampleSentence: 'Property values appreciate over time in good neighborhoods.',
+    acceptedAnswers: ['কদর করা', 'to recognize how good or valuable something is', 'kodor kora']
   },
   {
     id: 'band6_009',
@@ -142,7 +155,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Suitable/Proper',
     memoryTip: '"APP-PRO-PRIATE" - professional and appropriate',
-    exampleSentence: 'It is not appropriate to use slang in formal writing.'
+    exampleSentence: 'It is not appropriate to use slang in formal writing.',
+    acceptedAnswers: ['উপযুক্ত', 'suitable for the situation', 'upojukto']
   },
   {
     id: 'band6_010',
@@ -156,7 +170,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Random/Haphazard',
     memoryTip: '"ARB-ITRARY" - an arbitrator making random decisions',
-    exampleSentence: 'The selection of winning numbers is arbitrary.'
+    exampleSentence: 'The selection of winning numbers is arbitrary.',
+    acceptedAnswers: ['খেয়ালখুশিমতো', 'decided by chance, not by a clear reason', 'kheyal khushi moto']
   },
 
   // Band 6 - Continued (more words...)
@@ -172,7 +187,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Evaluation',
     memoryTip: '"A-SESS" - have a session to assess',
-    exampleSentence: 'We need to assess the damage before starting repairs.'
+    exampleSentence: 'We need to assess the damage before starting repairs.',
+    acceptedAnswers: ['মূল্যায়ন করা', 'to judge the quality or value of something', 'mullayon kora']
   },
   {
     id: 'band6_012',
@@ -186,7 +202,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Distribution',
     memoryTip: '"A-SIGN" - sign up for assignment',
-    exampleSentence: 'Each team member was assigned a specific role.'
+    exampleSentence: 'Each team member was assigned a specific role.',
+    acceptedAnswers: ['দায়িত্ব দেওয়া', 'to give someone a task to do', 'dayitto deoya']
   },
   {
     id: 'band6_013',
@@ -200,7 +217,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Help/Support',
     memoryTip: '"A-SIST" - a sister helps you',
-    exampleSentence: 'The new software will assist in data processing.'
+    exampleSentence: 'The new software will assist in data processing.',
+    acceptedAnswers: ['সাহায্য করা', 'to help someone', 'sahajyo kora']
   },
   {
     id: 'band6_014',
@@ -214,7 +232,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Belief/Supposition',
     memoryTip: '"A-ZOOM" - assume you can zoom somewhere',
-    exampleSentence: 'If we assume the economy improves, sales should increase.'
+    exampleSentence: 'If we assume the economy improves, sales should increase.',
+    acceptedAnswers: ['ধরে নেওয়া', 'to believe something is true without checking', 'dhore neoya']
   },
   {
     id: 'band6_015',
@@ -228,7 +247,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 6,
     category: 'Promise/Guarantee',
     memoryTip: '"A-SURE" - be sure and assure others',
-    exampleSentence: 'The manager assured the team that layoffs were unlikely.'
+    exampleSentence: 'The manager assured the team that layoffs were unlikely.',
+    acceptedAnswers: ['আশ্বস্ত করা', 'to promise someone confidently', 'ashshosto kora']
   },
 
   // Band 7 - Upper Intermediate Vocabulary (70 words)
@@ -244,7 +264,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Unclear/Vague',
     memoryTip: '"AM-BIG-UOUS" - big things that are unclear',
-    exampleSentence: 'The contract contained ambiguous clauses that led to disputes.'
+    exampleSentence: 'The contract contained ambiguous clauses that led to disputes.',
+    acceptedAnswers: ['দ্ব্যর্থবোধক', 'can be understood in more than one way', 'dbarthobodhok']
   },
   {
     id: 'band7_002',
@@ -258,7 +279,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Facilities/Comfort',
     memoryTip: '"A-MEAN-ITY" - a mean person can\'t afford amenities',
-    exampleSentence: 'Modern apartments often include amenities like parking and laundry.'
+    exampleSentence: 'Modern apartments often include amenities like parking and laundry.',
+    acceptedAnswers: ['সুযোগ-সুবিধা', 'a feature that makes something more comfortable', 'shujog shubidha']
   },
   {
     id: 'band7_003',
@@ -272,7 +294,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Comparison',
     memoryTip: '"AN-ALL-OGY" - an analogy covers all similarities',
-    exampleSentence: 'The teacher used an analogy to explain complex physics concepts.'
+    exampleSentence: 'The teacher used an analogy to explain complex physics concepts.',
+    acceptedAnswers: ['উপমা', 'a comparison used to explain an idea', 'upoma']
   },
   {
     id: 'band7_004',
@@ -286,7 +309,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Conflict/Opposition',
     memoryTip: '"ANTI-ANTAGONISM" - anti means against, antagonism is against',
-    exampleSentence: 'Historical antagonism between nations can affect trade relations.'
+    exampleSentence: 'Historical antagonism between nations can affect trade relations.',
+    acceptedAnswers: ['বিরোধিতা', 'active hostility between two sides', 'birodhita']
   },
   {
     id: 'band7_005',
@@ -300,7 +324,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Dislike/Opposition',
     memoryTip: '"A-VERSION" - a version of things you hate',
-    exampleSentence: 'His aversion to authority led to constant conflicts at work.'
+    exampleSentence: 'His aversion to authority led to constant conflicts at work.',
+    acceptedAnswers: ['তীব্র অনীহা', 'a strong dislike for something', 'tibro oniha']
   },
   {
     id: 'band7_006',
@@ -314,7 +339,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Honesty/Truth',
     memoryTip: '"CAN-DID" - did you can say the truth?',
-    exampleSentence: 'In her candid interview, she revealed her struggles.'
+    exampleSentence: 'In her candid interview, she revealed her struggles.',
+    acceptedAnswers: ['স্পষ্টবাদী', 'honest and direct in what you say', 'spostobadi']
   },
   {
     id: 'band7_007',
@@ -328,7 +354,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Brief/Short',
     memoryTip: '"CON-CISE" - concise cuts away extra words',
-    exampleSentence: 'A concise presentation is more effective than a lengthy one.'
+    exampleSentence: 'A concise presentation is more effective than a lengthy one.',
+    acceptedAnswers: ['সংক্ষিপ্ত', 'said briefly and clearly, without extra words', 'shongkhipto']
   },
   {
     id: 'band7_008',
@@ -342,7 +369,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Favorable/Helpful',
     memoryTip: '"CON-DUCE" - conduct yourself in favorable conditions',
-    exampleSentence: 'The workshop created a conducive atmosphere for learning.'
+    exampleSentence: 'The workshop created a conducive atmosphere for learning.',
+    acceptedAnswers: ['সহায়ক', 'helping to create good conditions for something', 'shohayok']
   },
   {
     id: 'band7_009',
@@ -356,7 +384,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Important/Significant',
     memoryTip: '"CONSEQUENCE-TIAL" - important because of consequences',
-    exampleSentence: 'Climate change is one of the most consequential issues today.'
+    exampleSentence: 'Climate change is one of the most consequential issues today.',
+    acceptedAnswers: ['তাৎপর্যপূর্ণ', 'important because of its effects']
   },
   {
     id: 'band7_010',
@@ -370,7 +399,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 7,
     category: 'Obvious/Visible',
     memoryTip: '"CON-SPIC-UOUS" - conspicuous = you see it',
-    exampleSentence: 'His absence was conspicuous by its presence.'
+    exampleSentence: 'His absence was conspicuous by its presence.',
+    acceptedAnswers: ['সহজে চোখে পড়ে এমন', 'easily noticed; impossible to miss']
   },
 
   // Band 8 - Advanced Vocabulary (50 words)
@@ -386,7 +416,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Complex/Difficult',
     memoryTip: '"AB-STRUSE" - abstract and obscure = abstruse',
-    exampleSentence: 'Quantum physics remains abstruse to most people.'
+    exampleSentence: 'Quantum physics remains abstruse to most people.',
+    acceptedAnswers: ['দুর্বোধ্য', 'very hard to understand']
   },
   {
     id: 'band8_002',
@@ -400,7 +431,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Bitter/Harsh',
     memoryTip: '"ACRE-MONY" - acre of bitter poison',
-    exampleSentence: 'The acrimonious divorce proceedings lasted for months.'
+    exampleSentence: 'The acrimonious divorce proceedings lasted for months.',
+    acceptedAnswers: ['তিক্ত ও রূঢ়', 'bitter and harsh in tone']
   },
   {
     id: 'band8_003',
@@ -414,7 +446,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Time/Period',
     memoryTip: '"ANA-CHRON" - not in the right chronological time',
-    exampleSentence: 'The film contained several historical anachronisms.'
+    exampleSentence: 'The film contained several historical anachronisms.',
+    acceptedAnswers: ['সময়ের সাথে অসামঞ্জস্যপূর্ণ বিষয়', 'something that does not belong to its time period']
   },
   {
     id: 'band8_004',
@@ -428,7 +461,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Comfort/Relief',
     memoryTip: '"AN-ODE-YNE" - an ode to pain relief',
-    exampleSentence: 'Travel was an anodyne for her depression.'
+    exampleSentence: 'Travel was an anodyne for her depression.',
+    acceptedAnswers: ['উপশমকারী', 'something that calms or soothes']
   },
   {
     id: 'band8_005',
@@ -442,7 +476,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Secret/Mysterious',
     memoryTip: '"ARC-ANE" - arc of ancient mystery',
-    exampleSentence: 'Ancient alchemists possessed arcane knowledge.'
+    exampleSentence: 'Ancient alchemists possessed arcane knowledge.',
+    acceptedAnswers: ['রহস্যময় ও দুর্বোধ্য', 'known or understood by only a few people']
   },
   {
     id: 'band8_006',
@@ -456,7 +491,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Dedication/Diligence',
     memoryTip: '"ASSID-U-ITY" - constant persistent work',
-    exampleSentence: 'The researcher\'s assiduity led to breakthrough discoveries.'
+    exampleSentence: 'The researcher\'s assiduity led to breakthrough discoveries.',
+    acceptedAnswers: ['অধ্যবসায়', 'careful and steady effort over time', 'odhyoboshay']
   },
   {
     id: 'band8_007',
@@ -470,7 +506,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Sound/Noise',
     memoryTip: '"CACOPHO-NY" - bad sounds (caco=bad)',
-    exampleSentence: 'The cacophony of the busy market was overwhelming.'
+    exampleSentence: 'The cacophony of the busy market was overwhelming.',
+    acceptedAnswers: ['কর্কশ শব্দের সমাহার', 'a harsh, unpleasant mixture of sounds']
   },
   {
     id: 'band8_008',
@@ -484,7 +521,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Unpredictable/Erratic',
     memoryTip: '"CAPRI-CIOUS" - like a Capri sun going everywhere',
-    exampleSentence: 'The CEO\'s capricious decisions worried the board.'
+    exampleSentence: 'The CEO\'s capricious decisions worried the board.',
+    acceptedAnswers: ['খামখেয়ালি', 'changing suddenly and unpredictably', 'khamkheyali']
   },
   {
     id: 'band8_009',
@@ -498,7 +536,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Wordiness/Verbosity',
     memoryTip: '"CIRCUM-LOCUTION" - going around (circum) with words (locution)',
-    exampleSentence: 'Good writing avoids circumlocution.'
+    exampleSentence: 'Good writing avoids circumlocution.',
+    acceptedAnswers: ['ঘুরিয়ে বলার ভঙ্গি', 'using many words instead of saying something directly']
   },
   {
     id: 'band8_010',
@@ -512,7 +551,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 8,
     category: 'Persuasive/Compelling',
     memoryTip: '"CO-GENT" - together (co) and thinking (gent) = convincing',
-    exampleSentence: 'The lawyer presented cogent evidence that proved his innocence.'
+    exampleSentence: 'The lawyer presented cogent evidence that proved his innocence.',
+    acceptedAnswers: ['যুক্তিযুক্ত ও বিশ্বাসযোগ্য', 'convincing because it is well-reasoned', 'juktijukto']
   },
 
   // Band 9 - Mastery Level (30 words)
@@ -528,7 +568,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 9,
     category: 'Corruption/Contamination',
     memoryTip: '"ADULT-ERATE" - adults corrupting things',
-    exampleSentence: 'Unscrupulous manufacturers adulterated the product with cheap fillers.'
+    exampleSentence: 'Unscrupulous manufacturers adulterated the product with cheap fillers.',
+    acceptedAnswers: ['ভেজাল মেশানো', 'to make something impure by adding something inferior', 'vejal meshano']
   },
   {
     id: 'band9_002',
@@ -542,7 +583,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 9,
     category: 'Beauty/Art',
     memoryTip: '"A-STHETIC" - a sense of beauty (aesthetic)',
-    exampleSentence: 'Modern architecture often prioritizes aesthetic design.'
+    exampleSentence: 'Modern architecture often prioritizes aesthetic design.',
+    acceptedAnswers: ['নান্দনিক', 'relating to beauty or art', 'nandonik']
   },
   {
     id: 'band9_003',
@@ -556,7 +598,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 9,
     category: 'Speech/Oration',
     memoryTip: '"ALLO-CUTION" - allocate time for a speech',
-    exampleSentence: 'The president delivered an allocution to the nation.'
+    exampleSentence: 'The president delivered an allocution to the nation.',
+    acceptedAnswers: ['আনুষ্ঠানিক ভাষণ', 'a formal speech given on an occasion']
   },
   {
     id: 'band9_004',
@@ -570,7 +613,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 9,
     category: 'Improvement/Enhancement',
     memoryTip: '"AMEL-ORATE" - amendment = ameliorate',
-    exampleSentence: 'The government introduced measures to ameliorate poverty.'
+    exampleSentence: 'The government introduced measures to ameliorate poverty.',
+    acceptedAnswers: ['উন্নত করা', 'to make something better', 'unnoto kora']
   },
   {
     id: 'band9_005',
@@ -584,7 +628,8 @@ export const IELTS_VOCABULARY: IELTSWord[] = [
     bandLevel: 9,
     category: 'Opposite/Contrast',
     memoryTip: '"ANTI-THESIS" - anti means against, so total opposite',
-    exampleSentence: 'His views are the antithesis of what I believe.'
+    exampleSentence: 'His views are the antithesis of what I believe.',
+    acceptedAnswers: ['সম্পূর্ণ বিপরীত বিষয়', 'the exact opposite of something']
   }
 ];
 

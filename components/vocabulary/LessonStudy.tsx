@@ -62,7 +62,7 @@ export function LessonStudy({ lesson, nextLessonId }: LessonStudyProps) {
     if (info) void brain.save(info, { type: 'word-bank', title: t('vocabulary.lesson.title', { n: lesson.lessonId }) }, word.example).catch(() => undefined);
   };
 
-  const subject: RecallSubject = { word: word.word, lemma: word.word.toLowerCase(), meaning: '', meaningBn: word.meaning, synonyms: [] };
+  const subject: RecallSubject = { word: word.word, lemma: word.word.toLowerCase(), meaning: '', meaningBn: word.meaning, synonyms: [], acceptedAnswers: word.acceptedAnswers };
 
   /** Only a word already saved to My Brain has a schedule to update — this feeds the SAME
    * BrainWord record every other surface reads, never a separate self-report counter. */

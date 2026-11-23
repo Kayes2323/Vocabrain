@@ -13,7 +13,10 @@ import { MinoError } from '../lib/ai/server/errors';
 import { EVALUATION_LIMITS, checkEvaluationLimit, checkRateLimit } from '../lib/ai/server/rate-limit';
 import { LIMITS } from '../lib/ai/server/config';
 import type { AIProvider, AIRunRequest } from '../lib/ai/types';
-import { applyRecall, createBrainWord, evaluateRecall, recallOutcomeFromVerdict, routeRecall } from '../lib/engine';
+import { applyRecall, createBrainWord, evaluateRecall, recallOutcomeFromVerdict, routeRecall, type RecallSubject } from '../lib/engine';
+import { IELTS_VOCABULARY } from '../lib/ielts-vocabulary';
+import { VOCABULARY_DATA } from '../lib/vocabulary';
+import { FOUNDATION_WORDS } from '../lib/vocab-foundation/words';
 import { LIBRARY } from '../lib/content/reading-library';
 import { buildLearnerContext } from '../lib/mino-eval/context';
 import { STATUS_TEXT, verdictLabel, verdictTone } from '../lib/mino-eval/labels';
@@ -163,7 +166,7 @@ const MCQ = {
   await test('vocabulary meaning prompt: accepts synonyms/paraphrases, forbids keyword matching, defines partial vs incorrect, includes trusted meaning', () => {
     const req = base({ answerType: 'vocab_meaning', question: 'What does "mitigate" mean?', answer: 'to reduce how bad something is', vocab });
     const sys = buildSystemPrompt(req); const user = buildUserMessage(req);
-    assert.match(sys, /Accept semantically equivalent meanings, valid synonyms and sound paraphrases, in English or Bangla/);
+    assert.match(sys, /Accept semantically equivalent meanings, valid synonyms and sound paraphrases, in English, Bangla, or clearly readable Romanized Bangla/);
     assert.match(sys, /Do NOT require word-for-word agreement/);
     assert.match(sys, /Do NOT accept an answer merely because it shares a keyword/);
     assert.match(sys, /partially_correct: it captures part of the meaning but misses an essential component \(name the missing component\)/);
@@ -552,7 +555,7 @@ const MCQ = {
     assert.equal(alt.verdict, 'correct');
     // Mixed-language answer: the rubric explicitly tells the model to accept this; confirm the instruction actually reaches the prompt.
     const mixedPrompt = buildSystemPrompt(base({ answerType: 'vocab_meaning', answer: 'to প্রশমিত করা something bad', vocab: vocabWord }));
-    assert.match(mixedPrompt, /in English or Bangla/i);
+    assert.match(mixedPrompt, /in English, Bangla, or/i);
     const mixed = await evaluateAnswerAI(model(() => ok()), base({ answerType: 'vocab_meaning', answer: 'to প্রশমিত করা something bad', vocab: vocabWord }));
     assert.equal(mixed.verdict, 'correct');
     // Incomplete / partially correct: captures part of the meaning, missing an essential component.
@@ -669,7 +672,8 @@ const MCQ = {
     assert.equal(tierFor('speaking_usage'), 'fast');
     assert.equal(tierFor('essay'), 'smart');
     const route = readFileSync('app/api/mino/evaluate-answer/route.ts', 'utf8');
-    assert.match(route, /req\.answerType === 'vocab_meaning'\s*\?\s*await evaluateVocabMeaningFast/, 'only vocab_meaning is routed to the lite evaluator');
+    assert.match(route, /answerType === 'vocab_meaning' \? 'lite' : 'full'/, 'only vocab_meaning resolves to the lite tier');
+    assert.match(route, /tier === 'lite'\s*\?\s*await evaluateVocabMeaningFast/, 'only the lite tier is routed to the lightweight evaluator');
     assert.match(route, /await evaluateAnswerAI\(provider, req\)/, 'every other answer type keeps the full evaluator — sentence, usage, writing, speaking transcripts and essays still get deep analysis');
   });
 
@@ -692,13 +696,81 @@ const MCQ = {
     assert.equal(cacheGet(keyUser2), undefined, "another student's identical question is never served from the first student's cache entry");
   });
 
-  await test('SRS integrity: an answer Mino could not evaluate is never recorded as a recall attempt in WordBankStudy, LessonStudy or Today\'s Recall (source-level audit)', () => {
-    for (const file of ['components/review/ReviewSession.tsx', 'components/vocabulary/WordBankStudy.tsx', 'components/vocabulary/LessonStudy.tsx']) {
+  await test('SRS integrity: an answer Mino could not evaluate is never recorded as a recall attempt in WordBankStudy, LessonStudy, Today\'s Recall or the Vocabulary Foundation mission (source-level audit)', () => {
+    for (const file of ['components/review/ReviewSession.tsx', 'components/vocabulary/WordBankStudy.tsx', 'components/vocabulary/LessonStudy.tsx', 'components/vocab-foundation/MissionSession.tsx']) {
       const src = readFileSync(file, 'utf8');
       assert.match(src, /recallOutcomeFromVerdict/, `${file} uses the shared verdict-to-outcome mapping`);
       assert.match(src, /'uncertain'/, `${file} has a distinct branch for an unevaluable answer`);
-      assert.ok(/if \(result !== 'uncertain'\) record\(result\)|if \(outcome === 'uncertain'\)|if \(result === 'uncertain'\) return;/.test(src), `${file} skips the Brain write when Mino could not evaluate the answer`);
     }
+    const mission = readFileSync('components/vocab-foundation/MissionSession.tsx', 'utf8');
+    assert.match(mission, /if \(v === 'uncertain'\) \{/, 'MissionSession no longer collapses unable_to_evaluate into its old wrong-answer branch');
+    assert.match(mission, /setState\(\{ stage: 'ask', attempt \}\)/, 'an uncertain verdict returns to the SAME attempt — never advances the failure/clue counter');
+    assert.ok(!/advance\(evaluation\.verdict === 'correct' \? 'correct' : 'wrong'\)/.test(mission), 'the old binary correct/wrong collapse is gone');
+    assert.match(mission, /record\('partial'\)/, 'a partially correct final answer is recorded distinctly, not as a plain miss');
+    assert.match(mission, /minoEval\?\.verdict !== 'unable_to_evaluate'/, 'the existing "almost, here is a clue" box never shows for an uncertain verdict (they are mutually exclusive)');
+    assert.match(mission, /vocabFoundation\.session\.uncertainNotice/, 'a dedicated, distinct notice exists for the uncertain case');
+  });
+
+  // ---------------------------------------------------------------- vocabulary content enrichment (acceptedAnswers)
+  await test('content coverage: every WordBank, lesson and Foundation word has curated accepted-answer variants, each non-empty and distinct from the canonical meaning', () => {
+    const wordBankTotal = IELTS_VOCABULARY.length;
+    const wordBankCovered = IELTS_VOCABULARY.filter((w) => w.acceptedAnswers?.length).length;
+    assert.equal(wordBankTotal, 40, 'sanity: the word bank is still 40 words');
+    assert.equal(wordBankCovered, wordBankTotal, `word bank coverage: ${wordBankCovered}/${wordBankTotal}`);
+
+    const lessonWords = VOCABULARY_DATA.flatMap((l) => l.words);
+    const lessonCovered = lessonWords.filter((w) => w.acceptedAnswers?.length).length;
+    assert.equal(lessonWords.length, 60, 'sanity: the topic lessons are still 60 words');
+    assert.equal(lessonCovered, lessonWords.length, `lesson vocabulary coverage: ${lessonCovered}/${lessonWords.length}`);
+
+    const foundationCovered = FOUNDATION_WORDS.filter((w) => w.acceptedAnswers?.length).length;
+    assert.equal(FOUNDATION_WORDS.length, 10, 'sanity: the Foundation list is still 10 words');
+    assert.equal(foundationCovered, FOUNDATION_WORDS.length, `Foundation coverage: ${foundationCovered}/${FOUNDATION_WORDS.length}`);
+
+    // No entry is blank, whitespace-only, or a verbatim duplicate of the word's own canonical meaning —
+    // an enrichment pipeline that just copied the existing field would add no real coverage.
+    for (const w of IELTS_VOCABULARY) {
+      for (const v of w.acceptedAnswers ?? []) {
+        assert.ok(v.trim().length > 0, `${w.word}: an accepted-answer variant must not be blank`);
+        assert.notEqual(v.trim().toLowerCase(), w.definition.trim().toLowerCase(), `${w.word}: a variant must add real coverage, not restate the definition verbatim`);
+      }
+    }
+  });
+
+  await test('content coverage: a curated accepted answer is never the opposite of the trusted meaning (spot check against known antonym pairs)', () => {
+    // A handful of word-bank entries whose canonical antonyms are known; none of their curated
+    // accepted answers may equal (or paraphrase) one of those antonyms.
+    const abundant = IELTS_VOCABULARY.find((w) => w.word === 'Abundant')!;
+    const adverse = IELTS_VOCABULARY.find((w) => w.word === 'Adverse')!;
+    assert.ok(!abundant.acceptedAnswers!.some((v) => /scarce|limited|sparse/i.test(v)), 'Abundant must never accept a scarcity-flavoured variant');
+    assert.ok(!adverse.acceptedAnswers!.some((v) => /favorable|favourable|beneficial|positive/i.test(v)), 'Adverse must never accept a favourable-flavoured variant');
+  });
+
+  await test('Romanized Bangla: a curated word-bank variant is accepted instantly (Tier 1), a one-letter misspelling of it is still accepted, and an unrelated word is not', () => {
+    const assist = IELTS_VOCABULARY.find((w) => w.word === 'Assist')!;
+    const subject: RecallSubject = { word: assist.word, lemma: assist.word.toLowerCase(), meaning: assist.definition, synonyms: assist.synonyms, acceptedAnswers: assist.acceptedAnswers };
+    assert.deepEqual(routeRecall(subject, 'meaning', 'sahajyo kora'), { kind: 'local', verdict: 'correct' }, 'the curated Romanized Bangla variant is graded instantly');
+    assert.deepEqual(routeRecall(subject, 'meaning', 'সাহায্য করা'), { kind: 'local', verdict: 'correct' }, 'the curated Bangla translation is graded instantly');
+    const typo = routeRecall(subject, 'meaning', 'sahajo kora'); // one dropped letter
+    assert.equal(typo.kind, 'local', 'a one-letter slip in a longer curated phrase is still within the safe, length-scaled tolerance');
+    assert.equal(routeRecall(subject, 'meaning', 'protibadh kora').kind, 'mino', 'an unrelated-looking phrase is never guessed locally, even if short');
+  });
+
+  await test('Romanized Bangla: length-scaled tolerance never derives one distinct phrasing from another — different wordings still require their own curated entry', () => {
+    const hatchlingLike: RecallSubject = {
+      word: 'hatchling',
+      lemma: 'hatchling',
+      meaning: 'a young bird or animal that has just hatched from an egg',
+      meaningBn: 'ডিম ফুটে বের হওয়া বাচ্চা',
+      synonyms: [],
+      acceptedAnswers: ['dim theke fota baccha'],
+    };
+    // A one/two-character slip of the SAME curated phrase is accepted.
+    assert.equal(routeRecall(hatchlingLike, 'meaning', 'dim theke phota baccha').kind, 'local');
+    // A genuinely different phrasing of the same idea (the task's own examples) is NOT derived
+    // from the one curated variant — it goes to Mino unless it is separately curated too.
+    assert.equal(routeRecall(hatchlingLike, 'meaning', 'notun fota baccha').kind, 'mino');
+    assert.equal(routeRecall(hatchlingLike, 'meaning', 'dim theke ber howa').kind, 'mino');
   });
 
   // ---------------------------------------------------------------- Task 2 Lesson 01

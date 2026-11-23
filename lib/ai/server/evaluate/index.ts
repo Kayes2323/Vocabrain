@@ -58,7 +58,7 @@ Rules:
 const RUBRIC: Record<AnswerType, string> = {
   multiple_choice: 'Multiple-choice answers are checked locally and never reach you.',
   vocab_meaning: `Skill: vocabulary meaning recall. Decide whether the answer expresses the meaning of the target word in <vocabulary>.
-- Accept semantically equivalent meanings, valid synonyms and sound paraphrases, in English or Bangla. Do NOT require word-for-word agreement with the trusted meaning.
+- Accept semantically equivalent meanings, valid synonyms and sound paraphrases, in English, Bangla, or clearly readable Romanized Bangla. Do NOT require word-for-word agreement with the trusted meaning.
 - Do NOT accept an answer merely because it shares a keyword with the trusted meaning, repeats the target word, or names a related or opposite idea.
 - partially_correct: it captures part of the meaning but misses an essential component (name the missing component), or is too vague, too broad or too narrow.
 - incorrect: the meaning is wrong, opposite, or only loosely associated.`,

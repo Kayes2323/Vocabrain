@@ -79,6 +79,27 @@ function matchesWord(answer: string, candidate: string): RecallVerdict {
   return 'wrong';
 }
 
+/**
+ * Safe, deterministic matching for a trusted meaning or a curated phrase (a full
+ * sentence-length meaning, a Romanized Bangla spelling): exact after normalizing case,
+ * punctuation and whitespace, or within a small, length-scaled number of character
+ * edits — one for a short phrase, two for a longer one. Spelling of a transliterated
+ * phrase varies more than a single word does, so a longer known-good candidate gets a
+ * little more room; a 2-edit difference on a 10+ character phrase is still an
+ * unmistakably close match, never a broad fuzzy guess. This NEVER derives one distinct
+ * phrasing from another — two genuinely different ways of saying something are always
+ * curated as separate candidates, not matched to each other.
+ */
+function matchesPhrase(answer: string, candidate: string): boolean {
+  const a = normalize(answer);
+  const c = normalize(candidate);
+  if (!a || !c) return false;
+  if (a === c || stem(a) === stem(c)) return true;
+  const maxDistance = c.length >= 10 ? 2 : c.length >= 5 ? 1 : 0;
+  if (maxDistance === 0 || Math.abs(a.length - c.length) > maxDistance) return false;
+  return levenshtein(a, c) <= maxDistance;
+}
+
 function contentWords(text: string): string[] {
   return normalize(text)
     .split(/[\s/,]+/)
@@ -154,7 +175,7 @@ export function routeRecall(word: RecallSubject, exercise: RecallExercise, answe
     const candidates = [word.meaning, word.meaningBn, ...bnParts, ...word.synonyms, ...(word.acceptedAnswers ?? [])].filter(
       (c): c is string => Boolean(c && c.trim()),
     );
-    if (candidates.some((c) => matchesWord(trimmed, c) !== 'wrong')) return { kind: 'local', verdict: 'correct' };
+    if (candidates.some((c) => matchesPhrase(trimmed, c))) return { kind: 'local', verdict: 'correct' };
     // Tier 2: everything else — a meaning in the student's own words, a paraphrase, a
     // Bangla/English/mixed or Romanized-Bangla answer — is judged by Mino, never guessed locally.
     return { kind: 'mino', answerType: 'vocab_meaning', question: `What does "${word.word}" mean?` };

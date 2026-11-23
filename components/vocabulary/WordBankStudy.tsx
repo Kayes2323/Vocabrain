@@ -71,7 +71,7 @@ export function WordBankStudy({ band, words }: WordBankStudyProps) {
     if (entry) void brain.save(entry.info, { type: 'word-bank', title: entry.title }, entry.info.exampleSentence).catch(() => undefined);
   };
 
-  const subject: RecallSubject = { word: word.word, lemma: word.word.toLowerCase(), meaning: word.definition, synonyms: word.synonyms };
+  const subject: RecallSubject = { word: word.word, lemma: word.word.toLowerCase(), meaning: word.definition, synonyms: word.synonyms, acceptedAnswers: word.acceptedAnswers };
 
   /** Only a word already saved to My Brain has a schedule to update — this feeds the SAME
    * BrainWord record every other surface reads, never a separate self-report counter. */
@@ -108,7 +108,18 @@ export function WordBankStudy({ band, words }: WordBankStudyProps) {
       language: locale === 'bn' ? 'bn' : 'en',
       question: route.question,
       answer: answer.trim(),
-      vocab: { word: word.word, partOfSpeech: word.partOfSpeech, meaning: word.definition, synonyms: word.synonyms.slice(0, 12), collocations: [] },
+      vocab: {
+        word: word.word,
+        partOfSpeech: word.partOfSpeech,
+        meaning: word.definition,
+        // The word bank has no formal Bangla field; a curated Bangla accepted-answer
+        // variant (if one exists) is passed as the trusted translation so Mino can
+        // judge a Bangla or mixed-language answer against the real meaning, not just
+        // the English definition.
+        meaningBn: word.acceptedAnswers?.find((v) => /[ঀ-৿]/.test(v)),
+        synonyms: word.synonyms.slice(0, 12),
+        collocations: [],
+      },
       learner: { lessonId: 'word-bank-study', objective: 'Recall the meaning of a saved IELTS word bank word', recentMistakes: [] },
     });
     if (evaluation) applyEvaluation(evaluation); // on failure the panel below offers Retry (the answer is kept) or an explicit self-check

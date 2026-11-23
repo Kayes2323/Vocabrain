@@ -11,7 +11,7 @@ import { useBrain } from '@/components/providers/BrainProvider';
 import { useBrainGate } from '@/components/brain/BrainGate';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { speakWord } from '@/components/reading/speak';
-import { checkSentence, createBrainWord, evaluateRecall, makeCloze, routeRecall, type RecallVerdict } from '@/lib/engine';
+import { checkSentence, createBrainWord, evaluateRecall, makeCloze, recallOutcomeFromVerdict, routeRecall, type RecallOutcome, type RecallVerdict } from '@/lib/engine';
 import { EvaluationView, MinoVerdictPanel } from '@/components/mino-eval/MinoVerdictPanel';
 import { useMinoEvaluation } from '@/components/mino-eval/useMinoEvaluation';
 import type { MinoEvaluation } from '@/lib/mino-eval/types';
@@ -242,7 +242,7 @@ type RecallState =
   /** Mino is evaluating a meaning given in the student's own words. */
   | { stage: 'checking'; attempt: 0 | 1 }
   | { stage: 'self' }
-  | { stage: 'result'; correct: boolean; kind: 'first' | 'clue' | 'revealed' | 'close' };
+  | { stage: 'result'; correct: boolean; kind: 'first' | 'clue' | 'revealed' | 'close' | 'partial' };
 
 function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' | 'completion'; onNext: () => void }) {
   const { t, locale } = useLocale();
@@ -258,23 +258,46 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
   const exercise = kind === 'meaning' ? 'meaning' : 'completion';
   const cloze = kind === 'completion' ? makeCloze(fw.examples[0], fw.id) : undefined;
 
-  const record = (correct: boolean) => {
+  const record = (result: RecallOutcome) => {
     if (recorded.current) return;
     recorded.current = true;
+    const correct = result === true;
     // Only words the student chose to save go into the Brain's review schedule.
     // A write that fails stays flagged "unsaved" in the Brain (and shows the global notice) instead of being lost.
-    if (brain.has(fw.id)) void brain.recordRecall(fw.id, exercise, correct, answer).catch(() => undefined);
+    if (brain.has(fw.id)) void brain.recordRecall(fw.id, exercise, result, answer).catch(() => undefined);
     update((v) => bumpDay(recordSessionResult(v, `recall:${kind}:${fw.id}`, correct, answer), { recalls: 1, recallCorrect: correct ? 1 : 0 }));
   };
 
-  const advance = (v: 'correct' | 'close' | 'wrong') => {
+  const advance = (v: 'correct' | 'close' | 'partial' | 'wrong' | 'uncertain') => {
     if (state.stage !== 'ask' && state.stage !== 'checking') return;
     const attempt = state.attempt;
+    if (v === 'uncertain') {
+      // Mino genuinely could not judge this answer: never a verified pass or fail, so nothing
+      // is recorded, the failure streak and stage are untouched, and the learner's answer stays
+      // in the box exactly as they wrote it — they simply try again, same attempt.
+      setState({ stage: 'ask', attempt });
+      return;
+    }
     if (v === 'correct' || v === 'close') {
       // Right on the first try is a real recall; with a clue it counts as "needs more practice".
       record(attempt === 0);
       setState({ stage: 'result', correct: true, kind: attempt === 0 ? (v === 'close' ? 'close' : 'first') : 'clue' });
-    } else if (attempt === 0) {
+      return;
+    }
+    if (v === 'partial') {
+      // Partly right on the first try still earns a clue and a second attempt, same as a miss;
+      // partly right on the final attempt gets its own scheduler signal — never the same stage
+      // reset as a fully wrong answer, and never credited like a full success.
+      if (attempt === 0) {
+        setState({ stage: 'ask', attempt: 1 });
+        setAnswer('');
+        return;
+      }
+      record('partial');
+      setState({ stage: 'result', correct: false, kind: 'partial' });
+      return;
+    }
+    if (attempt === 0) {
       setState({ stage: 'ask', attempt: 1 });
       setAnswer('');
     } else {
@@ -285,7 +308,8 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
 
   const applyEvaluation = (evaluation: MinoEvaluation) => {
     setMinoEval(evaluation);
-    advance(evaluation.verdict === 'correct' ? 'correct' : 'wrong');
+    const result = recallOutcomeFromVerdict(evaluation.verdict);
+    advance(result === true ? 'correct' : result === 'partial' ? 'partial' : result === 'uncertain' ? 'uncertain' : 'wrong');
   };
 
   const check = async (giveUp = false) => {
@@ -355,7 +379,16 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
         </div>
       )}
 
-      {state.stage === 'ask' && state.attempt === 1 && (
+      {state.stage === 'ask' && minoEval?.verdict === 'unable_to_evaluate' && (
+        <div role="status" className="space-y-1.5 rounded-xl bg-amber-500/10 p-4 animate-in fade-in duration-300" data-testid="foundation-uncertain-notice">
+          <div className="mb-1 rounded-lg border bg-card p-3" data-testid="foundation-mino-evaluation">
+            <EvaluationView evaluation={minoEval} language={locale === 'bn' ? 'bn' : 'en'} />
+          </div>
+          <p className="text-sm text-muted-foreground">{t('vocabFoundation.session.uncertainNotice')}</p>
+        </div>
+      )}
+
+      {state.stage === 'ask' && state.attempt === 1 && minoEval?.verdict !== 'unable_to_evaluate' && (
         <div role="status" className="space-y-1.5 rounded-xl bg-amber-500/10 p-4 animate-in fade-in duration-300">
           {minoEval && (
             <div className="mb-2 rounded-lg border bg-card p-3" data-testid="foundation-mino-evaluation">
@@ -442,7 +475,9 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
                 ? t('vocabFoundation.session.close')
                 : state.kind === 'clue'
                   ? t('vocabFoundation.session.withClue')
-                  : t('vocabFoundation.session.reveal')}
+                  : state.kind === 'partial'
+                    ? t('vocabFoundation.session.partial')
+                    : t('vocabFoundation.session.reveal')}
           </p>
           <p lang="en" className="text-lg font-semibold">{fw.word}</p>
           <p>{text(fw.meaning)}</p>

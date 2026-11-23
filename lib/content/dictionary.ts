@@ -59,6 +59,7 @@ function fromWordBank(w: IELTSWord): WordInfo {
     antonyms: w.antonyms ?? [],
     collocations: [],
     exampleSentence: w.exampleSentence || w.example,
+    ...(w.acceptedAnswers?.length ? { acceptedAnswers: w.acceptedAnswers } : {}),
     dictionarySource: 'word-bank',
   };
 }
@@ -88,6 +89,7 @@ export function lookupLocal(token: string, glossary?: Record<string, GlossaryEnt
         synonyms: [],
         antonyms: [],
         collocations: [],
+        ...(l.acceptedAnswers?.length ? { acceptedAnswers: l.acceptedAnswers } : {}),
         dictionarySource: 'word-bank',
       };
     }

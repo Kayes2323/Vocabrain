@@ -98,6 +98,8 @@ export const en = {
       clue: 'Clue',
       tryAgain: 'Try again',
       withClue: 'Correct with a clue. It will come back soon for another try.',
+      partial: 'Partly right — see what Mino says below.',
+      uncertainNotice: "Mino couldn't read that as an attempt. Try again — it won't count against you.",
       reveal: 'Here it is',
       selfCheck: 'Did you mean the same thing?',
       selfYes: 'Yes, I got it',
