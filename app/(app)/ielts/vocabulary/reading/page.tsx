@@ -9,6 +9,7 @@ import { EmptyState, PageHeader, ScreenSkeleton } from '@/components/ds';
 import { WordStatusChip } from '@/components/brain/WordStatusChip';
 import { meanings } from '@/components/brain/meaning';
 import { useBrain } from '@/components/providers/BrainProvider';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { vocabWordInfo } from '@/lib/content/reading-library';
@@ -24,7 +25,9 @@ export default function ReadingVocabularyPage() {
   const { profile } = useProfile();
   const [saving, setSaving] = useState<string | null>(null);
 
-  if (brain.loading || !profile) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
+  if (!profile) return <ScreenSkeleton />;
   const { fresh, saved } = readingVocabulary(profile.study.readingLibrary, brain.words);
 
   const save = async (w: ReadingWord) => {

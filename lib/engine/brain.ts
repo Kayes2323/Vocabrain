@@ -1,4 +1,4 @@
-import type { BrainWord, RecallExercise, RecallRating, UsageAttempt, WordInfo, WordSource, WordStatus } from '@/lib/models';
+import type { BrainWord, RecallAttempt, RecallExercise, RecallRating, RecallSnapshot, UsageAttempt, WordInfo, WordSource, WordStatus } from '@/lib/models';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -114,8 +114,14 @@ export function nextReviewDate(w: Pick<BrainWord, 'recallHistory' | 'consecutive
  * student gives one) only tunes the spacing: Again counts as not recalled,
  * Hard keeps the word at its current step, Easy stretches the next interval.
  */
-export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswer: boolean, answer: string | undefined, now = new Date(), rating?: RecallRating): BrainWord {
+export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswer: boolean, answer: string | undefined, now = new Date(), rating?: RecallRating, attemptId?: string): BrainWord {
+  // The same card recorded twice (a retry after a slow save, a double tap) is one attempt.
+  if (attemptId && w.recallHistory.some((a) => a.id === attemptId)) return w;
   const correct = correctAnswer && rating !== 'again';
+  // An answer recorded without a rating keeps what it needs to take a rating later, exactly.
+  const before: RecallSnapshot | undefined = rating
+    ? undefined
+    : { stage: w.stage, nextReviewAt: w.nextReviewAt, ...(w.lastReviewedAt ? { lastReviewedAt: w.lastReviewedAt } : {}), recallCount: w.recallCount, successfulRecallCount: w.successfulRecallCount, consecutiveFailures: w.consecutiveFailures };
   const stage = !correct ? 0 : rating === 'hard' ? Math.max(w.stage, 1) : Math.min(w.stage + 1, MAX_STAGE);
   return withStatus({
     ...w,
@@ -126,9 +132,41 @@ export function applyRecall(w: BrainWord, exercise: RecallExercise, correctAnswe
     recallCount: w.recallCount + 1,
     successfulRecallCount: w.successfulRecallCount + (correct ? 1 : 0),
     consecutiveFailures: correct ? 0 : w.consecutiveFailures + 1,
-    recallHistory: [...w.recallHistory, { at: now.toISOString(), exercise, correct, answer: answer?.slice(0, 200), ...(rating ? { rating } : {}) }].slice(-HISTORY_LIMIT),
+    recallHistory: [
+      ...w.recallHistory,
+      { ...(attemptId ? { id: attemptId } : {}), at: now.toISOString(), exercise, correct, answer: answer?.slice(0, 200), ...(rating ? { rating, ratedAt: now.toISOString() } : {}), ...(before ? { before } : {}) },
+    ].slice(-HISTORY_LIMIT),
   });
 }
+
+/**
+ * The learner's self-rating for an answer that was already recorded. Applied
+ * to the latest attempt it gives exactly the schedule the rating would have
+ * given together with the answer; it is a no-op for an attempt that is already
+ * rated, unknown, or no longer the latest (the rating is then only noted).
+ */
+export function applyRating(w: BrainWord, attemptId: string, rating: RecallRating, now = new Date()): BrainWord {
+  const index = w.recallHistory.findIndex((a) => a.id === attemptId);
+  if (index < 0) return w;
+  const attempt: RecallAttempt = w.recallHistory[index];
+  if (attempt.rating) return w;
+  const isLatest = index === w.recallHistory.length - 1;
+  if (!isLatest || !attempt.before) {
+    return { ...w, recallHistory: w.recallHistory.map((a, i) => (i === index ? { ...stripBefore(a), rating, ratedAt: now.toISOString() } : a)), updatedAt: now.toISOString() };
+  }
+  const restored: BrainWord = { ...w, ...attempt.before, recallHistory: w.recallHistory.slice(0, -1) };
+  const reapplied = applyRecall(restored, attempt.exercise, true, attempt.answer, new Date(attempt.at), rating, attemptId);
+  return { ...reapplied, updatedAt: now.toISOString() };
+}
+
+function stripBefore(a: RecallAttempt): RecallAttempt {
+  const { before: _before, ...rest } = a;
+  void _before;
+  return rest;
+}
+
+/** Answered but not rated: the attempt is stored and counts; only the self-rating is missing. */
+export const isUnrated = (a: RecallAttempt) => !a.rating;
 
 export function applyUsage(w: BrainWord, attempt: Omit<UsageAttempt, 'at'>, now = new Date()): BrainWord {
   return withStatus({
@@ -187,9 +225,28 @@ export function nextExercise(w: BrainWord, problem?: string, distractors = 3): R
   return formats[w.recallCount % formats.length];
 }
 
-/** Notebook groups: New (never recalled) · Learning · Mastered. */
+/**
+ * Notebook groups: New (never recalled) · Learning (recalled at least once, not
+ * mastered) · Mastered. Every count on every screen is computed from these, over
+ * the words in `users/{uid}/vocabulary` — the one authoritative store.
+ */
 export type BrainGroup = 'new' | 'learning' | 'mastered';
 export const brainGroup = (w: Pick<BrainWord, 'status'>): BrainGroup => (w.status === 'new' ? 'new' : w.status === 'mastered' ? 'mastered' : 'learning');
+
+/** The notebook's filters. `review` (due now) cuts across the groups; the rest partition the words. */
+export const BRAIN_FILTERS = ['all', 'new', 'learning', 'review', 'mastered'] as const;
+export type BrainFilter = (typeof BRAIN_FILTERS)[number];
+
+export function matchesBrainFilter(w: BrainWord, filter: BrainFilter, now = new Date()): boolean {
+  if (filter === 'all') return true;
+  if (filter === 'review') return isDue(w, now);
+  return brainGroup(w) === filter;
+}
+
+/** One count per filter, from the same words and the same rule the list uses. */
+export function brainCounts(words: BrainWord[], now = new Date()): Record<BrainFilter, number> {
+  return Object.fromEntries(BRAIN_FILTERS.map((f) => [f, words.filter((w) => matchesBrainFilter(w, f, now)).length])) as Record<BrainFilter, number>;
+}
 
 /** Words that have been recalled but not yet used by the student: ready for practice. */
 export function wordsReadyToUse(words: BrainWord[], mode: 'writing' | 'speaking'): BrainWord[] {
@@ -221,7 +278,7 @@ export function brainSummary(words: BrainWord[], now = new Date()): BrainSummary
     due: due.length,
     failedLastTime: due.filter((w) => w.consecutiveFailures > 0).length,
     byStatus,
-    learning: words.filter((w) => brainGroup(w) === 'learning').length,
+    learning: brainCounts(words, now).learning,
     mastered: byStatus.mastered,
     ...(due.length === 0 && upcoming ? { nextDueAt: upcoming } : {}),
   };

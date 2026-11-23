@@ -32,6 +32,48 @@ service cloud.firestore {
         && (!('responses' in d) || d.responses is map);
     }
 
+    // A Brain word (users/{uid}/vocabulary/{id}). Only fields that are present are checked, so
+    // words saved before a field existed stay valid. Keep in sync with lib/engine/brain-validate.ts.
+    function isoDate(v) {
+      return v is string && v.size() <= 32
+        && v.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\\.[0-9]{1,6})?Z$');
+    }
+    function wholeNumber(v, max) {
+      return v is int && v >= 0 && v <= max;
+    }
+    function shortList(v) {
+      return v is list && v.size() <= 40;
+    }
+    function shortText(v, max) {
+      return v is string && v.size() <= max;
+    }
+    function validBrainWord(d) {
+      return d.word is string && d.word.size() > 0 && d.word.size() <= 64
+        && (!('stage' in d) || wholeNumber(d.stage, 6))
+        && (!('nextReviewAt' in d) || isoDate(d.nextReviewAt))
+        && (!('createdAt' in d) || isoDate(d.createdAt))
+        && (!('updatedAt' in d) || isoDate(d.updatedAt))
+        && (!('lastReviewedAt' in d) || isoDate(d.lastReviewedAt))
+        && (!('status' in d) || d.status in ['new', 'learning', 'recalling', 'active', 'strong', 'mastered'])
+        && (!('recallCount' in d) || wholeNumber(d.recallCount, 1000000))
+        && (!('successfulRecallCount' in d) || wholeNumber(d.successfulRecallCount, 1000000))
+        && (!('consecutiveFailures' in d) || wholeNumber(d.consecutiveFailures, 1000000))
+        && (!('writingUsageCount' in d) || wholeNumber(d.writingUsageCount, 1000000))
+        && (!('speakingUsageCount' in d) || wholeNumber(d.speakingUsageCount, 1000000))
+        && (!('confidence' in d) || (d.confidence is number && d.confidence >= 0 && d.confidence <= 100))
+        && (!('synonyms' in d) || shortList(d.synonyms))
+        && (!('antonyms' in d) || shortList(d.antonyms))
+        && (!('collocations' in d) || shortList(d.collocations))
+        && (!('recallHistory' in d) || (d.recallHistory is list && d.recallHistory.size() <= 20))
+        && (!('usageHistory' in d) || (d.usageHistory is list && d.usageHistory.size() <= 10))
+        && (!('meaning' in d) || shortText(d.meaning, 1000))
+        && (!('meaningBn' in d) || shortText(d.meaningBn, 1000))
+        && (!('lemma' in d) || shortText(d.lemma, 1000))
+        && (!('partOfSpeech' in d) || shortText(d.partOfSpeech, 1000))
+        && (!('exampleSentence' in d) || shortText(d.exampleSentence, 1000))
+        && (!('originalSentence' in d) || shortText(d.originalSentence, 2000));
+    }
+
     // users/{uid}: profile summary + app state (goals, plan, progress).
     match /users/{uid} {
       allow read, delete: if isOwner(uid);
@@ -48,10 +90,7 @@ service cloud.firestore {
       // users/{uid}/vocabulary/{vocabId}: the student's Brain.
       match /vocabulary/{vocabId} {
         allow read, delete: if isOwner(uid);
-        allow create, update: if isOwner(uid)
-          && request.resource.data.word is string
-          && request.resource.data.word.size() > 0
-          && request.resource.data.word.size() <= 64;
+        allow create, update: if isOwner(uid) && validBrainWord(request.resource.data);
       }
 
       // users/{uid}/testSessions/{sessionId}: IELTS practice attempts.

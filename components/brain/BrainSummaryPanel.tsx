@@ -7,11 +7,13 @@ import { Panel } from '@/components/ds';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { brainSummary } from '@/lib/engine';
+import { BrainLoadError } from './BrainGate';
 
 /** "My Brain" at a glance: saved, due today, and words the student can actually use. */
 export function BrainSummaryPanel() {
   const { t, n } = useLocale();
   const brain = useBrain();
+  if (brain.view === 'error' || brain.view === 'unconfirmed') return <BrainLoadError kind={brain.view} />;
   const s = brainSummary(brain.words);
   const active = s.byStatus.active + s.byStatus.strong + s.byStatus.mastered;
 

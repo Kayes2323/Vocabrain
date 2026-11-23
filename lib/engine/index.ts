@@ -8,6 +8,8 @@ export * from './abroad-journey';
 export * from './next-action';
 export * from './vocabulary';
 export * from './brain';
+export * from './brain-validate';
+export * from './brain-store';
 export * from './recall';
 export * from './usage';
 export * from './diagnosis';

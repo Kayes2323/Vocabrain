@@ -13,7 +13,9 @@ import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useLeave } from '@/components/setup/useLeave';
-import { checkSentence, markActivityDone, type UsageCheck } from '@/lib/engine';
+import { checkSentence, hasUsableMeaning, markActivityDone, type UsageCheck } from '@/lib/engine';
+import { MeaningEditor } from '@/components/brain/MeaningEditor';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { PracticeShell } from './PracticeShell';
 import { pickWord } from './pickWord';
 
@@ -28,7 +30,8 @@ export function WritingPractice() {
   const [text, setText] = useState('');
   const [result, setResult] = useState<UsageCheck | null>(null);
 
-  if (brain.loading) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
   const word = pickWord(brain.words, 'writing', requested, done);
 
   if (!word) {
@@ -48,12 +51,26 @@ export function WritingPractice() {
     );
   }
 
+  if (!hasUsableMeaning(word)) {
+    return (
+      <PracticeShell title={t('practice.writingTitle')} onClose={() => leave()}>
+        <MeaningEditor
+          word={word}
+          onSkip={() => {
+            setDone((d) => [...d, word.id]);
+            setRequested(null);
+          }}
+        />
+      </PracticeShell>
+    );
+  }
+
   const { primary } = meanings(word, locale);
 
   const check = async () => {
     const r = checkSentence(word, text);
     setResult(r);
-    await brain.recordUsage(word.id, { mode: 'writing', text, correct: r.correct, feedback: r.feedback });
+    await brain.recordUsage(word.id, { mode: 'writing', text, correct: r.correct, feedback: r.feedback }).catch(() => undefined);
     updateProfile((p) => markActivityDone(p, 'writing'));
   };
 

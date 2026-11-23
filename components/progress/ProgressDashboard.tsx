@@ -277,9 +277,10 @@ export function ProgressDashboard() {
   const progress = useMemo(() => (profile && sessions ? ieltsProgress(profile, sessions, LOOKUPS) : undefined), [profile, sessions]);
   const ctx = useMemo<ActivityContext | undefined>(() => {
     if (!profile || !sessions) return undefined;
-    const s = brain.loading ? undefined : brainSummary(brain.words);
+    // Counts are shown only when the words are really available: an outage is not "0 words".
+    const s = brain.view === 'ready' || brain.view === 'empty' ? brainSummary(brain.words) : undefined;
     return { profile, sections: sectionsByDate(sessions), today: localDateKey(), brain: s ? { total: s.total, due: s.due } : undefined };
-  }, [profile, sessions, brain.words, brain.loading]);
+  }, [profile, sessions, brain.words, brain.view]);
 
   if (!profile || !progress || !ctx) return <ScreenSkeleton />;
   const stats = learningStats(profile);

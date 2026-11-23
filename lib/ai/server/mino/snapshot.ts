@@ -2,7 +2,7 @@
 // the student's own Firestore data (read with their ID token, so rules apply).
 // Browser-sent context is never trusted for facts.
 import { IELTS_SKILLS } from '@/lib/constants';
-import { brainSummary, buildDailyPlan, continueLearning, daysUntil, formatBand, ieltsJourney, learningStats, overallBand } from '@/lib/engine';
+import { brainSummary, buildDailyPlan, sanitizeBrainWord, continueLearning, daysUntil, formatBand, ieltsJourney, learningStats, overallBand } from '@/lib/engine';
 import { getTranslator } from '@/lib/i18n';
 import { analyseTests, type TestSession } from '@/lib/ielts';
 import { getTest } from '@/lib/ielts/content';
@@ -103,7 +103,8 @@ export async function buildStudentSnapshot(student: StudentRef, tzOffsetMinutes?
   }
 
   // Vocabulary (Brain)
-  const brain = brainSummary(words as unknown as BrainWord[], now);
+  // Stored words are read defensively: one invalid value (an unreadable date, a stage out of range) must not skew Mino's picture of the learner.
+  const brain = brainSummary((words as unknown as BrainWord[]).map((w) => sanitizeBrainWord(w, now)), now);
   lines.push(
     brain.total === 0
       ? '- Vocabulary (Brain): no saved words yet.'

@@ -33,12 +33,28 @@ export interface WordSource {
   licenseStatus?: LicenseStatus;
 }
 
+/** Scheduler fields as they were just before an answer, so a later self-rating can be applied exactly. */
+export interface RecallSnapshot {
+  stage: number;
+  nextReviewAt: ISODate;
+  lastReviewedAt?: ISODate;
+  recallCount: number;
+  successfulRecallCount: number;
+  consecutiveFailures: number;
+}
+
 export interface RecallAttempt {
+  /** Stable key of this attempt (one per card shown). Recording the same key twice is a no-op. */
+  id?: string;
   at: ISODate;
   exercise: RecallExercise;
   correct: boolean;
   answer?: string;
+  /** The learner's self-rating. Absent = the answer was recorded but not (yet) rated. */
   rating?: RecallRating;
+  ratedAt?: ISODate;
+  /** Present only while the attempt is still unrated: lets the rating be applied exactly as if it came with the answer. */
+  before?: RecallSnapshot;
 }
 
 export interface UsageAttempt {

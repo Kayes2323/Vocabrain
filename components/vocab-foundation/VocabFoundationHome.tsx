@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { PageHeader, Panel, ProgressBar, ScreenSkeleton, Section } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useBrain } from '@/components/providers/BrainProvider';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { localDateKey } from '@/lib/engine/dates';
 import { todayMission, vocabJourney, vocabStats } from '@/lib/vocab-foundation';
 import { cn } from '@/lib/utils';
@@ -27,7 +28,9 @@ export function VocabFoundationHome() {
   const { t, n } = useLocale();
   const { profile, vf } = useVocabFoundation();
   const brain = useBrain();
-  if (!profile || !vf || brain.loading) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
+  if (!profile || !vf) return <ScreenSkeleton />;
 
   const stats = vocabStats(brain.words, vf, profile.study);
   const mission = todayMission(vf, brain.words);

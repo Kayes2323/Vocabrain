@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { BrainProvider } from '@/components/providers/BrainProvider';
+import { BrainSyncNotice } from '@/components/brain/BrainSyncNotice';
 import { ProfileProvider, useProfile } from '@/components/providers/ProfileProvider';
 import { UpgradeProvider } from '@/components/providers/UpgradeProvider';
 import LoginView from '@/components/LoginView';
@@ -95,6 +96,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <ProfileProvider userId={user.uid} repository={repository}>
       <BrainProvider userId={user.uid} repository={brainRepository}>
+      <BrainSyncNotice />
       <UpgradeProvider>
         <JourneyGate>
           {focused ? (

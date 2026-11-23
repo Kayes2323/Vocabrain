@@ -12,7 +12,9 @@ import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { useLeave } from '@/components/setup/useLeave';
-import { containsWord, markActivityDone, speakingPrompt } from '@/lib/engine';
+import { containsWord, hasUsableMeaning, markActivityDone, speakingPrompt } from '@/lib/engine';
+import { MeaningEditor } from '@/components/brain/MeaningEditor';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { cn } from '@/lib/utils';
 import { PracticeShell } from './PracticeShell';
 import { pickWord } from './pickWord';
@@ -33,7 +35,8 @@ export function SpeakingPractice() {
   const [phase, setPhase] = useState<Phase>('answer');
   const [outcome, setOutcome] = useState<'used' | 'natural' | 'missing' | 'unnatural' | null>(null);
 
-  if (brain.loading) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
   const word = pickWord(brain.words, 'speaking', requested, done);
 
   if (!word) {
@@ -53,6 +56,20 @@ export function SpeakingPractice() {
     );
   }
 
+  if (!hasUsableMeaning(word)) {
+    return (
+      <PracticeShell title={t('practice.speakingTitle')} onClose={() => leave()}>
+        <MeaningEditor
+          word={word}
+          onSkip={() => {
+            setDone((d) => [...d, word.id]);
+            setRequested(null);
+          }}
+        />
+      </PracticeShell>
+    );
+  }
+
   const prompt = speakingPrompt(word, done.length);
   const answer = speech.transcript;
 
@@ -61,7 +78,7 @@ export function SpeakingPractice() {
     if (!containsWord(answer, word.lemma)) {
       setOutcome('missing');
       setPhase('result');
-      await brain.recordUsage(word.id, { mode: 'speaking', text: answer, correct: false, feedback: ['practice.speaking.missing'] });
+      await brain.recordUsage(word.id, { mode: 'speaking', text: answer, correct: false, feedback: ['practice.speaking.missing'] }).catch(() => undefined);
       updateProfile((p) => markActivityDone(p, 'speaking'));
       return;
     }
@@ -77,7 +94,7 @@ export function SpeakingPractice() {
       text: answer,
       correct: natural,
       feedback: [natural ? 'practice.speaking.natural' : 'practice.speaking.unnatural'],
-    });
+    }).catch(() => undefined);
     updateProfile((p) => markActivityDone(p, 'speaking'));
   };
 

@@ -22,7 +22,9 @@ import { MinoSays } from '@/components/mino/MinoSays';
 import { canSpeak, speakWord } from '@/components/reading/speak';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { MAX_STAGE, diagnoseWord, speakingPrompt } from '@/lib/engine';
+import { MAX_STAGE, diagnoseWord, hasUsableMeaning, speakingPrompt } from '@/lib/engine';
+import { MeaningEditor } from '@/components/brain/MeaningEditor';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { FoundationWordExtras } from '@/components/vocab-foundation/FoundationWordExtras';
 
 function Chips({ label, items }: { label: string; items: string[] }) {
@@ -56,8 +58,10 @@ export default function WordDetailPage() {
   const { t, locale, n } = useLocale();
   const brain = useBrain();
 
-  if (brain.loading) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
   const word = brain.get(id);
+  // Only a loaded list can say a word does not exist; a failed load was handled above.
   if (!word) notFound();
 
   const { primary, secondary } = meanings(word, locale);
@@ -99,6 +103,7 @@ export default function WordDetailPage() {
         ) : (
           <p className="text-sm text-muted-foreground">{t('brain.noMeaning')}</p>
         )}
+        {!hasUsableMeaning(word) && <MeaningEditor word={word} />}
         {word.originalSentence && (
           <div className="space-y-1 rounded-xl bg-muted/60 px-4 py-3" data-testid="word-source">
             <p className="text-xs text-muted-foreground">

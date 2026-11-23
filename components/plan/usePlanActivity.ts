@@ -31,9 +31,9 @@ export function usePlanActivity(): ActivityContext | undefined {
   const sections = useTestSections();
   const today = localDateKey();
   const counts = useMemo(() => {
-    if (brain.loading) return undefined;
+    if (brain.view !== 'ready' && brain.view !== 'empty') return undefined;
     const s = brainSummary(brain.words);
     return { total: s.total, due: s.due };
-  }, [brain.words, brain.loading]);
+  }, [brain.words, brain.view]);
   return useMemo(() => (profile ? { profile, sections, today, brain: counts } : undefined), [profile, sections, today, counts]);
 }

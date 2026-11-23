@@ -44,7 +44,9 @@ export function checkSentence(word: BrainWord, text: string): UsageCheck {
  */
 export function speakingPrompt(word: BrainWord, seed = 0): { key: string; vars: Record<string, string> } {
   const pos = (word.partOfSpeech ?? '').toLowerCase();
-  const kind = pos.startsWith('verb') ? 'verb' : pos.startsWith('adj') ? 'adjective' : pos.startsWith('adv') ? 'adverb' : 'noun';
+  // The prompt needs the word to fit a grammatical slot, so a word whose part of speech is missing or not one of the four
+  // (a phrase, "noun / verb"…) gets a prompt that does not assume one, instead of defaulting to a noun.
+  const kind = pos.startsWith('verb') ? 'verb' : pos.startsWith('adj') ? 'adjective' : pos.startsWith('adv') ? 'adverb' : pos.startsWith('noun') && !/[/,]| or /.test(pos) ? 'noun' : 'generic';
   const variant = seed % 2;
   return { key: `practice.speakingPrompts.${kind}.${variant}`, vars: { word: word.word.toLowerCase() } };
 }

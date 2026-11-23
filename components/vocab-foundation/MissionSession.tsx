@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Panel, ProgressBar, ScreenSkeleton, StatusChip } from '@/components/ds';
 import { useBrain } from '@/components/providers/BrainProvider';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { speakWord } from '@/components/reading/speak';
 import { vocabFeedback } from '@/lib/ai/client';
@@ -214,8 +215,12 @@ function DiscoverStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }
                   variant="brand"
                   className="h-13 text-base shadow-lg"
                   onClick={async () => {
-                    await brain.save(toWordInfo(fw), SOURCE, fw.context);
-                    setJustSaved(true);
+                    try {
+                      await brain.save(toWordInfo(fw), SOURCE, fw.context);
+                      setJustSaved(true);
+                    } catch {
+                      // Not stored: no "Saved" message; the sync notice offers Save again.
+                    }
                   }}
                 >
                   <Plus /> {t('vocabFoundation.session.save')}
@@ -259,7 +264,8 @@ function RecallStep({ fw, kind, onNext }: { fw: FoundationWord; kind: 'meaning' 
     if (recorded.current) return;
     recorded.current = true;
     // Only words the student chose to save go into the Brain's review schedule.
-    if (brain.has(fw.id)) void brain.recordRecall(fw.id, exercise, correct, answer);
+    // A write that fails stays flagged "unsaved" in the Brain (and shows the global notice) instead of being lost.
+    if (brain.has(fw.id)) void brain.recordRecall(fw.id, exercise, correct, answer).catch(() => undefined);
     update((v) => bumpDay(recordSessionResult(v, `recall:${kind}:${fw.id}`, correct, answer), { recalls: 1, recallCorrect: correct ? 1 : 0 }));
   };
 
@@ -486,7 +492,7 @@ function UseStep({ fw, onNext }: { fw: FoundationWord; onNext: () => void }) {
     }
     setResult(r);
     setLoading(false);
-    if (brain.has(fw.id)) void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct: r.correct, feedback: r.source === 'fallback' ? r.keys : [] });
+    if (brain.has(fw.id)) void brain.recordUsage(fw.id, { mode: 'writing', text: sentence.trim(), correct: r.correct, feedback: r.source === 'fallback' ? r.keys : [] }).catch(() => undefined);
     update((v) => bumpDay(recordSessionResult(v, `use:${fw.id}`, r.correct, sentence.trim()), { sentences: 1, sentencesCorrect: r.correct ? 1 : 0 }));
   };
 
@@ -603,6 +609,7 @@ export function MissionSession() {
   const { t } = useLocale();
   const { vf, update } = useVocabFoundation();
   const brain = useBrain();
+  const brainGate = useBrainGate();
   const today = localDateKey();
   const ready = vf?.session?.date === today;
 
@@ -615,7 +622,8 @@ export function MissionSession() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const steps = useMemo<SessionStep[]>(() => (session ? sessionSteps(session) : []), [session?.words.join(), session?.index]);
 
-  if (!session || brain.loading) return <ScreenSkeleton />;
+  if (brainGate) return brainGate;
+  if (!session) return <ScreenSkeleton />;
   const index = Math.min(session.index, steps.length - 1);
   const step = steps[index];
   const next = () => {

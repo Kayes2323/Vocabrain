@@ -50,9 +50,9 @@ export function WordBankStudy({ band, words }: WordBankStudyProps) {
   const brainId = wordId(word.word.toLowerCase());
   const saved = Boolean(brain.get(brainId));
   const toggleSave = () => {
-    if (saved) return void brain.remove(brainId);
+    if (saved) return void brain.remove(brainId).catch(() => undefined);
     const entry = getWordBankInfo(word.id);
-    if (entry) void brain.save(entry.info, { type: 'word-bank', title: entry.title }, entry.info.exampleSentence);
+    if (entry) void brain.save(entry.info, { type: 'word-bank', title: entry.title }, entry.info.exampleSentence).catch(() => undefined);
   };
 
   return (

@@ -11,6 +11,8 @@ import { EmptyState, ProgressBar, ScreenSkeleton } from '@/components/ds';
 import { meanings } from '@/components/brain/meaning';
 import { useWhen } from '@/components/brain/useWhen';
 import { MinoSays } from '@/components/mino/MinoSays';
+import { MeaningEditor } from '@/components/brain/MeaningEditor';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
@@ -21,6 +23,7 @@ import {
   diagnoseWord,
   dueWords,
   evaluateRecall,
+  hasUsableMeaning,
   makeCloze,
   markActivityDone,
   nextExercise,
@@ -35,6 +38,8 @@ const SESSION_LIMIT = 20;
 
 interface Card {
   id: string;
+  /** One per card shown. The answer is stored under this key, so storing it twice stores it once. */
+  attemptId: string;
   exercise: RecallExercise;
   /** Choose-the-meaning options. */
   options?: string[];
@@ -42,14 +47,19 @@ interface Card {
 }
 
 /** The recall format for a word, falling back when the word lacks what the format needs. */
-function buildCard(word: BrainWord, all: BrainWord[], locale: Locale, focus?: string | null): Card {
+function buildCard(word: BrainWord, all: BrainWord[], locale: Locale, attemptId: string, focus?: string | null): Card {
   const options = choiceOptions(word, all, locale === 'bn' ? 'bn' : 'en');
   const problem = focus ?? diagnoseWord(word)?.problem;
   let exercise = nextExercise(word, problem, options ? 3 : 0);
   if (exercise === 'context' && !(word.originalSentence && makeCloze(word.originalSentence, word.lemma))) exercise = word.meaningBn ? 'recall-en' : 'meaning';
   if (exercise === 'completion' && !(word.exampleSentence && makeCloze(word.exampleSentence, word.lemma))) exercise = word.meaningBn ? 'recall-en' : 'meaning';
   if (exercise === 'meaning' && !word.meaning && !word.meaningBn && word.originalSentence) exercise = 'context';
-  return { id: word.id, exercise, ...(exercise === 'choice' ? { options } : {}) };
+  return { id: word.id, attemptId, exercise, ...(exercise === 'choice' ? { options } : {}) };
+}
+
+/** Whether any recall question can be built for the word (a meaning to compare with, or a sentence to blank). */
+function canAsk(w: BrainWord): boolean {
+  return hasUsableMeaning(w) || Boolean(w.originalSentence && makeCloze(w.originalSentence, w.lemma));
 }
 
 type Verdict = RecallVerdict | 'dontknow';
@@ -75,6 +85,14 @@ export function ReviewSession() {
   const [hint, setHint] = useState(false);
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [started, setStarted] = useState(false);
+  // Ids this session used for its cards; a retry card gets a new one.
+  const sessionKey = useRef(`s${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`);
+  const retries = useRef(0);
+  const rating = useRef(false);
+  const gate = useBrainGate();
+  const [needsMeaning, setNeedsMeaning] = useState<BrainWord | null>(null);
+  // An answer that could not be stored yet: shown with Try again, and kept until it is stored.
+  const [saveFailed, setSaveFailed] = useState<(() => Promise<void>) | null>(null);
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   // Answers whose correctness depends on meaning are evaluated by Mino (never left for the student to compare).
   const mino = useMinoEvaluation();
@@ -85,23 +103,42 @@ export function ReviewSession() {
 
   // Build the queue once, when the Brain has loaded.
   useEffect(() => {
-    if (brain.loading || queue !== null) return;
+    if ((brain.view !== 'ready' && brain.view !== 'empty') || queue !== null) return;
     const only = params.get('word');
     const focus = params.get('focus');
     if (only) {
       const w = brain.get(only);
-      setQueue(w ? [buildCard(w, brain.words, locale, focus)] : []);
+      if (w && !canAsk(w)) {
+        // Nothing to ask about yet: the learner adds a meaning first (never invented).
+        setNeedsMeaning(w);
+        setQueue([]);
+        return;
+      }
+      setQueue(w ? [buildCard(w, brain.words, locale, `${sessionKey.current}:0`, focus)] : []);
       setStarted(true);
     } else {
-      setQueue(due.slice(0, SESSION_LIMIT).map((w) => buildCard(w, brain.words, locale)));
+      setQueue(due.filter(canAsk).slice(0, SESSION_LIMIT).map((w, i) => buildCard(w, brain.words, locale, `${sessionKey.current}:${i}`)));
     }
-  }, [brain.loading, brain, queue, params, due, locale]);
+  }, [brain.view, brain, queue, params, due, locale]);
 
   useEffect(() => {
     if (started && verdict === null) inputRef.current?.focus();
   }, [started, index, verdict]);
 
-  if (brain.loading || queue === null || !profile) return <ScreenSkeleton />;
+  if (gate) return gate;
+  if (queue === null || !profile) return <ScreenSkeleton />;
+  if (needsMeaning) {
+    const current = brain.get(needsMeaning.id) ?? needsMeaning;
+    return (
+      <div className="mx-auto max-w-lg px-4 py-10">
+        {hasUsableMeaning(current) ? (
+          <Button onClick={() => router.replace(`/review?word=${current.id}`)}>{t('review.start')}</Button>
+        ) : (
+          <MeaningEditor word={current} onSkip={() => leave()} />
+        )}
+      </div>
+    );
+  }
 
   const close = () => leave();
 
@@ -121,7 +158,7 @@ export function ReviewSession() {
               {practiceAnyway.length > 0 ? (
                 <Button
                   onClick={() => {
-                    setQueue(practiceAnyway.map((w) => buildCard(w, brain.words, locale)));
+                    setQueue(practiceAnyway.filter(canAsk).map((w, i) => buildCard(w, brain.words, locale, `${sessionKey.current}:p${i}`)));
                     setStarted(true);
                   }}
                 >
@@ -200,11 +237,34 @@ export function ReviewSession() {
     card.exercise === 'context' ? makeCloze(word.originalSentence ?? '', word.lemma) : card.exercise === 'completion' ? makeCloze(word.exampleSentence ?? '', word.lemma) : undefined;
   const last = index + 1 >= queue.length;
 
+  /**
+   * Runs a write to the Brain. If it cannot be stored the learner is told and can try again; the card's attempt key
+   * makes running it twice safe, so a retry after a slow or half-failed save never counts the answer twice.
+   */
+  const store = async (write: () => Promise<void>) => {
+    try {
+      await write();
+      setSaveFailed(null);
+    } catch {
+      setSaveFailed(() => () => store(write));
+    }
+  };
+
+  /** The answer is stored the moment its result is known. The self-rating that may follow is only a refinement of it. */
   const record = async (correct: boolean, rating?: RecallRating) => {
     // Only the first attempt in a session counts towards the result summary.
     setResults((r) => (card.id in r ? r : { ...r, [card.id]: correct && rating !== 'again' }));
-    await brain.recordRecall(word.id, card.exercise, correct, answer, rating);
-    if ((!correct || rating === 'again') && !card.retry) setQueue((q) => [...(q ?? []), { ...buildCard(word, brain.words, locale), retry: true }]);
+    await store(() => brain.recordRecall(word.id, card.exercise, correct, answer, rating, card.attemptId));
+    if ((!correct || rating === 'again') && !card.retry) {
+      retries.current += 1;
+      setQueue((q) => [...(q ?? []), { ...buildCard(word, brain.words, locale, `${sessionKey.current}:r${retries.current}`), retry: true }]);
+    }
+  };
+
+  /** A correct answer is stored before the learner is asked how hard it felt. */
+  const recordAnswered = async () => {
+    setResults((r) => (card.id in r ? r : { ...r, [card.id]: true }));
+    await store(() => brain.recordRecall(word.id, card.exercise, true, answer, undefined, card.attemptId));
   };
 
   const next = () => {
@@ -249,6 +309,7 @@ export function ReviewSession() {
     setMinoEval(evaluation);
     if (evaluation.verdict === 'correct') {
       setVerdict('correct');
+      await recordAnswered();
     } else {
       // Partly right or wrong: not recalled yet, so it comes back later. Mino has said exactly why.
       setVerdict('wrong');
@@ -266,6 +327,7 @@ export function ReviewSession() {
       }
       setVerdict(route.verdict);
       if (route.verdict === 'wrong') await record(false);
+      else await recordAnswered(); // 'correct' or 'close': stored now, rated (optionally) next
       return;
     }
     await askMino(route);
@@ -277,8 +339,17 @@ export function ReviewSession() {
     setVerdict('check');
   };
 
-  const rate = async (rating: RecallRating) => {
-    await record(verdict === 'correct' || verdict === 'close' || (verdict === 'check' && rating !== 'again'), rating);
+  const rate = async (r: RecallRating) => {
+    if (rating.current) return; // a double tap is one rating
+    rating.current = true;
+    if (verdict === 'correct' || verdict === 'close') {
+      // The answer is already stored; this only adds how it felt (and tunes the interval).
+      await store(() => brain.rateRecall(word.id, card.attemptId, r));
+    } else {
+      // The learner compared with the answer themselves: their rating is the result.
+      await record(verdict === 'check' && r !== 'again', r);
+    }
+    rating.current = false;
     next();
   };
 
@@ -325,6 +396,15 @@ export function ReviewSession() {
           {n(index + 1)}/{n(queue.length)}
         </span>
       </div>
+
+      {saveFailed && (
+        <div role="alert" className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-warning/50 bg-card px-3 py-2 text-sm" data-testid="recall-save-failed">
+          <span>{t('review.saveFailed')}</span>
+          <Button size="sm" variant="outline" onClick={() => void saveFailed()} data-testid="recall-save-retry">
+            {t('review.saveRetry')}
+          </Button>
+        </div>
+      )}
 
       <div key={index} className="flex-1 space-y-6 pt-6 pb-8" data-recall-word={word.id} data-recall-format={card.exercise}>
         <p className="text-sm font-medium text-brand">{t(`review.type.${card.exercise}`)}</p>

@@ -5,25 +5,18 @@ import Link from 'next/link';
 import { ArrowRight, BookOpenText, BookText, BrainCircuit, CheckCircle2, ChevronRight, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { EmptyState, PageHeader, Panel, ScreenSkeleton } from '@/components/ds';
+import { EmptyState, PageHeader, Panel } from '@/components/ds';
 import { WordStatusChip } from '@/components/brain/WordStatusChip';
+import { useBrainGate } from '@/components/brain/BrainGate';
 import { meanings } from '@/components/brain/meaning';
 import { useWhen } from '@/components/brain/useWhen';
 import { useBrain } from '@/components/providers/BrainProvider';
 import { useLocale } from '@/components/providers/LocaleProvider';
-import { brainGroup, brainSummary, isDue } from '@/lib/engine';
-import type { BrainWord } from '@/lib/models';
+import { BRAIN_FILTERS, brainCounts, brainSummary, isDue, matchesBrainFilter, type BrainFilter } from '@/lib/engine';
 import { cn } from '@/lib/utils';
 
-type Filter = 'all' | 'learning' | 'review' | 'mastered';
-const FILTERS: Filter[] = ['all', 'learning', 'review', 'mastered'];
-
-function matches(w: BrainWord, filter: Filter) {
-  if (filter === 'review') return isDue(w);
-  if (filter === 'learning') return brainGroup(w) !== 'mastered';
-  if (filter === 'mastered') return brainGroup(w) === 'mastered';
-  return true;
-}
+type Filter = BrainFilter;
+const FILTERS = BRAIN_FILTERS;
 
 /**
  * My Brain: the student's own vocabulary. Two clear parts — Today's Recall
@@ -37,14 +30,16 @@ export default function NotebookPage() {
   const [query, setQuery] = useState('');
 
   const summary = brainSummary(brain.words);
-  const counts = useMemo(() => Object.fromEntries(FILTERS.map((f) => [f, brain.words.filter((w) => matches(w, f)).length])) as Record<Filter, number>, [brain.words]);
+  // The same words and the same rule drive the stat tiles, the tab counts and the list.
+  const counts = useMemo(() => brainCounts(brain.words), [brain.words]);
   const list = brain.words
-    .filter((w) => matches(w, filter))
+    .filter((w) => matchesBrainFilter(w, filter))
     .filter((w) => !query.trim() || w.word.toLowerCase().includes(query.trim().toLowerCase()))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   const onlyNewDue = summary.due > 0 && brain.words.filter((w) => isDue(w)).every((w) => w.recallCount === 0);
 
-  if (brain.loading) return <ScreenSkeleton />;
+  const gate = useBrainGate();
+  if (gate) return gate;
 
   const stats: [string, number, string][] = [
     ['words', summary.total, 'stat-words'],
@@ -117,7 +112,7 @@ export default function NotebookPage() {
               </Link>
             </div>
 
-            <div role="tablist" aria-label={t('brain.page.notebook')} className="grid grid-cols-4 gap-1 rounded-xl bg-muted p-1">
+            <div role="tablist" aria-label={t('brain.page.notebook')} className="grid grid-cols-5 gap-0.5 rounded-xl bg-muted p-1">
               {FILTERS.map((f) => (
                 <button
                   key={f}
