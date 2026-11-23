@@ -92,8 +92,8 @@ test('only supported schema is used: valid material types, one check per step, n
 });
 
 const KEYS: [string, number][] = [
-  ['intro', 1], ['overview-vs-body', 1], ['group-data', 1], ['select-details', 1], ['comparisons', 1], ['support-evidence', 1],
-  ['paragraph-structure', 1], ['cohesion', 1], ['clinic', 0], ['clinic-2', 1], ['clinic-3', 1], ['clinic-4', 2], ['plan-before-write', 0],
+  ['intro', 2], ['overview-vs-body', 0], ['group-data', 1], ['select-details', 2], ['comparisons', 0], ['support-evidence', 1],
+  ['paragraph-structure', 2], ['cohesion', 0], ['clinic', 1], ['clinic-2', 2], ['clinic-3', 0], ['clinic-4', 2], ['plan-before-write', 1],
 ];
 test('every check has the specified answer key, valid options and an explanation', () => {
   assert.deepEqual(lesson.steps.filter((s) => s.check).map((s) => s.id), KEYS.map(([id]) => id));
@@ -104,6 +104,57 @@ test('every check has the specified answer key, valid options and an explanation
     assert.ok(c.options.length >= 3 && new Set(c.options).size === c.options.length, `${id}: options`);
     assert.ok(c.explain.length > 30, `${id}: explanation`);
   }
+});
+// What each option IS, independent of where it sits: one correct pattern and the wrong/inferior patterns.
+const ROLES: Record<string, { correct: RegExp; wrong: RegExp[] }> = {
+  intro: { correct: /^Denmark's share rose from 14% in 2000 to 62% in 2020, representing an increase of 48 percentage points\.$/, wrong: [/^Overall, Denmark/, /^The chart illustrates/] },
+  'overview-vs-body': { correct: /^Specific figures showing how the pattern developed\.$/, wrong: [/^The overall pattern/, /^A general statement/] },
+  'group-data': { correct: /^Discuss Denmark separately, then compare Country B and Country C\.$/, wrong: [/^Group all three countries together/, /alphabetical/] },
+  'select-details': { correct: /^Its starting and ending figures, with the time period\.$/, wrong: [/^Only the 2005 figure/, /^A list of all three countries/] },
+  comparisons: { correct: /^Country C initially led Country B by 3 percentage points, but Country B had moved ahead by 2010\.$/, wrong: [/^Country B was 6% and Country C was 9%\.$/, /both had percentages/] },
+  'support-evidence': { correct: /^Country B's share increased by 21 percentage points\.$/, wrong: [/because its government/, /more environmentally responsible/] },
+  'paragraph-structure': { correct: /^The group, trend or comparison that the paragraph will develop\.$/, wrong: [/^An unrelated fact/, /personal opinion/] },
+  cohesion: { correct: /^"Country B grew more strongly than Country C, while Denmark remained well ahead of both\."$/, wrong: [/Moreover, furthermore/, /Firstly, secondly/] },
+  clinic: { correct: /^An unsupported cause has been invented\.$/, wrong: [/figure for Country C is missing/, /wrong tense/, /repeats the introduction/] },
+  'clinic-2': { correct: /^A clear explanation of the trend and a meaningful comparison\.$/, wrong: [/Country B and Country C only/, /opinion about renewable energy/, /^A reason for the increase/] },
+  'clinic-3': { correct: /^The figure is attributed to the wrong country; Country C was 16%\.$/, wrong: [/Country C reached 27% in 2015/, /Percentage points should be used/, /^Nothing; the statement is accurate/] },
+  'clinic-4': { correct: /^It repeats a broad overview instead of developing the data with supporting details\.$/, wrong: [/uses a linking word/, /too long/, /wrong chart/] },
+  'plan-before-write': { correct: /^Denmark: 14% in 2000 and 62% in 2020\.$/, wrong: [/^Country C: 9%/, /chart's title/] },
+};
+test('answer keys follow the CONTENT: in every check the option at correctIndex is the correct one and every other option is a known distractor', () => {
+  assert.deepEqual(Object.keys(ROLES).sort(), KEYS.map(([id]) => id).sort(), 'every check is covered');
+  for (const [id] of KEYS) {
+    const c = lesson.steps.find((s) => s.id === id)!.check!;
+    const { correct, wrong } = ROLES[id];
+    assert.equal(c.options.filter((o) => correct.test(o)).length, 1, `${id}: exactly one correct option`);
+    c.options.forEach((o, i) => {
+      const isCorrect = correct.test(o);
+      const wrongHits = wrong.filter((w) => w.test(o)).length;
+      assert.equal(i === c.correctIndex, isCorrect, `${id}: option ${i} ("${o}") — correctIndex points at the wrong option`);
+      assert.equal(wrongHits, isCorrect ? 0 : 1, `${id}: option ${i} ("${o}") must be exactly one known distractor`);
+    });
+    assert.equal(c.options.length, 1 + wrong.length, `${id}: no unexpected options`);
+  }
+});
+test('the facts behind the correct answers and the data-based distractors hold in the dataset', () => {
+  assert.equal(val('Denmark', '2000'), 14); assert.equal(val('Denmark', '2020'), 62); assert.equal(rise('Denmark'), 48);
+  assert.equal(rise('Country B'), 21);
+  assert.equal(val('Country C', '2000') - val('Country B', '2000'), 3, 'C led B by 3 in 2000');
+  assert.ok(val('Country B', '2010') > val('Country C', '2010'), 'B ahead by 2010');
+  assert.equal(val('Country C', '2020'), 16, 'clinic-3: Country C was 16% in 2020');
+  assert.notEqual(val('Country C', '2015'), 27, 'clinic-3 distractor "Country C reached 27% in 2015" is false');
+  assert.equal(val('Country C', '2000'), 9); assert.equal(val('Country B', '2000'), 6);
+});
+test('correct answers are distributed across positions: no position holds more than 6 of the 13 correct answers, and A, B and C are all used', () => {
+  const checks = lesson.steps.filter((s) => s.check).map((s) => s.check!);
+  assert.equal(checks.length, 13);
+  const counts = [0, 1, 2, 3].map((pos) => checks.filter((c) => c.correctIndex === pos).length);
+  assert.ok(counts.every((n) => n <= 6), `a position holds too many correct answers: ${counts}`);
+  assert.ok(counts[0] >= 3 && counts[1] >= 3 && counts[2] >= 3, `A, B and C should each be used at least 3 times: ${counts}`);
+  assert.equal(counts.reduce((a, b) => a + b, 0), 13);
+  // and the keys are not one long run of the same position
+  const keys = checks.map((c) => c.correctIndex);
+  for (let i = 2; i < keys.length; i++) assert.ok(!(keys[i] === keys[i - 1] && keys[i] === keys[i - 2]), `three identical keys in a row at ${i - 2}-${i}`);
 });
 test('the correct option is the accurate statement for each check', () => {
   const key = (id: string) => {
@@ -283,6 +334,47 @@ test('a short but valid paragraph is not marked "underdeveloped": under 70 words
   assert.equal(r.meetsLength, false);
   assert.ok(!r.mistakes.some((m) => /underdeveloped|dedicated overview|linking words|150/.test(m.why + m.fix)), JSON.stringify(r.mistakes));
   assert.ok(r.suggestions.some((s) => /Suggested length/.test(s)));
+});
+// ---------------------------------------------------------------- scope-aware length suggestion
+
+test('paragraph-only drill: a short paragraph gets a neutral, paragraph-specific suggestion — never "paraphrase", never a length mistake', () => {
+  const r = drill('Denmark led throughout, rising from 14% in 2000 to 62% in 2020, whereas Country C grew from 9% to 16%.');
+  assert.equal(r.meetsLength, false);
+  const sug = r.suggestions.find((x) => /Suggested length/.test(x));
+  assert.ok(sug, 'a suggestion is given');
+  assert.match(sug!, /around 70 words/);
+  assert.match(sug!, /flexible/);
+  assert.match(sug!, /develop a clear comparison using accurate supporting data/);
+  assert.ok(!/paraphras/i.test(JSON.stringify(r)), 'no paraphrase wording anywhere in a paragraph drill result');
+  assert.ok(!/not a strict requirement/.test(sug!), 'not the introduction wording');
+  assert.deepEqual(r.mistakes, [], 'no length-related (or any) mistake');
+  assert.ok(!/must|required|minimum|too short|underdeveloped|incorrect/i.test(sug!), `suggestion must stay neutral: ${sug}`);
+  assert.ok(!/(accurate|correct|good|weak|strong) (comparison|paragraph)s? (is|are|was)/i.test(sug!), 'makes no claim to have judged comparison quality');
+});
+test('a paragraph that meets the suggested length gets no length suggestion at all', () => {
+  const r = drill(DEVELOPED + ' Denmark remained ahead of both other countries at every point.');
+  assert.equal(r.meetsLength, true);
+  assert.ok(!r.suggestions.some((x) => /Suggested length/.test(x)));
+});
+test('introduction-only keeps its paraphrase-specific suggestion wording', () => {
+  const r = checkEssay('The bar chart compares commuters in one city in 2010 and 2023.', 18, 'task1', 'introduction-only', true);
+  const sug = r.suggestions.find((x) => /Suggested length/.test(x))!;
+  assert.match(sug, /around 18 words — not a strict requirement, as long as the paraphrase is accurate\./);
+  assert.deepEqual(r.mistakes, []);
+});
+test('overview-only drill gets overview-specific suggestion wording (no "paraphrase"), still a neutral suggestion', () => {
+  const r = checkEssay('Car use fell but cycling rose sharply.', 25, 'task1', 'overview-only', true);
+  const sug = r.suggestions.find((x) => /Suggested length/.test(x))!;
+  assert.match(sug, /around 25 words/);
+  assert.match(sug, /flexible/);
+  assert.match(sug, /communicates the main pattern accurately/);
+  assert.ok(!/paraphras/i.test(sug));
+  assert.ok(!r.mistakes.some((m) => /underdeveloped/.test(m.why)));
+});
+test('the length suggestion is only given for soft-length drills: a non-drill under-length answer is still a Task response mistake', () => {
+  const r = checkEssay('Short.', 10, 'task1', 'paragraph-only');
+  assert.ok(r.mistakes.some((m) => /underdeveloped/.test(m.why)));
+  assert.ok(!r.suggestions.some((x) => /Suggested length/.test(x)));
 });
 test('the one reliable data check still works: a paragraph with no figures at all is flagged', () => {
   assert.ok(drill('Denmark led throughout the period while the other two countries grew more slowly and in a similar way.').mistakes.some((m) => /specific data/.test(m.why)));

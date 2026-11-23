@@ -181,7 +181,16 @@ export function checkEssay(
     // A short introduction-only drill asks for one or two sentences, not a developed
     // paragraph — being under the suggested length is not a fault here, so this is a
     // neutral note, never a "Task response" mistake implying the answer is wrong.
-    suggestions.push(`Suggested length for this exercise: around ${minWords} words — not a strict requirement, as long as the paraphrase is accurate.`);
+    // The wording must match what the drill is about: "paraphrase" only makes sense for an
+    // introduction drill. The checker cannot judge accuracy or comparison quality, so these
+    // are neutral notes about length being flexible, never a verdict on the answer.
+    suggestions.push(
+      drillParagraph
+        ? `Suggested length for this exercise: around ${minWords} words. This is flexible, but the paragraph should still develop a clear comparison using accurate supporting data.`
+        : drillOverview
+          ? `Suggested length for this exercise: around ${minWords} words. This is flexible — a shorter overview is fine as long as it communicates the main pattern accurately.`
+          : `Suggested length for this exercise: around ${minWords} words — not a strict requirement, as long as the paraphrase is accurate.`,
+    );
   } else {
     mistakes.push({
       category: 'Task response',

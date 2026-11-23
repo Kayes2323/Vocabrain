@@ -45,10 +45,10 @@ export const bodyParagraphsLesson: Lesson = {
         prompt: 'Which sentence is most suitable for a body paragraph?',
         options: [
           'Overall, Denmark experienced the most significant growth.',
-          "Denmark's share rose from 14% in 2000 to 62% in 2020, representing an increase of 48 percentage points.",
           'The chart illustrates renewable electricity generation in three countries.',
+          "Denmark's share rose from 14% in 2000 to 62% in 2020, representing an increase of 48 percentage points.",
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explain: 'It provides specific evidence and a precise comparison. The first is an overview-style statement; the third is an introduction.',
       },
     },
@@ -69,11 +69,11 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'Which information belongs primarily in the body paragraph?',
         options: [
-          'The overall pattern across the chart.',
           'Specific figures showing how the pattern developed.',
+          'The overall pattern across the chart.',
           'A general statement about what the chart is about.',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explain: 'Specific figures and detailed comparisons belong in the body. The overall pattern belongs in the overview, and a statement about what the chart shows belongs in the introduction.',
       },
     },
@@ -170,10 +170,10 @@ export const bodyParagraphsLesson: Lesson = {
         prompt: "Which detail is most useful when demonstrating Denmark's overall increase?",
         options: [
           'Only the 2005 figure.',
-          'Its starting and ending figures, with the time period.',
           "A list of all three countries' values in 2000.",
+          'Its starting and ending figures, with the time period.',
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explain:
           'The starting and ending values directly demonstrate the scale of the change. Intermediate figures can be added if they support a more specific point, such as steady growth.',
       },
@@ -196,11 +196,11 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'Which sentence makes the most meaningful comparison?',
         options: [
-          'Country B was 6% and Country C was 9%.',
           'Country C initially led Country B by 3 percentage points, but Country B had moved ahead by 2010.',
+          'Country B was 6% and Country C was 9%.',
           'Country B and Country C both had percentages.',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explain: 'It explains how the relationship changed over time and supports the comparison with accurate figures (9% against 6% in 2000; 12% against 11% in 2010).',
       },
     },
@@ -247,10 +247,10 @@ export const bodyParagraphsLesson: Lesson = {
         prompt: "What should a body paragraph's first sentence usually help establish?",
         options: [
           'An unrelated fact from the chart.',
-          'The group, trend or comparison that the paragraph will develop.',
           "The writer's personal opinion.",
+          'The group, trend or comparison that the paragraph will develop.',
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explain: 'The opening should give the paragraph direction. It does not need a memorised phrase or a fixed sentence pattern.',
       },
     },
@@ -271,11 +271,11 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'Which option uses cohesion more naturally?',
         options: [
-          '"Moreover, furthermore, in addition, Denmark increased."',
           '"Country B grew more strongly than Country C, while Denmark remained well ahead of both."',
+          '"Moreover, furthermore, in addition, Denmark increased."',
           '"Firstly, secondly, thirdly, the chart has countries."',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explain: 'It uses contrast and comparison to connect the data. Cohesion should express a genuine relationship, not pile up linking words.',
       },
     },
@@ -323,12 +323,12 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'What is wrong?',
         options: [
-          'An unsupported cause has been invented.',
           'The figure for Country C is missing.',
+          'An unsupported cause has been invented.',
           'The sentence is in the wrong tense.',
           'It repeats the introduction.',
         ],
-        correctIndex: 0,
+        correctIndex: 1,
         explain: 'The chart shows that Country C increased, not why. A Task 1 paragraph must not invent reasons or attribute motives to people.',
       },
     },
@@ -341,11 +341,11 @@ export const bodyParagraphsLesson: Lesson = {
         prompt: 'What is missing?',
         options: [
           'The figures for Country B and Country C only.',
-          'A clear explanation of the trend and a meaningful comparison.',
           'An opinion about renewable energy.',
+          'A clear explanation of the trend and a meaningful comparison.',
           'A reason for the increase.',
         ],
-        correctIndex: 1,
+        correctIndex: 2,
         explain:
           'The figures are accurate, but they are only listed. The reader needs to know what they show (a steady rise) and how that compares with the other countries. An opinion or a reason would add unsupported content.',
       },
@@ -358,12 +358,12 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'What is wrong?',
         options: [
-          'The year is wrong: Country C reached 27% in 2015.',
           'The figure is attributed to the wrong country; Country C was 16%.',
+          'The year is wrong: Country C reached 27% in 2015.',
           'Percentage points should be used instead of percentages.',
           'Nothing; the statement is accurate.',
         ],
-        correctIndex: 1,
+        correctIndex: 0,
         explain: 'In 2020, 27% belongs to Country B; Country C was 16% (and only 13% in 2015). Always verify the category, year and value before writing.',
       },
     },
@@ -454,11 +454,11 @@ export const bodyParagraphsLesson: Lesson = {
       check: {
         prompt: 'A learner plans to write about Denmark\'s growth. Which evidence is most relevant?',
         options: [
-          'Denmark: 14% in 2000 and 62% in 2020.',
           'Country C: 9% in 2000 and 16% in 2020.',
+          'Denmark: 14% in 2000 and 62% in 2020.',
           "The chart's title.",
         ],
-        correctIndex: 0,
+        correctIndex: 1,
         explain: 'The figures directly support the chosen paragraph focus. Country C\'s figures would be relevant to a comparison, but not to describing Denmark\'s own growth, and a title is not evidence.',
       },
     },
