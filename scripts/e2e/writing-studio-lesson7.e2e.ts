@@ -7,6 +7,7 @@
 // answer keys. Uses the mock Gemini server, which does not prove live-model assessment quality.
 //   bash scripts/e2e/run.sh writing-studio-lesson7
 import { task1CompleteWritingLesson as lesson } from '../../lib/writing-studio/lessons/task1-complete-writing';
+import { localize } from '../../lib/writing-studio/types';
 import { BASE, check, getDoc, launch, report, shot, signUp, uidOf, watchErrors } from './helpers';
 
 const RESPONSE = [
@@ -64,7 +65,7 @@ async function main() {
       if (step.check) {
         const c = step.check;
         await page.getByRole('button', { name: c.options[c.correctIndex], exact: true }).click();
-        await page.getByText(c.explain.slice(0, 40), { exact: false }).first().waitFor({ timeout: 10_000 });
+        await page.getByText(localize('en', c.explain).slice(0, 40), { exact: false }).first().waitFor({ timeout: 10_000 });
         answered++;
       }
       if (step.material?.type === 'chart-board') {

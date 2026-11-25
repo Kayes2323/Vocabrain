@@ -43,7 +43,7 @@ const MODEL = textOf('complete-response').slice(0, 4);
 const MODEL_TEXT = MODEL.join('\n\n');
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, localize('en', lesson.finalPrompt.instructions)];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
     parts.push(localize('en', s.trainerMessage));
     const m = s.material;

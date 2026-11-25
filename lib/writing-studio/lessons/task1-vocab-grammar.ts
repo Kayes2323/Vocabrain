@@ -244,212 +244,325 @@ export const task1VocabGrammarLesson: Lesson = {
     {
       id: 'comparison-language',
       kind: 'explain',
-      title: 'Comparison Language',
-      trainerMessage:
-        'A Task 1 response should not describe every category separately without connecting the information. Comparisons help readers understand the relationship between figures.',
+      title: { en: 'Comparison Language', bn: 'Comparison-এর ভাষা' },
+      trainerMessage: {
+        en: 'A Task 1 response should not describe every category separately without connecting the information. Comparisons help readers understand the relationship between figures.',
+        bn: 'একটা Task 1 response-এ প্রতিটা category আলাদাভাবে বর্ণনা করা উচিত না, তথ্যগুলো একসাথে সংযুক্ত না করে। Comparison পাঠককে figure-গুলোর মধ্যে সম্পর্ক বুঝতে সাহায্য করে।',
+      },
       material: {
         type: 'vocab',
         items: [
           {
             phrase: 'A. Basic comparison',
-            use: 'higher than, lower than, greater than, less than, similar to. Examples: "Car use was higher than bicycle use in both years." "Walking remained at the same level in 2010 and 2023."',
+            use: {
+              en: 'higher than, lower than, greater than, less than, similar to. Examples: "Car use was higher than bicycle use in both years." "Walking remained at the same level in 2010 and 2023."',
+              bn: 'higher than, lower than, greater than, less than, similar to। উদাহরণ: "Car use was higher than bicycle use in both years." "Walking remained at the same level in 2010 and 2023."',
+            },
           },
           {
             phrase: 'B. Contrast',
-            use: 'whereas, while, in contrast, by comparison, compared with. Examples: "Car use declined, whereas bicycle use increased." "Compared with car use, bicycle use followed an upward trend."',
+            use: {
+              en: 'whereas, while, in contrast, by comparison, compared with. Examples: "Car use declined, whereas bicycle use increased." "Compared with car use, bicycle use followed an upward trend."',
+              bn: 'whereas, while, in contrast, by comparison, compared with। উদাহরণ: "Car use declined, whereas bicycle use increased." "Compared with car use, bicycle use followed an upward trend."',
+            },
           },
           {
             phrase: 'C. Multiples',
-            use: 'twice as high as, three times as high as, more than double, approximately half as much as. Example: "Bicycle use in 2023 was more than three times its 2010 level." Check: 19 ÷ 6 ≈ 3.17.',
+            use: {
+              en: 'twice as high as, three times as high as, more than double, approximately half as much as. Example: "Bicycle use in 2023 was more than three times its 2010 level." Check: 19 ÷ 6 ≈ 3.17.',
+              bn: 'twice as high as, three times as high as, more than double, approximately half as much as। উদাহরণ: "Bicycle use in 2023 was more than three times its 2010 level." হিসাব: ১৯ ÷ ৬ ≈ ৩.১৭।',
+            },
           },
           {
             phrase: 'D. Similar magnitude',
-            use: 'approximately the same as, roughly equal to, a comparable figure. Use these only when the values genuinely support the comparison.',
+            use: {
+              en: 'approximately the same as, roughly equal to, a comparable figure. Use these only when the values genuinely support the comparison.',
+              bn: 'approximately the same as, roughly equal to, a comparable figure। এগুলো তখনই ব্যবহার করো যখন value-গুলো সত্যিই সেই comparison সমর্থন করে।',
+            },
           },
           {
             phrase: 'E. Difference',
-            use: 'a difference of, exceeded by, was X percentage points higher than. Example: "In 2023, car use exceeded bicycle use by 19 percentage points." Check: 38 − 19 = 19 percentage points.',
+            use: {
+              en: 'a difference of, exceeded by, was X percentage points higher than. Example: "In 2023, car use exceeded bicycle use by 19 percentage points." Check: 38 − 19 = 19 percentage points.',
+              bn: 'a difference of, exceeded by, was X percentage points higher than। উদাহরণ: "In 2023, car use exceeded bicycle use by 19 percentage points." হিসাব: ৩৮ − ১৯ = ১৯ percentage points।',
+            },
           },
           {
             phrase: 'Important grammar',
-            use: '"Whereas" and "while" connect contrasting clauses. Correct: "Car use declined, whereas bicycle use increased." Incorrect: "Whereas car use declined. Bicycle use increased." — the first part is a sentence fragment, because "whereas" introduces a dependent clause that needs a main clause.',
+            use: {
+              en: '"Whereas" and "while" connect contrasting clauses. Correct: "Car use declined, whereas bicycle use increased." Incorrect: "Whereas car use declined. Bicycle use increased." — the first part is a sentence fragment, because "whereas" introduces a dependent clause that needs a main clause.',
+              bn: '"Whereas" আর "while" বিপরীতধর্মী clause-কে সংযুক্ত করে। সঠিক: "Car use declined, whereas bicycle use increased." ভুল: "Whereas car use declined. Bicycle use increased." — প্রথম অংশটা একটা sentence fragment, কারণ "whereas" একটা dependent clause শুরু করে যার একটা main clause দরকার।',
+            },
           },
         ],
       },
       check: {
-        prompt: 'Which sentence correctly compares car and bicycle use?',
+        prompt: { en: 'Which sentence correctly compares car and bicycle use?', bn: 'কোন বাক্যটা car আর bicycle use সঠিকভাবে তুলনা করে?' },
         options: [
           'Car use declined, whereas bicycle use increase.',
           'Car use declined whereas bicycle use increasing.',
           'Car use declined, whereas bicycle use increased.',
         ],
         correctIndex: 2,
-        explain:
-          'Both clauses have correctly formed past-tense verbs. The first option has an incorrect verb form, while the second lacks a correctly formed finite verb in the second clause.',
+        explain: {
+          en: 'Both clauses have correctly formed past-tense verbs. The first option has an incorrect verb form, while the second lacks a correctly formed finite verb in the second clause.',
+          bn: 'দুটো clause-এই সঠিকভাবে গঠিত past-tense verb আছে। প্রথম option-এ ভুল verb form আছে, আর দ্বিতীয়টার দ্বিতীয় clause-এ সঠিকভাবে গঠিত finite verb নেই।',
+        },
       },
     },
     {
       id: 'tense-control',
       kind: 'explain',
-      title: 'Tense Control: Choose Based on Time',
-      trainerMessage:
-        'One of the most common grammar mistakes in Task 1 is inconsistent tense. However, there is an important rule: do not use past tense automatically for every chart. Choose the tense according to the time reference and the information being described.',
+      title: { en: 'Tense Control: Choose Based on Time', bn: 'Tense Control: সময় অনুযায়ী বেছে নেওয়া' },
+      trainerMessage: {
+        en: 'One of the most common grammar mistakes in Task 1 is inconsistent tense. However, there is an important rule: do not use past tense automatically for every chart. Choose the tense according to the time reference and the information being described.',
+        bn: 'Task 1-এ সবচেয়ে সাধারণ grammar ভুলগুলোর একটা হলো tense-এ অসামঞ্জস্য। তবে একটা গুরুত্বপূর্ণ নিয়ম আছে: প্রতিটা chart-এর জন্যই automatic past tense ব্যবহার করো না। time reference আর যে তথ্য বর্ণনা করা হচ্ছে তা অনুযায়ী tense বেছে নাও।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'A. Completed past period — use past simple for completed events and changes. "Car use declined between 2010 and 2023." "Bicycle use increased from 6% to 19%."',
-          'B. Present information — use present simple when describing what a visual shows, or current facts. "The chart illustrates the proportion of commuters using different transport methods." "The diagram shows how the recycling process works."',
-          'C. Future projections — use future forms or appropriate reporting structures for projected figures. For a chart that contains projections (a different chart from this one): "The figure is projected to rise to 40% by 2030." "The proportion is expected to increase over the next decade."',
-          'D. Mixed time periods — a visual may contain past data and future projections. Hypothetical example, not from this chart: "Sales declined between 2010 and 2020, but they are projected to rise slightly by 2030."',
-          'E. Timeless descriptions — some descriptions of the visual, or of general processes, use present simple even when the chart contains historical data. "The chart compares five transport methods."',
-          'Important: do not assume that every verb in a Task 1 response must be past tense merely because the chart includes past dates. The tense must match the specific statement: completed changes in the past, but what the chart shows, in the present.',
+          {
+            en: 'A. Completed past period — use past simple for completed events and changes. "Car use declined between 2010 and 2023." "Bicycle use increased from 6% to 19%."',
+            bn: 'A. শেষ হয়ে যাওয়া অতীত সময়কাল — শেষ হওয়া ঘটনা আর পরিবর্তনের জন্য past simple ব্যবহার করো। "Car use declined between 2010 and 2023." "Bicycle use increased from 6% to 19%."',
+          },
+          {
+            en: 'B. Present information — use present simple when describing what a visual shows, or current facts. "The chart illustrates the proportion of commuters using different transport methods." "The diagram shows how the recycling process works."',
+            bn: 'B. বর্তমান তথ্য — একটা visual কী দেখাচ্ছে, বা বর্তমান তথ্য বর্ণনা করতে present simple ব্যবহার করো। "The chart illustrates the proportion of commuters using different transport methods." "The diagram shows how the recycling process works."',
+          },
+          {
+            en: 'C. Future projections — use future forms or appropriate reporting structures for projected figures. For a chart that contains projections (a different chart from this one): "The figure is projected to rise to 40% by 2030." "The proportion is expected to increase over the next decade."',
+            bn: 'C. ভবিষ্যৎ projection — projected figure-এর জন্য future form বা উপযুক্ত reporting structure ব্যবহার করো। projection-সহ একটা chart-এর জন্য (এই chart-এর না): "The figure is projected to rise to 40% by 2030." "The proportion is expected to increase over the next decade."',
+          },
+          {
+            en: 'D. Mixed time periods — a visual may contain past data and future projections. Hypothetical example, not from this chart: "Sales declined between 2010 and 2020, but they are projected to rise slightly by 2030."',
+            bn: 'D. মিশ্র সময়কাল — একটা visual-এ অতীতের data আর ভবিষ্যতের projection দুটোই থাকতে পারে। hypothetical উদাহরণ, এই chart-এর না: "Sales declined between 2010 and 2020, but they are projected to rise slightly by 2030."',
+          },
+          {
+            en: 'E. Timeless descriptions — some descriptions of the visual, or of general processes, use present simple even when the chart contains historical data. "The chart compares five transport methods."',
+            bn: 'E. নিরন্তর বর্ণনা — visual বা সাধারণ process-এর কিছু বর্ণনায়, chart-এ historical data থাকলেও present simple ব্যবহার হয়। "The chart compares five transport methods."',
+          },
+          {
+            en: 'Important: do not assume that every verb in a Task 1 response must be past tense merely because the chart includes past dates. The tense must match the specific statement: completed changes in the past, but what the chart shows, in the present.',
+            bn: 'গুরুত্বপূর্ণ: শুধু chart-এ অতীতের তারিখ আছে বলেই ধরে নিও না যে Task 1 response-এর প্রতিটা verb past tense হতে হবে। tense নির্দিষ্ট বক্তব্যের সাথে মিলতে হবে: শেষ হওয়া পরিবর্তন অতীতে, কিন্তু chart যা দেখাচ্ছে তা বর্তমানে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence uses tense appropriately?',
+        prompt: { en: 'Which sentence uses tense appropriately?', bn: 'কোন বাক্যটা tense সঠিকভাবে ব্যবহার করছে?' },
         options: [
           'Car use declined between 2010 and 2023, while the chart illustrates five transport methods.',
           'Car use declines between 2010 and 2023, according to the completed historical data.',
           'Car use had decline between 2010 and 2023.',
         ],
         correctIndex: 0,
-        explain:
-          "\"Car use declined between 2010 and 2023, while the chart illustrates five transport methods.\" is correct: \"declined\" is past simple for a completed historical change, and \"illustrates\" is present simple for what the chart shows. \"Car use declines between 2010 and 2023, according to the completed historical data.\" is incorrect, because present simple does not suit a completed historical change. \"Car use had decline between 2010 and 2023.\" is incorrect: \"had decline\" is not a valid verb form. Past perfect would be \"had declined\", but past perfect is not needed in this sentence.",
+        explain: {
+          en: "\"Car use declined between 2010 and 2023, while the chart illustrates five transport methods.\" is correct: \"declined\" is past simple for a completed historical change, and \"illustrates\" is present simple for what the chart shows. \"Car use declines between 2010 and 2023, according to the completed historical data.\" is incorrect, because present simple does not suit a completed historical change. \"Car use had decline between 2010 and 2023.\" is incorrect: \"had decline\" is not a valid verb form. Past perfect would be \"had declined\", but past perfect is not needed in this sentence.",
+          bn: '"Car use declined between 2010 and 2023, while the chart illustrates five transport methods." সঠিক: "declined" হলো past simple, শেষ হওয়া historical পরিবর্তনের জন্য, আর "illustrates" হলো present simple, chart যা দেখাচ্ছে তার জন্য। "Car use declines between 2010 and 2023, according to the completed historical data." ভুল, কারণ present simple একটা শেষ হওয়া historical পরিবর্তনের জন্য উপযুক্ত না। "Car use had decline between 2010 and 2023." ভুল: "had decline" কোনো valid verb form না। Past perfect হতো "had declined", কিন্তু এই বাক্যে past perfect-এর দরকারই নেই।',
+        },
       },
     },
     {
       id: 'structures',
       kind: 'explain',
-      title: 'Grammatical Structures for Task 1',
-      trainerMessage:
-        'Good vocabulary alone cannot produce a strong paragraph. You also need sentence structures that communicate relationships accurately. Avoid forcing complex sentences: the goal is clarity and grammatical control.',
+      title: { en: 'Grammatical Structures for Task 1', bn: 'Task 1-এর জন্য Grammatical Structure' },
+      trainerMessage: {
+        en: 'Good vocabulary alone cannot produce a strong paragraph. You also need sentence structures that communicate relationships accurately. Avoid forcing complex sentences: the goal is clarity and grammatical control.',
+        bn: 'শুধু ভালো vocabulary দিয়েই একটা শক্তিশালী paragraph হয় না। সম্পর্কগুলো নির্ভুলভাবে জানানোর জন্য বাক্যের structure-ও দরকার। জোর করে জটিল বাক্য বানাতে যেও না: লক্ষ্য হলো স্পষ্টতা আর grammatical control।',
+      },
       material: {
         type: 'vocab',
         items: [
-          { phrase: 'A. From … to', use: 'Starting and ending values. "Car use fell from 52% to 38%."' },
-          { phrase: 'B. By', use: 'The amount of change. "Car use fell by 14 percentage points."' },
-          { phrase: 'C. At', use: 'A value at a particular point. "Walking remained at 7%."' },
-          { phrase: 'D. Respectively', use: 'Two or more values that correspond to two or more items in the same order. "Car and bicycle use stood at 38% and 19%, respectively, in 2023."' },
-          { phrase: 'E. While / whereas', use: 'Contrasting information. "Car use declined, while bicycle use increased."' },
+          { phrase: 'A. From … to', use: { en: 'Starting and ending values. "Car use fell from 52% to 38%."', bn: 'শুরু আর শেষের value। "Car use fell from 52% to 38%."' } },
+          { phrase: 'B. By', use: { en: 'The amount of change. "Car use fell by 14 percentage points."', bn: 'পরিবর্তনের পরিমাণ। "Car use fell by 14 percentage points."' } },
+          { phrase: 'C. At', use: { en: 'A value at a particular point. "Walking remained at 7%."', bn: 'একটা নির্দিষ্ট বিন্দুতে value। "Walking remained at 7%."' } },
+          {
+            phrase: 'D. Respectively',
+            use: {
+              en: 'Two or more values that correspond to two or more items in the same order. "Car and bicycle use stood at 38% and 19%, respectively, in 2023."',
+              bn: 'একই ক্রমে দুই বা তার বেশি item-এর সাথে মিলে যাওয়া দুই বা তার বেশি value। "Car and bicycle use stood at 38% and 19%, respectively, in 2023."',
+            },
+          },
+          { phrase: 'E. While / whereas', use: { en: 'Contrasting information. "Car use declined, while bicycle use increased."', bn: 'বিপরীতধর্মী তথ্য। "Car use declined, while bicycle use increased."' } },
           {
             phrase: 'F. Although / despite',
-            use: '"Although car use declined, it remained the most common method." "Despite a substantial increase, bicycle use remained below car use in 2023." Grammar: although + subject + verb; despite + noun or gerund. Incorrect: "Despite car use declined…" Correct: "Despite the decline in car use…"',
+            use: {
+              en: '"Although car use declined, it remained the most common method." "Despite a substantial increase, bicycle use remained below car use in 2023." Grammar: although + subject + verb; despite + noun or gerund. Incorrect: "Despite car use declined…" Correct: "Despite the decline in car use…"',
+              bn: '"Although car use declined, it remained the most common method." "Despite a substantial increase, bicycle use remained below car use in 2023." Grammar: although + subject + verb; despite + noun বা gerund। ভুল: "Despite car use declined…" সঠিক: "Despite the decline in car use…"',
+            },
           },
-          { phrase: 'G. Compared with', use: '"Compared with 2010, bicycle use was substantially higher in 2023."' },
-          { phrase: 'H. Relative clauses', use: '"The category that recorded the largest increase was bicycle use."' },
+          { phrase: 'G. Compared with', use: { en: '"Compared with 2010, bicycle use was substantially higher in 2023."', bn: '"Compared with 2010, bicycle use was substantially higher in 2023."' } },
+          { phrase: 'H. Relative clauses', use: { en: '"The category that recorded the largest increase was bicycle use."', bn: '"The category that recorded the largest increase was bicycle use."' } },
         ],
       },
       check: {
-        prompt: 'Which sentence correctly uses "despite"?',
+        prompt: { en: 'Which sentence correctly uses "despite"?', bn: 'কোন বাক্যটা "despite" সঠিকভাবে ব্যবহার করছে?' },
         options: [
           'Despite car use declined, it remained the most common method.',
           'Despite declined car use, it remained the most common method.',
           'Despite the decline in car use, it remained the most common method.',
         ],
         correctIndex: 2,
-        explain: '"Despite" is followed by a noun phrase or a gerund, and "the decline in car use" is a correct noun phrase.',
+        explain: {
+          en: '"Despite" is followed by a noun phrase or a gerund, and "the decline in car use" is a correct noun phrase.',
+          bn: '"Despite"-এর পরে একটা noun phrase বা gerund আসে, আর "the decline in car use" একটা সঠিক noun phrase।',
+        },
       },
     },
     {
       id: 'articles-agreement',
       kind: 'explain',
-      title: 'Articles, Plurals and Subject–Verb Agreement',
-      trainerMessage:
-        'Small grammatical errors can make an otherwise good sentence sound unnatural. You need to control articles, singular and plural forms, and subject–verb agreement.',
+      title: { en: 'Articles, Plurals and Subject–Verb Agreement', bn: 'Article, Plural আর Subject–Verb Agreement' },
+      trainerMessage: {
+        en: 'Small grammatical errors can make an otherwise good sentence sound unnatural. You need to control articles, singular and plural forms, and subject–verb agreement.',
+        bn: 'ছোট ছোট grammatical ভুল একটা ভালো বাক্যকেও অস্বাভাবিক শোনাতে পারে। তোমাকে article, singular আর plural form, আর subject–verb agreement নিয়ন্ত্রণ করতে হবে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'A. Articles. Correct: "The chart illustrates the percentage of commuters." Correct: "A significant increase occurred." Incorrect: "Chart illustrates percentage of commuters." Singular countable nouns generally need an article or another determiner.',
-          'B. Countable and uncountable nouns. Use: the number of commuters, the amount of electricity, the proportion of households, the percentage of people. Do not write "the amount of commuters".',
-          'C. Singular and plural. Correct: "Three categories increased." Incorrect: "Three category increased." Correct: "The figure was higher." Incorrect: "The figures was higher."',
-          'D. Subject–verb agreement. Correct: "The percentage of commuters increased." Correct: "The number of visitors was higher." The head noun determines the verb form, not the nearest noun: "the number of" takes a singular verb, whereas "a number of" is a plural expression ("A number of commuters were…").',
-          'E. Prepositions. Common patterns: increased from 10% to 20%; increased by 10 percentage points; remained at 7%; declined between 2010 and 2023; was higher than; was similar to. "From" = starting point, "to" = ending point, "by" = amount of change, "at" = specific value.',
+          {
+            en: 'A. Articles. Correct: "The chart illustrates the percentage of commuters." Correct: "A significant increase occurred." Incorrect: "Chart illustrates percentage of commuters." Singular countable nouns generally need an article or another determiner.',
+            bn: 'A. Article। সঠিক: "The chart illustrates the percentage of commuters." সঠিক: "A significant increase occurred." ভুল: "Chart illustrates percentage of commuters." Singular countable noun-এর সাধারণত একটা article বা অন্য কোনো determiner দরকার হয়।',
+          },
+          {
+            en: 'B. Countable and uncountable nouns. Use: the number of commuters, the amount of electricity, the proportion of households, the percentage of people. Do not write "the amount of commuters".',
+            bn: 'B. Countable আর uncountable noun। ব্যবহার করো: the number of commuters, the amount of electricity, the proportion of households, the percentage of people। "the amount of commuters" লিখো না।',
+          },
+          {
+            en: 'C. Singular and plural. Correct: "Three categories increased." Incorrect: "Three category increased." Correct: "The figure was higher." Incorrect: "The figures was higher."',
+            bn: 'C. Singular আর plural। সঠিক: "Three categories increased." ভুল: "Three category increased." সঠিক: "The figure was higher." ভুল: "The figures was higher."',
+          },
+          {
+            en: 'D. Subject–verb agreement. Correct: "The percentage of commuters increased." Correct: "The number of visitors was higher." The head noun determines the verb form, not the nearest noun: "the number of" takes a singular verb, whereas "a number of" is a plural expression ("A number of commuters were…").',
+            bn: 'D. Subject–verb agreement। সঠিক: "The percentage of commuters increased." সঠিক: "The number of visitors was higher." verb form ঠিক করে head noun, সবচেয়ে কাছের noun না: "the number of"-এর সাথে singular verb হয়, কিন্তু "a number of" একটা plural expression ("A number of commuters were…")।',
+          },
+          {
+            en: 'E. Prepositions. Common patterns: increased from 10% to 20%; increased by 10 percentage points; remained at 7%; declined between 2010 and 2023; was higher than; was similar to. "From" = starting point, "to" = ending point, "by" = amount of change, "at" = specific value.',
+            bn: 'E. Preposition। সাধারণ pattern: increased from 10% to 20%; increased by 10 percentage points; remained at 7%; declined between 2010 and 2023; was higher than; was similar to। "From" = শুরুর point, "to" = শেষের point, "by" = পরিবর্তনের পরিমাণ, "at" = নির্দিষ্ট value।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence is grammatically correct?',
+        prompt: { en: 'Which sentence is grammatically correct?', bn: 'কোন বাক্যটা grammatically সঠিক?' },
         options: [
           'The number of commuters were higher in 2023.',
           'The number of commuters was higher in 2023.',
           'The amount of commuters was higher in 2023.',
         ],
         correctIndex: 1,
-        explain:
-          '"Number" is used with countable nouns such as commuters, and the head noun "number" is singular, so "was" is correct. "Amount" is wrong with a countable noun, and "were" does not agree with the singular head noun.',
+        explain: {
+          en: '"Number" is used with countable nouns such as commuters, and the head noun "number" is singular, so "was" is correct. "Amount" is wrong with a countable noun, and "were" does not agree with the singular head noun.',
+          bn: '"Number" commuters-এর মতো countable noun-এর সাথে ব্যবহার হয়, আর head noun "number" singular, তাই "was" সঠিক। "Amount" একটা countable noun-এর সাথে ভুল, আর "were" singular head noun-এর সাথে মিলছে না।',
+        },
       },
     },
     {
       id: 'sentence-variety',
       kind: 'explain',
-      title: 'Sentence Variety Without Overcomplication',
-      trainerMessage:
-        'Many learners believe that a high-level response must contain long sentences. That is not true. Vary sentence structures when they help communicate relationships. Do not combine unrelated information simply to make a sentence longer.',
+      title: { en: 'Sentence Variety Without Overcomplication', bn: 'জটিলতা ছাড়াই বাক্যে বৈচিত্র্য' },
+      trainerMessage: {
+        en: 'Many learners believe that a high-level response must contain long sentences. That is not true. Vary sentence structures when they help communicate relationships. Do not combine unrelated information simply to make a sentence longer.',
+        bn: 'অনেক learner মনে করে একটা high-level response-এ অবশ্যই লম্বা বাক্য থাকতে হবে। এটা সত্যি না। যখন সম্পর্ক বোঝাতে সাহায্য করে তখনই বাক্যের structure-এ বৈচিত্র্য আনো। শুধু বাক্য লম্বা করার জন্য অসম্পর্কিত তথ্য জোড়া লাগিও না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Weak repetition: "Car use fell. Bicycle use increased. Bus use fell. Train use increased." Improved: "Car and bus use declined, whereas bicycle and train use increased." More detailed: "Car use fell by 14 percentage points, while bicycle use rose by 13 percentage points over the same period."',
-          'Sentence patterns. 1. Simple: "Walking remained unchanged at 7%." 2. Compound: "Car use declined, but bicycle use increased." 3. Complex: "Although car use declined, it remained the most common method." 4. Comparative: "Bicycle use in 2023 was more than three times its initial level." 5. Participle: "Recording the largest increase, bicycle use rose from 6% to 19%."',
-          'Use a participle structure only when its subject and relationship are clear. Do not create dangling modifiers: the subject of the main clause must be the thing that "records" the increase.',
+          {
+            en: 'Weak repetition: "Car use fell. Bicycle use increased. Bus use fell. Train use increased." Improved: "Car and bus use declined, whereas bicycle and train use increased." More detailed: "Car use fell by 14 percentage points, while bicycle use rose by 13 percentage points over the same period."',
+            bn: 'দুর্বল পুনরাবৃত্তি: "Car use fell. Bicycle use increased. Bus use fell. Train use increased." উন্নত: "Car and bus use declined, whereas bicycle and train use increased." আরও বিস্তারিত: "Car use fell by 14 percentage points, while bicycle use rose by 13 percentage points over the same period."',
+          },
+          {
+            en: 'Sentence patterns. 1. Simple: "Walking remained unchanged at 7%." 2. Compound: "Car use declined, but bicycle use increased." 3. Complex: "Although car use declined, it remained the most common method." 4. Comparative: "Bicycle use in 2023 was more than three times its initial level." 5. Participle: "Recording the largest increase, bicycle use rose from 6% to 19%."',
+            bn: 'বাক্যের pattern। ১. Simple: "Walking remained unchanged at 7%." ২. Compound: "Car use declined, but bicycle use increased." ৩. Complex: "Although car use declined, it remained the most common method." ৪. Comparative: "Bicycle use in 2023 was more than three times its initial level." ৫. Participle: "Recording the largest increase, bicycle use rose from 6% to 19%."',
+          },
+          {
+            en: 'Use a participle structure only when its subject and relationship are clear. Do not create dangling modifiers: the subject of the main clause must be the thing that "records" the increase.',
+            bn: 'participle structure তখনই ব্যবহার করো যখন এর subject আর সম্পর্ক স্পষ্ট। dangling modifier তৈরি কোরো না: main clause-এর subject-টাই যেন সেই জিনিস হয় যেটা বৃদ্ধি "record" করছে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence is clear and grammatically accurate?',
+        prompt: { en: 'Which sentence is clear and grammatically accurate?', bn: 'কোন বাক্যটা স্পষ্ট আর grammatically নির্ভুল?' },
         options: [
           'Although car use declined, it remained the most common method.',
           'Although car use declined, but it remained the most common method.',
           'Although declined car use, it remained the most common method.',
         ],
         correctIndex: 0,
-        explain:
-          '"Although" already introduces the contrast, so an additional "but" is unnecessary and incorrect. The third option has an incomplete clause with no subject and verb after "although".',
+        explain: {
+          en: '"Although" already introduces the contrast, so an additional "but" is unnecessary and incorrect. The third option has an incomplete clause with no subject and verb after "although".',
+          bn: '"Although" ইতিমধ্যে contrast শুরু করে দিয়েছে, তাই আলাদা করে "but" অপ্রয়োজনীয় আর ভুল। তৃতীয় option-এ "although"-এর পরে subject আর verb ছাড়া একটা অসম্পূর্ণ clause আছে।',
+        },
       },
     },
     {
       id: 'collocations',
       kind: 'explain',
-      title: 'Collocations and Natural Academic Language',
-      trainerMessage:
-        'Some words may be grammatically possible but unnatural in academic writing. Learn common word combinations rather than memorising isolated vocabulary.',
+      title: { en: 'Collocations and Natural Academic Language', bn: 'Collocation আর স্বাভাবিক Academic ভাষা' },
+      trainerMessage: {
+        en: 'Some words may be grammatically possible but unnatural in academic writing. Learn common word combinations rather than memorising isolated vocabulary.',
+        bn: 'কিছু শব্দ grammatically সম্ভব হলেও academic writing-এ অস্বাভাবিক শোনাতে পারে। আলাদা আলাদা vocabulary মুখস্থ করার বদলে সাধারণ word combination শেখো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Natural combinations: a sharp increase, a gradual decline, a slight decrease, a significant difference, a steady rise, a considerable proportion, remained relatively stable, reached a peak, recorded the highest figure, accounted for the largest share. (Words about pace — sharp, gradual, steady — still need data that shows the pace.)',
-          'Natural: "The chart shows a substantial increase in bicycle use." Natural: "Bicycle use increased substantially."',
-          'The grammatical difference: adjective + noun ("a substantial increase") versus verb + adverb ("increased substantially"). An adjective modifies a noun; an adverb modifies a verb.',
-          'Incorrect or awkward expressions: "a big up", "more higher", "increased up", "fell down by lower", "a lot of percentage points" when an exact figure is available, "the most highest".',
+          {
+            en: 'Natural combinations: a sharp increase, a gradual decline, a slight decrease, a significant difference, a steady rise, a considerable proportion, remained relatively stable, reached a peak, recorded the highest figure, accounted for the largest share. (Words about pace — sharp, gradual, steady — still need data that shows the pace.)',
+            bn: 'স্বাভাবিক combination: a sharp increase, a gradual decline, a slight decrease, a significant difference, a steady rise, a considerable proportion, remained relatively stable, reached a peak, recorded the highest figure, accounted for the largest share। (pace সম্পর্কিত শব্দ — sharp, gradual, steady — এগুলোর জন্যও data-তে সেই pace দেখাতে হবে।)',
+          },
+          {
+            en: 'Natural: "The chart shows a substantial increase in bicycle use." Natural: "Bicycle use increased substantially."',
+            bn: 'স্বাভাবিক: "The chart shows a substantial increase in bicycle use." স্বাভাবিক: "Bicycle use increased substantially."',
+          },
+          {
+            en: 'The grammatical difference: adjective + noun ("a substantial increase") versus verb + adverb ("increased substantially"). An adjective modifies a noun; an adverb modifies a verb.',
+            bn: 'grammatical পার্থক্য: adjective + noun ("a substantial increase") বনাম verb + adverb ("increased substantially")। একটা adjective একটা noun-কে modify করে; একটা adverb একটা verb-কে modify করে।',
+          },
+          {
+            en: 'Incorrect or awkward expressions: "a big up", "more higher", "increased up", "fell down by lower", "a lot of percentage points" when an exact figure is available, "the most highest".',
+            bn: 'ভুল বা অস্বাভাবিক expression: "a big up", "more higher", "increased up", "fell down by lower", নির্ভুল figure থাকা সত্ত্বেও "a lot of percentage points", "the most highest"।',
+          },
         ],
       },
       check: {
-        prompt: 'Which expression is natural and grammatically correct?',
+        prompt: { en: 'Which expression is natural and grammatically correct?', bn: 'কোন expression-টা স্বাভাবিক আর grammatically সঠিক?' },
         options: [
           'A substantially increase in bicycle use.',
           'A more higher increase in bicycle use.',
           'A substantial increase in bicycle use.',
         ],
         correctIndex: 2,
-        explain:
-          '"Substantial" is an adjective modifying the noun "increase". "Substantially" is an adverb and cannot directly modify a noun in this construction, and "more higher" is a double comparative.',
+        explain: {
+          en: '"Substantial" is an adjective modifying the noun "increase". "Substantially" is an adverb and cannot directly modify a noun in this construction, and "more higher" is a double comparative.',
+          bn: '"Substantial" একটা adjective, যেটা "increase" noun-কে modify করছে। "Substantially" একটা adverb আর এই construction-এ সরাসরি একটা noun-কে modify করতে পারে না, আর "more higher" একটা double comparative।',
+        },
       },
     },
     {
       id: 'improve-paragraph',
       kind: 'demonstrate',
-      title: 'Demonstration: Improve a Weak Paragraph',
-      trainerMessage:
-        'Now we will combine everything. First, read a weak paragraph. Then examine the improved version and understand exactly what changed.',
+      title: { en: 'Demonstration: Improve a Weak Paragraph', bn: 'উদাহরণ: একটা দুর্বল Paragraph উন্নত করা' },
+      trainerMessage: {
+        en: 'Now we will combine everything. First, read a weak paragraph. Then examine the improved version and understand exactly what changed.',
+        bn: 'এবার আমরা সবকিছু একসাথে করব। প্রথমে একটা দুর্বল paragraph পড়ো। তারপর উন্নত version-টা দেখো আর ঠিক কী কী বদলেছে বোঝো।',
+      },
       material: {
         type: 'examples',
         weak: 'Car use go down from 52% to 38%. Bicycle use go up a lot from 6% to 19%. Bus use also go down. Walking was same. Car was more higher than bicycle.',
         good: 'Car use declined from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. By contrast, bicycle use increased substantially from 6% to 19%, representing a rise of 13 percentage points. Bus use fell slightly from 24% to 21%, whereas walking remained unchanged at 7%. Despite its decline, car use continued to be the most common transport method in 2023.',
-        note: 'What changed: 1. "go down" became "declined" (a more precise trend verb). 2. "go up a lot" became "increased substantially" (a more natural, accurate expression of magnitude). 3. "go" became past-tense verbs, because these are completed historical changes. 4. "from 52% to 38%" gained "a decrease of 14 percentage points" (an accurate calculation). 5. "Car was more higher than bicycle" was removed: the incorrect comparative is gone, and the improved paragraph states the real ranking instead ("car use continued to be the most common transport method"). 6. "Walking was same" became "walking remained unchanged at 7%" (a natural collocation with supporting data). 7. "By contrast" and "whereas" connect the information logically. The improved paragraph is not better because it contains difficult words. It is better because the language is precise, grammatical and supported by the chart.',
+        note: {
+          en: 'What changed: 1. "go down" became "declined" (a more precise trend verb). 2. "go up a lot" became "increased substantially" (a more natural, accurate expression of magnitude). 3. "go" became past-tense verbs, because these are completed historical changes. 4. "from 52% to 38%" gained "a decrease of 14 percentage points" (an accurate calculation). 5. "Car was more higher than bicycle" was removed: the incorrect comparative is gone, and the improved paragraph states the real ranking instead ("car use continued to be the most common transport method"). 6. "Walking was same" became "walking remained unchanged at 7%" (a natural collocation with supporting data). 7. "By contrast" and "whereas" connect the information logically. The improved paragraph is not better because it contains difficult words. It is better because the language is precise, grammatical and supported by the chart.',
+          bn: 'কী বদলেছে: ১. "go down" হয়েছে "declined" (একটা বেশি নির্ভুল trend verb)। ২. "go up a lot" হয়েছে "increased substantially" (magnitude-এর একটা বেশি স্বাভাবিক, নির্ভুল প্রকাশ)। ৩. "go" হয়েছে past-tense verb, কারণ এগুলো শেষ হওয়া historical পরিবর্তন। ৪. "from 52% to 38%"-এর সাথে যোগ হয়েছে "a decrease of 14 percentage points" (একটা নির্ভুল হিসাব)। ৫. "Car was more higher than bicycle" সরানো হয়েছে: ভুল comparative-টা নেই, আর উন্নত paragraph-এ এর বদলে আসল ranking বলা হয়েছে ("car use continued to be the most common transport method")। ৬. "Walking was same" হয়েছে "walking remained unchanged at 7%" (সহায়ক data-সহ একটা স্বাভাবিক collocation)। ৭. "By contrast" আর "whereas" তথ্যগুলোকে যুক্তিসঙ্গতভাবে সংযুক্ত করছে। উন্নত paragraph-টা ভালো, কঠিন শব্দ আছে বলে না। এটা ভালো, কারণ ভাষাটা নির্ভুল, grammatical, আর chart দিয়ে সমর্থিত।',
+        },
       },
     },
     {
       id: 'guided-practice',
       kind: 'guided',
-      title: 'Guided Practice: Improve the Sentences',
-      trainerMessage:
-        'Now it is your turn. You will improve sentences one by one. Focus on meaning first, then grammar and vocabulary. Write your own improved version, check it, and compare with the possible answer — other grammatically correct and factually accurate rewrites are also acceptable.',
+      title: { en: 'Guided Practice: Improve the Sentences', bn: 'Guided Practice: বাক্যগুলো উন্নত করো' },
+      trainerMessage: {
+        en: 'Now it is your turn. You will improve sentences one by one. Focus on meaning first, then grammar and vocabulary. Write your own improved version, check it, and compare with the possible answer — other grammatically correct and factually accurate rewrites are also acceptable.',
+        bn: 'এবার তোমার পালা। তুমি একটার পর একটা বাক্য উন্নত করবে। আগে অর্থের দিকে মনোযোগ দাও, তারপর grammar আর vocabulary। নিজের উন্নত version লেখো, check করো, আর সম্ভাব্য উত্তরের সাথে তুলনা করো — অন্য grammatically সঠিক আর factually নির্ভুল rewrite-ও গ্রহণযোগ্য।',
+      },
       material: {
         type: 'chart-board',
         dataset: CHART_DATASETS['commute-methods'],
@@ -457,42 +570,42 @@ export const task1VocabGrammarLesson: Lesson = {
           {
             id: 'task-a',
             order: 1,
-            prompt: 'Task A — Trend verb. Improve: "Bicycle use went up from 6% to 19%."',
+            prompt: { en: 'Task A — Trend verb. Improve: "Bicycle use went up from 6% to 19%."', bn: 'Task A — Trend verb। উন্নত করো: "Bicycle use went up from 6% to 19%."' },
             modelAnswer: 'Bicycle use increased from 6% to 19%. (Other accurate verbs such as "rose" or "grew" are also fine.)',
             belongsIn: 'body',
           },
           {
             id: 'task-b',
             order: 2,
-            prompt: 'Task B — Magnitude. Improve: "Bus use went down a little."',
+            prompt: { en: 'Task B — Magnitude. Improve: "Bus use went down a little."', bn: 'Task B — Magnitude। উন্নত করো: "Bus use went down a little."' },
             modelAnswer: 'Bus use declined slightly from 24% to 21%.',
             belongsIn: 'body',
           },
           {
             id: 'task-c',
             order: 3,
-            prompt: 'Task C — Percentage points. Improve: "Car use decreased by 14%."',
+            prompt: { en: 'Task C — Percentage points. Improve: "Car use decreased by 14%."', bn: 'Task C — Percentage points। উন্নত করো: "Car use decreased by 14%."' },
             modelAnswer: 'Car use decreased by 14 percentage points. (From 52% to 38%: 52 − 38 = 14.)',
             belongsIn: 'body',
           },
           {
             id: 'task-d',
             order: 4,
-            prompt: 'Task D — Comparison. Improve: "Car use was more higher than bicycle use."',
+            prompt: { en: 'Task D — Comparison. Improve: "Car use was more higher than bicycle use."', bn: 'Task D — Comparison। উন্নত করো: "Car use was more higher than bicycle use."' },
             modelAnswer: 'Car use was higher than bicycle use. ("Higher" is already the comparative form.)',
             belongsIn: 'body',
           },
           {
             id: 'task-e',
             order: 5,
-            prompt: 'Task E — Tense. Improve: "Walking remains unchanged between 2010 and 2023."',
+            prompt: { en: 'Task E — Tense. Improve: "Walking remains unchanged between 2010 and 2023."', bn: 'Task E — Tense। উন্নত করো: "Walking remains unchanged between 2010 and 2023."' },
             modelAnswer: 'Walking remained unchanged between 2010 and 2023. (A completed historical period needs past simple.)',
             belongsIn: 'body',
           },
           {
             id: 'task-f',
             order: 6,
-            prompt: 'Task F — Sentence structure. Improve: "Car use declined. Bicycle use increased."',
+            prompt: { en: 'Task F — Sentence structure. Improve: "Car use declined. Bicycle use increased."', bn: 'Task F — Sentence structure। উন্নত করো: "Car use declined. Bicycle use increased."' },
             modelAnswer: 'Car use declined, whereas bicycle use increased.',
             belongsIn: 'body',
           },

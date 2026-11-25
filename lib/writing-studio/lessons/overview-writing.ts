@@ -25,7 +25,7 @@ export const overviewWritingLesson: Lesson = {
   id: 'overview-writing',
   task: 'task1',
   moduleId: 'task1-m4',
-  title: 'Overview Mastery',
+  title: { en: 'Overview Mastery', bn: 'Overview-তে দক্ষতা' },
   objective:
     'Identify, select, compare and synthesise the main features of an IELTS Academic Task 1 visual into a clear, accurate overview — without listing every figure or inventing reasons.',
   estMinutes: 30,
@@ -33,19 +33,30 @@ export const overviewWritingLesson: Lesson = {
     {
       id: 'intro',
       kind: 'intro',
-      title: 'Welcome: What Are We Learning Today?',
-      trainerMessage:
-        'Welcome to Lesson 04: Overview Mastery. In the previous lesson, you learned how to write an introduction by accurately paraphrasing the question. Now you will learn one of the most important skills in IELTS Academic Writing Task 1: writing an overview. Imagine that someone gives you a chart containing several categories and many figures. They do not have time to study every number. They ask you: "What are the most important things I should notice?" Your job is to answer that question. That is the purpose of an overview.',
+      title: { en: 'Welcome: What Are We Learning Today?', bn: 'স্বাগতম: আজ আমরা কী শিখব?' },
+      trainerMessage: {
+        en: 'Welcome to Lesson 04: Overview Mastery. In the previous lesson, you learned how to write an introduction by accurately paraphrasing the question. Now you will learn one of the most important skills in IELTS Academic Writing Task 1: writing an overview. Imagine that someone gives you a chart containing several categories and many figures. They do not have time to study every number. They ask you: "What are the most important things I should notice?" Your job is to answer that question. That is the purpose of an overview.',
+        bn: 'Lesson 04: Overview Mastery-তে স্বাগতম। আগের lesson-এ তুমি শিখেছিলে কীভাবে প্রশ্নটা সঠিকভাবে paraphrase করে একটা Introduction লিখতে হয়। এখন তুমি শিখবে IELTS Academic Writing Task 1-এর সবচেয়ে গুরুত্বপূর্ণ skill-গুলোর একটা: Overview লেখা। ধরো, কেউ তোমাকে এমন একটা chart দিল যেখানে অনেকগুলো category আর অনেক figure আছে। তার হাতে প্রতিটা সংখ্যা পড়ার সময় নেই। সে তোমাকে জিজ্ঞেস করল: "সবচেয়ে গুরুত্বপূর্ণ জিনিসগুলো কী, যেগুলো আমার খেয়াল করা উচিত?" তোমার কাজ হলো সেই প্রশ্নের উত্তর দেওয়া। এটাই একটা Overview-এর উদ্দেশ্য।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'By the end of this lesson, you will be able to identify the main features of a visual and summarise them without describing every detail.',
-          'An overview is an analytical summary of the most important information in a visual. It is not a second introduction, a list of every number, a detailed description of each category, an explanation of why something happened, a personal opinion, or a conclusion with recommendations.',
-          'Let us begin with one diagnostic question.',
+          {
+            en: 'By the end of this lesson, you will be able to identify the main features of a visual and summarise them without describing every detail.',
+            bn: 'এই lesson শেষে, তুমি একটা visual-এর মূল feature-গুলো চিহ্নিত করতে পারবে আর প্রতিটা detail না বলে সেগুলো summarise করতে পারবে।',
+          },
+          {
+            en: 'An overview is an analytical summary of the most important information in a visual. It is not a second introduction, a list of every number, a detailed description of each category, an explanation of why something happened, a personal opinion, or a conclusion with recommendations.',
+            bn: 'Overview হলো একটা visual-এর সবচেয়ে গুরুত্বপূর্ণ তথ্যের একটা analytical summary। এটা দ্বিতীয় একটা Introduction না, প্রতিটা সংখ্যার তালিকা না, প্রতিটা category-র বিস্তারিত বর্ণনা না, কেন কিছু হলো তার ব্যাখ্যা না, ব্যক্তিগত মতামত না, আর recommendation সহ কোনো conclusion-ও না।',
+          },
+          { en: 'Let us begin with one diagnostic question.', bn: 'চলো, একটা diagnostic প্রশ্ন দিয়ে শুরু করি।' },
         ],
       },
       check: {
-        prompt: 'A chart shows five categories over two years. What should an overview mainly describe?',
+        prompt: {
+          en: 'A chart shows five categories over two years. What should an overview mainly describe?',
+          bn: 'একটা chart-এ দুই বছরের পাঁচটা category দেখানো হয়েছে। একটা Overview মূলত কী বর্ণনা করা উচিত?',
+        },
         options: [
           'Every figure shown in the chart.',
           'The most important patterns and comparisons.',
@@ -53,43 +64,67 @@ export const overviewWritingLesson: Lesson = {
           "The writer's personal opinion.",
         ],
         correctIndex: 1,
-        explain: 'An overview identifies the most important features. It does not reproduce all the data or invent reasons for changes.',
+        explain: {
+          en: 'An overview identifies the most important features. It does not reproduce all the data or invent reasons for changes.',
+          bn: 'Overview সবচেয়ে গুরুত্বপূর্ণ feature-গুলো চিহ্নিত করে। এটা সব data আবার লেখে না, বা পরিবর্তনের কারণ বানিয়ে বলে না।',
+        },
       },
     },
     {
       id: 'overview-role',
       kind: 'explain',
-      title: 'Understand the Role of an Overview',
-      trainerMessage:
-        'A standard IELTS Academic Task 1 response usually contains an introduction, an overview and body paragraph(s). Each section has a different job. Read this example carefully, then tell me which sentence does the overview\'s job.',
+      title: { en: 'Understand the Role of an Overview', bn: 'Overview-এর ভূমিকাটা বুঝে নাও' },
+      trainerMessage: {
+        en: 'A standard IELTS Academic Task 1 response usually contains an introduction, an overview and body paragraph(s). Each section has a different job. Read this example carefully, then tell me which sentence does the overview\'s job.',
+        bn: 'একটা standard IELTS Academic Task 1 response-এ সাধারণত একটা Introduction, একটা Overview, আর এক বা একাধিক Body Paragraph থাকে। প্রতিটা অংশের কাজ আলাদা। এই example-টা মন দিয়ে পড়ো, তারপর বলো কোন বাক্যটা Overview-এর কাজ করছে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Introduction: what does the visual show? Overview: what are the most important things it reveals? Body paragraphs: what are the relevant details and figures?',
-          'Question description: "The chart compares the percentages of commuters using five different transport methods in one city in 2010 and 2023."',
-          'Introduction: "The bar chart compares the proportions of commuters who used five forms of transport in a city in 2010 and 2023." This identifies the visual.',
-          'A possible overview: "Overall, cars remained the most commonly used transport method, although their share declined. By contrast, cycling became considerably more popular, while walking remained unchanged." This tells the reader what matters most.',
-          'Notice what the overview does: it identifies the dominant category, identifies a major change, highlights a stable category, and avoids listing all the figures.',
+          {
+            en: 'Introduction: what does the visual show? Overview: what are the most important things it reveals? Body paragraphs: what are the relevant details and figures?',
+            bn: 'Introduction: visual-টা কী দেখাচ্ছে? Overview: এটা সবচেয়ে গুরুত্বপূর্ণ কী কী জিনিস প্রকাশ করছে? Body paragraph: কোন কোন প্রাসঙ্গিক detail আর figure আছে?',
+          },
+          {
+            en: 'Question description: "The chart compares the percentages of commuters using five different transport methods in one city in 2010 and 2023."',
+            bn: 'প্রশ্নের বিবরণ: "The chart compares the percentages of commuters using five different transport methods in one city in 2010 and 2023."',
+          },
+          {
+            en: 'Introduction: "The bar chart compares the proportions of commuters who used five forms of transport in a city in 2010 and 2023." This identifies the visual.',
+            bn: 'Introduction: "The bar chart compares the proportions of commuters who used five forms of transport in a city in 2010 and 2023." এটা visual-টা কী, তা চিহ্নিত করে।',
+          },
+          {
+            en: 'A possible overview: "Overall, cars remained the most commonly used transport method, although their share declined. By contrast, cycling became considerably more popular, while walking remained unchanged." This tells the reader what matters most.',
+            bn: 'একটা সম্ভাব্য overview: "Overall, cars remained the most commonly used transport method, although their share declined. By contrast, cycling became considerably more popular, while walking remained unchanged." এটা পাঠককে বলে দেয় সবচেয়ে গুরুত্বপূর্ণ জিনিসটা কী।',
+          },
+          {
+            en: 'Notice what the overview does: it identifies the dominant category, identifies a major change, highlights a stable category, and avoids listing all the figures.',
+            bn: 'লক্ষ্য করো overview-টা কী করছে: এটা dominant category চিহ্নিত করে, একটা বড় পরিবর্তন চিহ্নিত করে, একটা স্থির category তুলে ধরে, আর সব figure তালিকা করা এড়িয়ে যায়।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence performs the role of an overview?',
+        prompt: { en: 'Which sentence performs the role of an overview?', bn: 'কোন বাক্যটা একটা Overview-এর কাজ করছে?' },
         options: [
           'The bar chart compares five transport methods in 2010 and 2023.',
           'Car use fell, but it remained the leading transport method, while cycling recorded the most substantial increase.',
           'Car use was 52% in 2010 and 38% in 2023.',
         ],
         correctIndex: 1,
-        explain:
-          'The first sentence is an introduction: it only identifies the visual. The third is a specific data detail for a body paragraph. The second summarises the main features.',
+        explain: {
+          en: 'The first sentence is an introduction: it only identifies the visual. The third is a specific data detail for a body paragraph. The second summarises the main features.',
+          bn: 'প্রথম বাক্যটা একটা Introduction: এটা শুধু visual-টা কী তা চিহ্নিত করে। তৃতীয়টা একটা body paragraph-এর জন্য একটা নির্দিষ্ট data detail। দ্বিতীয়টা মূল feature-গুলো summarise করে।',
+        },
       },
     },
     {
       id: 'read-chart',
       kind: 'guided',
-      title: 'Read the Chart Before Selecting Features',
-      trainerMessage:
-        'Before writing, read the whole chart. Check how many categories there are, what is measured, which years are compared, which value is highest and lowest, and what increased, decreased or stayed the same. Do not start writing after noticing only the first two figures. Answer each question from the chart itself.',
+      title: { en: 'Read the Chart Before Selecting Features', bn: 'Feature বেছে নেওয়ার আগে Chart-টা পড়ো' },
+      trainerMessage: {
+        en: 'Before writing, read the whole chart. Check how many categories there are, what is measured, which years are compared, which value is highest and lowest, and what increased, decreased or stayed the same. Do not start writing after noticing only the first two figures. Answer each question from the chart itself.',
+        bn: 'লেখা শুরু করার আগে, পুরো chart-টা পড়ো। দেখো কয়টা category আছে, কী measure করা হচ্ছে, কোন কোন বছর তুলনা করা হচ্ছে, কোন value সবচেয়ে বেশি আর কোনটা সবচেয়ে কম, আর কোনটা বাড়লো, কমলো বা একই রইলো। শুধু প্রথম দুইটা figure দেখেই লেখা শুরু করো না। প্রতিটা প্রশ্নের উত্তর chart থেকেই দাও।',
+      },
       material: {
         type: 'chart-board',
         dataset: CHART_DATASETS['commute-methods'],
@@ -97,35 +132,38 @@ export const overviewWritingLesson: Lesson = {
           {
             id: 'scope',
             order: 1,
-            prompt: 'What is being measured, how many categories are shown, and which two years are compared?',
+            prompt: {
+              en: 'What is being measured, how many categories are shown, and which two years are compared?',
+              bn: 'কী measure করা হচ্ছে, কয়টা category দেখানো হয়েছে, আর কোন দুইটা বছর তুলনা করা হচ্ছে?',
+            },
             modelAnswer: 'The chart measures the percentage of commuters using each of five transport methods in one city, and it compares 2010 and 2023.',
             belongsIn: 'overview',
           },
           {
             id: 'highest-2010',
             order: 2,
-            prompt: 'Which method had the highest percentage in 2010, and what was the figure?',
+            prompt: { en: 'Which method had the highest percentage in 2010, and what was the figure?', bn: '২০১০ সালে কোন পদ্ধতির percentage সবচেয়ে বেশি ছিল, আর figure-টা কত ছিল?' },
             modelAnswer: 'Car, at 52%.',
             belongsIn: 'overview',
           },
           {
             id: 'lowest-2010',
             order: 3,
-            prompt: 'Which method had the lowest percentage in 2010?',
+            prompt: { en: 'Which method had the lowest percentage in 2010?', bn: '২০১০ সালে কোন পদ্ধতির percentage সবচেয়ে কম ছিল?' },
             modelAnswer: 'Bicycle, at 6%.',
             belongsIn: 'body',
           },
           {
             id: 'unchanged',
             order: 4,
-            prompt: 'Which method had exactly the same percentage in both years?',
+            prompt: { en: 'Which method had exactly the same percentage in both years?', bn: 'কোন পদ্ধতির percentage দুই বছরেই ঠিক একই ছিল?' },
             modelAnswer: 'Walking, at 7% in both 2010 and 2023.',
             belongsIn: 'body',
           },
           {
             id: 'directions',
             order: 5,
-            prompt: 'Which methods increased, which decreased, and which stayed the same?',
+            prompt: { en: 'Which methods increased, which decreased, and which stayed the same?', bn: 'কোন কোন পদ্ধতি বেড়েছে, কোনগুলো কমেছে, আর কোনটা একই রয়ে গেছে?' },
             modelAnswer:
               'Bicycle (6% to 19%) and train (11% to 15%) increased. Car (52% to 38%) and bus (24% to 21%) decreased. Walking stayed the same at 7%.',
             belongsIn: 'body',

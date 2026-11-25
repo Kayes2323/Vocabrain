@@ -15,7 +15,7 @@ import { bodyParagraphsLesson } from '../lib/writing-studio/lessons/body-paragra
 import { overviewWritingLesson } from '../lib/writing-studio/lessons/overview-writing';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -39,15 +39,15 @@ const GOOD_PARAGRAPH =
   'Car use declined from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. By contrast, bicycle use increased substantially from 6% to 19%, representing a rise of 13 percentage points. Bus use fell slightly from 24% to 21%, whereas walking remained unchanged at 7%. Despite its decline, car use continued to be the most common transport method in 2023.';
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, i.use]));
-    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${t.prompt} ${t.modelAnswer}`));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, localize('en', i.use)]));
+    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${localize('en', t.prompt)} ${t.modelAnswer}`));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -126,7 +126,7 @@ test('answer keys follow the CONTENT: the option at correctIndex is the correct 
       assert.equal(i === c.correctIndex, isCorrect, `${id}: option ${i} ("${o}") — correctIndex points at the wrong option`);
       assert.equal(wrong.filter((w) => w.test(o)).length, isCorrect ? 0 : 1, `${id}: option ${i} ("${o}") must be exactly one known distractor`);
     });
-    assert.ok(c.explain.length > 40, `${id}: explanation`);
+    assert.ok(localize('en', c.explain).length > 40, `${id}: explanation`);
   }
 });
 test('"tense-control" explanation gives each option its correct grammatical status, found by CONTENT (fails if the correct option is called incorrect)', () => {
@@ -139,13 +139,14 @@ test('"tense-control" explanation gives each option its correct grammatical stat
   assert.equal(c.options[c.correctIndex], mixed, 'the correct answer is the mixed past-simple / present-simple sentence');
 
   // Split the explanation into one segment per quoted option (in the order they are quoted).
-  const at = (opt: string) => c.explain.indexOf(opt);
+  const explain = localize('en', c.explain);
+  const at = (opt: string) => explain.indexOf(opt);
   const starts = [mixed, presentSimple, hadDecline].map((o) => ({ o, i: at(o) }));
   for (const { o, i } of starts) assert.ok(i >= 0, `the explanation quotes the option: ${o}`);
   const ordered = starts.slice().sort((a, b) => a.i - b.i);
   const segment = (opt: string) => {
     const k = ordered.findIndex((x) => x.o === opt);
-    return c.explain.slice(ordered[k].i + opt.length, k + 1 < ordered.length ? ordered[k + 1].i : undefined);
+    return explain.slice(ordered[k].i + opt.length, k + 1 < ordered.length ? ordered[k + 1].i : undefined);
   };
   const m = segment(mixed), p = segment(presentSimple), h = segment(hadDecline);
 
@@ -165,7 +166,7 @@ test('"tense-control" explanation gives each option its correct grammatical stat
   assert.match(h, /past perfect is not needed in this sentence/);
   assert.ok(!/\bis correct\b/.test(h), h);
   // No positional wording that could go stale if the options are reordered.
-  assert.ok(!/\b(first|second|third)\b/i.test(c.explain), 'no positional references');
+  assert.ok(!/\b(first|second|third)\b/i.test(explain), 'no positional references');
 });
 test('the specified answer meaning is kept: the spec\'s letter keys map to the same correct options after balancing', () => {
   // Spec keys (A=0,B=1,C=2) -> the option that was correct there; checked by content above, restated here by the spec's own letters.
@@ -310,7 +311,7 @@ test('model sentences in the demonstration, tasks and final guidance are consist
   assert.match(a['task-d'], /^Car use was higher than bicycle use\./);
   assert.match(a['task-e'], /^Walking remained unchanged between 2010 and 2023\./);
   assert.match(a['task-f'], /^Car use declined, whereas bicycle use increased\./);
-  for (const t of board.tasks) assert.ok(t.prompt.length > 15 && t.modelAnswer.length > 15, t.id);
+  for (const t of board.tasks) assert.ok(localize('en', t.prompt).length > 15 && t.modelAnswer.length > 15, t.id);
 });
 
 // ---------------------------------------------------------------- final prompt / assessment scope
@@ -322,10 +323,11 @@ test('final prompt is a paragraph-only language drill on the commute chart', () 
   assert.equal(f.chartId, 'commute-methods');
   assert.equal(f.minWords, 80);
   assert.equal(deriveScope(lesson), 'paragraph-only');
-  assert.match(f.instructions, /approximately 80–100 words/);
-  assert.match(f.instructions, /Do not write a complete Task 1 response/);
-  assert.match(f.instructions, /targeted vocabulary and grammar exercise/);
-  assert.ok(!/150|exam time limit|full task 1 response\b(?!\.)/i.test(f.instructions.replace('Do not write a complete Task 1 response', '')), f.instructions);
+  const finalInstructions = localize('en', f.instructions);
+  assert.match(finalInstructions, /approximately 80–100 words/);
+  assert.match(finalInstructions, /Do not write a complete Task 1 response/);
+  assert.match(finalInstructions, /targeted vocabulary and grammar exercise/);
+  assert.ok(!/150|exam time limit|full task 1 response\b(?!\.)/i.test(finalInstructions.replace('Do not write a complete Task 1 response', '')), finalInstructions);
   assert.match(f.skillFocus!, /\b(vocabulary|grammatical)\b/i, 'the skill name must route to the language rubric');
 });
 test('Lessons 04 and 05 keep their own focus (not routed to the language rubric)', () => {

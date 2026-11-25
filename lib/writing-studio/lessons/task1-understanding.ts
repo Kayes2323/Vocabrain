@@ -13,7 +13,10 @@ export const task1UnderstandingLesson: Lesson = {
   task: 'task1',
   moduleId: 'task1-m1',
   title: { en: 'Understanding IELTS Writing Task 1', bn: 'IELTS Writing Task 1 বোঝা' },
-  objective: 'Know exactly what Academic Task 1 asks for, how a response is structured, and how to paraphrase a question accurately — so every later lesson builds on the right foundation.',
+  objective: {
+    en: 'Know exactly what Academic Task 1 asks for, how a response is structured, and how to paraphrase a question accurately — so every later lesson builds on the right foundation.',
+    bn: 'ঠিক ঠিক জানো Academic Task 1 আসলে কী চায়, একটা response কীভাবে structured হয়, আর কীভাবে একটা প্রশ্ন নির্ভুলভাবে paraphrase করতে হয় — যাতে পরের প্রতিটা lesson সঠিক ভিত্তির উপর তৈরি হয়।',
+  },
   estMinutes: 16,
   steps: [
     {
@@ -172,24 +175,28 @@ export const task1UnderstandingLesson: Lesson = {
     {
       id: 'check-sections',
       kind: 'check',
-      title: 'Guided practice: which section is this?',
-      trainerMessage: "Now let's test whether you can tell the three sections apart.",
+      title: { en: 'Guided practice: which section is this?', bn: 'Guided practice: এটা কোন section?' },
+      trainerMessage: { en: "Now let's test whether you can tell the three sections apart.", bn: 'এবার দেখি তুমি এই তিনটা section আলাদা করতে পারো কিনা।' },
       check: {
-        prompt:
-          'Read this sentence from a student\'s response: "The bar chart illustrates the proportion of households owning a car, a bicycle and a motorbike in two cities in 2015." Which part of a well-structured Task 1 response is this sentence?',
+        prompt: {
+          en: 'Read this sentence from a student\'s response: "The bar chart illustrates the proportion of households owning a car, a bicycle and a motorbike in two cities in 2015." Which part of a well-structured Task 1 response is this sentence?',
+          bn: 'একজন student-এর response থেকে এই বাক্যটা পড়ো: "The bar chart illustrates the proportion of households owning a car, a bicycle and a motorbike in two cities in 2015." একটা ভালোভাবে structured Task 1 response-এর কোন অংশ এই বাক্যটা?',
+        },
         options: ['Introduction', 'Overview', 'Body paragraph', 'Conclusion'],
         correctIndex: 0,
-        explain:
-          'This sentence only restates the question in different words — it names the chart type and topic but gives no overall pattern, no comparison and no figures. That is exactly the Introduction\'s job. An Overview would instead name the biggest pattern (for example, which vehicle was most common); a Body paragraph would add real figures and comparisons. Note too that Task 1 responses have no Conclusion — that belongs to Task 2\'s essay structure.',
+        explain: {
+          en: 'This sentence only restates the question in different words — it names the chart type and topic but gives no overall pattern, no comparison and no figures. That is exactly the Introduction\'s job. An Overview would instead name the biggest pattern (for example, which vehicle was most common); a Body paragraph would add real figures and comparisons. Note too that Task 1 responses have no Conclusion — that belongs to Task 2\'s essay structure.',
+          bn: 'এই বাক্যটা শুধু প্রশ্নটাকে অন্য শব্দে restate করছে — এটা chart-এর type আর topic বলছে কিন্তু কোনো overall pattern, comparison বা figure দিচ্ছে না। এটাই ঠিক Introduction-এর কাজ। একটা Overview এর বদলে সবচেয়ে বড় pattern-টা বলত (যেমন, কোন vehicle সবচেয়ে common ছিল); আর একটা Body paragraph real figure আর comparison যোগ করত। এটাও খেয়াল রাখো যে Task 1 response-এ কোনো Conclusion থাকে না — সেটা Task 2-এর essay structure-এ থাকে।',
+        },
       },
     },
     {
       id: 'check-objective',
       kind: 'check',
-      title: 'Guided practice: objective or opinion?',
-      trainerMessage: 'One more check — this time spotting several ways an opinion can sneak in.',
+      title: { en: 'Guided practice: objective or opinion?', bn: 'Guided practice: objective নাকি opinion?' },
+      trainerMessage: { en: 'One more check — this time spotting several ways an opinion can sneak in.', bn: 'আরেকটা check — এবার দেখব opinion কীভাবে কয়েকভাবে ঢুকে পড়তে পারে।' },
       check: {
-        prompt: 'Which of these four sentences is suitable for an IELTS Academic Task 1 response?',
+        prompt: { en: 'Which of these four sentences is suitable for an IELTS Academic Task 1 response?', bn: 'এই চারটা বাক্যের মধ্যে কোনটা একটা IELTS Academic Task 1 response-এর জন্য উপযুক্ত?' },
         options: [
           'The number of visitors rose from 10,000 in 2000 to 45,000 in 2020.',
           'The sharp rise is probably due to a new marketing campaign that year.',
@@ -197,20 +204,29 @@ export const task1UnderstandingLesson: Lesson = {
           'In my opinion, the museum should receive more government funding.',
         ],
         correctIndex: 0,
-        explain:
-          'Only the first sentence reports what the chart actually shows, with real figures and no added comment. The second guesses at a CAUSE the chart does not state ("probably due to"); the third adds a value judgement ("a very positive sign"); the fourth is a direct personal opinion with a recommendation. Explaining causes, judging whether something is good, and recommending action are three of the most common beginner habits in Task 1 — and all three cost marks however fluent the English is.',
+        explain: {
+          en: 'Only the first sentence reports what the chart actually shows, with real figures and no added comment. The second guesses at a CAUSE the chart does not state ("probably due to"); the third adds a value judgement ("a very positive sign"); the fourth is a direct personal opinion with a recommendation. Explaining causes, judging whether something is good, and recommending action are three of the most common beginner habits in Task 1 — and all three cost marks however fluent the English is.',
+          bn: 'শুধু প্রথম বাক্যটা chart আসলে যা দেখাচ্ছে সেটা report করছে, real figure দিয়ে, কোনো অতিরিক্ত মন্তব্য ছাড়া। দ্বিতীয়টা chart-এ না থাকা একটা CAUSE অনুমান করছে ("probably due to"); তৃতীয়টা একটা value judgement যোগ করছে ("a very positive sign"); চতুর্থটা সরাসরি একটা ব্যক্তিগত opinion recommendation সহ। কারণ ব্যাখ্যা করা, কোনো কিছু ভালো কিনা বিচার করা, আর recommend করা — এই তিনটাই Task 1-এ নতুনদের সবচেয়ে সাধারণ অভ্যাস — আর English যত ভালোই হোক, এই তিনটাই নম্বর কাটে।',
+        },
       },
     },
     {
       id: 'paraphrase-technique',
       kind: 'guided',
-      title: 'Guided practice: paraphrasing a question',
-      trainerMessage:
-        'Paraphrasing means changing the words and the sentence structure while keeping every important fact exactly the same — names, dates, units, categories and numbers. Forcing an unfamiliar synonym that changes the meaning is worse than a plain, accurate sentence.',
-      hint: 'Check: did the wording and structure change, and did every fact (dates, countries, topic) survive unchanged?',
+      title: { en: 'Guided practice: paraphrasing a question', bn: 'Guided practice: একটা প্রশ্ন paraphrase করা' },
+      trainerMessage: {
+        en: 'Paraphrasing means changing the words and the sentence structure while keeping every important fact exactly the same — names, dates, units, categories and numbers. Forcing an unfamiliar synonym that changes the meaning is worse than a plain, accurate sentence.',
+        bn: 'Paraphrasing মানে হলো শব্দ আর বাক্যের structure বদলানো, কিন্তু প্রতিটা গুরুত্বপূর্ণ তথ্য — নাম, তারিখ, unit, category আর সংখ্যা — ঠিক একইরকম রাখা। অর্থ বদলে দেয় এমন একটা অপরিচিত synonym জোর করে ব্যবহার করা একটা সাদামাটা কিন্তু সঠিক বাক্যের চেয়েও খারাপ।',
+      },
+      hint: {
+        en: 'Check: did the wording and structure change, and did every fact (dates, countries, topic) survive unchanged?',
+        bn: 'চেক করো: শব্দ আর structure কি বদলেছে, আর প্রতিটা তথ্য (তারিখ, দেশ, topic) কি অপরিবর্তিত থেকেছে?',
+      },
       check: {
-        prompt:
-          'Task 1 question: "The chart below shows the percentage of households with internet access in three countries between 2005 and 2020." Which of these is the BEST paraphrase for your introduction?',
+        prompt: {
+          en: 'Task 1 question: "The chart below shows the percentage of households with internet access in three countries between 2005 and 2020." Which of these is the BEST paraphrase for your introduction?',
+          bn: 'Task 1 question: "The chart below shows the percentage of households with internet access in three countries between 2005 and 2020." তোমার introduction-এর জন্য এর মধ্যে কোনটা সবচেয়ে ভালো paraphrase?',
+        },
         options: [
           'The chart below shows the percentage of households with internet access in three countries between 2005 and 2020.',
           'The given chart illustrates the proportion of homes with internet connections in three countries from 2005 to 2020.',
@@ -218,35 +234,50 @@ export const task1UnderstandingLesson: Lesson = {
           'The graph shows the percentage of three countries between 2005 until 2020.',
         ],
         correctIndex: 1,
-        explain:
-          'A good paraphrase changes both the words ("shows" → "illustrates", "percentage of households with" → "proportion of homes with") and the structure, while every fact survives — three countries, 2005 to 2020, and internet access. Option 1 is not paraphrased at all, just copied. Option 3 drops the key facts (which countries, which dates) and drifts into an unsupported opinion ("huge improvement"). Option 4 tries to change the wording but loses the topic ("internet access") entirely and creates a grammar mistake ("between... until") — a forced, inaccurate synonym is often worse than a safe, accurate one.',
+        explain: {
+          en: 'A good paraphrase changes both the words ("shows" → "illustrates", "percentage of households with" → "proportion of homes with") and the structure, while every fact survives — three countries, 2005 to 2020, and internet access. Option 1 is not paraphrased at all, just copied. Option 3 drops the key facts (which countries, which dates) and drifts into an unsupported opinion ("huge improvement"). Option 4 tries to change the wording but loses the topic ("internet access") entirely and creates a grammar mistake ("between... until") — a forced, inaccurate synonym is often worse than a safe, accurate one.',
+          bn: 'একটা ভালো paraphrase শব্দ ("shows" → "illustrates", "percentage of households with" → "proportion of homes with") আর structure দুটোই বদলায়, আর প্রতিটা তথ্য টিকে থাকে — তিনটা দেশ, ২০০৫ থেকে ২০২০, আর internet access। Option 1 আসলে paraphrase-ই না, শুধু copy করা। Option 3 গুরুত্বপূর্ণ তথ্য (কোন দেশ, কোন তারিখ) বাদ দিয়ে একটা unsupported opinion-এ চলে যায় ("huge improvement")। Option 4 শব্দ বদলানোর চেষ্টা করে কিন্তু topic-টাই ("internet access") হারিয়ে ফেলে আর একটা grammar ভুল তৈরি করে ("between... until") — একটা জোর করে বসানো, ভুল synonym অনেক সময় একটা safe, সঠিক synonym-এর চেয়ে খারাপ।',
+        },
       },
     },
     {
       id: 'self-correction',
       kind: 'review',
-      title: 'Self-correction checklist',
-      trainerMessage: 'Before you submit any Task 1 response — today\'s practice included — run it against this checklist.',
+      title: { en: 'Self-correction checklist', bn: 'নিজে যাচাই করার checklist' },
+      trainerMessage: {
+        en: "Before you submit any Task 1 response — today's practice included — run it against this checklist.",
+        bn: 'যেকোনো Task 1 response জমা দেওয়ার আগে — আজকের practice-ও বাদ না — এই checklist দিয়ে একবার যাচাই করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Does my introduction paraphrase the question without copying it word for word, and without losing any key fact? Have I left out any opinion, any individual figures, and any explanation of causes? Is there one overview sentence, separate from the introduction, naming the one or two biggest patterns? Do my body paragraphs use selected, real figures and comparisons rather than opinion or a list of every number? Have I avoided words like "I think", "should", or "probably because" anywhere in the response? Is it at least 150 words?',
-          'In order of how often they appear, the most common beginner mistakes are: giving an opinion or recommendation (Task 2 behaviour); guessing at causes the visual does not state; copying the question instead of paraphrasing it; forgetting the overview entirely; and trying to report every single figure instead of selecting the ones that matter most.',
+          {
+            en: 'Does my introduction paraphrase the question without copying it word for word, and without losing any key fact? Have I left out any opinion, any individual figures, and any explanation of causes? Is there one overview sentence, separate from the introduction, naming the one or two biggest patterns? Do my body paragraphs use selected, real figures and comparisons rather than opinion or a list of every number? Have I avoided words like "I think", "should", or "probably because" anywhere in the response? Is it at least 150 words?',
+            bn: 'আমার introduction কি প্রশ্নটা হুবহু copy না করে, কোনো key fact না হারিয়ে paraphrase করছে? আমি কি কোনো opinion, আলাদা আলাদা figure, বা কারণের ব্যাখ্যা বাদ দিয়েছি? introduction থেকে আলাদা, সবচেয়ে বড় এক বা দুইটা pattern বলা একটা overview বাক্য আছে কি? আমার body paragraph-গুলো কি opinion বা প্রতিটা সংখ্যার তালিকার বদলে বেছে নেওয়া, real figure আর comparison ব্যবহার করছে? আমি কি response-এ কোথাও "I think", "should", বা "probably because"-এর মতো শব্দ এড়িয়ে গেছি? এটা কি অন্তত ১৫০ শব্দের?',
+          },
+          {
+            en: 'In order of how often they appear, the most common beginner mistakes are: giving an opinion or recommendation (Task 2 behaviour); guessing at causes the visual does not state; copying the question instead of paraphrasing it; forgetting the overview entirely; and trying to report every single figure instead of selecting the ones that matter most.',
+            bn: 'কতবার দেখা যায় সেই ক্রমে, নতুনদের সবচেয়ে সাধারণ ভুলগুলো হলো: একটা opinion বা recommendation দেওয়া (Task 2-এর আচরণ); visual-এ না থাকা কারণ অনুমান করা; paraphrase না করে প্রশ্নটা copy করা; overview একেবারেই ভুলে যাওয়া; আর গুরুত্বপূর্ণ figure বেছে নেওয়ার বদলে প্রতিটা সংখ্যা report করার চেষ্টা করা।',
+          },
         ],
       },
     },
     {
       id: 'readiness',
       kind: 'review',
-      title: 'Ready to write',
-      trainerMessage:
-        "You now know what Task 1 actually asks for, how Introduction, Overview and Body work together, and how to paraphrase a question accurately. Next, you'll write just the introduction for a new Task 1 question — nothing else. Keep it short, accurate, and completely free of opinion, figures or causes; that belongs to later lessons.",
+      title: { en: 'Ready to write', bn: 'লেখার জন্য প্রস্তুত' },
+      trainerMessage: {
+        en: "You now know what Task 1 actually asks for, how Introduction, Overview and Body work together, and how to paraphrase a question accurately. Next, you'll write just the introduction for a new Task 1 question — nothing else. Keep it short, accurate, and completely free of opinion, figures or causes; that belongs to later lessons.",
+        bn: 'এখন তুমি জানো Task 1 আসলে কী চায়, Introduction, Overview আর Body কীভাবে একসাথে কাজ করে, আর কীভাবে একটা প্রশ্ন নির্ভুলভাবে paraphrase করতে হয়। এরপর, তুমি শুধু একটা নতুন Task 1 প্রশ্নের introduction লিখবে — আর কিছু না। এটা ছোট, সঠিক, আর opinion, figure বা কারণ থেকে সম্পূর্ণ মুক্ত রাখো; সেগুলো পরের lesson-এ আসবে।',
+      },
     },
   ],
   finalPrompt: {
-    title: 'Write an accurate introduction',
-    instructions:
-      'Here is a new Task 1 question: "The graphs below show the average monthly temperature and rainfall in two cities over one year." Write ONLY the introduction — one or two sentences that paraphrase this question accurately. Keep every key fact unchanged (both cities, both measurements — temperature and rainfall — and the one-year period) while changing the wording and structure. Do not add an overview, any figures, or any opinion; those come in later lessons.',
+    title: { en: 'Write an accurate introduction', bn: 'একটা সঠিক introduction লেখো' },
+    instructions: {
+      en: 'Here is a new Task 1 question: "The graphs below show the average monthly temperature and rainfall in two cities over one year." Write ONLY the introduction — one or two sentences that paraphrase this question accurately. Keep every key fact unchanged (both cities, both measurements — temperature and rainfall — and the one-year period) while changing the wording and structure. Do not add an overview, any figures, or any opinion; those come in later lessons.',
+      bn: 'এখানে একটা নতুন Task 1 প্রশ্ন দেওয়া হলো: "The graphs below show the average monthly temperature and rainfall in two cities over one year." শুধু introduction-টা লেখো — এক বা দুইটা বাক্য যা এই প্রশ্নটা নির্ভুলভাবে paraphrase করে। প্রতিটা key fact অপরিবর্তিত রাখো (দুইটা শহর, দুইটা measurement — temperature আর rainfall — আর এক বছরের সময়কাল) আর একইসাথে শব্দ ও structure বদলাও। কোনো overview, figure, বা opinion যোগ করো না; সেগুলো পরের lesson-এ আসবে।',
+    },
     minWords: 20,
     skillFocus: 'Paraphrasing accuracy for a Task 1 introduction',
     checkScope: 'introduction-only',

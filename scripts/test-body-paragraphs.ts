@@ -42,7 +42,7 @@ const WORKED =
   "Denmark recorded the highest proportion throughout the period, with its share rising steadily from 14% in 2000 to 62% in 2020. This represented an increase of 48 percentage points and meant that its final figure was more than four times the initial level. Although Country B also experienced substantial growth, increasing from 6% to 27%, Country C rose more gradually from 9% to 16%.";
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, localize('en', lesson.finalPrompt.instructions)];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
     parts.push(localize('en', s.trainerMessage));
     const m = s.material;

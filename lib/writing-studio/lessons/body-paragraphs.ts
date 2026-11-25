@@ -237,136 +237,212 @@ export const bodyParagraphsLesson: Lesson = {
     {
       id: 'comparisons',
       kind: 'explain',
-      title: 'Comparison Is More Than Mentioning Two Numbers',
-      trainerMessage:
-        'A comparison explains the relationship between two or more pieces of information. Simply placing two numbers in the same sentence does not automatically create a meaningful comparison.',
+      title: { en: 'Comparison Is More Than Mentioning Two Numbers', bn: 'Comparison মানে শুধু দুটো সংখ্যা উল্লেখ করা না' },
+      trainerMessage: {
+        en: 'A comparison explains the relationship between two or more pieces of information. Simply placing two numbers in the same sentence does not automatically create a meaningful comparison.',
+        bn: 'একটা comparison দুই বা তার বেশি তথ্যের মধ্যে সম্পর্ক ব্যাখ্যা করে। শুধু একই বাক্যে দুটো সংখ্যা বসালেই সেটা একটা অর্থপূর্ণ comparison হয়ে যায় না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Weak: "Country B was 6% in 2000. Country C was 9% in 2000." Better: "Country C initially had a higher share than Country B, at 9% compared with 6%."',
-          'Weak: "Country B was 27% in 2020. Country C was 16% in 2020." Better: "By 2020, Country B had moved ahead of Country C, reaching 27% compared with 16%."',
-          'Useful comparison language: compared with, whereas, while, by contrast, respectively, higher than, lower than, more than four times its initial level (for Denmark: 62 against 14).',
-          'Accuracy rule: use "respectively" only when the order of the figures clearly matches the order of the categories.',
+          {
+            en: 'Weak: "Country B was 6% in 2000. Country C was 9% in 2000." Better: "Country C initially had a higher share than Country B, at 9% compared with 6%."',
+            bn: 'দুর্বল: "Country B was 6% in 2000. Country C was 9% in 2000." ভালো: "Country C initially had a higher share than Country B, at 9% compared with 6%."',
+          },
+          {
+            en: 'Weak: "Country B was 27% in 2020. Country C was 16% in 2020." Better: "By 2020, Country B had moved ahead of Country C, reaching 27% compared with 16%."',
+            bn: 'দুর্বল: "Country B was 27% in 2020. Country C was 16% in 2020." ভালো: "By 2020, Country B had moved ahead of Country C, reaching 27% compared with 16%."',
+          },
+          {
+            en: 'Useful comparison language: compared with, whereas, while, by contrast, respectively, higher than, lower than, more than four times its initial level (for Denmark: 62 against 14).',
+            bn: 'কাজের comparison language: compared with, whereas, while, by contrast, respectively, higher than, lower than, more than four times its initial level (Denmark-এর জন্য: 62 against 14)।',
+          },
+          {
+            en: 'Accuracy rule: use "respectively" only when the order of the figures clearly matches the order of the categories.',
+            bn: 'নির্ভুলতার নিয়ম: "respectively" তখনই ব্যবহার করো যখন figure-এর order category-র order-এর সাথে স্পষ্টভাবে মিলে যায়।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence makes the most meaningful comparison?',
+        prompt: { en: 'Which sentence makes the most meaningful comparison?', bn: 'কোন বাক্যটা সবচেয়ে অর্থপূর্ণ comparison করে?' },
         options: [
           'Country C initially led Country B by 3 percentage points, but Country B had moved ahead by 2010.',
           'Country B was 6% and Country C was 9%.',
           'Country B and Country C both had percentages.',
         ],
         correctIndex: 0,
-        explain: 'It explains how the relationship changed over time and supports the comparison with accurate figures (9% against 6% in 2000; 12% against 11% in 2010).',
+        explain: {
+          en: 'It explains how the relationship changed over time and supports the comparison with accurate figures (9% against 6% in 2000; 12% against 11% in 2010).',
+          bn: 'এটা ব্যাখ্যা করে সময়ের সাথে সম্পর্কটা কীভাবে বদলেছে, আর সঠিক figure দিয়ে comparison-টা support করে (২০০০-এ 9% against 6%; ২০১০-এ 12% against 11%)।',
+        },
       },
     },
     {
       id: 'support-evidence',
       kind: 'explain',
-      title: 'Every Important Claim Needs Evidence',
-      trainerMessage:
-        'A body paragraph should not contain unsupported statements. If you say that one category grew considerably faster, you should be able to show the reader why.',
+      title: { en: 'Every Important Claim Needs Evidence', bn: 'প্রতিটা গুরুত্বপূর্ণ claim-এর evidence দরকার' },
+      trainerMessage: {
+        en: 'A body paragraph should not contain unsupported statements. If you say that one category grew considerably faster, you should be able to show the reader why.',
+        bn: 'একটা body paragraph-এ unsupported statement থাকা উচিত না। যদি তুমি বলো একটা category অনেক বেশি দ্রুত বেড়েছে, তাহলে পাঠককে সেটা কেন বলছ তা দেখাতে পারতে হবে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Claim: "Denmark experienced the strongest growth." Supporting evidence: "Its share rose by 48 percentage points, from 14% to 62%, compared with increases of 21 points in Country B and 7 points in Country C." The evidence makes the claim verifiable.',
-          'Three rules: 1. Make the comparison first. 2. Select the figures that support it. 3. Explain the relationship clearly.',
-          'Do not invent reasons. Incorrect: "Denmark\'s renewable electricity increased because the government invested more money." The chart does not provide information about government investment. Better: "Denmark\'s share increased substantially over the period." This reports only what the chart demonstrates.',
+          {
+            en: 'Claim: "Denmark experienced the strongest growth." Supporting evidence: "Its share rose by 48 percentage points, from 14% to 62%, compared with increases of 21 points in Country B and 7 points in Country C." The evidence makes the claim verifiable.',
+            bn: 'Claim: "Denmark experienced the strongest growth." Supporting evidence: "Its share rose by 48 percentage points, from 14% to 62%, compared with increases of 21 points in Country B and 7 points in Country C." এই evidence claim-টাকে verifiable করে তোলে।',
+          },
+          { en: 'Three rules: 1. Make the comparison first. 2. Select the figures that support it. 3. Explain the relationship clearly.', bn: 'তিনটা নিয়ম: ১. প্রথমে comparison করো। ২. সেটাকে support করে এমন figure বেছে নাও। ৩. সম্পর্কটা স্পষ্টভাবে ব্যাখ্যা করো।' },
+          {
+            en: 'Do not invent reasons. Incorrect: "Denmark\'s renewable electricity increased because the government invested more money." The chart does not provide information about government investment. Better: "Denmark\'s share increased substantially over the period." This reports only what the chart demonstrates.',
+            bn: 'কারণ বানিয়ে নিও না। ভুল: "Denmark\'s renewable electricity increased because the government invested more money." chart সরকারের investment নিয়ে কোনো তথ্য দেয় না। ভালো: "Denmark\'s share increased substantially over the period." এটা শুধু chart যা দেখায় তাই report করে।',
+          },
         ],
       },
       check: {
-        prompt: 'The chart shows Country B increasing from 6% to 27%. Which claim is supported?',
+        prompt: { en: 'The chart shows Country B increasing from 6% to 27%. Which claim is supported?', bn: 'chart দেখাচ্ছে Country B 6% থেকে 27%-এ বেড়েছে। কোন claim-টা support করা হয়েছে?' },
         options: [
           'Country B increased because its government introduced new policies.',
           "Country B's share increased by 21 percentage points.",
           'Country B became more environmentally responsible.',
         ],
         correctIndex: 1,
-        explain: 'The chart supports the numerical change (27 − 6 = 21 percentage points). It does not reveal the cause or intentions behind it.',
+        explain: {
+          en: 'The chart supports the numerical change (27 − 6 = 21 percentage points). It does not reveal the cause or intentions behind it.',
+          bn: 'chart সংখ্যাগত পরিবর্তনটা support করে (27 − 6 = 21 percentage points)। এটা এর পেছনের কারণ বা উদ্দেশ্য প্রকাশ করে না।',
+        },
       },
     },
     {
       id: 'paragraph-structure',
       kind: 'explain',
-      title: 'How to Develop One Body Paragraph',
-      trainerMessage:
-        'A body paragraph needs a clear direction. The reader should understand what you are discussing and why the details belong together. This is a planning framework, not a compulsory four-sentence formula: you can combine functions in one sentence or use more sentences when necessary.',
+      title: { en: 'How to Develop One Body Paragraph', bn: 'একটা Body Paragraph কীভাবে Develop করবে' },
+      trainerMessage: {
+        en: 'A body paragraph needs a clear direction. The reader should understand what you are discussing and why the details belong together. This is a planning framework, not a compulsory four-sentence formula: you can combine functions in one sentence or use more sentences when necessary.',
+        bn: 'একটা body paragraph-এর একটা স্পষ্ট দিক দরকার। পাঠকের বোঝা উচিত তুমি কী নিয়ে আলোচনা করছ আর কেন detail-গুলো একসাথে গেছে। এটা একটা planning framework, বাধ্যতামূলক চার-বাক্যের formula না: প্রয়োজনে তুমি এক বাক্যে একাধিক function একসাথে করতে পারো, বা বেশি বাক্যও ব্যবহার করতে পারো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          '1. Main comparison or organising sentence: introduce the group or relationship you are describing. 2. Supporting detail: provide the most useful figures. 3. Comparison or development: explain how the categories differ or how their values changed. 4. Closing detail or link: add a relevant final observation that completes the comparison.',
-          'Worked example: "Denmark recorded the highest proportion throughout the period, with its share rising steadily from 14% in 2000 to 62% in 2020. This represented an increase of 48 percentage points and meant that its final figure was more than four times the initial level. Although Country B also experienced substantial growth, increasing from 6% to 27%, Country C rose more gradually from 9% to 16%."',
-          'Why it works: one clear organising idea (Denmark\'s leading position and growth); accurate supporting figures; a meaningful comparison with the other countries; no invented explanations; and no unnecessary repetition of the overview.',
+          {
+            en: '1. Main comparison or organising sentence: introduce the group or relationship you are describing. 2. Supporting detail: provide the most useful figures. 3. Comparison or development: explain how the categories differ or how their values changed. 4. Closing detail or link: add a relevant final observation that completes the comparison.',
+            bn: '১. মূল comparison বা organising বাক্য: যে group বা সম্পর্ক তুমি বর্ণনা করছ সেটার পরিচয় দাও। ২. Supporting detail: সবচেয়ে কাজের figure-গুলো দাও। ৩. Comparison বা development: category-গুলো কীভাবে আলাদা বা তাদের value কীভাবে বদলেছে তা ব্যাখ্যা করো। ৪. Closing detail বা link: comparison-টা সম্পূর্ণ করে এমন একটা প্রাসঙ্গিক শেষ observation যোগ করো।',
+          },
+          {
+            en: 'Worked example: "Denmark recorded the highest proportion throughout the period, with its share rising steadily from 14% in 2000 to 62% in 2020. This represented an increase of 48 percentage points and meant that its final figure was more than four times the initial level. Although Country B also experienced substantial growth, increasing from 6% to 27%, Country C rose more gradually from 9% to 16%."',
+            bn: 'একটা worked example: "Denmark recorded the highest proportion throughout the period, with its share rising steadily from 14% in 2000 to 62% in 2020. This represented an increase of 48 percentage points and meant that its final figure was more than four times the initial level. Although Country B also experienced substantial growth, increasing from 6% to 27%, Country C rose more gradually from 9% to 16%."',
+          },
+          {
+            en: "Why it works: one clear organising idea (Denmark's leading position and growth); accurate supporting figures; a meaningful comparison with the other countries; no invented explanations; and no unnecessary repetition of the overview.",
+            bn: 'কেন এটা কাজ করে: একটা স্পষ্ট organising idea (Denmark-এর leading position আর growth); সঠিক supporting figure; বাকি দেশগুলোর সাথে একটা অর্থপূর্ণ comparison; কোনো বানানো ব্যাখ্যা নেই; আর overview-এর অপ্রয়োজনীয় repetition নেই।',
+          },
         ],
       },
       check: {
-        prompt: "What should a body paragraph's first sentence usually help establish?",
+        prompt: { en: "What should a body paragraph's first sentence usually help establish?", bn: 'একটা body paragraph-এর প্রথম বাক্য সাধারণত কী স্থাপন করতে সাহায্য করে?' },
         options: [
           'An unrelated fact from the chart.',
           "The writer's personal opinion.",
           'The group, trend or comparison that the paragraph will develop.',
         ],
         correctIndex: 2,
-        explain: 'The opening should give the paragraph direction. It does not need a memorised phrase or a fixed sentence pattern.',
+        explain: {
+          en: 'The opening should give the paragraph direction. It does not need a memorised phrase or a fixed sentence pattern.',
+          bn: 'শুরুর বাক্যটা paragraph-কে একটা দিক দেওয়া উচিত। এর জন্য কোনো মুখস্থ phrase বা নির্দিষ্ট বাক্য-pattern লাগে না।',
+        },
       },
     },
     {
       id: 'cohesion',
       kind: 'explain',
-      title: 'Connect Ideas Naturally',
-      trainerMessage:
-        'A paragraph can contain accurate sentences and still feel disconnected. Cohesion helps the reader follow the relationship between them. However, adding linking words everywhere does not automatically improve writing.',
+      title: { en: 'Connect Ideas Naturally', bn: 'স্বাভাবিকভাবে Idea Connect করো' },
+      trainerMessage: {
+        en: 'A paragraph can contain accurate sentences and still feel disconnected. Cohesion helps the reader follow the relationship between them. However, adding linking words everywhere does not automatically improve writing.',
+        bn: 'একটা paragraph-এ সঠিক বাক্য থাকার পরও disconnected মনে হতে পারে। Cohesion পাঠককে বাক্যগুলোর মধ্যের সম্পর্ক বুঝতে সাহায্য করে। তবে, সবখানে linking word বসালেই লেখা automatically ভালো হয়ে যায় না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Useful relationships. Contrast: whereas, while, by contrast, compared with. Addition: also, similarly, in addition. Time: initially, by 2010, over the following years, by the end of the period. Reference: this figure, this increase, the corresponding proportion.',
-          'Weak example: "Denmark increased. Moreover, Country B increased. Furthermore, Country C increased. In addition, Denmark was highest."',
-          'Better example: "Denmark\'s share rose sharply throughout the period, whereas Country C experienced a much more gradual increase. Country B followed a stronger upward trend than Country C and had moved ahead of it by 2010." The second example connects the information through meaningful relationships, not excessive linking words.',
+          {
+            en: 'Useful relationships. Contrast: whereas, while, by contrast, compared with. Addition: also, similarly, in addition. Time: initially, by 2010, over the following years, by the end of the period. Reference: this figure, this increase, the corresponding proportion.',
+            bn: 'কাজের সম্পর্ক। Contrast: whereas, while, by contrast, compared with। Addition: also, similarly, in addition। Time: initially, by 2010, over the following years, by the end of the period। Reference: this figure, this increase, the corresponding proportion।',
+          },
+          {
+            en: 'Weak example: "Denmark increased. Moreover, Country B increased. Furthermore, Country C increased. In addition, Denmark was highest."',
+            bn: 'দুর্বল উদাহরণ: "Denmark increased. Moreover, Country B increased. Furthermore, Country C increased. In addition, Denmark was highest."',
+          },
+          {
+            en: 'Better example: "Denmark\'s share rose sharply throughout the period, whereas Country C experienced a much more gradual increase. Country B followed a stronger upward trend than Country C and had moved ahead of it by 2010." The second example connects the information through meaningful relationships, not excessive linking words.',
+            bn: 'ভালো উদাহরণ: "Denmark\'s share rose sharply throughout the period, whereas Country C experienced a much more gradual increase. Country B followed a stronger upward trend than Country C and had moved ahead of it by 2010." দ্বিতীয় উদাহরণটা অর্থপূর্ণ সম্পর্ক দিয়ে তথ্য connect করে, অতিরিক্ত linking word দিয়ে না।',
+          },
         ],
       },
       check: {
-        prompt: 'Which option uses cohesion more naturally?',
+        prompt: { en: 'Which option uses cohesion more naturally?', bn: 'কোন option-টা cohesion আরও স্বাভাবিকভাবে ব্যবহার করে?' },
         options: [
           '"Country B grew more strongly than Country C, while Denmark remained well ahead of both."',
           '"Moreover, furthermore, in addition, Denmark increased."',
           '"Firstly, secondly, thirdly, the chart has countries."',
         ],
         correctIndex: 0,
-        explain: 'It uses contrast and comparison to connect the data. Cohesion should express a genuine relationship, not pile up linking words.',
+        explain: {
+          en: 'It uses contrast and comparison to connect the data. Cohesion should express a genuine relationship, not pile up linking words.',
+          bn: 'এটা তথ্য connect করতে contrast আর comparison ব্যবহার করে। Cohesion একটা আসল সম্পর্ক প্রকাশ করা উচিত, শুধু linking word জমানো না।',
+        },
       },
     },
     {
       id: 'common-mistakes',
       kind: 'demonstrate',
-      title: 'Body Paragraph Mistake Clinic',
-      trainerMessage:
-        "Let's examine the mistakes that prevent an otherwise accurate paragraph from becoming a well-developed one. Then you will check whether you can spot four of them.",
+      title: { en: 'Body Paragraph Mistake Clinic', bn: 'Body Paragraph Mistake Clinic' },
+      trainerMessage: {
+        en: "Let's examine the mistakes that prevent an otherwise accurate paragraph from becoming a well-developed one. Then you will check whether you can spot four of them.",
+        bn: 'চলো দেখি সেই ভুলগুলো যেগুলোর কারণে একটা অন্যথায় সঠিক paragraph ভালোভাবে develop হতে পারে না। তারপর তুমি চেক করবে এগুলোর মধ্যে চারটা ধরতে পারো কিনা।',
+      },
       material: {
         type: 'vocab',
         items: [
           {
             phrase: 'Mistake 1 — Data dumping',
-            use: 'Weak: "Denmark was 14%, 21%, 33%, 48% and 62%." Problem: the figures are listed without explaining their relationship. Improvement: "Denmark\'s share rose steadily from 14% to 62%."',
+            use: {
+              en: 'Weak: "Denmark was 14%, 21%, 33%, 48% and 62%." Problem: the figures are listed without explaining their relationship. Improvement: "Denmark\'s share rose steadily from 14% to 62%."',
+              bn: 'দুর্বল: "Denmark was 14%, 21%, 33%, 48% and 62%." সমস্যা: figure-গুলো তাদের সম্পর্ক ব্যাখ্যা না করে শুধু তালিকা করা হয়েছে। উন্নতি: "Denmark\'s share rose steadily from 14% to 62%."',
+            },
           },
           {
             phrase: 'Mistake 2 — Repeating the overview',
-            use: 'Weak: "Overall, Denmark had the highest figure and the others increased." Problem: this repeats the broad summary without developing it. Improvement: add the specific values and comparisons that support the observation.',
+            use: {
+              en: 'Weak: "Overall, Denmark had the highest figure and the others increased." Problem: this repeats the broad summary without developing it. Improvement: add the specific values and comparisons that support the observation.',
+              bn: 'দুর্বল: "Overall, Denmark had the highest figure and the others increased." সমস্যা: এটা বড় summary-টা develop না করে শুধু repeat করছে। উন্নতি: observation-টাকে support করে এমন নির্দিষ্ট value আর comparison যোগ করো।',
+            },
           },
           {
             phrase: 'Mistake 3 — Unsupported causes',
-            use: 'Weak: "Country B grew because of better government policies." Problem: the chart does not show why the figures changed. Improvement: report the observed increase without inventing its cause.',
+            use: {
+              en: 'Weak: "Country B grew because of better government policies." Problem: the chart does not show why the figures changed. Improvement: report the observed increase without inventing its cause.',
+              bn: 'দুর্বল: "Country B grew because of better government policies." সমস্যা: figure কেন বদলেছে chart সেটা দেখায় না। উন্নতি: কারণ না বানিয়ে শুধু দেখা increase-টা report করো।',
+            },
           },
           {
             phrase: 'Mistake 4 — Incorrect comparisons',
-            use: 'Weak: "Country B was 27% higher than Country C in 2020." Problem: this is ambiguous and confuses a value of 27% with a relative difference (the gap is 11 percentage points). Improvement: "Country B stood at 27%, compared with 16% in Country C."',
+            use: {
+              en: 'Weak: "Country B was 27% higher than Country C in 2020." Problem: this is ambiguous and confuses a value of 27% with a relative difference (the gap is 11 percentage points). Improvement: "Country B stood at 27%, compared with 16% in Country C."',
+              bn: 'দুর্বল: "Country B was 27% higher than Country C in 2020." সমস্যা: এটা অস্পষ্ট আর 27% value-কে একটা relative difference-এর সাথে গুলিয়ে ফেলে (আসল gap 11 percentage points)। উন্নতি: "Country B stood at 27%, compared with 16% in Country C."',
+            },
           },
           {
             phrase: 'Mistake 5 — Repetition',
-            use: 'Weak: "Denmark increased. Denmark rose. Denmark went up." Problem: the same observation is repeated without adding information. Improvement: combine the trend with relevant evidence and comparison.',
+            use: {
+              en: 'Weak: "Denmark increased. Denmark rose. Denmark went up." Problem: the same observation is repeated without adding information. Improvement: combine the trend with relevant evidence and comparison.',
+              bn: 'দুর্বল: "Denmark increased. Denmark rose. Denmark went up." সমস্যা: একই observation নতুন তথ্য ছাড়া বারবার বলা হচ্ছে। উন্নতি: trend-টাকে প্রাসঙ্গিক evidence আর comparison-এর সাথে combine করো।',
+            },
           },
           {
             phrase: 'Mistake 6 — Wrong figures or attribution',
-            use: 'Weak: "Country C reached 27% in 2020." Problem: 27% belongs to Country B. Country C reached 16%. Improvement: always verify the category, year and value before writing.',
+            use: {
+              en: 'Weak: "Country C reached 27% in 2020." Problem: 27% belongs to Country B. Country C reached 16%. Improvement: always verify the category, year and value before writing.',
+              bn: 'দুর্বল: "Country C reached 27% in 2020." সমস্যা: 27% আসলে Country B-র। Country C পৌঁছেছিল 16%-এ। উন্নতি: লেখার আগে সবসময় category, year আর value যাচাই করো।',
+            },
           },
         ],
       },
@@ -374,10 +450,10 @@ export const bodyParagraphsLesson: Lesson = {
     {
       id: 'clinic',
       kind: 'check',
-      title: 'Mistake Clinic (1 of 4)',
-      trainerMessage: 'A learner writes: "Country C increased because people preferred clean energy."',
+      title: { en: 'Mistake Clinic (1 of 4)', bn: 'Mistake Clinic (১ এর ৪)' },
+      trainerMessage: { en: 'A learner writes: "Country C increased because people preferred clean energy."', bn: 'একজন learner লিখেছে: "Country C increased because people preferred clean energy."' },
       check: {
-        prompt: 'What is wrong?',
+        prompt: { en: 'What is wrong?', bn: 'এখানে কী ভুল আছে?' },
         options: [
           'The figure for Country C is missing.',
           'An unsupported cause has been invented.',
@@ -385,16 +461,19 @@ export const bodyParagraphsLesson: Lesson = {
           'It repeats the introduction.',
         ],
         correctIndex: 1,
-        explain: 'The chart shows that Country C increased, not why. A Task 1 paragraph must not invent reasons or attribute motives to people.',
+        explain: {
+          en: 'The chart shows that Country C increased, not why. A Task 1 paragraph must not invent reasons or attribute motives to people.',
+          bn: 'chart দেখায় Country C বেড়েছে, কিন্তু কেন বেড়েছে তা দেখায় না। একটা Task 1 paragraph-এ কারণ বানানো বা মানুষের motive-কে দায়ী করা যাবে না।',
+        },
       },
     },
     {
       id: 'clinic-2',
       kind: 'check',
-      title: 'Mistake Clinic (2 of 4)',
-      trainerMessage: 'A learner writes: "Denmark was 14%, 21%, 33%, 48% and 62%."',
+      title: { en: 'Mistake Clinic (2 of 4)', bn: 'Mistake Clinic (২ এর ৪)' },
+      trainerMessage: { en: 'A learner writes: "Denmark was 14%, 21%, 33%, 48% and 62%."', bn: 'একজন learner লিখেছে: "Denmark was 14%, 21%, 33%, 48% and 62%."' },
       check: {
-        prompt: 'What is missing?',
+        prompt: { en: 'What is missing?', bn: 'এখানে কী বাদ পড়েছে?' },
         options: [
           'The figures for Country B and Country C only.',
           'An opinion about renewable energy.',
@@ -402,17 +481,19 @@ export const bodyParagraphsLesson: Lesson = {
           'A reason for the increase.',
         ],
         correctIndex: 2,
-        explain:
-          'The figures are accurate, but they are only listed. The reader needs to know what they show (a steady rise) and how that compares with the other countries. An opinion or a reason would add unsupported content.',
+        explain: {
+          en: 'The figures are accurate, but they are only listed. The reader needs to know what they show (a steady rise) and how that compares with the other countries. An opinion or a reason would add unsupported content.',
+          bn: 'figure-গুলো সঠিক, কিন্তু শুধু তালিকা করা হয়েছে। পাঠকের জানা দরকার এগুলো কী দেখাচ্ছে (একটা steady rise) আর বাকি দেশগুলোর সাথে এটা কীভাবে তুলনা হয়। একটা opinion বা কারণ unsupported content যোগ করবে।',
+        },
       },
     },
     {
       id: 'clinic-3',
       kind: 'check',
-      title: 'Mistake Clinic (3 of 4)',
-      trainerMessage: 'A learner writes: "Country C reached 27% in 2020."',
+      title: { en: 'Mistake Clinic (3 of 4)', bn: 'Mistake Clinic (৩ এর ৪)' },
+      trainerMessage: { en: 'A learner writes: "Country C reached 27% in 2020."', bn: 'একজন learner লিখেছে: "Country C reached 27% in 2020."' },
       check: {
-        prompt: 'What is wrong?',
+        prompt: { en: 'What is wrong?', bn: 'এখানে কী ভুল আছে?' },
         options: [
           'The figure is attributed to the wrong country; Country C was 16%.',
           'The year is wrong: Country C reached 27% in 2015.',
@@ -420,16 +501,22 @@ export const bodyParagraphsLesson: Lesson = {
           'Nothing; the statement is accurate.',
         ],
         correctIndex: 0,
-        explain: 'In 2020, 27% belongs to Country B; Country C was 16% (and only 13% in 2015). Always verify the category, year and value before writing.',
+        explain: {
+          en: 'In 2020, 27% belongs to Country B; Country C was 16% (and only 13% in 2015). Always verify the category, year and value before writing.',
+          bn: '২০২০ সালে 27% আসলে Country B-র; Country C ছিল 16% (আর ২০১৫-এ মাত্র 13%)। লেখার আগে সবসময় category, year আর value যাচাই করো।',
+        },
       },
     },
     {
       id: 'clinic-4',
       kind: 'check',
-      title: 'Mistake Clinic (4 of 4)',
-      trainerMessage: 'A learner writes, in a body paragraph: "Overall, Denmark was the highest and increased."',
+      title: { en: 'Mistake Clinic (4 of 4)', bn: 'Mistake Clinic (৪ এর ৪)' },
+      trainerMessage: {
+        en: 'A learner writes, in a body paragraph: "Overall, Denmark was the highest and increased."',
+        bn: 'একজন learner একটা body paragraph-এ লিখেছে: "Overall, Denmark was the highest and increased."',
+      },
       check: {
-        prompt: 'Why is this weak in a body paragraph?',
+        prompt: { en: 'Why is this weak in a body paragraph?', bn: 'একটা body paragraph-এ এটা কেন দুর্বল?' },
         options: [
           'It uses a linking word.',
           'It is too long.',
@@ -437,15 +524,20 @@ export const bodyParagraphsLesson: Lesson = {
           'It describes the wrong chart.',
         ],
         correctIndex: 2,
-        explain: 'It makes a general statement that belongs in the overview. A body paragraph should add the supporting figures and comparisons, for example the rise from 14% to 62%.',
+        explain: {
+          en: 'It makes a general statement that belongs in the overview. A body paragraph should add the supporting figures and comparisons, for example the rise from 14% to 62%.',
+          bn: 'এটা একটা general statement দেয় যেটা overview-তে থাকা উচিত। একটা body paragraph-এ supporting figure আর comparison যোগ করা উচিত, যেমন 14% থেকে 62%-এ বৃদ্ধি।',
+        },
       },
     },
     {
       id: 'plan-paragraph',
       kind: 'guided',
-      title: 'Build Your Paragraph Plan',
-      trainerMessage:
-        'Before writing, create a short plan. Do not start by writing full sentences. Work through four planning tasks on the chart: choose a focus, select evidence, order your ideas, and spot an unsupported statement.',
+      title: { en: 'Build Your Paragraph Plan', bn: 'তোমার Paragraph-এর Plan তৈরি করো' },
+      trainerMessage: {
+        en: 'Before writing, create a short plan. Do not start by writing full sentences. Work through four planning tasks on the chart: choose a focus, select evidence, order your ideas, and spot an unsupported statement.',
+        bn: 'লেখার আগে, একটা ছোট plan তৈরি করো। পুরো বাক্য লেখা দিয়ে শুরু করো না। chart-টার ওপর চারটা planning task কাজ করো: একটা focus বেছে নাও, evidence বেছে নাও, তোমার idea-গুলো order করো, আর একটা unsupported statement খুঁজে বের করো।',
+      },
       material: {
         type: 'chart-board',
         dataset: CHART_DATASETS['renewable-electricity'],
@@ -453,8 +545,10 @@ export const bodyParagraphsLesson: Lesson = {
           {
             id: 'plan-focus',
             order: 1,
-            prompt:
-              'Task 1 — Choose the paragraph focus. Which focus would create a coherent paragraph? A: Denmark\'s dominant position and growth, compared with the other countries. B: Randomly describing one figure from each year. C: Explaining why the countries adopted renewable electricity.',
+            prompt: {
+              en: 'Task 1 — Choose the paragraph focus. Which focus would create a coherent paragraph? A: Denmark\'s dominant position and growth, compared with the other countries. B: Randomly describing one figure from each year. C: Explaining why the countries adopted renewable electricity.',
+              bn: 'Task 1 — Paragraph-এর focus বেছে নাও। কোন focus একটা coherent paragraph তৈরি করবে? A: Denmark-এর dominant position আর growth, বাকি দেশগুলোর সাথে তুলনা করে। B: প্রতি বছর থেকে random একটা figure বর্ণনা করা। C: কেন দেশগুলো renewable electricity নিয়েছে তা ব্যাখ্যা করা।',
+            },
             modelAnswer:
               'A. It gives the paragraph one organising idea that the chart supports. B has no organising idea and C needs information the chart does not contain.',
             belongsIn: 'body',
@@ -462,8 +556,10 @@ export const bodyParagraphsLesson: Lesson = {
           {
             id: 'plan-evidence',
             order: 2,
-            prompt:
-              'Task 2 — Select supporting figures. For Denmark (14% to 62%), Country B (6% to 27%) and Country C (9% to 16%), say what each comparison demonstrates.',
+            prompt: {
+              en: 'Task 2 — Select supporting figures. For Denmark (14% to 62%), Country B (6% to 27%) and Country C (9% to 16%), say what each comparison demonstrates.',
+              bn: 'Task 2 — Supporting figure বেছে নাও। Denmark (14% থেকে 62%), Country B (6% থেকে 27%) আর Country C (9% থেকে 16%)-এর জন্য, প্রতিটা comparison কী দেখাচ্ছে তা বলো।',
+            },
             modelAnswer:
               'Denmark: the highest final figure and the largest increase. Country B: substantial growth. Country C: more gradual growth.',
             belongsIn: 'body',
@@ -471,15 +567,20 @@ export const bodyParagraphsLesson: Lesson = {
           {
             id: 'plan-order',
             order: 3,
-            prompt:
-              'Task 3 — Create a logical sequence. Put these in order: 1. Compare Country B\'s growth with Country C\'s. 2. Introduce Denmark\'s leading position. 3. Support the comparison with starting and ending values.',
+            prompt: {
+              en: 'Task 3 — Create a logical sequence. Put these in order: 1. Compare Country B\'s growth with Country C\'s. 2. Introduce Denmark\'s leading position. 3. Support the comparison with starting and ending values.',
+              bn: 'Task 3 — একটা যৌক্তিক sequence তৈরি করো। এগুলোকে order করো: ১. Country B-র growth-এর সাথে Country C-র তুলনা করা। ২. Denmark-এর leading position পরিচয় করানো। ৩. শুরু আর শেষের value দিয়ে comparison-টা support করা।',
+            },
             modelAnswer: '2, then 3, then 1: introduce Denmark\'s leading position, support it with starting and ending values, then compare Country B\'s growth with Country C\'s.',
             belongsIn: 'body',
           },
           {
             id: 'plan-unsupported',
             order: 4,
-            prompt: 'Task 4 — Identify the unsupported statement: "Country B overtook Country C because its government invested more in renewable energy." What is wrong with it?',
+            prompt: {
+              en: 'Task 4 — Identify the unsupported statement: "Country B overtook Country C because its government invested more in renewable energy." What is wrong with it?',
+              bn: 'Task 4 — unsupported statement-টা খুঁজে বের করো: "Country B overtook Country C because its government invested more in renewable energy." এখানে কী সমস্যা আছে?',
+            },
             modelAnswer:
               'The cause is unsupported. The chart shows the change in values (Country B moved ahead of Country C by 2010), not the reason for it.',
             belongsIn: 'body',
@@ -490,15 +591,18 @@ export const bodyParagraphsLesson: Lesson = {
     {
       id: 'weak-vs-developed',
       kind: 'demonstrate',
-      title: 'Learn from a Complete Example',
-      trainerMessage: 'Read both paragraphs about the same chart. Notice what changed, not just the wording.',
+      title: { en: 'Learn from a Complete Example', bn: 'একটা পূর্ণ উদাহরণ থেকে শেখো' },
+      trainerMessage: { en: 'Read both paragraphs about the same chart. Notice what changed, not just the wording.', bn: 'একই chart নিয়ে দুটো paragraph পড়ো। শুধু শব্দ না, কী বদলেছে সেটা খেয়াল করো।' },
       material: {
         type: 'examples',
         weak:
           'Denmark was 14% in 2000 and 21% in 2005. Country B was 6% and 8%. Country C was 9% and 10%. In 2010 Denmark was 33%, Country B was 12% and Country C was 11%. All countries increased. Denmark was the highest.',
         good:
           "Denmark consistently recorded the highest proportion of renewable electricity, with its share rising from 14% in 2000 to 62% in 2020. This 48-percentage-point increase was substantially greater than the rises recorded by Country B and Country C. Country B's figure climbed from 6% to 27%, whereas Country C experienced more gradual growth, reaching 16% from an initial 9%. Consequently, Country B had moved ahead of Country C by 2010 and widened the gap to 11 percentage points by the end of the period.",
-        note: 'The weak paragraph presents data mechanically, makes limited comparisons, ends on a sentence that repeats an obvious observation, and has no clear organising structure. The developed paragraph is stronger because it has a clear organising idea, figures that support each comparison, an explained relationship between Country B and Country C, precise language, and no claim to know why the figures changed.',
+        note: {
+          en: 'The weak paragraph presents data mechanically, makes limited comparisons, ends on a sentence that repeats an obvious observation, and has no clear organising structure. The developed paragraph is stronger because it has a clear organising idea, figures that support each comparison, an explained relationship between Country B and Country C, precise language, and no claim to know why the figures changed.',
+          bn: 'দুর্বল paragraph-টা তথ্য যান্ত্রিকভাবে উপস্থাপন করে, সীমিত comparison করে, একটা স্পষ্ট observation repeat করে শেষ হয়, আর এর কোনো স্পষ্ট organising structure নেই। developed paragraph-টা শক্তিশালী কারণ এতে একটা স্পষ্ট organising idea আছে, প্রতিটা comparison-কে support করে এমন figure আছে, Country B আর Country C-র মধ্যে সম্পর্ক ব্যাখ্যা করা আছে, সুনির্দিষ্ট ভাষা আছে, আর figure কেন বদলেছে তা জানার কোনো দাবি নেই।',
+        },
       },
     },
     {

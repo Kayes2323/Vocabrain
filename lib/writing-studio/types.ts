@@ -166,8 +166,8 @@ export interface Lesson {
   id: string;
   task: TaskId;
   moduleId: string;
-  title: string;
-  objective: string;
+  title: L10n;
+  objective: L10n;
   estMinutes: number;
   steps: LessonStep[];
   finalPrompt: FinalPrompt;

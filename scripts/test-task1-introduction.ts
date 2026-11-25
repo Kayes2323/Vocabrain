@@ -31,14 +31,14 @@ const STRONG = 'The bar chart compares the proportions of commuters travelling b
 const INACCURATE = 'The chart compares the number of people using different transport systems in two cities from 2010 to 2023.';
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, i.use]));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, localize('en', i.use)]));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -82,7 +82,7 @@ test('every check step has four options, a valid correctIndex and a meaningful e
     assert.ok(s.check, s.id);
     assert.equal(s.check.options.length, 4, s.id);
     assert.ok(Number.isInteger(s.check.correctIndex) && s.check.correctIndex >= 0 && s.check.correctIndex < 4, s.id);
-    assert.ok(s.check.explain.length > 40, s.id);
+    assert.ok(localize('en', s.check.explain).length > 40, s.id);
     assert.equal(new Set(s.check.options).size, 4, `${s.id}: duplicate options`);
   }
 });
@@ -100,7 +100,7 @@ test('clinic correct answers are the accurate options (0-based 1, 0, 1, 0)', () 
 test('step 8 example 1 keeps the agent: "workers manufacture glass bottles", and says so', () => {
   const m = lesson.steps.find((x) => x.id === 'grammar-structure')!.material;
   assert.ok(m && m.type === 'text');
-  const ex = m.paragraphs.find((p) => p.startsWith('Example 1'))!;
+  const ex = m.paragraphs.map((p) => localize('en', p)).find((p) => p.startsWith('Example 1'))!;
   assert.ok(ex.includes('Original: "The diagram shows how workers produce glass bottles."'));
   assert.ok(ex.includes('Alternative: "The process diagram illustrates how workers manufacture glass bottles."'));
   assert.ok(!ex.includes('glass bottles are produced."'), 'the agent-dropping passive must not be offered as the alternative');
@@ -153,7 +153,7 @@ test('the lesson keeps the deliberately wrong commute-style example only as an e
 test('each "preserve vs inaccurate" pairing in step 3 uses the dataset facts (percentage, one city, five, 2010 and 2023)', () => {
   const s = lesson.steps.find((x) => x.id === 'break-down-question')!.material;
   assert.ok(s && s.type === 'text');
-  const t = s.paragraphs.join('\n');
+  const t = s.paragraphs.map((p) => localize('en', p)).join('\n');
   assert.match(t, /Categories → five transport methods/);
   assert.match(t, /Location → one city/);
   assert.match(t, /Time → 2010 and 2023/);
@@ -162,8 +162,8 @@ test('each "preserve vs inaccurate" pairing in step 3 uses the dataset facts (pe
 test('the independent-practice step repeats the exact question the final prompt uses', () => {
   const m = lesson.steps.find((x) => x.id === 'independent-practice')!.material;
   assert.ok(m && m.type === 'text');
-  assert.ok(m.paragraphs[0].includes(QUESTION));
-  assert.ok(lesson.finalPrompt.instructions.includes(QUESTION));
+  assert.ok(localize('en', m.paragraphs[0]).includes(QUESTION));
+  assert.ok(localize('en', lesson.finalPrompt.instructions).includes(QUESTION));
 });
 
 // ---------------------------------------------------------------- final prompt
@@ -178,7 +178,7 @@ test('final prompt is an introduction-only skill drill on the commute chart', ()
   assert.equal(deriveScope(lesson), 'introduction-only');
 });
 test('final instructions ask for ONE introduction only: no full response, no 150 words, no reflection sentence', () => {
-  const i = lesson.finalPrompt.instructions;
+  const i = localize('en', lesson.finalPrompt.instructions);
   assert.match(i, /Write ONE concise introduction/);
   assert.match(i, /Write only the introduction\./);
   assert.match(i, /Do not add an overview, individual figures, personal opinions, or unsupported explanations/);

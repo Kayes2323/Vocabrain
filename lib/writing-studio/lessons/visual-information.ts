@@ -233,26 +233,45 @@ export const visualInformationLesson: Lesson = {
     {
       id: 'key-features',
       kind: 'explain',
-      title: 'What Deserves Your Attention?',
-      trainerMessage:
-        'A chart may contain many values, but a good Task 1 response does not describe every single one. You must select the most significant information.',
+      title: { en: 'What Deserves Your Attention?', bn: 'কোনটা তোমার attention পাওয়ার যোগ্য?' },
+      trainerMessage: {
+        en: 'A chart may contain many values, but a good Task 1 response does not describe every single one. You must select the most significant information.',
+        bn: 'একটা chart-এ অনেক value থাকতে পারে, কিন্তু একটা ভালো Task 1 response প্রতিটা describe করে না। তোমাকে সবচেয়ে গুরুত্বপূর্ণ তথ্যটা বাছাই করতে হবে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Look for the biggest overall patterns: the highest or lowest category, the largest increase or decrease, an unchanged value, an unusual difference, or a clear contrast between groups.',
-          'A strong overview gives the reader the main message of the visual. It does not become a list of numbers.',
-          'For our commuting chart, two highly significant features are that car use remained the most common method in both years despite a considerable decline, while bicycle use rose sharply and narrowed the gap.',
-          'Walking remained unchanged, but that is a secondary feature. It may be useful in a body paragraph, but it is not necessarily the most important headline.',
-          'Selection is not the same as ignoring data randomly. You select information because it helps explain the most important patterns.',
+          {
+            en: 'Look for the biggest overall patterns: the highest or lowest category, the largest increase or decrease, an unchanged value, an unusual difference, or a clear contrast between groups.',
+            bn: 'সবচেয়ে বড় overall pattern-গুলো খোঁজো: সর্বোচ্চ বা সর্বনিম্ন category, সবচেয়ে বড় বৃদ্ধি বা হ্রাস, একটা অপরিবর্তিত value, একটা অস্বাভাবিক পার্থক্য, বা group-এর মধ্যে স্পষ্ট বৈপরীত্য।',
+          },
+          {
+            en: 'A strong overview gives the reader the main message of the visual. It does not become a list of numbers.',
+            bn: 'একটা জোরালো overview পাঠককে visual-এর মূল message দেয়। এটা সংখ্যার তালিকা হয়ে যায় না।',
+          },
+          {
+            en: 'For our commuting chart, two highly significant features are that car use remained the most common method in both years despite a considerable decline, while bicycle use rose sharply and narrowed the gap.',
+            bn: 'আমাদের commuting chart-এ দুইটা খুব গুরুত্বপূর্ণ feature হলো — যথেষ্ট কমার পরও car use দুই বছরেই সবচেয়ে জনপ্রিয় method ছিল, আর bicycle use তীব্রভাবে বেড়ে ব্যবধান কমিয়ে ফেলেছে।',
+          },
+          {
+            en: 'Walking remained unchanged, but that is a secondary feature. It may be useful in a body paragraph, but it is not necessarily the most important headline.',
+            bn: 'Walking অপরিবর্তিত ছিল, কিন্তু এটা একটা secondary feature। এটা body paragraph-এ কাজে আসতে পারে, কিন্তু এটাই সবচেয়ে গুরুত্বপূর্ণ headline না।',
+          },
+          {
+            en: 'Selection is not the same as ignoring data randomly. You select information because it helps explain the most important patterns.',
+            bn: 'বাছাই করা মানে এলোমেলোভাবে data উপেক্ষা করা না। তুমি তথ্য বাছাই করো কারণ সেটা সবচেয়ে গুরুত্বপূর্ণ pattern-গুলো ব্যাখ্যা করতে সাহায্য করে।',
+          },
         ],
       },
     },
     {
       id: 'guided-analysis',
       kind: 'guided',
-      title: 'Read the Commuting Chart Step by Step',
-      trainerMessage:
-        'Now you will apply the method to a real chart inside Mino. Do not rush. Answer each question using the chart itself, not your memory or guesswork.',
+      title: { en: 'Read the Commuting Chart Step by Step', bn: 'Commuting Chart ধাপে ধাপে পড়ো' },
+      trainerMessage: {
+        en: 'Now you will apply the method to a real chart inside Mino. Do not rush. Answer each question using the chart itself, not your memory or guesswork.',
+        bn: 'এবার Mino-র ভেতরে একটা আসল chart-এ এই method apply করবে। তাড়াহুড়া কোরো না। মনে রাখা বা আন্দাজ না করে, chart দেখেই প্রতিটা প্রশ্নের উত্তর দাও।',
+      },
       material: {
         type: 'chart-board',
         dataset: CHART_DATASETS['commute-methods'],
@@ -260,42 +279,45 @@ export const visualInformationLesson: Lesson = {
           {
             id: 'identify-unit',
             order: 1,
-            prompt: 'What is being measured, and what is the unit?',
+            prompt: { en: 'What is being measured, and what is the unit?', bn: 'কী measure করা হচ্ছে, আর unit কী?' },
             modelAnswer: 'The chart compares the main methods of travelling to work, measured as a percentage of commuters.',
             belongsIn: 'overview',
           },
           {
             id: 'identify-period',
             order: 2,
-            prompt: 'Which two years are being compared?',
+            prompt: { en: 'Which two years are being compared?', bn: 'কোন দুইটা বছর তুলনা করা হচ্ছে?' },
             modelAnswer: 'The chart compares 2010 and 2023.',
             belongsIn: 'overview',
           },
           {
             id: 'car-direction',
             order: 3,
-            prompt: 'How did car use change between the two years? Include the correct figures.',
+            prompt: { en: 'How did car use change between the two years? Include the correct figures.', bn: 'দুই বছরের মধ্যে car use কীভাবে বদলেছে? সঠিক figure সহ লেখো।' },
             modelAnswer: 'Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points.',
             belongsIn: 'body',
           },
           {
             id: 'bicycle-direction',
             order: 4,
-            prompt: 'Which method experienced the largest relative increase, and what were its starting and ending values?',
+            prompt: {
+              en: 'Which method experienced the largest relative increase, and what were its starting and ending values?',
+              bn: 'কোন method-এ সবচেয়ে বেশি relative বৃদ্ধি হয়েছে, আর এর শুরু আর শেষের value কত ছিল?',
+            },
             modelAnswer: 'Bicycle use experienced the largest relative increase, rising from 6% in 2010 to 19% in 2023.',
             belongsIn: 'body',
           },
           {
             id: 'stable-category',
             order: 5,
-            prompt: 'Which category remained unchanged?',
+            prompt: { en: 'Which category remained unchanged?', bn: 'কোন category অপরিবর্তিত ছিল?' },
             modelAnswer: 'Walking remained unchanged at 7% in both years.',
             belongsIn: 'body',
           },
           {
             id: 'headline',
             order: 6,
-            prompt: 'What is the most important overall pattern that a reader should notice?',
+            prompt: { en: 'What is the most important overall pattern that a reader should notice?', bn: 'পাঠকের লক্ষ্য করা উচিত এমন সবচেয়ে গুরুত্বপূর্ণ overall pattern-টা কী?' },
             modelAnswer: 'Car use remained the most common commuting method despite declining, while bicycle use rose sharply and narrowed the gap.',
             belongsIn: 'overview',
           },
@@ -308,11 +330,16 @@ export const visualInformationLesson: Lesson = {
     {
       id: 'misreading-clinic',
       kind: 'check',
-      title: 'Can You Spot the Misreading? (1 of 4)',
-      trainerMessage:
-        "Let's test whether you can catch mistakes that may look convincing but misrepresent the chart.",
+      title: { en: 'Can You Spot the Misreading? (1 of 4)', bn: 'ভুল পড়াটা কি ধরতে পারবে? (১ এর মধ্যে ১)' },
+      trainerMessage: {
+        en: "Let's test whether you can catch mistakes that may look convincing but misrepresent the chart.",
+        bn: 'চলো দেখি, দেখতে convincing মনে হলেও chart-কে ভুলভাবে উপস্থাপন করা ভুলগুলো তুমি ধরতে পারো কিনা।',
+      },
       check: {
-        prompt: "The chart measures the percentage of commuters. A student writes: 'There were 52 car users in 2010.' What is wrong?",
+        prompt: {
+          en: "The chart measures the percentage of commuters. A student writes: 'There were 52 car users in 2010.' What is wrong?",
+          bn: "chart-টা commuter-দের percentage measure করে। একজন student লিখেছে: 'There were 52 car users in 2010.' এখানে ভুলটা কোথায়?",
+        },
         options: [
           'The sentence uses too many words.',
           'The student changed a percentage into an absolute number.',
@@ -320,16 +347,19 @@ export const visualInformationLesson: Lesson = {
           'The student should describe the weather.',
         ],
         correctIndex: 1,
-        explain: 'The chart reports 52% of commuters, not 52 individual people. The unit must remain accurate.',
+        explain: {
+          en: 'The chart reports 52% of commuters, not 52 individual people. The unit must remain accurate.',
+          bn: 'chart-টা 52% commuter report করছে, 52 জন মানুষ না। unit সঠিক রাখতে হবে।',
+        },
       },
     },
     {
       id: 'misreading-clinic-2',
       kind: 'check',
-      title: 'Can You Spot the Misreading? (2 of 4)',
-      trainerMessage: 'Next: direction and size of change. Check the subtraction before you choose.',
+      title: { en: 'Can You Spot the Misreading? (2 of 4)', bn: 'ভুল পড়াটা কি ধরতে পারবে? (২ এর মধ্যে ২)' },
+      trainerMessage: { en: 'Next: direction and size of change. Check the subtraction before you choose.', bn: 'এবার: পরিবর্তনের direction আর size। বেছে নেওয়ার আগে বিয়োগটা চেক করো।' },
       check: {
-        prompt: 'Car use fell from 52% in 2010 to 38% in 2023. Which statement is accurate?',
+        prompt: { en: 'Car use fell from 52% in 2010 to 38% in 2023. Which statement is accurate?', bn: 'Car use 2010-এ 52% থেকে 2023-এ 38%-এ নেমেছে। কোন statement-টা সঠিক?' },
         options: [
           'Car use increased by 14 percentage points.',
           'Car use decreased by 14 percentage points.',
@@ -337,16 +367,16 @@ export const visualInformationLesson: Lesson = {
           'Car use remained stable.',
         ],
         correctIndex: 1,
-        explain: '52 − 38 = 14 percentage points. The direction is downward, so it is a decrease.',
+        explain: { en: '52 − 38 = 14 percentage points. The direction is downward, so it is a decrease.', bn: '52 − 38 = 14 percentage point। direction নিচের দিকে, তাই এটা একটা হ্রাস।' },
       },
     },
     {
       id: 'misreading-clinic-3',
       kind: 'check',
-      title: 'Can You Spot the Misreading? (3 of 4)',
-      trainerMessage: 'Now a stable category. Match your wording to what actually happened.',
+      title: { en: 'Can You Spot the Misreading? (3 of 4)', bn: 'ভুল পড়াটা কি ধরতে পারবে? (৩ এর মধ্যে ৩)' },
+      trainerMessage: { en: 'Now a stable category. Match your wording to what actually happened.', bn: 'এবার একটা stable category। যা আসলে ঘটেছে, তোমার ভাষা সেটার সাথে মিলাও।' },
       check: {
-        prompt: 'Walking accounted for 7% in both 2010 and 2023. Which description is most accurate?',
+        prompt: { en: 'Walking accounted for 7% in both 2010 and 2023. Which description is most accurate?', bn: '2010 আর 2023, দুই বছরেই Walking 7% ছিল। কোন description-টা সবচেয়ে সঠিক?' },
         options: [
           'Walking use rose sharply.',
           'Walking use fell considerably.',
@@ -354,16 +384,16 @@ export const visualInformationLesson: Lesson = {
           'Walking became the most popular method.',
         ],
         correctIndex: 2,
-        explain: 'The value is exactly 7% in both years, so it remained unchanged.',
+        explain: { en: 'The value is exactly 7% in both years, so it remained unchanged.', bn: 'দুই বছরেই value ঠিক 7%, তাই এটা অপরিবর্তিত ছিল।' },
       },
     },
     {
       id: 'misreading-clinic-4',
       kind: 'check',
-      title: 'Can You Spot the Misreading? (4 of 4)',
-      trainerMessage: 'Last one: choose the interpretation that a reader could rely on.',
+      title: { en: 'Can You Spot the Misreading? (4 of 4)', bn: 'ভুল পড়াটা কি ধরতে পারবে? (৪ এর মধ্যে ৪)' },
+      trainerMessage: { en: 'Last one: choose the interpretation that a reader could rely on.', bn: 'শেষটা: এমন একটা interpretation বেছে নাও যেটার ওপর একজন পাঠক ভরসা করতে পারে।' },
       check: {
-        prompt: 'Which is the strongest overall interpretation of the commuting chart?',
+        prompt: { en: 'Which is the strongest overall interpretation of the commuting chart?', bn: 'commuting chart-এর সবচেয়ে জোরালো overall interpretation কোনটা?' },
         options: [
           'Every commuting method increased between 2010 and 2023.',
           'Car use remained the largest category, while bicycle use rose substantially.',
@@ -371,30 +401,49 @@ export const visualInformationLesson: Lesson = {
           'The chart proves that the government encouraged cycling.',
         ],
         correctIndex: 1,
-        explain: 'Option 2 accurately identifies two major patterns. Option 4 invents a cause that the chart does not provide.',
+        explain: {
+          en: 'Option 2 accurately identifies two major patterns. Option 4 invents a cause that the chart does not provide.',
+          bn: 'Option 2 সঠিকভাবে দুইটা major pattern চিহ্নিত করে। Option 4 এমন একটা কারণ বানিয়ে বলে যা chart-এ নেই।',
+        },
       },
     },
     {
       id: 'independent-review',
       kind: 'review',
-      title: 'Your Chart-Reading Checklist',
-      trainerMessage:
-        'You have now practised reading the chart before writing. Your next job is to apply the same method independently. A strong writer does not simply notice numbers; a strong writer understands what those numbers mean.',
+      title: { en: 'Your Chart-Reading Checklist', bn: 'তোমার Chart-Reading Checklist' },
+      trainerMessage: {
+        en: 'You have now practised reading the chart before writing. Your next job is to apply the same method independently. A strong writer does not simply notice numbers; a strong writer understands what those numbers mean.',
+        bn: 'তুমি এখন লেখার আগে chart পড়ার practice করেছ। তোমার পরের কাজ হলো একই method নিজে নিজে apply করা। একজন ভালো লেখক শুধু সংখ্যা দেখে না; সে বোঝে ওই সংখ্যাগুলোর মানে কী।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Before writing any Task 1 response, ask yourself: What is the subject? What is the unit? Which periods or categories are shown? What does each series represent? Is the visual showing change over time or a static comparison?',
-          'Then ask: What increased? What decreased? What remained stable? Which category is highest or lowest? Which one or two patterns are most significant?',
-          'Finally, check your interpretation. Have you reversed a year? Confused a percentage with a number? Mixed up percentage points and percentage growth? Added a cause or opinion that the visual never stated?',
-          'You are ready to write only when you can explain the main message of the visual accurately in your own words.',
+          {
+            en: 'Before writing any Task 1 response, ask yourself: What is the subject? What is the unit? Which periods or categories are shown? What does each series represent? Is the visual showing change over time or a static comparison?',
+            bn: 'যেকোনো Task 1 response লেখার আগে নিজেকে জিজ্ঞেস করো: subject কী? unit কী? কোন period বা category দেখানো হয়েছে? প্রতিটা series কী represent করছে? visual-টা কি সময়ের সাথে পরিবর্তন, নাকি একটা static comparison দেখাচ্ছে?',
+          },
+          {
+            en: 'Then ask: What increased? What decreased? What remained stable? Which category is highest or lowest? Which one or two patterns are most significant?',
+            bn: 'তারপর জিজ্ঞেস করো: কী বেড়েছে? কী কমেছে? কী স্থিতিশীল থেকেছে? কোন category সর্বোচ্চ বা সর্বনিম্ন? কোন এক বা দুইটা pattern সবচেয়ে গুরুত্বপূর্ণ?',
+          },
+          {
+            en: 'Finally, check your interpretation. Have you reversed a year? Confused a percentage with a number? Mixed up percentage points and percentage growth? Added a cause or opinion that the visual never stated?',
+            bn: 'শেষে, নিজের interpretation চেক করো। কোনো বছর উল্টে ফেলোনি তো? percentage-কে সংখ্যার সাথে গুলিয়ে ফেলোনি তো? percentage point আর percentage growth গুলিয়ে ফেলোনি তো? এমন কোনো কারণ বা মতামত যোগ করোনি তো যেটা visual-এ বলা নেই?',
+          },
+          {
+            en: 'You are ready to write only when you can explain the main message of the visual accurately in your own words.',
+            bn: 'তুমি লেখার জন্য তখনই প্রস্তুত, যখন visual-টার মূল message নিজের ভাষায় সঠিকভাবে ব্যাখ্যা করতে পারবে।',
+          },
         ],
       },
     },
   ],
   finalPrompt: {
-    title: 'Write the Main Message of the Chart',
-    instructions:
-      'Using the commuting chart you have just analysed, write a concise two-sentence overview of its most significant features. Your overview should: identify the main pattern in car use; identify the major change in bicycle use; use the correct direction of change; preserve the correct categories and time comparison; avoid listing every figure; and avoid unsupported explanations or personal opinions. Do not write an introduction or body paragraph. Focus only on communicating the main message accurately.',
+    title: { en: 'Write the Main Message of the Chart', bn: 'Chart-এর মূল Message লেখো' },
+    instructions: {
+      en: 'Using the commuting chart you have just analysed, write a concise two-sentence overview of its most significant features. Your overview should: identify the main pattern in car use; identify the major change in bicycle use; use the correct direction of change; preserve the correct categories and time comparison; avoid listing every figure; and avoid unsupported explanations or personal opinions. Do not write an introduction or body paragraph. Focus only on communicating the main message accurately.',
+      bn: 'তুমি এইমাত্র যে commuting chart-টা analyse করেছ, সেটা ব্যবহার করে এর সবচেয়ে গুরুত্বপূর্ণ feature-গুলোর একটা সংক্ষিপ্ত দুই-বাক্যের overview লেখো। তোমার overview-তে থাকা উচিত: car use-এর মূল pattern চিহ্নিত করা; bicycle use-এর বড় পরিবর্তন চিহ্নিত করা; পরিবর্তনের সঠিক direction ব্যবহার করা; সঠিক category আর time comparison ঠিক রাখা; প্রতিটা figure তালিকা না করা; আর কোনো অসমর্থিত ব্যাখ্যা বা ব্যক্তিগত মতামত এড়িয়ে চলা। কোনো introduction বা body paragraph লিখো না। শুধু মূল message সঠিকভাবে বোঝানোর দিকে focus করো।',
+    },
     minWords: 20,
     chartId: 'commute-methods',
     skillFocus: 'Chart interpretation and key-feature selection',

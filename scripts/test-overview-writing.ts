@@ -38,7 +38,7 @@ const MODEL_2 =
 const ONE_SENTENCE = 'Although car use fell, it stayed the leading method, while cycling rose sharply and walking was unchanged.';
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, localize('en', lesson.finalPrompt.instructions)];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
     parts.push(localize('en', s.trainerMessage));
     const m = s.material;

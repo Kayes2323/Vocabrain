@@ -259,129 +259,202 @@ export const task1CompleteWritingLesson: Lesson = {
     {
       id: 'body-1',
       kind: 'explain',
-      title: 'Develop Body Paragraph 1',
-      trainerMessage:
-        'The body paragraphs support the overview with relevant details and comparisons. For this chart, one sensible grouping is the two categories that declined.',
+      title: { en: 'Develop Body Paragraph 1', bn: 'Body Paragraph 1 Develop করো' },
+      trainerMessage: {
+        en: 'The body paragraphs support the overview with relevant details and comparisons. For this chart, one sensible grouping is the two categories that declined.',
+        bn: 'Body paragraph-গুলো প্রাসঙ্গিক detail আর comparison দিয়ে overview-কে support করে। এই chart-এর জন্য, যে দুইটা category কমেছে সেগুলোকে একসাথে group করাটা একটা যুক্তিসঙ্গত উপায়।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Model paragraph: "Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023."',
-          'Why it works: it reports accurate values; it compares the magnitude of the changes; it connects the figures logically; and it avoids unsupported explanations for why the changes occurred.',
+          {
+            en: 'Model paragraph: "Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023."',
+            bn: 'Model paragraph: "Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023."',
+          },
+          {
+            en: 'Why it works: it reports accurate values; it compares the magnitude of the changes; it connects the figures logically; and it avoids unsupported explanations for why the changes occurred.',
+            bn: 'এটা কেন কাজ করে: এটা নির্ভুল মান report করে; change-গুলোর magnitude তুলনা করে; figure-গুলোকে logically সংযুক্ত করে; আর change কেন হলো সেটার unsupported ব্যাখ্যা এড়িয়ে চলে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence reports the car change accurately?',
+        prompt: { en: 'Which sentence reports the car change accurately?', bn: 'কোন বাক্যটা car-এর change নির্ভুলভাবে report করে?' },
         options: [
           'Car use decreased by 14 percentage points, from 52% to 38%.',
           'Car use increased by 14 percentage points.',
           'Car use decreased by 14% from 52% to 38%.',
         ],
         correctIndex: 0,
-        explain:
-          'The difference between 52% and 38% is 14 percentage points, and the direction is a decrease. The relative decrease is approximately 26.9%, so "14%" would mix the two measures.',
+        explain: {
+          en: 'The difference between 52% and 38% is 14 percentage points, and the direction is a decrease. The relative decrease is approximately 26.9%, so "14%" would mix the two measures.',
+          bn: '52% আর 38%-এর পার্থক্য 14 percentage point, আর দিকটা হলো কমা। Relative decrease প্রায় 26.9%, তাই "14%" বললে দুইটা measure মিশে যাবে।',
+        },
       },
     },
     {
       id: 'body-2',
       kind: 'explain',
-      title: 'Develop Body Paragraph 2',
-      trainerMessage:
-        'The second body paragraph should report the remaining relevant information without repeating the overview.',
+      title: { en: 'Develop Body Paragraph 2', bn: 'Body Paragraph 2 Develop করো' },
+      trainerMessage: {
+        en: 'The second body paragraph should report the remaining relevant information without repeating the overview.',
+        bn: 'দ্বিতীয় body paragraph-এ বাকি প্রাসঙ্গিক তথ্য report করা উচিত, overview-টা আবার না বলে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Model paragraph: "In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years."',
-          'Why it works: it groups two increases and one unchanged category; it uses relevant figures; it provides comparisons without listing irrelevant detail; and it avoids claims about what happened between the two recorded years.',
+          {
+            en: 'Model paragraph: "In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years."',
+            bn: 'Model paragraph: "In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years."',
+          },
+          {
+            en: 'Why it works: it groups two increases and one unchanged category; it uses relevant figures; it provides comparisons without listing irrelevant detail; and it avoids claims about what happened between the two recorded years.',
+            bn: 'এটা কেন কাজ করে: এটা দুইটা বৃদ্ধি আর একটা অপরিবর্তিত category একসাথে group করে; প্রাসঙ্গিক figure ব্যবহার করে; অপ্রাসঙ্গিক detail ছাড়াই comparison দেয়; আর দুই বছরের মাঝে কী হয়েছিল সেই দাবি এড়িয়ে চলে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which statement is unsupported?',
+        prompt: { en: 'Which statement is unsupported?', bn: 'কোন বাক্যটা unsupported?' },
         options: [
           'Train use increased from 11% to 15%.',
           'Walking remained at 7% in both recorded years.',
           'Bicycle use increased steadily throughout the entire period.',
         ],
         correctIndex: 2,
-        explain:
-          'Only two time points are provided, so the chart does not show what happened between them. "Steadily throughout the entire period" claims a pattern the data cannot show.',
+        explain: {
+          en: 'Only two time points are provided, so the chart does not show what happened between them. "Steadily throughout the entire period" claims a pattern the data cannot show.',
+          bn: 'শুধু দুইটা সময়বিন্দু দেওয়া আছে, তাই এই দুইয়ের মাঝে কী হয়েছিল সেটা chart দেখায় না। "steadily throughout the entire period" এমন একটা pattern দাবি করছে যেটা এই data দেখাতে পারে না।',
+        },
       },
     },
     {
       id: 'complete-response',
       kind: 'demonstrate',
-      title: 'Build a Coherent Complete Response',
-      trainerMessage:
-        'Your response should read as one connected report, not four disconnected answers. Use clear paragraph organisation, appropriate reference and linking, consistent tense, accurate comparisons and relevant data, with no invented causes, predictions or explanations. Do not put a linking word into every sentence: use transitions when they clarify a relationship.',
+      title: { en: 'Build a Coherent Complete Response', bn: 'একটা সুসংগত সম্পূর্ণ Response তৈরি করো' },
+      trainerMessage: {
+        en: 'Your response should read as one connected report, not four disconnected answers. Use clear paragraph organisation, appropriate reference and linking, consistent tense, accurate comparisons and relevant data, with no invented causes, predictions or explanations. Do not put a linking word into every sentence: use transitions when they clarify a relationship.',
+        bn: 'তোমার response-টা চারটা আলাদা আলাদা উত্তর না হয়ে একটা সংযুক্ত report-এর মতো পড়া উচিত। স্পষ্ট paragraph organisation, উপযুক্ত reference আর linking, একই রকম tense, নির্ভুল comparison আর প্রাসঙ্গিক data ব্যবহার করো — কোনো বানানো কারণ, prediction বা ব্যাখ্যা ছাড়া। প্রতিটা বাক্যে linking word বসিয়ো না: যখন একটা সম্পর্ক স্পষ্ট করে তখনই transition ব্যবহার করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023.',
-          'Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged.',
-          'Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023.',
-          'In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years.',
-          'Important: this is one valid model response, not the only acceptable answer. Other accurate introductions, overviews, groupings and sentence structures also deserve credit.',
+          {
+            en: 'The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023.',
+            bn: 'The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023.',
+          },
+          {
+            en: 'Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged.',
+            bn: 'Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged.',
+          },
+          {
+            en: 'Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023.',
+            bn: 'Car use fell from 52% in 2010 to 38% in 2023, a decrease of 14 percentage points. Despite this decline, it remained considerably more popular than the other methods in 2023. Bus use also decreased, although the change was smaller, falling from 24% to 21%. Consequently, the gap between car and bus use narrowed from 28 percentage points in 2010 to 17 in 2023.',
+          },
+          {
+            en: 'In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years.',
+            bn: 'In contrast, bicycle use rose markedly from 6% to 19%, an increase of 13 percentage points, and it overtook train use, which had been higher in 2010. Train use also grew, moving from 11% to 15%. Meanwhile, the proportion of commuters who walked remained unchanged at 7% in both years.',
+          },
+          {
+            en: 'Important: this is one valid model response, not the only acceptable answer. Other accurate introductions, overviews, groupings and sentence structures also deserve credit.',
+            bn: 'গুরুত্বপূর্ণ: এটা একটা গ্রহণযোগ্য model response, এটাই একমাত্র সঠিক উত্তর না। অন্য নির্ভুল introduction, overview, grouping আর sentence structure-ও সমান কৃতিত্ব পাওয়ার যোগ্য।',
+          },
         ],
       },
     },
     {
       id: 'time-and-words',
       kind: 'explain',
-      title: 'Word Count and Time Management',
-      trainerMessage:
-        'IELTS Academic Task 1 requires at least 150 words. A practical target is approximately 160–190 words — a planning suggestion, not an official upper limit. Do not sacrifice accuracy to reach a particular word target.',
+      title: { en: 'Word Count and Time Management', bn: 'Word Count আর Time Management' },
+      trainerMessage: {
+        en: 'IELTS Academic Task 1 requires at least 150 words. A practical target is approximately 160–190 words — a planning suggestion, not an official upper limit. Do not sacrifice accuracy to reach a particular word target.',
+        bn: 'IELTS Academic Task 1-এ অন্তত 150 শব্দ লাগে। একটা practical target হলো প্রায় 160–190 শব্দ — এটা শুধু একটা planning suggestion, কোনো official upper limit না। একটা নির্দিষ্ট word target পূরণ করতে গিয়ে নির্ভুলতা বিসর্জন দিয়ো না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Suggested 20-minute allocation: analyse and plan — 3 minutes; introduction — 2 minutes; overview — 3 minutes; body paragraphs — 9 minutes; review — 3 minutes.',
+          {
+            en: 'Suggested 20-minute allocation: analyse and plan — 3 minutes; introduction — 2 minutes; overview — 3 minutes; body paragraphs — 9 minutes; review — 3 minutes.',
+            bn: 'Suggested 20-মিনিট allocation: analyse আর plan — 3 মিনিট; introduction — 2 মিনিট; overview — 3 মিনিট; body paragraph — 9 মিনিট; review — 3 মিনিট।',
+          },
         ],
       },
       check: {
-        prompt: 'What is the minimum word requirement for IELTS Academic Task 1?',
+        prompt: { en: 'What is the minimum word requirement for IELTS Academic Task 1?', bn: 'IELTS Academic Task 1-এর জন্য minimum word requirement কত?' },
         options: ['100 words.', '150 words.', '200 words.'],
         correctIndex: 1,
-        explain: 'Task 1 requires at least 150 words. Writing fewer costs marks, while a target of 160–190 is only a planning suggestion.',
+        explain: {
+          en: 'Task 1 requires at least 150 words. Writing fewer costs marks, while a target of 160–190 is only a planning suggestion.',
+          bn: 'Task 1-এ অন্তত 150 শব্দ লাগে। এর কম লিখলে নম্বর কমে, আর 160–190-এর target শুধু একটা planning suggestion।',
+        },
       },
     },
     {
       id: 'common-problems',
       kind: 'explain',
-      title: 'Common Complete-Response Problems',
-      trainerMessage: 'Learn to recognise these twelve problems in your own writing.',
+      title: { en: 'Common Complete-Response Problems', bn: 'সম্পূর্ণ Response-এর সাধারণ সমস্যা' },
+      trainerMessage: { en: 'Learn to recognise these twelve problems in your own writing.', bn: 'নিজের লেখায় এই বারোটা সমস্যা চিনতে শেখো।' },
       material: {
         type: 'vocab',
         items: [
-          { phrase: '1. No clear overview', use: 'The reader is never told the main message.' },
-          { phrase: '2. Overview with too many figures', use: 'It lists numbers instead of summarising patterns.' },
-          { phrase: '3. Incorrect data or calculations', use: 'Wrong figures, wrong categories, or percentage points confused with percentages.' },
-          { phrase: '4. Missing key features', use: 'An important pattern, such as the dominant category or largest change, is never reported.' },
-          { phrase: '5. Repetition between overview and body', use: 'The body paragraphs restate the overview without adding supporting detail.' },
-          { phrase: '6. Disorganised grouping', use: 'Categories are reported in an order that has no logic.' },
-          { phrase: '7. Unsupported explanations or predictions', use: 'Reasons or future trends that the visual does not show.' },
-          { phrase: '8. Incorrect tense', use: 'Tense that does not match the time reference.' },
-          { phrase: '9. Percentages versus percentage points', use: 'For example, "increased by 13%" for a rise from 6% to 19%.' },
-          { phrase: '10. Inaccurate collocations or structures', use: 'Unnatural word combinations or ungrammatical sentences.' },
-          { phrase: '11. Fewer than 150 words', use: 'The response is too short to cover the task.' },
-          { phrase: '12. Poor paragraph connections', use: 'The paragraphs read as separate pieces, not one report.' },
+          { phrase: '1. No clear overview', use: { en: 'The reader is never told the main message.', bn: 'পাঠককে মূল message-টা কখনো বলা হয় না।' } },
+          { phrase: '2. Overview with too many figures', use: { en: 'It lists numbers instead of summarising patterns.', bn: 'এটা pattern summarise না করে সংখ্যা তালিকা করে।' } },
+          {
+            phrase: '3. Incorrect data or calculations',
+            use: { en: 'Wrong figures, wrong categories, or percentage points confused with percentages.', bn: 'ভুল figure, ভুল category, বা percentage point-কে percentage-এর সাথে গুলিয়ে ফেলা।' },
+          },
+          {
+            phrase: '4. Missing key features',
+            use: { en: 'An important pattern, such as the dominant category or largest change, is never reported.', bn: 'dominant category বা সবচেয়ে বড় change-এর মতো একটা গুরুত্বপূর্ণ pattern কখনো report করা হয় না।' },
+          },
+          {
+            phrase: '5. Repetition between overview and body',
+            use: { en: 'The body paragraphs restate the overview without adding supporting detail.', bn: 'body paragraph support করার মতো detail যোগ না করে overview-টাই আবার বলে।' },
+          },
+          { phrase: '6. Disorganised grouping', use: { en: 'Categories are reported in an order that has no logic.', bn: 'category-গুলো এমন একটা order-এ report করা হয় যার কোনো যুক্তি নেই।' } },
+          {
+            phrase: '7. Unsupported explanations or predictions',
+            use: { en: 'Reasons or future trends that the visual does not show.', bn: 'এমন কারণ বা future trend যেটা visual-টা দেখায় না।' },
+          },
+          { phrase: '8. Incorrect tense', use: { en: 'Tense that does not match the time reference.', bn: 'সময়ের সাথে না মেলা tense।' } },
+          {
+            phrase: '9. Percentages versus percentage points',
+            use: { en: 'For example, "increased by 13%" for a rise from 6% to 19%.', bn: 'যেমন, 6% থেকে 19%-এ বাড়াকে "increased by 13%" বলা।' },
+          },
+          {
+            phrase: '10. Inaccurate collocations or structures',
+            use: { en: 'Unnatural word combinations or ungrammatical sentences.', bn: 'অস্বাভাবিক শব্দ-সমন্বয় বা ব্যাকরণগতভাবে ভুল বাক্য।' },
+          },
+          { phrase: '11. Fewer than 150 words', use: { en: 'The response is too short to cover the task.', bn: 'response-টা task কভার করার জন্য খুবই ছোট।' } },
+          {
+            phrase: '12. Poor paragraph connections',
+            use: { en: 'The paragraphs read as separate pieces, not one report.', bn: 'paragraph-গুলো একটা report না হয়ে আলাদা আলাদা অংশের মতো পড়া যায়।' },
+          },
         ],
       },
       check: {
-        prompt: 'A learner writes an accurate introduction and two detailed body paragraphs but has no overview. What is the main problem?',
+        prompt: {
+          en: 'A learner writes an accurate introduction and two detailed body paragraphs but has no overview. What is the main problem?',
+          bn: 'একজন learner নির্ভুল introduction আর দুইটা বিস্তারিত body paragraph লেখে কিন্তু কোনো overview দেয় না। মূল সমস্যাটা কী?',
+        },
         options: [
           'The response lacks a clear summary of the main features.',
           'The introduction is automatically invalid.',
           'The learner used too many paragraphs.',
         ],
         correctIndex: 0,
-        explain:
-          'Without an overview the reader is never told the main message of the visual. The introduction is not invalid, and the number of paragraphs is not the issue.',
+        explain: {
+          en: 'Without an overview the reader is never told the main message of the visual. The introduction is not invalid, and the number of paragraphs is not the issue.',
+          bn: 'overview ছাড়া পাঠককে visual-এর মূল message কখনো বলা হয় না। introduction অবৈধ না, আর paragraph-এর সংখ্যাও কোনো সমস্যা না।',
+        },
       },
     },
     {
       id: 'guided-practice',
       kind: 'guided',
-      title: 'Guided Practice: Assemble a Response',
-      trainerMessage:
-        'Now build the response one part at a time: an introduction, an overview, and two body paragraphs. Write your own version, check it, and compare it with the possible answer — other accurate phrasing and logical groupings are also acceptable. These are skill-building tasks, not full IELTS responses, and they are not scored.',
+      title: { en: 'Guided Practice: Assemble a Response', bn: 'Guided Practice: একটা Response তৈরি করো' },
+      trainerMessage: {
+        en: 'Now build the response one part at a time: an introduction, an overview, and two body paragraphs. Write your own version, check it, and compare it with the possible answer — other accurate phrasing and logical groupings are also acceptable. These are skill-building tasks, not full IELTS responses, and they are not scored.',
+        bn: 'এবার response-টা এক এক অংশ করে তৈরি করো: একটা introduction, একটা overview, আর দুইটা body paragraph। নিজের version লেখো, চেক করো, আর possible answer-এর সাথে তুলনা করো — অন্য নির্ভুল phrasing আর logical grouping-ও গ্রহণযোগ্য। এগুলো skill-building task, পুরো IELTS response না, আর এগুলো score করা হয় না।',
+      },
       material: {
         type: 'chart-board',
         dataset: CHART_DATASETS['commute-methods'],
@@ -389,8 +462,10 @@ export const task1CompleteWritingLesson: Lesson = {
           {
             id: 'task-a-introduction',
             order: 1,
-            prompt:
-              'Task A — Introduction. Write one sentence that accurately paraphrases the task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023." Keep the chart type, the five transport methods, commuters, the one city, and both years.',
+            prompt: {
+              en: 'Task A — Introduction. Write one sentence that accurately paraphrases the task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023." Keep the chart type, the five transport methods, commuters, the one city, and both years.',
+              bn: 'Task A — Introduction। একটা বাক্য লেখো যেটা task-টাকে নির্ভুলভাবে paraphrase করে: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023." chart type, পাঁচটা transport method, commuters, একটা city, আর দুটো বছরই ঠিক রাখো।',
+            },
             modelAnswer:
               'The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023. (Any accurate paraphrase that keeps those elements is fine.)',
             belongsIn: 'introduction',
@@ -398,8 +473,10 @@ export const task1CompleteWritingLesson: Lesson = {
           {
             id: 'task-b-overview',
             order: 2,
-            prompt:
-              'Task B — Overview. Write one or two sentences that identify the dominant category and the most important changes.',
+            prompt: {
+              en: 'Task B — Overview. Write one or two sentences that identify the dominant category and the most important changes.',
+              bn: 'Task B — Overview। একটা বা দুইটা বাক্য লেখো যেটা dominant category আর সবচেয়ে গুরুত্বপূর্ণ change-গুলো চিহ্নিত করে।',
+            },
             modelAnswer:
               'Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged.',
             belongsIn: 'overview',
@@ -407,7 +484,10 @@ export const task1CompleteWritingLesson: Lesson = {
           {
             id: 'task-c-car-bus',
             order: 3,
-            prompt: 'Task C — Body paragraph. Write a paragraph comparing car and bus use, with the figures for both years.',
+            prompt: {
+              en: 'Task C — Body paragraph. Write a paragraph comparing car and bus use, with the figures for both years.',
+              bn: 'Task C — Body paragraph। car আর bus use তুলনা করে একটা paragraph লেখো, দুটো বছরের figure সহ।',
+            },
             modelAnswer:
               'Car use fell from 52% to 38%, a decrease of 14 percentage points, whereas bus use declined only slightly, from 24% to 21%. Both declined, but the fall in car use was much larger, so car use remained well ahead of bus use in 2023.',
             belongsIn: 'body',
@@ -415,7 +495,10 @@ export const task1CompleteWritingLesson: Lesson = {
           {
             id: 'task-d-bicycle-train-walking',
             order: 4,
-            prompt: 'Task D — Second body paragraph. Write a paragraph comparing bicycle, train and walking, with the figures for both years.',
+            prompt: {
+              en: 'Task D — Second body paragraph. Write a paragraph comparing bicycle, train and walking, with the figures for both years.',
+              bn: 'Task D — দ্বিতীয় body paragraph। bicycle, train আর walking তুলনা করে একটা paragraph লেখো, দুটো বছরের figure সহ।',
+            },
             modelAnswer:
               'Bicycle use rose from 6% to 19%, an increase of 13 percentage points, and train use grew from 11% to 15%. Walking, by contrast, remained at 7% in both years.',
             belongsIn: 'body',
@@ -426,103 +509,130 @@ export const task1CompleteWritingLesson: Lesson = {
     {
       id: 'clinic',
       kind: 'check',
-      title: 'Misconception Clinic (1 of 6): Overview vs Detail',
-      trainerMessage: 'Each clinic question tests a different complete-response skill. First: what belongs in an overview?',
+      title: { en: 'Misconception Clinic (1 of 6): Overview vs Detail', bn: 'Misconception Clinic (1 of 6): Overview বনাম Detail' },
+      trainerMessage: {
+        en: 'Each clinic question tests a different complete-response skill. First: what belongs in an overview?',
+        bn: 'প্রতিটা clinic প্রশ্ন একটা আলাদা complete-response skill test করে। প্রথমটা: overview-তে কী থাকা উচিত?',
+      },
       check: {
-        prompt: 'Which information belongs in an overview rather than in a list of exact values?',
+        prompt: { en: 'Which information belongs in an overview rather than in a list of exact values?', bn: 'সঠিক মানের তালিকার বদলে, কোন তথ্যটা overview-তে থাকা উচিত?' },
         options: [
           'The exact figure for every category in both years.',
           'A sentence explaining why commuters changed their habits.',
           'The dominant category and the most notable change, such as car use remaining highest while bicycle use rose most.',
         ],
         correctIndex: 2,
-        explain:
-          "An overview summarises the main patterns. Exact figures belong in the body paragraphs, selected for relevance rather than listed for every category, and the reason commuters changed their habits is not shown by the chart at all.",
+        explain: {
+          en: "An overview summarises the main patterns. Exact figures belong in the body paragraphs, selected for relevance rather than listed for every category, and the reason commuters changed their habits is not shown by the chart at all.",
+          bn: 'Overview মূল pattern-গুলো summarise করে। সঠিক figure body paragraph-এ থাকে, প্রতিটা category-র জন্য তালিকা না করে প্রাসঙ্গিকতা অনুযায়ী বাছাই করা হয়, আর commuter-রা কেন তাদের অভ্যাস পাল্টেছে সেটা chart একেবারেই দেখায় না।',
+        },
       },
     },
     {
       id: 'clinic-2',
       kind: 'check',
-      title: 'Misconception Clinic (2 of 6): Percentage Points vs Relative Change',
-      trainerMessage: 'Bicycle use rose from 6% to 19%.',
+      title: { en: 'Misconception Clinic (2 of 6): Percentage Points vs Relative Change', bn: 'Misconception Clinic (2 of 6): Percentage Point বনাম Relative Change' },
+      trainerMessage: { en: 'Bicycle use rose from 6% to 19%.', bn: 'Bicycle use 6% থেকে 19%-এ বেড়েছে।' },
       check: {
-        prompt: 'What is the difference between a 13-percentage-point increase and a 216.7% relative increase?',
+        prompt: {
+          en: 'What is the difference between a 13-percentage-point increase and a 216.7% relative increase?',
+          bn: '13-percentage-point বৃদ্ধি আর 216.7% relative বৃদ্ধির মধ্যে পার্থক্য কী?',
+        },
         options: [
           'A 13-percentage-point increase is the arithmetic gap between the two percentages (19 − 6), whereas a 216.7% relative increase compares that gap with the starting figure (13 ÷ 6).',
           'They are two names for the same calculation.',
           'One applies to bicycle use and the other applies to car use.',
         ],
         correctIndex: 0,
-        explain:
-          'Percentage points subtract one percentage from the other; relative change divides that difference by the starting value. They are different calculations, and both describe the same bicycle figures.',
+        explain: {
+          en: 'Percentage points subtract one percentage from the other; relative change divides that difference by the starting value. They are different calculations, and both describe the same bicycle figures.',
+          bn: 'Percentage point একটা percentage থেকে আরেকটা বিয়োগ করে; relative change সেই পার্থক্যকে শুরুর মান দিয়ে ভাগ করে। এগুলো আলাদা হিসাব, আর দুটোই একই bicycle figure বর্ণনা করছে।',
+        },
       },
     },
     {
       id: 'clinic-3',
       kind: 'check',
-      title: 'Misconception Clinic (3 of 6): Logical Grouping',
-      trainerMessage: 'Grouping is a choice about meaning, not a fixed pattern.',
+      title: { en: 'Misconception Clinic (3 of 6): Logical Grouping', bn: 'Misconception Clinic (3 of 6): Logical Grouping' },
+      trainerMessage: { en: 'Grouping is a choice about meaning, not a fixed pattern.', bn: 'Grouping হলো অর্থ নিয়ে একটা সিদ্ধান্ত, কোনো fixed pattern না।' },
       check: {
-        prompt: 'Why might car and bus use be grouped together in one body paragraph?',
+        prompt: { en: 'Why might car and bus use be grouped together in one body paragraph?', bn: 'কেন car আর bus use একটা body paragraph-এ একসাথে group করা যেতে পারে?' },
         options: [
           'Both were the lowest categories in 2010.',
           'Both declined between 2010 and 2023, so their changes can be compared directly.',
           'Both remained unchanged.',
         ],
         correctIndex: 1,
-        explain:
-          'Car fell from 52% to 38% and bus from 24% to 21%, so they share a direction and their changes can be compared. Car was actually the highest category in 2010, and neither category was unchanged.',
+        explain: {
+          en: 'Car fell from 52% to 38% and bus from 24% to 21%, so they share a direction and their changes can be compared. Car was actually the highest category in 2010, and neither category was unchanged.',
+          bn: 'Car 52% থেকে 38%-এ আর bus 24% থেকে 21%-এ কমেছে, তাই তাদের দিক একই, আর তাদের change তুলনা করা যায়। আসলে 2010-এ car-ই সবচেয়ে বড় category ছিল, আর দুটোর কোনোটাই অপরিবর্তিত ছিল না।',
+        },
       },
     },
     {
       id: 'clinic-4',
       kind: 'check',
-      title: 'Misconception Clinic (4 of 6): Mixed Tense',
-      trainerMessage: 'Consider a response that says "Car use fell … while the chart illustrates …".',
+      title: { en: 'Misconception Clinic (4 of 6): Mixed Tense', bn: 'Misconception Clinic (4 of 6): Mixed Tense' },
+      trainerMessage: {
+        en: 'Consider a response that says "Car use fell … while the chart illustrates …".',
+        bn: '"Car use fell … while the chart illustrates …" — এমন একটা response কল্পনা করো।',
+      },
       check: {
-        prompt: 'Why can a response use past simple for the changes and present simple for what the chart illustrates?',
+        prompt: {
+          en: 'Why can a response use past simple for the changes and present simple for what the chart illustrates?',
+          bn: 'একটা response কেন change-গুলোর জন্য past simple আর chart কী illustrate করছে তার জন্য present simple ব্যবহার করতে পারে?',
+        },
         options: [
           'Because tense does not matter in Task 1.',
           'Because every verb in a Task 1 response must be in the same tense.',
           'Past simple reports completed changes between 2010 and 2023, while present simple describes what the chart shows now.',
         ],
         correctIndex: 2,
-        explain:
-          'Tense follows the time reference of each statement: completed changes take past simple, and a description of the visual itself takes present simple. Tense does matter, and there is no rule that one tense must be used throughout.',
+        explain: {
+          en: 'Tense follows the time reference of each statement: completed changes take past simple, and a description of the visual itself takes present simple. Tense does matter, and there is no rule that one tense must be used throughout.',
+          bn: 'Tense প্রতিটা বাক্যের সময়-নির্দেশ অনুসরণ করে: completed change-এ past simple হয়, আর visual-টার নিজের description-এ present simple হয়। Tense গুরুত্বপূর্ণ, আর পুরোটা জুড়ে একটাই tense ব্যবহার করতে হবে এমন কোনো নিয়ম নেই।',
+        },
       },
     },
     {
       id: 'clinic-5',
       kind: 'check',
-      title: 'Misconception Clinic (5 of 6): Unsupported Pace Claim',
-      trainerMessage: 'A learner writes: "Bicycle use increased steadily."',
+      title: { en: 'Misconception Clinic (5 of 6): Unsupported Pace Claim', bn: 'Misconception Clinic (5 of 6): Unsupported Pace Claim' },
+      trainerMessage: { en: 'A learner writes: "Bicycle use increased steadily."', bn: 'একজন learner লেখে: "Bicycle use increased steadily."' },
       check: {
-        prompt: 'Why is "bicycle use increased steadily" unsupported by this chart?',
+        prompt: { en: 'Why is "bicycle use increased steadily" unsupported by this chart?', bn: 'কেন "bicycle use increased steadily" কথাটা এই chart দিয়ে support করা যায় না?' },
         options: [
           'Because bicycle use did not increase.',
           'The chart gives only two time points, so it shows nothing about how the change developed between them.',
           'Because "steadily" is always an incorrect word in Task 1.',
         ],
         correctIndex: 1,
-        explain:
-          'Bicycle use did increase (6% to 19%), but "steadily" describes how the change developed, which two data points cannot show. The word is fine when yearly data supports it.',
+        explain: {
+          en: 'Bicycle use did increase (6% to 19%), but "steadily" describes how the change developed, which two data points cannot show. The word is fine when yearly data supports it.',
+          bn: 'Bicycle use সত্যিই বেড়েছে (6% থেকে 19%), কিন্তু "steadily" শব্দটা বোঝায় change-টা কীভাবে এগিয়েছে, যেটা মাত্র দুইটা data point দিয়ে দেখানো যায় না। yearly data থাকলে এই শব্দটা ঠিক আছে।',
+        },
       },
     },
     {
       id: 'clinic-6',
       kind: 'check',
-      title: 'Misconception Clinic (6 of 6): Coherence and Repetition',
-      trainerMessage: 'A body paragraph only restates the overview, without adding any supporting figures or comparisons.',
+      title: { en: 'Misconception Clinic (6 of 6): Coherence and Repetition', bn: 'Misconception Clinic (6 of 6): Coherence আর Repetition' },
+      trainerMessage: {
+        en: 'A body paragraph only restates the overview, without adding any supporting figures or comparisons.',
+        bn: 'একটা body paragraph শুধু overview-টাই আবার বলে, কোনো supporting figure বা comparison যোগ না করে।',
+      },
       check: {
-        prompt: 'What should the writer do?',
+        prompt: { en: 'What should the writer do?', bn: 'লেখকের কী করা উচিত?' },
         options: [
           'Add relevant figures and comparisons that develop the overview\'s main points.',
           'Delete the body paragraph and add a conclusion.',
           'Repeat the overview more strongly with advanced vocabulary.',
         ],
         correctIndex: 0,
-        explain:
-          'A body paragraph should add supporting evidence for the overview: specific figures and comparisons. Task 1 does not need a conclusion, and repeating the overview adds nothing.',
+        explain: {
+          en: 'A body paragraph should add supporting evidence for the overview: specific figures and comparisons. Task 1 does not need a conclusion, and repeating the overview adds nothing.',
+          bn: 'একটা body paragraph-এ overview-র support-এ প্রমাণ থাকা উচিত: নির্দিষ্ট figure আর comparison। Task 1-এ conclusion লাগে না, আর overview আবার বললে কিছুই যোগ হয় না।',
+        },
       },
     },
     {
