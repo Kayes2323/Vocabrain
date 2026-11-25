@@ -62,7 +62,7 @@ test('identity: id task1-complete-writing, module task1-m7, task1, export task1C
   assert.equal(lesson.id, 'task1-complete-writing');
   assert.equal(lesson.moduleId, 'task1-m7');
   assert.equal(lesson.task, 'task1');
-  assert.equal(lesson.title, 'Complete Task 1 Writing');
+  assert.equal(localize('en', lesson.title), 'Complete Task 1 Writing');
   assert.equal(getLesson('task1-complete-writing'), lesson);
   assert.equal(Object.values(LESSONS).filter((l) => l === lesson).length, 1, 'registered once');
   assert.equal(Object.values(LESSONS).filter((l) => l.id === 'task1-complete-writing').length, 1);
@@ -87,7 +87,7 @@ test('Academy: exactly seven Task 1 cards, numbered 1-7, with the seventh being 
   const seventh = TASK1_MODULES[6];
   assert.equal(seventh.id, 'task1-m7');
   assert.equal(seventh.number, 7);
-  assert.equal(seventh.title, 'Complete Task 1 Writing');
+  assert.equal(localize('en', seventh.title), 'Complete Task 1 Writing');
   assert.equal(seventh.builtLessonId, 'task1-complete-writing');
   const seventhDescription = localize('en', seventh.description);
   assert.match(seventhDescription, /analysis/i);
@@ -97,11 +97,11 @@ test('Academy: exactly seven Task 1 cards, numbered 1-7, with the seventh being 
   assert.match(seventhDescription, /language/);
   assert.match(seventhDescription, /complete, coherent response/);
   assert.equal(new Set(TASK1_MODULES.map((m) => m.id)).size, 7);
-  assert.equal(TASK1_MODULES.filter((m) => m.title === 'Complete Task 1 Writing').length, 1, 'no second "Complete Task 1 Writing" card');
+  assert.equal(TASK1_MODULES.filter((m) => localize('en', m.title) === 'Complete Task 1 Writing').length, 1, 'no second "Complete Task 1 Writing" card');
 });
 test('Academy: the first six cards are unchanged', () => {
   assert.deepEqual(
-    TASK1_MODULES.slice(0, 6).map((m) => [m.id, m.number, m.title, m.builtLessonId]),
+    TASK1_MODULES.slice(0, 6).map((m) => [m.id, m.number, localize('en', m.title), m.builtLessonId]),
     [
       ['task1-m1', 1, 'Understanding IELTS Writing Task 1', 'task1-understanding'],
       ['task1-m2', 2, 'Understanding Visual Information', 'visual-information'],
@@ -127,7 +127,7 @@ test('Academy: the old capstone lesson is still registered (unchanged) for backw
   assert.ok(old);
   assert.equal(old.id, 'task1-full-practice');
   assert.equal(old.moduleId, 'task1-m8');
-  assert.equal(old.title, 'Putting a Full Response Together');
+  assert.equal(localize('en', old.title), 'Putting a Full Response Together');
   assert.equal(old.finalPrompt.minWords, 150);
   assert.equal(Object.values(LESSONS).filter((l) => l.id === 'task1-full-practice').length, 1);
 });
@@ -379,7 +379,7 @@ test('the final exercise is a full Task 1 assessment: scope full, chart commute-
 test('LessonRunner withholds the band ONLY when skillFocus is set, so this lesson\'s final response records a band (behavioural + source-level)', () => {
   const src = readFileSync('components/writing-studio/LessonRunner.tsx', 'utf8');
   assert.match(src, /lesson\.finalPrompt\.skillFocus \? null : unified\.band/);
-  assert.match(src, /checkEssay\(essay, lesson\.finalPrompt\.minWords, lesson\.task, scope, !!lesson\.finalPrompt\.skillFocus\)/);
+  assert.match(src, /checkEssay\(essay, lesson\.finalPrompt\.minWords, lesson\.task, scope, !!lesson\.finalPrompt\.skillFocus, contentLocale\)/);
   const bandRecorded = (l: typeof lesson, band: number) => (l.finalPrompt.skillFocus ? null : band);
   assert.equal(bandRecorded(lesson, 6.5), 6.5);
 });

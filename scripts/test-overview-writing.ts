@@ -60,7 +60,7 @@ test('existing identity is preserved: id overview-writing, module task1-m4, regi
   assert.equal(getLesson('overview-writing'), lesson);
   assert.equal(getLesson('task1-overview'), undefined, 'no duplicate overview lesson is registered');
   const m4 = TASK1_MODULES.find((m) => m.id === 'task1-m4')!;
-  assert.equal(m4.title, 'Overview Mastery');
+  assert.equal(localize('en', m4.title), 'Overview Mastery');
   assert.equal(m4.builtLessonId, 'overview-writing');
 });
 test('all intended teaching stages exist, in order (each multi-question group is consecutive check steps)', () => {

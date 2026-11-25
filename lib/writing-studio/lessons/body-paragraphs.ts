@@ -608,56 +608,88 @@ export const bodyParagraphsLesson: Lesson = {
     {
       id: 'plan-before-write',
       kind: 'guided',
-      title: 'Plan Before You Write',
-      trainerMessage:
-        'Now plan your own body paragraph. You will write independently in the final task. Use this planning checklist: What is the main comparison? Which categories belong together? Which figures support the comparison? What is the most useful sequence? Have you avoided unsupported explanations? Are the figures attributed correctly? Then try one mini-check.',
+      title: { en: 'Plan Before You Write', bn: 'লেখার আগে Plan করো' },
+      trainerMessage: {
+        en: 'Now plan your own body paragraph. You will write independently in the final task. Use this planning checklist: What is the main comparison? Which categories belong together? Which figures support the comparison? What is the most useful sequence? Have you avoided unsupported explanations? Are the figures attributed correctly? Then try one mini-check.',
+        bn: 'এবার নিজের body paragraph-টা plan করো। শেষ task-এ তুমি একা লিখবে। এই planning checklist-টা ব্যবহার করো: মূল comparison কী? কোন category-গুলো একসাথে যায়? কোন figure comparison-টাকে support করে? সবচেয়ে কাজের sequence কোনটা? unsupported ব্যাখ্যা এড়িয়েছ তো? figure-গুলো সঠিকভাবে attribute করা হয়েছে তো? তারপর একটা mini-check চেষ্টা করো।',
+      },
       check: {
-        prompt: 'A learner plans to write about Denmark\'s growth. Which evidence is most relevant?',
+        prompt: {
+          en: "A learner plans to write about Denmark's growth. Which evidence is most relevant?",
+          bn: 'একজন learner Denmark-এর growth নিয়ে লিখতে চায়। কোন evidence সবচেয়ে প্রাসঙ্গিক?',
+        },
         options: [
           'Country C: 9% in 2000 and 16% in 2020.',
           'Denmark: 14% in 2000 and 62% in 2020.',
           "The chart's title.",
         ],
         correctIndex: 1,
-        explain: 'The figures directly support the chosen paragraph focus. Country C\'s figures would be relevant to a comparison, but not to describing Denmark\'s own growth, and a title is not evidence.',
+        explain: {
+          en: "The figures directly support the chosen paragraph focus. Country C's figures would be relevant to a comparison, but not to describing Denmark's own growth, and a title is not evidence.",
+          bn: 'এই figure-গুলো সরাসরি বেছে নেওয়া paragraph focus-কে support করে। Country C-র figure একটা comparison-এর জন্য প্রাসঙ্গিক হতো, কিন্তু Denmark-এর নিজের growth বর্ণনার জন্য না, আর একটা title কোনো evidence না।',
+        },
       },
     },
     {
       id: 'reflection',
       kind: 'review',
-      title: 'What Have You Learned?',
-      trainerMessage:
-        'You have now learned how to turn chart information into a developed body paragraph. Before the final exercise, think about the five reflection questions, then read the closing reminder.',
+      title: { en: 'What Have You Learned?', bn: 'তুমি কী শিখলে?' },
+      trainerMessage: {
+        en: 'You have now learned how to turn chart information into a developed body paragraph. Before the final exercise, think about the five reflection questions, then read the closing reminder.',
+        bn: 'তুমি এখন শিখেছ কীভাবে chart-এর তথ্যকে একটা developed body paragraph-এ রূপান্তর করতে হয়। শেষ exercise-এর আগে, পাঁচটা reflection question নিয়ে ভাবো, তারপর শেষের reminder-টা পড়ো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Remember the five-stage process: Select → Group → Compare → Support → Connect. Do not write a paragraph simply because you have noticed several numbers. First decide what those numbers demonstrate and why they belong together.',
-          'Reflection questions. 1. What is the main difference between an overview and a body paragraph? 2. Why should you group data before writing? 3. What makes a comparison meaningful? 4. Why is it dangerous to invent reasons for a trend? 5. Which one improvement will you apply in your next Task 1 response?',
-          'A strong body paragraph is not the paragraph with the most numbers. It is the paragraph in which every selected detail has a clear purpose.',
-          'After the final exercise, Lesson 05 is complete.',
+          {
+            en: 'Remember the five-stage process: Select → Group → Compare → Support → Connect. Do not write a paragraph simply because you have noticed several numbers. First decide what those numbers demonstrate and why they belong together.',
+            bn: 'পাঁচ-ধাপের process মনে রাখো: Select → Group → Compare → Support → Connect। শুধু কয়েকটা সংখ্যা চোখে পড়েছে বলে paragraph লিখো না। আগে ঠিক করো এই সংখ্যাগুলো কী দেখাচ্ছে আর কেন এগুলো একসাথে যায়।',
+          },
+          {
+            en: 'Reflection questions. 1. What is the main difference between an overview and a body paragraph? 2. Why should you group data before writing? 3. What makes a comparison meaningful? 4. Why is it dangerous to invent reasons for a trend? 5. Which one improvement will you apply in your next Task 1 response?',
+            bn: 'Reflection question। ১. overview আর body paragraph-এর মূল পার্থক্য কী? ২. লেখার আগে কেন তথ্য group করা উচিত? ৩. কী একটা comparison-কে অর্থপূর্ণ করে তোলে? ৪. trend-এর জন্য কারণ বানানো কেন বিপজ্জনক? ৫. তোমার পরের Task 1 response-এ তুমি কোন একটা উন্নতি প্রয়োগ করবে?',
+          },
+          {
+            en: 'A strong body paragraph is not the paragraph with the most numbers. It is the paragraph in which every selected detail has a clear purpose.',
+            bn: 'একটা জোরালো body paragraph মানে সবচেয়ে বেশি সংখ্যাওয়ালা paragraph না। এটা সেই paragraph যেখানে প্রতিটা বেছে নেওয়া detail-এর একটা স্পষ্ট উদ্দেশ্য আছে।',
+          },
+          { en: 'After the final exercise, Lesson 05 is complete.', bn: 'শেষ exercise-এর পর, Lesson 05 সম্পূর্ণ হবে।' },
         ],
       },
     },
     {
       id: 'independent-practice',
       kind: 'independent',
-      title: 'Final Skill Assessment',
-      trainerMessage:
-        'Now write one body paragraph on your own. Look at the chart as long as you need — this focused exercise has no exam time limit. Plan first: what is the organising idea, which categories belong together, and which figures will you use as evidence?',
+      title: { en: 'Final Skill Assessment', bn: 'শেষ Skill Assessment' },
+      trainerMessage: {
+        en: 'Now write one body paragraph on your own. Look at the chart as long as you need — this focused exercise has no exam time limit. Plan first: what is the organising idea, which categories belong together, and which figures will you use as evidence?',
+        bn: 'এবার একা একটা body paragraph লেখো। যতক্ষণ দরকার chart-টা দেখো — এই focused exercise-এ কোনো exam time limit নেই। আগে plan করো: organising idea কী, কোন category একসাথে যায়, আর কোন figure evidence হিসেবে ব্যবহার করবে?',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Chart: Electricity generated from renewable sources in three countries, 2000–2020 (% of total electricity generation). 2000: Denmark 14, Country B 6, Country C 9. 2005: 21, 8, 10. 2010: 33, 12, 11. 2015: 48, 18, 13. 2020: 62, 27, 16.',
-          'Write ONE body paragraph describing the relevant details and comparisons in the chart. You may focus on Denmark\'s leading position and compare the growth of Country B and Country C, or choose another defensible grouping if the paragraph remains accurate and coherent.',
-          'Suggested length: approximately 70–110 words. This is a learning guide, not a universal IELTS body-paragraph word-count rule. This is a paragraph-development skill exercise, not a complete Task 1 response.',
+          {
+            en: 'Chart: Electricity generated from renewable sources in three countries, 2000–2020 (% of total electricity generation). 2000: Denmark 14, Country B 6, Country C 9. 2005: 21, 8, 10. 2010: 33, 12, 11. 2015: 48, 18, 13. 2020: 62, 27, 16.',
+            bn: 'Chart: তিনটা দেশে renewable source থেকে উৎপন্ন electricity, ২০০০–২০২০ (% of total electricity generation)। ২০০০: Denmark 14, Country B 6, Country C 9। ২০০৫: 21, 8, 10। ২০১০: 33, 12, 11। ২০১৫: 48, 18, 13। ২০২০: 62, 27, 16।',
+          },
+          {
+            en: "Write ONE body paragraph describing the relevant details and comparisons in the chart. You may focus on Denmark's leading position and compare the growth of Country B and Country C, or choose another defensible grouping if the paragraph remains accurate and coherent.",
+            bn: 'chart-এর প্রাসঙ্গিক detail আর comparison বর্ণনা করে একটা body paragraph লেখো। তুমি Denmark-এর leading position-এ focus করে Country B আর Country C-র growth তুলনা করতে পারো, অথবা paragraph সঠিক আর coherent থাকলে অন্য কোনো defensible grouping বেছে নিতে পারো।',
+          },
+          {
+            en: 'Suggested length: approximately 70–110 words. This is a learning guide, not a universal IELTS body-paragraph word-count rule. This is a paragraph-development skill exercise, not a complete Task 1 response.',
+            bn: 'Suggested length: প্রায় 70–110 শব্দ। এটা একটা learning guide, কোনো universal IELTS body-paragraph word-count নিয়ম না। এটা একটা paragraph-development skill exercise, কোনো সম্পূর্ণ Task 1 response না।',
+          },
         ],
       },
     },
   ],
   finalPrompt: {
-    title: 'Write One Well-Developed Body Paragraph',
-    instructions:
-      'Write ONE body paragraph describing the relevant details and comparisons in the chart. Your paragraph should: have a clear organising idea; group related information logically; include accurate figures; make meaningful comparisons; explain the relationship between the categories; avoid simply listing every number; avoid repeating an overview; and avoid invented causes or unsupported claims. You may focus on Denmark\'s leading position and compare the growth of Country B and Country C, or choose another defensible grouping if the paragraph remains accurate and coherent. Suggested length: approximately 70–110 words — a learning guide, not a universal IELTS rule. Do not write an introduction or an overview.',
+    title: { en: 'Write One Well-Developed Body Paragraph', bn: 'একটা ভালোভাবে Developed Body Paragraph লেখো' },
+    instructions: {
+      en: "Write ONE body paragraph describing the relevant details and comparisons in the chart. Your paragraph should: have a clear organising idea; group related information logically; include accurate figures; make meaningful comparisons; explain the relationship between the categories; avoid simply listing every number; avoid repeating an overview; and avoid invented causes or unsupported claims. You may focus on Denmark's leading position and compare the growth of Country B and Country C, or choose another defensible grouping if the paragraph remains accurate and coherent. Suggested length: approximately 70–110 words — a learning guide, not a universal IELTS rule. Do not write an introduction or an overview.",
+      bn: 'chart-এর প্রাসঙ্গিক detail আর comparison বর্ণনা করে একটা body paragraph লেখো। তোমার paragraph-এ থাকা উচিত: একটা স্পষ্ট organising idea; যৌক্তিকভাবে group করা প্রাসঙ্গিক তথ্য; সঠিক figure; অর্থপূর্ণ comparison; category-গুলোর মধ্যে সম্পর্কের ব্যাখ্যা; আর প্রতিটা সংখ্যা তালিকা করা, overview repeat করা, বা বানানো কারণ/unsupported claim এড়ানো। তুমি Denmark-এর leading position-এ focus করে Country B আর Country C-র growth তুলনা করতে পারো, অথবা paragraph সঠিক আর coherent থাকলে অন্য কোনো defensible grouping বেছে নিতে পারো। Suggested length: প্রায় 70–110 শব্দ — এটা একটা learning guide, কোনো universal IELTS নিয়ম না। কোনো introduction বা overview লিখো না।',
+    },
     minWords: 70,
     chartId: 'renewable-electricity',
     skillFocus: 'Task 1 body paragraph development',

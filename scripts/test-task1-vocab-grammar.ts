@@ -67,7 +67,7 @@ test('existing identity is preserved: id task1-vocab-grammar, module task1-m6, e
   assert.equal(Object.values(LESSONS).filter((l) => l.moduleId === 'task1-m6').length, 1, 'no duplicate Module 6 lesson');
   const m6 = TASK1_MODULES.find((m) => m.id === 'task1-m6')!;
   assert.equal(m6.builtLessonId, 'task1-vocab-grammar');
-  assert.equal(lesson.title, 'Vocabulary and Grammar Mastery');
+  assert.equal(localize('en', lesson.title), 'Vocabulary and Grammar Mastery');
   assert.ok(lesson.estMinutes >= 30 && lesson.estMinutes <= 35);
 });
 test('teaching coverage: all 15 sections in order, 20 runner steps (within the 18-24 target), unique ids, supported schema only', () => {

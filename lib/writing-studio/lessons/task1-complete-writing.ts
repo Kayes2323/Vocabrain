@@ -638,53 +638,85 @@ export const task1CompleteWritingLesson: Lesson = {
     {
       id: 'self-review',
       kind: 'review',
-      title: 'Review and Self-Correction',
-      trainerMessage:
-        'Before you submit, review your response with this checklist. After you receive feedback, use "Rewrite and try again" to correct at least one meaningful weakness before you move on.',
+      title: { en: 'Review and Self-Correction', bn: 'Review আর Self-Correction' },
+      trainerMessage: {
+        en: 'Before you submit, review your response with this checklist. After you receive feedback, use "Rewrite and try again" to correct at least one meaningful weakness before you move on.',
+        bn: 'জমা দেওয়ার আগে, এই checklist দিয়ে তোমার response review করো। feedback পাওয়ার পর, সামনে এগোনোর আগে অন্তত একটা অর্থবহ দুর্বলতা ঠিক করতে "Rewrite and try again" ব্যবহার করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Task coverage: Have I described the correct visual and subject? Have I preserved the time period and the measurement?',
-          'Overview: Have I identified the main features? Does my overview summarise rather than list?',
-          'Details: Are all figures accurate? Have I selected relevant comparisons? Are the paragraphs logically grouped?',
-          'Language: Are tense and subject–verb agreement accurate? Are comparisons and collocations natural? Have I avoided unsupported claims?',
-          'Completion: Is the response at least 150 words? Have I used clear paragraph organisation? Have I left time to review?',
+          {
+            en: 'Task coverage: Have I described the correct visual and subject? Have I preserved the time period and the measurement?',
+            bn: 'Task coverage: আমি কি সঠিক visual আর subject বর্ণনা করেছি? সময়কাল আর measurement কি ঠিক রেখেছি?',
+          },
+          { en: 'Overview: Have I identified the main features? Does my overview summarise rather than list?', bn: 'Overview: আমি কি মূল feature-গুলো চিহ্নিত করেছি? আমার overview কি তালিকা না করে summarise করছে?' },
+          {
+            en: 'Details: Are all figures accurate? Have I selected relevant comparisons? Are the paragraphs logically grouped?',
+            bn: 'Details: সব figure কি নির্ভুল? আমি কি প্রাসঙ্গিক comparison বাছাই করেছি? paragraph-গুলো কি logically group করা?',
+          },
+          {
+            en: 'Language: Are tense and subject–verb agreement accurate? Are comparisons and collocations natural? Have I avoided unsupported claims?',
+            bn: 'Language: tense আর subject–verb agreement কি নির্ভুল? comparison আর collocation কি স্বাভাবিক? আমি কি unsupported দাবি এড়িয়ে চলেছি?',
+          },
+          {
+            en: 'Completion: Is the response at least 150 words? Have I used clear paragraph organisation? Have I left time to review?',
+            bn: 'Completion: response-টা কি অন্তত 150 শব্দের? আমি কি স্পষ্ট paragraph organisation ব্যবহার করেছি? review করার জন্য সময় রেখেছি কি?',
+          },
         ],
       },
     },
     {
       id: 'reflection',
       kind: 'review',
-      title: 'Reflection',
-      trainerMessage:
-        'You have now practised the complete IELTS Academic Writing Task 1 process. Your next goal is not to memorise this model. It is to apply the same decision-making process accurately to unfamiliar visuals.',
+      title: { en: 'Reflection', bn: 'Reflection' },
+      trainerMessage: {
+        en: 'You have now practised the complete IELTS Academic Writing Task 1 process. Your next goal is not to memorise this model. It is to apply the same decision-making process accurately to unfamiliar visuals.',
+        bn: 'তুমি এখন সম্পূর্ণ IELTS Academic Writing Task 1 process practice করেছ। তোমার পরের লক্ষ্য এই model মুখস্থ করা না — এটা হলো একই decision-making process অচেনা visual-এও নির্ভুলভাবে প্রয়োগ করতে পারা।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Think about these questions as you write and again after you read your feedback: 1. Which part of a complete Task 1 response is currently strongest? 2. Which part needs the most improvement? 3. What is one specific error you will watch for in your next practice?',
+          {
+            en: 'Think about these questions as you write and again after you read your feedback: 1. Which part of a complete Task 1 response is currently strongest? 2. Which part needs the most improvement? 3. What is one specific error you will watch for in your next practice?',
+            bn: 'লেখার সময় আর feedback পড়ার পর আবার এই প্রশ্নগুলো নিয়ে ভাবো: ১. একটা সম্পূর্ণ Task 1 response-এর কোন অংশটা তোমার এখন সবচেয়ে শক্তিশালী? ২. কোন অংশে সবচেয়ে বেশি উন্নতি দরকার? ৩. পরের practice-এ তুমি কোন নির্দিষ্ট ভুলটার জন্য সতর্ক থাকবে?',
+          },
         ],
       },
     },
     {
       id: 'independent-practice',
       kind: 'independent',
-      title: 'Independent Full Task 1 Practice',
-      trainerMessage:
-        'Now write a complete Task 1 response on your own. This is the one exercise in this lesson that is assessed as a full Task 1 response, so your feedback will include an indicative band. Plan first, write for about 20 minutes, then review with the checklist.',
+      title: { en: 'Independent Full Task 1 Practice', bn: 'Independent পুরো Task 1 Practice' },
+      trainerMessage: {
+        en: 'Now write a complete Task 1 response on your own. This is the one exercise in this lesson that is assessed as a full Task 1 response, so your feedback will include an indicative band. Plan first, write for about 20 minutes, then review with the checklist.',
+        bn: 'এবার নিজে একটা সম্পূর্ণ Task 1 response লেখো। এই lesson-এর এই একটা exercise-ই একটা পুরো Task 1 response হিসেবে assess হবে, তাই তোমার feedback-এ একটা indicative band থাকবে। আগে plan করো, প্রায় ২০ মিনিট লেখো, তারপর checklist দিয়ে review করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
-          'Data (percentage of commuters, illustrative training figures). Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
-          'Write a complete response with an introduction, an overview and logically organised body paragraphs. Minimum 150 words; a suggested target is 160–190. Spend about 20 minutes. Do not explain why the figures changed, do not make claims about years or trends the chart does not show, and do not copy the model answer.',
+          {
+            en: 'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
+            bn: 'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
+          },
+          {
+            en: 'Data (percentage of commuters, illustrative training figures). Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
+            bn: 'Data (commuter-দের percentage, illustrative training figure)। Car: 52% তারপর 38%। Bus: 24% তারপর 21%। Bicycle: 6% তারপর 19%। Train: 11% তারপর 15%। Walking: 7% তারপর 7%।',
+          },
+          {
+            en: 'Write a complete response with an introduction, an overview and logically organised body paragraphs. Minimum 150 words; a suggested target is 160–190. Spend about 20 minutes. Do not explain why the figures changed, do not make claims about years or trends the chart does not show, and do not copy the model answer.',
+            bn: 'একটা introduction, একটা overview আর logically organise করা body paragraph দিয়ে একটা সম্পূর্ণ response লেখো। Minimum 150 শব্দ; suggested target 160–190। প্রায় ২০ মিনিট সময় নাও। figure কেন বদলেছে সেটা ব্যাখ্যা কোরো না, chart যা দেখায় না এমন বছর বা trend নিয়ে দাবি কোরো না, আর model answer কপি কোরো না।',
+          },
         ],
       },
     },
   ],
   finalPrompt: {
-    title: 'Write a Complete Task 1 Response',
-    instructions:
-      'The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write a complete response with an introduction, an overview, relevant supporting details and meaningful comparisons, reporting the information accurately. You should spend about 20 minutes on this task. Write at least 150 words (a suggested target is 160–190). Do not explain why the figures changed, do not make claims about years or trends the chart does not show, and do not copy the model answer.',
+    title: { en: 'Write a Complete Task 1 Response', bn: 'একটা সম্পূর্ণ Task 1 Response লেখো' },
+    instructions: {
+      en: 'The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write a complete response with an introduction, an overview, relevant supporting details and meaningful comparisons, reporting the information accurately. You should spend about 20 minutes on this task. Write at least 150 words (a suggested target is 160–190). Do not explain why the figures changed, do not make claims about years or trends the chart does not show, and do not copy the model answer.',
+      bn: 'নিচের chart-টা একটা city-তে 2010 আর 2023 সালে পাঁচটা ভিন্ন পদ্ধতিতে commute করা মানুষের percentage তুলনা করে। মূল feature-গুলো বাছাই করে report করে তথ্যটা summarise করো, আর যেখানে প্রাসঙ্গিক সেখানে comparison করো। একটা introduction, একটা overview, প্রাসঙ্গিক supporting detail আর অর্থবহ comparison দিয়ে একটা সম্পূর্ণ response লেখো, তথ্যটা নির্ভুলভাবে report করে। এই task-এ তোমার প্রায় ২০ মিনিট সময় নেওয়া উচিত। অন্তত 150 শব্দ লেখো (suggested target 160–190)। figure কেন বদলেছে সেটা ব্যাখ্যা কোরো না, chart যা দেখায় না এমন বছর বা trend নিয়ে দাবি কোরো না, আর model answer কপি কোরো না।',
+    },
     minWords: 150,
     chartId: 'commute-methods',
     checkScope: 'full',

@@ -615,132 +615,171 @@ export const task1VocabGrammarLesson: Lesson = {
     {
       id: 'clinic',
       kind: 'check',
-      title: 'Error Clinic (1 of 6): Wrong Trend Direction',
-      trainerMessage: 'Each question shows one common error. The sentence is: "Car use increased from 52% to 38%."',
+      title: { en: 'Error Clinic (1 of 6): Wrong Trend Direction', bn: 'Error Clinic (১/৬): ভুল Trend Direction' },
+      trainerMessage: {
+        en: 'Each question shows one common error. The sentence is: "Car use increased from 52% to 38%."',
+        bn: 'প্রতিটা প্রশ্নে একটা সাধারণ ভুল দেখানো হয়েছে। বাক্যটা হলো: "Car use increased from 52% to 38%."',
+      },
       check: {
-        prompt: 'What is the problem?',
+        prompt: { en: 'What is the problem?', bn: 'সমস্যাটা কী?' },
         options: [
           'The sentence uses the wrong direction.',
           'The sentence uses an incorrect article.',
           'The sentence uses the wrong plural form.',
         ],
         correctIndex: 0,
-        explain: 'The figure decreased from 52% to 38%, so "increased" gives the wrong direction.',
+        explain: { en: 'The figure decreased from 52% to 38%, so "increased" gives the wrong direction.', bn: 'figure-টা ৫২% থেকে ৩৮%-এ কমেছে, তাই "increased" ভুল direction দেখাচ্ছে।' },
       },
     },
     {
       id: 'clinic-2',
       kind: 'check',
-      title: 'Error Clinic (2 of 6): Percentage-Point Error',
-      trainerMessage: 'The sentence is: "Bicycle use increased by 13% from 6% to 19%."',
+      title: { en: 'Error Clinic (2 of 6): Percentage-Point Error', bn: 'Error Clinic (২/৬): Percentage-Point ভুল' },
+      trainerMessage: { en: 'The sentence is: "Bicycle use increased by 13% from 6% to 19%."', bn: 'বাক্যটা হলো: "Bicycle use increased by 13% from 6% to 19%."' },
       check: {
-        prompt: 'What is the most accurate correction?',
+        prompt: { en: 'What is the most accurate correction?', bn: 'সবচেয়ে নির্ভুল সংশোধনটা কী?' },
         options: [
           'Bicycle use decreased by 13 percentage points.',
           'Bicycle use increased by 13 percentage points.',
           'Bicycle use remained stable.',
         ],
         correctIndex: 1,
-        explain: '19 − 6 = 13 percentage points. The direction is an increase, and "13%" would wrongly mix percentage points with percentages.',
+        explain: {
+          en: '19 − 6 = 13 percentage points. The direction is an increase, and "13%" would wrongly mix percentage points with percentages.',
+          bn: '১৯ − ৬ = ১৩ percentage points। direction-টা increase, আর "13%" percentage points আর percentage-কে ভুলভাবে মিশিয়ে ফেলত।',
+        },
       },
     },
     {
       id: 'clinic-3',
       kind: 'check',
-      title: 'Error Clinic (3 of 6): Tense Inconsistency',
-      trainerMessage: 'The sentence is: "Car use declined, while bicycle use increases."',
+      title: { en: 'Error Clinic (3 of 6): Tense Inconsistency', bn: 'Error Clinic (৩/৬): Tense-এ অসামঞ্জস্য' },
+      trainerMessage: { en: 'The sentence is: "Car use declined, while bicycle use increases."', bn: 'বাক্যটা হলো: "Car use declined, while bicycle use increases."' },
       check: {
-        prompt: 'Which correction is appropriate for this completed historical period?',
+        prompt: { en: 'Which correction is appropriate for this completed historical period?', bn: 'এই শেষ হওয়া historical সময়কালের জন্য কোন সংশোধনটা উপযুক্ত?' },
         options: ['bicycle use increasing', 'bicycle use increase', 'bicycle use increased'],
         correctIndex: 2,
-        explain: 'Both changes describe completed historical data, so past simple is appropriate for both clauses.',
+        explain: { en: 'Both changes describe completed historical data, so past simple is appropriate for both clauses.', bn: 'দুটো পরিবর্তনই শেষ হওয়া historical data বর্ণনা করছে, তাই দুটো clause-এর জন্যই past simple উপযুক্ত।' },
       },
     },
     {
       id: 'clinic-4',
       kind: 'check',
-      title: 'Error Clinic (4 of 6): Comparative Grammar',
-      trainerMessage: 'The sentence is: "Car use was more higher than bicycle use."',
+      title: { en: 'Error Clinic (4 of 6): Comparative Grammar', bn: 'Error Clinic (৪/৬): Comparative Grammar' },
+      trainerMessage: { en: 'The sentence is: "Car use was more higher than bicycle use."', bn: 'বাক্যটা হলো: "Car use was more higher than bicycle use."' },
       check: {
-        prompt: 'Which is correct?',
+        prompt: { en: 'Which is correct?', bn: 'কোনটা সঠিক?' },
         options: [
           'Car use was more highest than bicycle use.',
           'Car use was most higher than bicycle use.',
           'Car use was higher than bicycle use.',
         ],
         correctIndex: 2,
-        explain: '"Higher" is already the comparative form of "high", so do not add "more" or "most".',
+        explain: { en: '"Higher" is already the comparative form of "high", so do not add "more" or "most".', bn: '"Higher" ইতিমধ্যেই "high"-এর comparative form, তাই এর সাথে "more" বা "most" জুড়ো না।' },
       },
     },
     {
       id: 'clinic-5',
       kind: 'check',
-      title: 'Error Clinic (5 of 6): Preposition',
-      trainerMessage: 'The sentence is: "Car use declined at 14 percentage points."',
+      title: { en: 'Error Clinic (5 of 6): Preposition', bn: 'Error Clinic (৫/৬): Preposition' },
+      trainerMessage: { en: 'The sentence is: "Car use declined at 14 percentage points."', bn: 'বাক্যটা হলো: "Car use declined at 14 percentage points."' },
       check: {
-        prompt: 'Which correction is appropriate?',
+        prompt: { en: 'Which correction is appropriate?', bn: 'কোন সংশোধনটা উপযুক্ত?' },
         options: [
           'Car use declined by 14 percentage points.',
           'Car use declined from 14 percentage points.',
           'Car use declined to 14 percentage points.',
         ],
         correctIndex: 0,
-        explain: '"By" identifies the amount of change. "From" identifies the starting value, while "to" identifies the ending value.',
+        explain: { en: '"By" identifies the amount of change. "From" identifies the starting value, while "to" identifies the ending value.', bn: '"By" পরিবর্তনের পরিমাণ দেখায়। "From" শুরুর value দেখায়, আর "to" শেষের value দেখায়।' },
       },
     },
     {
       id: 'clinic-6',
       kind: 'check',
-      title: 'Error Clinic (6 of 6): Despite / Although',
-      trainerMessage: 'Last clinic question: choose the grammatically correct sentence.',
+      title: { en: 'Error Clinic (6 of 6): Despite / Although', bn: 'Error Clinic (৬/৬): Despite / Although' },
+      trainerMessage: { en: 'Last clinic question: choose the grammatically correct sentence.', bn: 'শেষ clinic প্রশ্ন: grammatically সঠিক বাক্যটা বেছে নাও।' },
       check: {
-        prompt: 'Which sentence is grammatically correct?',
+        prompt: { en: 'Which sentence is grammatically correct?', bn: 'কোন বাক্যটা grammatically সঠিক?' },
         options: [
           'Despite car use declined, it remained the most common method.',
           'Although car use declined, it remained the most common method.',
           'Despite declined car use, it remained the most common method.',
         ],
         correctIndex: 1,
-        explain:
-          '"Although" introduces a clause containing a subject and a verb. "Despite" requires a noun phrase or gerund in this construction, as in "Despite the decline in car use…".',
+        explain: {
+          en: '"Although" introduces a clause containing a subject and a verb. "Despite" requires a noun phrase or gerund in this construction, as in "Despite the decline in car use…".',
+          bn: '"Although" একটা clause শুরু করে যার subject আর verb আছে। "Despite"-এর জন্য এই construction-এ একটা noun phrase বা gerund দরকার, যেমন "Despite the decline in car use…"।',
+        },
       },
     },
     {
       id: 'language-checklist',
       kind: 'review',
-      title: 'Your Personal Language Checklist',
-      trainerMessage: 'Before writing a Task 1 response, ask yourself these questions. You will use them in the final exercise.',
+      title: { en: 'Your Personal Language Checklist', bn: 'তোমার নিজের Language Checklist' },
+      trainerMessage: {
+        en: 'Before writing a Task 1 response, ask yourself these questions. You will use them in the final exercise.',
+        bn: 'একটা Task 1 response লেখার আগে নিজেকে এই প্রশ্নগুলো করো। শেষ exercise-এ তুমি এগুলো ব্যবহার করবে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Vocabulary: Did I choose verbs that match the direction of change? Did I exaggerate the magnitude? Did I repeat the same verb unnecessarily? Are my collocations natural?',
-          'Data accuracy: Did I distinguish percentages from percentage points? Are all figures correct? Did I avoid unsupported comparisons?',
-          'Grammar: Is my tense appropriate for the time reference? Are my subjects and verbs in agreement? Are singular and plural forms correct? Have I used articles where necessary? Are my prepositions accurate? Are my comparative structures correct?',
-          'Sentence quality: Are my sentences clear? Have I connected related information? Have I avoided unnecessary complexity? Does every comparison have a clear meaning?',
+          {
+            en: 'Vocabulary: Did I choose verbs that match the direction of change? Did I exaggerate the magnitude? Did I repeat the same verb unnecessarily? Are my collocations natural?',
+            bn: 'Vocabulary: আমি কি পরিবর্তনের direction-এর সাথে মিলে এমন verb বেছেছি? আমি কি magnitude অতিরঞ্জিত করেছি? আমি কি একই verb অযথা বারবার ব্যবহার করেছি? আমার collocation কি স্বাভাবিক?',
+          },
+          {
+            en: 'Data accuracy: Did I distinguish percentages from percentage points? Are all figures correct? Did I avoid unsupported comparisons?',
+            bn: 'Data accuracy: আমি কি percentage থেকে percentage points আলাদা করেছি? সব figure কি সঠিক? আমি কি অসমর্থিত comparison এড়িয়েছি?',
+          },
+          {
+            en: 'Grammar: Is my tense appropriate for the time reference? Are my subjects and verbs in agreement? Are singular and plural forms correct? Have I used articles where necessary? Are my prepositions accurate? Are my comparative structures correct?',
+            bn: 'Grammar: আমার tense কি time reference-এর সাথে মিলছে? আমার subject আর verb কি agreement-এ আছে? singular আর plural form কি সঠিক? যেখানে দরকার সেখানে কি article ব্যবহার করেছি? আমার preposition কি নির্ভুল? আমার comparative structure কি সঠিক?',
+          },
+          {
+            en: 'Sentence quality: Are my sentences clear? Have I connected related information? Have I avoided unnecessary complexity? Does every comparison have a clear meaning?',
+            bn: 'বাক্যের মান: আমার বাক্যগুলো কি স্পষ্ট? সম্পর্কিত তথ্যগুলো কি আমি সংযুক্ত করেছি? অপ্রয়োজনীয় জটিলতা কি এড়িয়েছি? প্রতিটা comparison-এর কি স্পষ্ট অর্থ আছে?',
+          },
         ],
       },
     },
     {
       id: 'independent-practice',
       kind: 'independent',
-      title: 'Final Independent Practice',
-      trainerMessage:
-        'Now write one body paragraph on your own, using the commute chart. This is a targeted vocabulary and grammar exercise, not a complete Task 1 response, and there is no exam time limit. Accuracy comes before variety.',
+      title: { en: 'Final Independent Practice', bn: 'শেষ Independent Practice' },
+      trainerMessage: {
+        en: 'Now write one body paragraph on your own, using the commute chart. This is a targeted vocabulary and grammar exercise, not a complete Task 1 response, and there is no exam time limit. Accuracy comes before variety.',
+        bn: 'এবার commute chart ব্যবহার করে নিজে একটা body paragraph লেখো। এটা একটা targeted vocabulary আর grammar exercise, একটা সম্পূর্ণ Task 1 response না, আর এর কোনো exam time limit নেই। variety-র আগে accuracy।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'The chart: the percentage of commuters using five methods of travel in one city, 2010 and 2023. Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
-          'Suggested structure (not a required formula): sentence 1 describes the most important decline; sentence 2 contrasts it with the largest increase; sentence 3 adds a comparison or supporting detail; sentence 4 describes another relevant category or a stable feature. Other coherent structures are accepted.',
-          'Suggested length: approximately 80–100 words — a flexible practice target, not a hard IELTS rule.',
-          'After you finish, reflect: 1. Which language error did you make most often? 2. Which new expression did you use accurately? 3. What will you check before writing your next Task 1 paragraph?',
+          {
+            en: 'The chart: the percentage of commuters using five methods of travel in one city, 2010 and 2023. Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
+            bn: 'Chart-টা: একটা শহরে পাঁচটা travel পদ্ধতি ব্যবহারকারী commuter-দের percentage, ২০১০ আর ২০২৩ সালে। Car: ৫২% তারপর ৩৮%। Bus: ২৪% তারপর ২১%। Bicycle: ৬% তারপর ১৯%। Train: ১১% তারপর ১৫%। Walking: ৭% তারপর ৭%।',
+          },
+          {
+            en: 'Suggested structure (not a required formula): sentence 1 describes the most important decline; sentence 2 contrasts it with the largest increase; sentence 3 adds a comparison or supporting detail; sentence 4 describes another relevant category or a stable feature. Other coherent structures are accepted.',
+            bn: 'সাজেস্ট করা structure (বাধ্যতামূলক formula না): বাক্য ১ সবচেয়ে গুরুত্বপূর্ণ হ্রাস বর্ণনা করে; বাক্য ২ সেটাকে সবচেয়ে বড় বৃদ্ধির সাথে contrast করে; বাক্য ৩ একটা comparison বা সহায়ক detail যোগ করে; বাক্য ৪ আরেকটা প্রাসঙ্গিক category বা একটা স্থির feature বর্ণনা করে। অন্য সুসংগত structure-ও গ্রহণযোগ্য।',
+          },
+          {
+            en: 'Suggested length: approximately 80–100 words — a flexible practice target, not a hard IELTS rule.',
+            bn: 'সাজেস্ট করা length: প্রায় ৮০–১০০ শব্দ — একটা flexible practice target, কোনো কড়া IELTS নিয়ম না।',
+          },
+          {
+            en: 'After you finish, reflect: 1. Which language error did you make most often? 2. Which new expression did you use accurately? 3. What will you check before writing your next Task 1 paragraph?',
+            bn: 'শেষ করার পর ভাবো: ১. তুমি কোন language ভুল সবচেয়ে বেশি করেছ? ২. কোন নতুন expression তুমি সঠিকভাবে ব্যবহার করেছ? ৩. পরের Task 1 paragraph লেখার আগে তুমি কী চেক করবে?',
+          },
         ],
       },
     },
   ],
   finalPrompt: {
-    title: 'Write with Precise Vocabulary and Grammar',
-    instructions:
-      'Write one coherent Task 1 body paragraph of approximately 80–100 words describing the main changes and comparisons in the chart. Your paragraph should: describe at least one increase and one decrease; include an accurate comparison; use appropriate trend vocabulary; use at least one accurate magnitude or percentage-point expression; maintain appropriate tense; use grammatically correct sentence structures; include accurate supporting data; and avoid unsupported explanations or opinions. Do not write a complete Task 1 response. This is a targeted vocabulary and grammar exercise.',
+    title: { en: 'Write with Precise Vocabulary and Grammar', bn: 'নির্ভুল Vocabulary আর Grammar দিয়ে লেখো' },
+    instructions: {
+      en: 'Write one coherent Task 1 body paragraph of approximately 80–100 words describing the main changes and comparisons in the chart. Your paragraph should: describe at least one increase and one decrease; include an accurate comparison; use appropriate trend vocabulary; use at least one accurate magnitude or percentage-point expression; maintain appropriate tense; use grammatically correct sentence structures; include accurate supporting data; and avoid unsupported explanations or opinions. Do not write a complete Task 1 response. This is a targeted vocabulary and grammar exercise.',
+      bn: 'chart-এর মূল পরিবর্তন আর comparison বর্ণনা করে প্রায় ৮০–১০০ শব্দের একটা সুসংগত Task 1 body paragraph লেখো। তোমার paragraph-এ থাকা উচিত: অন্তত একটা বৃদ্ধি আর একটা হ্রাসের বর্ণনা; একটা নির্ভুল comparison; উপযুক্ত trend vocabulary; অন্তত একটা নির্ভুল magnitude বা percentage-point expression; উপযুক্ত tense; grammatically সঠিক sentence structure; নির্ভুল সহায়ক data; আর অসমর্থিত ব্যাখ্যা বা মতামত এড়িয়ে চলা। একটা সম্পূর্ণ Task 1 response লিখো না। এটা একটা targeted vocabulary আর grammar exercise।',
+    },
     minWords: 80,
     chartId: 'commute-methods',
     skillFocus: 'Task 1 vocabulary precision and grammatical accuracy',

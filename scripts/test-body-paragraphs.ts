@@ -64,9 +64,9 @@ test('existing identity is preserved: id body-paragraphs, module task1-m5, expor
   assert.equal(getLesson('body-paragraphs'), lesson);
   assert.equal(Object.values(LESSONS).filter((l) => l.id === 'body-paragraphs').length, 1);
   assert.equal(Object.values(LESSONS).filter((l) => l.moduleId === 'task1-m5').length, 1, 'no duplicate Module 5 lesson');
-  assert.equal(lesson.title, 'Body Paragraph Development');
+  assert.equal(localize('en', lesson.title), 'Body Paragraph Development');
   const m5 = TASK1_MODULES.find((m) => m.id === 'task1-m5')!;
-  assert.equal(m5.title, 'Body Paragraph Development');
+  assert.equal(localize('en', m5.title), 'Body Paragraph Development');
   assert.equal(m5.builtLessonId, 'body-paragraphs');
 });
 
@@ -341,7 +341,7 @@ test('board model answers agree with the data', () => {
 
 test('final prompt is a paragraph-only skill drill on the renewable-electricity chart', () => {
   const f = lesson.finalPrompt;
-  assert.equal(f.title, 'Write One Well-Developed Body Paragraph');
+  assert.equal(localize('en', f.title), 'Write One Well-Developed Body Paragraph');
   assert.equal(f.skillFocus, 'Task 1 body paragraph development');
   assert.equal(f.checkScope, 'paragraph-only');
   assert.equal(f.chartId, 'renewable-electricity');
@@ -457,7 +457,7 @@ test('LessonRunner withholds the band for any lesson with skillFocus (source-lev
   const src = readFileSync('components/writing-studio/LessonRunner.tsx', 'utf8');
   assert.match(src, /lesson\.finalPrompt\.skillFocus \? null : unified\.band/);
   assert.match(src, /checkScope: lesson\.finalPrompt\.checkScope/);
-  assert.match(src, /checkEssay\(essay, lesson\.finalPrompt\.minWords, lesson\.task, scope, !!lesson\.finalPrompt\.skillFocus\)/);
+  assert.match(src, /checkEssay\(essay, lesson\.finalPrompt\.minWords, lesson\.task, scope, !!lesson\.finalPrompt\.skillFocus, contentLocale\)/);
 });
 
 console.log(`\n${passed} passed`);
