@@ -12,93 +12,150 @@ export const task1UnderstandingLesson: Lesson = {
   id: 'task1-understanding',
   task: 'task1',
   moduleId: 'task1-m1',
-  title: 'Understanding IELTS Writing Task 1',
+  title: { en: 'Understanding IELTS Writing Task 1', bn: 'IELTS Writing Task 1 বোঝা' },
   objective: 'Know exactly what Academic Task 1 asks for, how a response is structured, and how to paraphrase a question accurately — so every later lesson builds on the right foundation.',
   estMinutes: 16,
   steps: [
     {
       id: 'intro',
       kind: 'intro',
-      title: "Today's goal",
-      trainerMessage:
-        "Hi — I'm Mino. This lesson is about IELTS ACADEMIC Writing Task 1 — describing a chart, table, map or diagram. (General Training has a different Task 1, a letter, which this Academy does not cover.) By the end, you'll know what Task 1 actually wants, how its response is built from three parts, and how to paraphrase a question without changing its meaning. Most early mistakes come from misunderstanding the task itself, not from weak English — so that's where we start.",
+      title: { en: "Today's goal", bn: 'আজকের লক্ষ্য' },
+      trainerMessage: {
+        en: "Hi — I'm Mino. This lesson is about IELTS ACADEMIC Writing Task 1 — describing a chart, table, map or diagram. (General Training has a different Task 1, a letter, which this Academy does not cover.) By the end, you'll know what Task 1 actually wants, how its response is built from three parts, and how to paraphrase a question without changing its meaning. Most early mistakes come from misunderstanding the task itself, not from weak English — so that's where we start.",
+        bn: 'হাই — আমি Mino। এই lesson-টা IELTS ACADEMIC Writing Task 1 নিয়ে — একটা chart, table, map বা diagram বর্ণনা করা। (General Training-এর Task 1 আলাদা, একটা letter, যেটা এই Academy-তে নেই।) শেষে গিয়ে তুমি জানবে Task 1 আসলে কী চায়, এর response তিনটা অংশ দিয়ে কীভাবে তৈরি হয়, আর অর্থ না বদলে কীভাবে একটা প্রশ্ন paraphrase করতে হয়। শুরুর দিকের বেশিরভাগ ভুল হয় Task-টা ভুল বুঝে, English দুর্বল থাকার জন্য না — তাই আমরা এখান থেকেই শুরু করছি।',
+      },
     },
     {
       id: 'what-task1-asks',
       kind: 'explain',
-      title: 'What Academic Task 1 actually asks for',
-      trainerMessage:
-        'Task 1 gives you ONE visual and asks you to describe it in your own words, using data from it. Think of yourself as a reporter, not a judge: your job is to describe what is shown, accurately and clearly — never to argue a case, explain causes, or recommend anything.',
+      title: { en: 'What Academic Task 1 actually asks for', bn: 'Academic Task 1 আসলে কী চায়' },
+      trainerMessage: {
+        en: 'Task 1 gives you ONE visual and asks you to describe it in your own words, using data from it. Think of yourself as a reporter, not a judge: your job is to describe what is shown, accurately and clearly — never to argue a case, explain causes, or recommend anything.',
+        bn: 'Task 1 তোমাকে একটা visual দেয় আর সেটাকে নিজের ভাষায়, সেখানের data ব্যবহার করে বর্ণনা করতে বলে। নিজেকে একজন reporter ভাবো, judge না: তোমার কাজ হলো যা দেখানো হয়েছে সেটা নির্ভুলভাবে আর স্পষ্টভাবে বর্ণনা করা — কখনো কোনো যুক্তি দেওয়া, কারণ ব্যাখ্যা করা, বা কিছু recommend করা না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          "The visual can be a line graph, a bar chart, a pie chart, a table, a map, or a process diagram — and these behave differently. Don't assume every visual has a rising or falling trend: a pie chart or table often shows a single moment with no trend at all, a map shows how a place changed between two dates, and a process diagram shows the stages of a cycle with no time axis whatsoever.",
-          "Whichever visual you get, the task is the same: report what it actually shows, selecting the features that matter most. You are never asked to report every single number — picking the right details is itself part of the skill, which later lessons in this Academy cover in depth.",
+          {
+            en: "The visual can be a line graph, a bar chart, a pie chart, a table, a map, or a process diagram — and these behave differently. Don't assume every visual has a rising or falling trend: a pie chart or table often shows a single moment with no trend at all, a map shows how a place changed between two dates, and a process diagram shows the stages of a cycle with no time axis whatsoever.",
+            bn: 'visual-টা একটা line graph, bar chart, pie chart, table, map, বা process diagram হতে পারে — আর এগুলো আলাদা আলাদাভাবে কাজ করে। ধরে নিও না যে প্রতিটা visual-এই বাড়া বা কমার একটা trend থাকবে: একটা pie chart বা table প্রায়ই একটা মুহূর্তের ছবি দেখায়, যেখানে কোনো trend-ই থাকে না, একটা map দেখায় একটা জায়গা দুইটা তারিখের মধ্যে কীভাবে বদলেছে, আর একটা process diagram একটা cycle-এর ধাপগুলো দেখায়, যেখানে কোনো সময়ের axis থাকে না।',
+          },
+          {
+            en: 'Whichever visual you get, the task is the same: report what it actually shows, selecting the features that matter most. You are never asked to report every single number — picking the right details is itself part of the skill, which later lessons in this Academy cover in depth.',
+            bn: 'যেকোনো visual-ই তুমি পাও না কেন, কাজটা একই: এটা আসলে কী দেখাচ্ছে সেটা report করা, সবচেয়ে গুরুত্বপূর্ণ feature-গুলো বেছে নিয়ে। তোমাকে কখনোই প্রতিটা সংখ্যা report করতে বলা হয় না — সঠিক detail বেছে নেওয়াটাই একটা skill, যা এই Academy-র পরের lesson-গুলোতে বিস্তারিত আলোচনা হবে।',
+          },
         ],
       },
     },
     {
       id: 'task1-vs-task2',
       kind: 'explain',
-      title: 'Task 1 versus Task 2',
-      trainerMessage: "It's easy to blur the two Writing tasks together early on. Here's exactly how they differ — and the two mistakes that blur usually causes.",
+      title: { en: 'Task 1 versus Task 2', bn: 'Task 1 বনাম Task 2' },
+      trainerMessage: {
+        en: "It's easy to blur the two Writing tasks together early on. Here's exactly how they differ — and the two mistakes that blur usually causes.",
+        bn: 'শুরুর দিকে এই দুইটা Writing task গুলিয়ে ফেলা খুব সহজ। চলো দেখি এগুলো ঠিক কীভাবে আলাদা — আর এই গুলিয়ে ফেলা থেকে সাধারণত কোন দুইটা ভুল হয়।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Task 1: describe visual data objectively, at least 150 words, about 20 minutes, no personal opinion, no essay structure. Task 2: answer a question with a developed, persuasive or discussion essay, at least 250 words, about 40 minutes, a clear personal position is required. Both are marked on four equally-weighted criteria that share the same names for Coherence & Cohesion, Lexical Resource and Grammatical Range & Accuracy — but the fourth criterion is Task Achievement for Task 1 and Task Response for Task 2, and the skills each one actually rewards are different.',
-          "Two mistakes follow from mixing them up. First, treating Task 1 like a mini-essay — adding \"I think...\", explaining why a trend happened, or finishing with a recommendation. Second, under-investing in Task 1 because its word count is lower — but Task 1 is marked by the exact same four-criteria system as Task 2, just applied to a reporting skill instead of an argument.",
+          {
+            en: 'Task 1: describe visual data objectively, at least 150 words, about 20 minutes, no personal opinion, no essay structure. Task 2: answer a question with a developed, persuasive or discussion essay, at least 250 words, about 40 minutes, a clear personal position is required. Both are marked on four equally-weighted criteria that share the same names for Coherence & Cohesion, Lexical Resource and Grammatical Range & Accuracy — but the fourth criterion is Task Achievement for Task 1 and Task Response for Task 2, and the skills each one actually rewards are different.',
+            bn: 'Task 1: visual data-কে objectively বর্ণনা করা, অন্তত ১৫০ শব্দ, প্রায় ২০ মিনিট, কোনো ব্যক্তিগত opinion না, কোনো essay structure না। Task 2: একটা প্রশ্নের উত্তরে একটা developed, persuasive বা discussion essay লেখা, অন্তত ২৫০ শব্দ, প্রায় ৪০ মিনিট, একটা স্পষ্ট ব্যক্তিগত position দরকার। দুইটাই চারটা সমান-গুরুত্বের criteria দিয়ে marked হয় — Coherence & Cohesion, Lexical Resource আর Grammatical Range & Accuracy একই নামে থাকে — কিন্তু চতুর্থ criterion Task 1-এর জন্য Task Achievement আর Task 2-এর জন্য Task Response, আর প্রতিটা আসলে ভিন্ন skill-কে reward করে।',
+          },
+          {
+            en: 'Two mistakes follow from mixing them up. First, treating Task 1 like a mini-essay — adding "I think...", explaining why a trend happened, or finishing with a recommendation. Second, under-investing in Task 1 because its word count is lower — but Task 1 is marked by the exact same four-criteria system as Task 2, just applied to a reporting skill instead of an argument.',
+            bn: 'এই দুইটা গুলিয়ে ফেলার ফলে দুইটা ভুল হয়। প্রথমত, Task 1-কে একটা mini-essay-এর মতো treat করা — "I think..." যোগ করা, কেন একটা trend হয়েছে ব্যাখ্যা করা, বা একটা recommendation দিয়ে শেষ করা। দ্বিতীয়ত, word count কম বলে Task 1-এ কম সময় দেওয়া — কিন্তু Task 1, Task 2-এর মতোই একই চার-criteria system দিয়ে marked হয়, শুধু সেটা একটা argument-এর বদলে reporting skill-এ প্রয়োগ হয়।',
+          },
         ],
       },
     },
     {
       id: 'time-criteria',
       kind: 'explain',
-      title: 'Time, word count, and the four criteria',
-      trainerMessage: "Here are the numbers and the marking system — worth knowing cold before you write a single response.",
+      title: { en: 'Time, word count, and the four criteria', bn: 'সময়, word count, আর চারটা criteria' },
+      trainerMessage: {
+        en: 'Here are the numbers and the marking system — worth knowing cold before you write a single response.',
+        bn: 'এখানে সংখ্যা আর marking system-টা দেওয়া হলো — একটা response লেখার আগে এগুলো একদম মুখস্থ থাকা দরকার।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'You have about 20 minutes and must write at least 150 words. Writing fewer than 150 words costs marks even when the content is good, because the examiner cannot see a fully developed response — and writing far more leaves less time for Task 2, which counts for more of your overall Writing band.',
-          'Four criteria, each worth an equal share of the Task 1 score: Task Achievement (did you cover the key features accurately, with a clear overview, and no opinion?), Coherence & Cohesion (is it logically organised and linked with paragraphs and linking words?), Lexical Resource (is your vocabulary accurate, varied and precise — especially trend and comparison language?), and Grammatical Range & Accuracy (a mix of correct simple and complex sentences).',
+          {
+            en: 'You have about 20 minutes and must write at least 150 words. Writing fewer than 150 words costs marks even when the content is good, because the examiner cannot see a fully developed response — and writing far more leaves less time for Task 2, which counts for more of your overall Writing band.',
+            bn: 'তোমার কাছে প্রায় ২০ মিনিট আছে আর অন্তত ১৫০ শব্দ লিখতে হবে। ১৫০ শব্দের কম লিখলে content ভালো হলেও নম্বর কাটা যায়, কারণ examiner একটা পুরোপুরি develop করা response দেখতে পান না — আর অনেক বেশি লিখলে Task 2-এর জন্য সময় কমে যায়, যেটা তোমার overall Writing band-এ বেশি গুরুত্ব বহন করে।',
+          },
+          {
+            en: 'Four criteria, each worth an equal share of the Task 1 score: Task Achievement (did you cover the key features accurately, with a clear overview, and no opinion?), Coherence & Cohesion (is it logically organised and linked with paragraphs and linking words?), Lexical Resource (is your vocabulary accurate, varied and precise — especially trend and comparison language?), and Grammatical Range & Accuracy (a mix of correct simple and complex sentences).',
+            bn: 'চারটা criteria, প্রতিটা Task 1-এর score-এ সমান ভাগ: Task Achievement (তুমি কি key feature-গুলো নির্ভুলভাবে cover করেছ, একটা স্পষ্ট overview সহ, কোনো opinion ছাড়া?), Coherence & Cohesion (এটা কি যুক্তিসঙ্গতভাবে সাজানো আর paragraph ও linking word দিয়ে সংযুক্ত?), Lexical Resource (তোমার vocabulary কি নির্ভুল, বৈচিত্র্যময় আর নির্দিষ্ট — বিশেষ করে trend আর comparison-এর ভাষা?), আর Grammatical Range & Accuracy (সঠিক simple আর complex বাক্যের মিশ্রণ)।',
+          },
         ],
       },
     },
     {
       id: 'response-structure',
       kind: 'explain',
-      title: 'Introduction, Overview, and Body: three different jobs',
-      trainerMessage: 'A Task 1 response always has the same three working parts, and each one has a distinct job — mixing them up is one of the most common structural mistakes.',
+      title: { en: 'Introduction, Overview, and Body: three different jobs', bn: 'Introduction, Overview, আর Body: তিনটা আলাদা কাজ' },
+      trainerMessage: {
+        en: 'A Task 1 response always has the same three working parts, and each one has a distinct job — mixing them up is one of the most common structural mistakes.',
+        bn: 'একটা Task 1 response-এর সবসময় একই তিনটা working part থাকে, আর প্রতিটার কাজ আলাদা — এগুলো গুলিয়ে ফেলা structural দিক থেকে সবচেয়ে সাধারণ ভুলগুলোর একটা।',
+      },
       material: {
         type: 'vocab',
         items: [
-          { phrase: 'Introduction', use: 'Paraphrase the task question accurately — change the wording and structure, but keep every key fact (dates, units, categories, numbers of items) the same. No data, no trend, and no opinion belong here.' },
-          { phrase: 'Overview', use: 'Stand back and state the one or two most significant overall features — the "headline" of the visual — without listing individual figures. A static visual gets an overview of its main comparison or feature instead of a "trend".' },
-          { phrase: 'Body paragraph(s)', use: 'Support the overview with selected, grouped details and real comparisons (for example "more than double", "roughly the same as") — not a complete list of every number in the visual.' },
+          {
+            phrase: 'Introduction',
+            use: {
+              en: 'Paraphrase the task question accurately — change the wording and structure, but keep every key fact (dates, units, categories, numbers of items) the same. No data, no trend, and no opinion belong here.',
+              bn: 'task question-টা নির্ভুলভাবে paraphrase করা — শব্দ আর structure বদলাও, কিন্তু প্রতিটা key fact (তারিখ, unit, category, item-এর সংখ্যা) একই রাখো। এখানে কোনো data, trend, বা opinion থাকবে না।',
+            },
+          },
+          {
+            phrase: 'Overview',
+            use: {
+              en: 'Stand back and state the one or two most significant overall features — the "headline" of the visual — without listing individual figures. A static visual gets an overview of its main comparison or feature instead of a "trend".',
+              bn: 'পিছিয়ে এসে সবচেয়ে গুরুত্বপূর্ণ এক বা দুইটা overall feature বলো — visual-টার "headline" — আলাদা আলাদা figure তালিকা না করে। একটা static visual-এর জন্য "trend"-এর বদলে এর মূল comparison বা feature-এর একটা overview থাকে।',
+            },
+          },
+          {
+            phrase: 'Body paragraph(s)',
+            use: {
+              en: 'Support the overview with selected, grouped details and real comparisons (for example "more than double", "roughly the same as") — not a complete list of every number in the visual.',
+              bn: 'বেছে নেওয়া, গ্রুপ করা detail আর real comparison (যেমন "more than double", "roughly the same as") দিয়ে overview-কে support করো — visual-এর প্রতিটা সংখ্যার পূর্ণ তালিকা না।',
+            },
+          },
         ],
       },
     },
     {
       id: 'objective-vs-opinion',
       kind: 'demonstrate',
-      title: 'Objective reporting versus opinion',
-      trainerMessage: 'Here are two openings written about the same chart, on renewable electricity use. Only one of them is doing what Task 1 asks — and the difference is not about grammar.',
+      title: { en: 'Objective reporting versus opinion', bn: 'Objective reporting বনাম Opinion' },
+      trainerMessage: {
+        en: 'Here are two openings written about the same chart, on renewable electricity use. Only one of them is doing what Task 1 asks — and the difference is not about grammar.',
+        bn: 'এখানে একই chart নিয়ে লেখা দুইটা opening দেওয়া হলো, renewable electricity ব্যবহার নিয়ে। এর মধ্যে শুধু একটা Task 1 যা চায় সেটা করছে — আর পার্থক্যটা grammar নিয়ে না।',
+      },
       material: {
         type: 'examples',
         good:
           'The line graph compares the proportion of electricity generated from renewable sources in three countries between 2000 and 2020.',
         weak:
           'In my opinion, countries should use more renewable electricity because it is better for the environment, and I think this chart proves it.',
-        note: 'The weak version gives an opinion ("in my opinion", "I think") and argues a case — that is Task 2 behaviour. Both sentences are grammatically fine; the difference is entirely about task type. Task 1 only ever reports what the visual shows, in neutral, factual language, whatever the visual actually is.',
+        note: {
+          en: 'The weak version gives an opinion ("in my opinion", "I think") and argues a case — that is Task 2 behaviour. Both sentences are grammatically fine; the difference is entirely about task type. Task 1 only ever reports what the visual shows, in neutral, factual language, whatever the visual actually is.',
+          bn: 'weak version-টা একটা opinion দেয় ("in my opinion", "I think") আর একটা যুক্তি তুলে ধরে — এটা Task 2-এর আচরণ। দুইটা বাক্যই grammatically ঠিক আছে; পার্থক্যটা সম্পূর্ণভাবে task type নিয়ে। Task 1 সবসময় শুধু visual-টা যা দেখাচ্ছে সেটাই neutral, factual ভাষায় report করে, visual-টা আসলে যা-ই হোক না কেন।',
+        },
       },
     },
     {
       id: 'check-task-type',
       kind: 'check',
-      title: 'Guided practice: which task is this?',
-      trainerMessage: 'A quick check before we go further.',
+      title: { en: 'Guided practice: which task is this?', bn: 'Guided practice: এটা কোন task?' },
+      trainerMessage: { en: 'A quick check before we go further.', bn: 'আরও এগোনোর আগে একটা ছোট check।' },
       check: {
-        prompt:
-          "A friend practising IELTS shows you a task card: \"The chart below shows the number of international students in four countries from 2010 to 2020. Summarise the information by selecting and reporting the main features.\" Which task is this?",
+        prompt: {
+          en: "A friend practising IELTS shows you a task card: \"The chart below shows the number of international students in four countries from 2010 to 2020. Summarise the information by selecting and reporting the main features.\" Which task is this?",
+          bn: 'IELTS practice করা একজন বন্ধু তোমাকে একটা task card দেখাল: "The chart below shows the number of international students in four countries from 2010 to 2020. Summarise the information by selecting and reporting the main features." এটা কোন task?',
+        },
         options: [
           'Academic Writing Task 1 — describing visual data',
           'Academic Writing Task 2 — an opinion essay',
@@ -106,8 +163,10 @@ export const task1UnderstandingLesson: Lesson = {
           'Speaking Part 2 — a cue card',
         ],
         correctIndex: 0,
-        explain:
-          "The instruction \"summarise... by selecting and reporting the main features\" is the standard Academic Task 1 wording for describing a chart — there is no question to discuss and no opinion asked for, which rules out Task 2, and nothing here asks for a letter or spoken answer.",
+        explain: {
+          en: "The instruction \"summarise... by selecting and reporting the main features\" is the standard Academic Task 1 wording for describing a chart — there is no question to discuss and no opinion asked for, which rules out Task 2, and nothing here asks for a letter or spoken answer.",
+          bn: '"summarise... by selecting and reporting the main features" — এই instruction-টা একটা chart বর্ণনা করার জন্য standard Academic Task 1-এর ভাষা — এখানে discuss করার মতো কোনো প্রশ্ন নেই আর কোনো opinion চাওয়া হয়নি, তাই Task 2 বাদ, আর এখানে কোনো letter বা মুখে বলা উত্তরও চাওয়া হয়নি।',
+        },
       },
     },
     {

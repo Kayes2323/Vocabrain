@@ -31,7 +31,7 @@ export const task1VocabGrammarLesson: Lesson = {
   id: 'task1-vocab-grammar',
   task: 'task1',
   moduleId: 'task1-m6',
-  title: 'Vocabulary and Grammar Mastery',
+  title: { en: 'Vocabulary and Grammar Mastery', bn: 'Vocabulary আর Grammar-এ দক্ষতা' },
   objective:
     'Describe trends, compare data and write accurately: choose precise trend verbs, describe magnitude without exaggeration, keep percentage points and percentages apart, control tense, articles, agreement and prepositions, and apply it all in one accurate body paragraph.',
   estMinutes: 32,
@@ -39,132 +39,206 @@ export const task1VocabGrammarLesson: Lesson = {
     {
       id: 'intro',
       kind: 'intro',
-      title: 'Why Language Accuracy Matters',
-      trainerMessage:
-        "Welcome to Lesson 06. You already know how to understand a chart, write an introduction, identify an overview and develop a body paragraph. Now we will improve the language you use to communicate that information. Many learners repeatedly use phrases such as 'went up', 'went down', 'a lot', 'very high' and 'very low'. Others try to use advanced vocabulary without understanding its exact meaning. Both approaches create problems. Today, you will learn how to choose words that describe the actual data, compare figures accurately and control your grammar. Remember: IELTS Writing is not a competition to use the most difficult words. Your goal is to communicate accurate information clearly and naturally.",
+      title: { en: 'Why Language Accuracy Matters', bn: 'ভাষার নির্ভুলতা কেন গুরুত্বপূর্ণ' },
+      trainerMessage: {
+        en: "Welcome to Lesson 06. You already know how to understand a chart, write an introduction, identify an overview and develop a body paragraph. Now we will improve the language you use to communicate that information. Many learners repeatedly use phrases such as 'went up', 'went down', 'a lot', 'very high' and 'very low'. Others try to use advanced vocabulary without understanding its exact meaning. Both approaches create problems. Today, you will learn how to choose words that describe the actual data, compare figures accurately and control your grammar. Remember: IELTS Writing is not a competition to use the most difficult words. Your goal is to communicate accurate information clearly and naturally.",
+        bn: "Lesson 06-এ স্বাগতম। তুমি এতদিনে জানো কীভাবে একটা chart বুঝতে হয়, একটা introduction লিখতে হয়, overview চিনতে হয় আর একটা body paragraph develop করতে হয়। এবার আমরা সেই তথ্য জানানোর ভাষাটাকে আরও ভালো করব। অনেক learner বারবার 'went up', 'went down', 'a lot', 'very high' আর 'very low'-এর মতো phrase ব্যবহার করে। আবার কেউ কেউ সঠিক অর্থ না বুঝেই advanced vocabulary ব্যবহার করার চেষ্টা করে। দুই পদ্ধতিতেই সমস্যা হয়। আজ তুমি শিখবে কীভাবে আসল data বর্ণনা করার জন্য সঠিক শব্দ বেছে নিতে হয়, figure-গুলো নির্ভুলভাবে তুলনা করতে হয়, আর grammar control করতে হয়। মনে রাখবে: IELTS Writing সবচেয়ে কঠিন শব্দ ব্যবহার করার প্রতিযোগিতা না। তোমার লক্ষ্য হলো সঠিক তথ্য স্পষ্ট আর স্বাভাবিকভাবে জানানো।",
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'A strong Task 1 response requires accurate vocabulary, appropriate grammatical structures, correct data descriptions, meaningful comparisons, consistent tense, and clear, natural sentences. Accuracy comes before variety: a simple accurate sentence is better than an impressive but inaccurate one.',
-          'Weak: "Car went down a lot and bicycle went up a lot."',
-          'Improved: "Car use declined, whereas bicycle use increased substantially."',
-          'More precise: "Car use fell by 14 percentage points, whereas bicycle use rose by 13 percentage points."',
-          'The final version is more informative because it gives the exact magnitude of each change. All figures in this lesson come from one chart: the percentage of commuters using five methods of travel in one city, 2010 and 2023 (illustrative training data).',
+          {
+            en: 'A strong Task 1 response requires accurate vocabulary, appropriate grammatical structures, correct data descriptions, meaningful comparisons, consistent tense, and clear, natural sentences. Accuracy comes before variety: a simple accurate sentence is better than an impressive but inaccurate one.',
+            bn: 'একটা শক্তিশালী Task 1 response-এর জন্য দরকার সঠিক vocabulary, উপযুক্ত grammatical structure, সঠিক data বর্ণনা, অর্থবহ comparison, সামঞ্জস্যপূর্ণ tense, আর স্পষ্ট, স্বাভাবিক বাক্য। variety-র আগে accuracy: একটা সহজ কিন্তু সঠিক বাক্য, একটা impressive কিন্তু ভুল বাক্যের চেয়ে ভালো।',
+          },
+          { en: 'Weak: "Car went down a lot and bicycle went up a lot."', bn: 'দুর্বল: "Car went down a lot and bicycle went up a lot."' },
+          { en: 'Improved: "Car use declined, whereas bicycle use increased substantially."', bn: 'উন্নত: "Car use declined, whereas bicycle use increased substantially."' },
+          {
+            en: 'More precise: "Car use fell by 14 percentage points, whereas bicycle use rose by 13 percentage points."',
+            bn: 'আরও নির্ভুল: "Car use fell by 14 percentage points, whereas bicycle use rose by 13 percentage points."',
+          },
+          {
+            en: 'The final version is more informative because it gives the exact magnitude of each change. All figures in this lesson come from one chart: the percentage of commuters using five methods of travel in one city, 2010 and 2023 (illustrative training data).',
+            bn: 'শেষ version-টা বেশি তথ্যবহুল, কারণ এটা প্রতিটা পরিবর্তনের নির্ভুল magnitude দেয়। এই lesson-এর সব figure একটাই chart থেকে নেওয়া: একটা শহরে পাঁচটা transport পদ্ধতি ব্যবহারকারী commuter-দের percentage, ২০১০ আর ২০২৩ সালে (illustrative training data)।',
+          },
         ],
       },
       check: {
-        prompt: 'Which sentence communicates the data most precisely?',
+        prompt: { en: 'Which sentence communicates the data most precisely?', bn: 'কোন বাক্যটা data সবচেয়ে নির্ভুলভাবে জানায়?' },
         options: [
           'Car use became bad and bicycle use became good.',
           'Car use changed a lot and bicycle use changed a lot.',
           'Car use declined by 14 percentage points, while bicycle use increased by 13 percentage points.',
         ],
         correctIndex: 2,
-        explain:
-          'The last sentence describes the direction and exact magnitude of both changes. The first expresses opinions, and the second is too vague to tell the reader anything.',
+        explain: {
+          en: 'The last sentence describes the direction and exact magnitude of both changes. The first expresses opinions, and the second is too vague to tell the reader anything.',
+          bn: 'শেষ বাক্যটা দুটো পরিবর্তনেরই direction আর নির্ভুল magnitude বর্ণনা করে। প্রথমটা opinion প্রকাশ করছে, আর দ্বিতীয়টা এতই vague যে এটা পাঠককে কিছুই জানাচ্ছে না।',
+        },
       },
     },
     {
       id: 'trend-verbs',
       kind: 'explain',
-      title: 'Trend Verbs: Describing Direction',
-      trainerMessage:
-        'Your first task is to identify the direction of a change. Did the figure increase, decrease, remain stable or fluctuate? Choose the verb that matches the actual movement. Do not select a word simply because it sounds academic.',
+      title: { en: 'Trend Verbs: Describing Direction', bn: 'Trend Verb: Direction বর্ণনা করা' },
+      trainerMessage: {
+        en: 'Your first task is to identify the direction of a change. Did the figure increase, decrease, remain stable or fluctuate? Choose the verb that matches the actual movement. Do not select a word simply because it sounds academic.',
+        bn: 'তোমার প্রথম কাজ হলো পরিবর্তনের direction চিহ্নিত করা। figure-টা কি বেড়েছে, কমেছে, একই থেকেছে, না ওঠানামা করেছে? আসল movement-এর সাথে মেলে এমন verb বেছে নাও। শুধু academic শোনায় বলে কোনো শব্দ বেছে নিও না।',
+      },
       material: {
         type: 'vocab',
         items: [
           {
             phrase: 'A. Upward movement',
-            use: 'increased, rose, climbed, grew. Examples: "Bicycle use increased from 6% to 19%." "Train use rose from 11% to 15%." These verbs can often describe upward movement, but always check the context and the grammatical structure.',
+            use: {
+              en: 'increased, rose, climbed, grew. Examples: "Bicycle use increased from 6% to 19%." "Train use rose from 11% to 15%." These verbs can often describe upward movement, but always check the context and the grammatical structure.',
+              bn: 'increased, rose, climbed, grew। উদাহরণ: "Bicycle use increased from 6% to 19%." "Train use rose from 11% to 15%." এই verb-গুলো প্রায়ই upward movement বর্ণনা করতে পারে, তবে সবসময় context আর grammatical structure চেক করো।',
+            },
           },
           {
             phrase: 'B. Downward movement',
-            use: 'decreased, fell, declined, dropped. Examples: "Car use fell from 52% to 38%." "Bus use declined slightly from 24% to 21%."',
+            use: {
+              en: 'decreased, fell, declined, dropped. Examples: "Car use fell from 52% to 38%." "Bus use declined slightly from 24% to 21%."',
+              bn: 'decreased, fell, declined, dropped। উদাহরণ: "Car use fell from 52% to 38%." "Bus use declined slightly from 24% to 21%."',
+            },
           },
           {
             phrase: 'C. No significant change',
-            use: 'remained stable, remained unchanged, stayed constant, remained relatively steady. Examples: "Walking remained unchanged at 7%." "Walking stayed at 7% in both years." Do not use "remained stable" when the figure changed substantially.',
+            use: {
+              en: 'remained stable, remained unchanged, stayed constant, remained relatively steady. Examples: "Walking remained unchanged at 7%." "Walking stayed at 7% in both years." Do not use "remained stable" when the figure changed substantially.',
+              bn: 'remained stable, remained unchanged, stayed constant, remained relatively steady। উদাহরণ: "Walking remained unchanged at 7%." "Walking stayed at 7% in both years." figure যদি অনেকটা বদলে যায় তাহলে "remained stable" ব্যবহার করো না।',
+            },
           },
           {
             phrase: 'D. Fluctuation',
-            use: 'fluctuated, experienced fluctuations, varied. Use these when a figure moves up and down during the period — which needs data from several points in time. Do not use "fluctuated" to describe a simple continuous increase.',
+            use: {
+              en: 'fluctuated, experienced fluctuations, varied. Use these when a figure moves up and down during the period — which needs data from several points in time. Do not use "fluctuated" to describe a simple continuous increase.',
+              bn: 'fluctuated, experienced fluctuations, varied। এগুলো তখনই ব্যবহার করো যখন একটা figure সময়ের মধ্যে ওঠানামা করে — যার জন্য একাধিক সময়-বিন্দুর data দরকার। একটা সাধারণ ধারাবাহিক বৃদ্ধি বোঝাতে "fluctuated" ব্যবহার করো না।',
+            },
           },
           {
             phrase: 'E. Highest and lowest points',
-            use: 'reached a peak of, peaked at, reached its lowest point at, hit a low of. These need a real high or low point in the available data. Do not invent a peak or a lowest point from incomplete information.',
+            use: {
+              en: 'reached a peak of, peaked at, reached its lowest point at, hit a low of. These need a real high or low point in the available data. Do not invent a peak or a lowest point from incomplete information.',
+              bn: 'reached a peak of, peaked at, reached its lowest point at, hit a low of। এগুলোর জন্য available data-তে আসল একটা high বা low point থাকতে হবে। অসম্পূর্ণ তথ্য থেকে কোনো peak বা lowest point বানিয়ে নিও না।',
+            },
           },
         ],
       },
       check: {
-        prompt: 'Which sentence accurately describes the bicycle figures?',
+        prompt: { en: 'Which sentence accurately describes the bicycle figures?', bn: 'কোন বাক্যটা bicycle-এর figure সঠিকভাবে বর্ণনা করে?' },
         options: [
           'Bicycle use increased from 6% to 19%.',
           'Bicycle use remained stable at 19%.',
           'Bicycle use declined from 6% to 19%.',
         ],
         correctIndex: 0,
-        explain:
-          'The figure increased by 13 percentage points. The second option is incorrect because the figure changed, and the third describes the direction incorrectly.',
+        explain: {
+          en: 'The figure increased by 13 percentage points. The second option is incorrect because the figure changed, and the third describes the direction incorrectly.',
+          bn: 'figure-টা ১৩ percentage point বেড়েছে। দ্বিতীয় option ভুল, কারণ figure-টা বদলেছে, আর তৃতীয়টা direction ভুলভাবে বর্ণনা করছে।',
+        },
       },
     },
     {
       id: 'magnitude-pace',
       kind: 'explain',
-      title: 'Magnitude and Pace',
-      trainerMessage:
-        'Describing direction is not enough. A useful Task 1 sentence can also explain how large or how fast a change was. Compare increased, increased slightly, increased gradually, increased sharply and increased substantially: they do not communicate exactly the same thing.',
+      title: { en: 'Magnitude and Pace', bn: 'Magnitude আর Pace' },
+      trainerMessage: {
+        en: 'Describing direction is not enough. A useful Task 1 sentence can also explain how large or how fast a change was. Compare increased, increased slightly, increased gradually, increased sharply and increased substantially: they do not communicate exactly the same thing.',
+        bn: 'শুধু direction বর্ণনা করলেই হবে না। একটা কাজের Task 1 বাক্য এটাও বলতে পারে যে পরিবর্তনটা কতটা বড় বা কত দ্রুত হয়েছিল। increased, increased slightly, increased gradually, increased sharply আর increased substantially তুলনা করে দেখো: এগুলো ঠিক একই জিনিস বলে না।',
+      },
       material: {
         type: 'vocab',
         items: [
-          { phrase: 'A. Small changes', use: 'slightly, marginally, modestly. Example: "Bus use declined slightly from 24% to 21%."' },
-          { phrase: 'B. Large changes', use: 'considerably, substantially, significantly, sharply, dramatically. Example: "Bicycle use increased substantially from 6% to 19%."' },
+          {
+            phrase: 'A. Small changes',
+            use: { en: 'slightly, marginally, modestly. Example: "Bus use declined slightly from 24% to 21%."', bn: 'slightly, marginally, modestly। উদাহরণ: "Bus use declined slightly from 24% to 21%."' },
+          },
+          {
+            phrase: 'B. Large changes',
+            use: {
+              en: 'considerably, substantially, significantly, sharply, dramatically. Example: "Bicycle use increased substantially from 6% to 19%."',
+              bn: 'considerably, substantially, significantly, sharply, dramatically। উদাহরণ: "Bicycle use increased substantially from 6% to 19%."',
+            },
+          },
           {
             phrase: 'C. Gradual movement',
-            use: 'gradually, steadily, progressively. These describe how a change developed over time, so they need evidence from several points in time. Example for a line graph with yearly figures (not this chart): "Sales increased steadily every year."',
+            use: {
+              en: 'gradually, steadily, progressively. These describe how a change developed over time, so they need evidence from several points in time. Example for a line graph with yearly figures (not this chart): "Sales increased steadily every year."',
+              bn: 'gradually, steadily, progressively। এগুলো বোঝায় একটা পরিবর্তন সময়ের সাথে কীভাবে হয়েছে, তাই এর জন্য একাধিক সময়-বিন্দুর প্রমাণ লাগে। বছরভিত্তিক figure-সহ line graph-এর জন্য উদাহরণ (এই chart-এর না): "Sales increased steadily every year."',
+            },
           },
           {
             phrase: 'D. Rapid movement',
-            use: 'rapidly, sharply, steeply. These also describe pace, so use them when the data shows a pronounced change over a short interval. Example for a line graph with yearly figures (not this chart): "Sales rose sharply between 2019 and 2020."',
+            use: {
+              en: 'rapidly, sharply, steeply. These also describe pace, so use them when the data shows a pronounced change over a short interval. Example for a line graph with yearly figures (not this chart): "Sales rose sharply between 2019 and 2020."',
+              bn: 'rapidly, sharply, steeply। এগুলোও pace বর্ণনা করে, তাই যখন data কম সময়ের মধ্যে স্পষ্ট পরিবর্তন দেখায় তখনই ব্যবহার করো। বছরভিত্তিক figure-সহ line graph-এর জন্য উদাহরণ (এই chart-এর না): "Sales rose sharply between 2019 and 2020."',
+            },
           },
-          { phrase: 'E. Stability', use: 'remained virtually unchanged, stayed almost constant, showed little variation.' },
+          {
+            phrase: 'E. Stability',
+            use: { en: 'remained virtually unchanged, stayed almost constant, showed little variation.', bn: 'remained virtually unchanged, stayed almost constant, showed little variation।' },
+          },
           {
             phrase: 'Important distinctions',
-            use: '"Steadily" describes a consistent pattern. "Gradually" describes slow development. "Sharply" describes a pronounced change. "Slightly" describes a small magnitude. "Dramatically" should only be used when the data supports a very substantial change — do not add it to every increase.',
+            use: {
+              en: '"Steadily" describes a consistent pattern. "Gradually" describes slow development. "Sharply" describes a pronounced change. "Slightly" describes a small magnitude. "Dramatically" should only be used when the data supports a very substantial change — do not add it to every increase.',
+              bn: '"Steadily" একটা consistent pattern বোঝায়। "Gradually" ধীর development বোঝায়। "Sharply" একটা স্পষ্ট পরিবর্তন বোঝায়। "Slightly" ছোট magnitude বোঝায়। "Dramatically" তখনই ব্যবহার করা উচিত যখন data সত্যিই অনেক বড় পরিবর্তন দেখায় — প্রতিটা বৃদ্ধির সাথে এটা জুড়ে দিও না।',
+            },
           },
           {
             phrase: 'Two accuracy warnings',
-            use: 'This chart has only two time points, 2010 and 2023, so it gives no evidence about what happened in between: do not call a change gradual, steady or sharp here — describe its size instead ("increased substantially", "declined slightly"). Also, "significantly" is ordinary descriptive language for a large change; do not use it to imply a statistical claim.',
+            use: {
+              en: 'This chart has only two time points, 2010 and 2023, so it gives no evidence about what happened in between: do not call a change gradual, steady or sharp here — describe its size instead ("increased substantially", "declined slightly"). Also, "significantly" is ordinary descriptive language for a large change; do not use it to imply a statistical claim.',
+              bn: 'এই chart-এ শুধু দুইটা সময়-বিন্দু আছে, ২০১০ আর ২০২৩, তাই মাঝখানে কী হয়েছে তার কোনো প্রমাণ নেই: তাই এখানে কোনো পরিবর্তনকে gradual, steady বা sharp বোলো না — বরং এর size বর্ণনা করো ("increased substantially", "declined slightly")। আর "significantly" একটা বড় পরিবর্তনের জন্য সাধারণ বর্ণনামূলক ভাষা; এটা দিয়ে কোনো statistical claim বোঝাতে যেও না।',
+            },
           },
         ],
       },
       check: {
-        prompt: 'Which description is most suitable for the change in bus use from 24% to 21%?',
+        prompt: { en: 'Which description is most suitable for the change in bus use from 24% to 21%?', bn: 'bus use-এর ২৪% থেকে ২১%-এ পরিবর্তনের জন্য কোন বর্ণনাটা সবচেয়ে উপযুক্ত?' },
         options: ['It increased dramatically.', 'It declined slightly.', 'It remained completely unchanged.'],
         correctIndex: 1,
-        explain: 'The decrease was only 3 percentage points, so it is accurate to describe it as a slight decline.',
+        explain: { en: 'The decrease was only 3 percentage points, so it is accurate to describe it as a slight decline.', bn: 'হ্রাসটা মাত্র ৩ percentage point ছিল, তাই এটাকে একটা slight decline বলা নির্ভুল।' },
       },
     },
     {
       id: 'percentage-points',
       kind: 'explain',
-      title: 'Percentage vs Percentage Points',
-      trainerMessage:
-        'This is a very important accuracy lesson. Many candidates confuse percentage change with percentage-point change. If you make this mistake, your sentence can communicate the wrong mathematical meaning even when your grammar is perfect.',
+      title: { en: 'Percentage vs Percentage Points', bn: 'Percentage বনাম Percentage Points' },
+      trainerMessage: {
+        en: 'This is a very important accuracy lesson. Many candidates confuse percentage change with percentage-point change. If you make this mistake, your sentence can communicate the wrong mathematical meaning even when your grammar is perfect.',
+        bn: 'এটা accuracy-র একটা খুব গুরুত্বপূর্ণ lesson। অনেক candidate percentage change আর percentage-point change গুলিয়ে ফেলে। এই ভুল করলে, grammar নিখুঁত হলেও তোমার বাক্য ভুল mathematical অর্থ জানাতে পারে।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'A figure increases from 6% to 19%. Percentage-point change: 19 − 6 = 13 percentage points. Relative percentage increase: (19 − 6) ÷ 6 × 100 = approximately 216.7%.',
-          'Correct: "Bicycle use increased by 13 percentage points." Also correct: "Bicycle use increased by approximately 216.7% relative to its initial figure." Incorrect: "Bicycle use increased by 13%." The difference between 6% and 19% is 13 percentage points, not 13 percent.',
-          'Another example: car use decreases from 52% to 38%. Percentage-point decrease: 52 − 38 = 14 percentage points. Relative percentage decrease: 14 ÷ 52 × 100 = approximately 26.9%. Correct: "Car use fell by 14 percentage points." Also correct: "Car use decreased by approximately 26.9% relative to its 2010 level."',
-          'Teaching rule: when describing the arithmetic difference between two percentages, use percentage points. When describing the proportional change relative to the starting figure, use percentage change. Do not calculate relative changes unless they are relevant and the starting figure is clear.',
+          {
+            en: 'A figure increases from 6% to 19%. Percentage-point change: 19 − 6 = 13 percentage points. Relative percentage increase: (19 − 6) ÷ 6 × 100 = approximately 216.7%.',
+            bn: 'একটা figure ৬% থেকে ১৯%-এ বেড়েছে। Percentage-point change: ১৯ − ৬ = ১৩ percentage points। Relative percentage increase: (১৯ − ৬) ÷ ৬ × ১০০ = প্রায় ২১৬.৭%।',
+          },
+          {
+            en: 'Correct: "Bicycle use increased by 13 percentage points." Also correct: "Bicycle use increased by approximately 216.7% relative to its initial figure." Incorrect: "Bicycle use increased by 13%." The difference between 6% and 19% is 13 percentage points, not 13 percent.',
+            bn: 'সঠিক: "Bicycle use increased by 13 percentage points." এটাও সঠিক: "Bicycle use increased by approximately 216.7% relative to its initial figure." ভুল: "Bicycle use increased by 13%." ৬% আর ১৯%-এর মধ্যে পার্থক্যটা ১৩ percentage points, ১৩ percent না।',
+          },
+          {
+            en: 'Another example: car use decreases from 52% to 38%. Percentage-point decrease: 52 − 38 = 14 percentage points. Relative percentage decrease: 14 ÷ 52 × 100 = approximately 26.9%. Correct: "Car use fell by 14 percentage points." Also correct: "Car use decreased by approximately 26.9% relative to its 2010 level."',
+            bn: 'আরেকটা উদাহরণ: car use ৫২% থেকে ৩৮%-এ কমেছে। Percentage-point decrease: ৫২ − ৩৮ = ১৪ percentage points। Relative percentage decrease: ১৪ ÷ ৫২ × ১০০ = প্রায় ২৬.৯%। সঠিক: "Car use fell by 14 percentage points." এটাও সঠিক: "Car use decreased by approximately 26.9% relative to its 2010 level."',
+          },
+          {
+            en: 'Teaching rule: when describing the arithmetic difference between two percentages, use percentage points. When describing the proportional change relative to the starting figure, use percentage change. Do not calculate relative changes unless they are relevant and the starting figure is clear.',
+            bn: 'নিয়ম: দুটো percentage-এর মধ্যে arithmetic পার্থক্য বর্ণনা করতে percentage points ব্যবহার করো। শুরুর figure-এর তুলনায় proportional পরিবর্তন বর্ণনা করতে percentage change ব্যবহার করো। relative change তখনই হিসাব করো যখন সেটা প্রাসঙ্গিক আর শুরুর figure স্পষ্ট।',
+          },
         ],
       },
       check: {
-        prompt: 'Bicycle use increased from 6% to 19%. What is the percentage-point increase?',
+        prompt: { en: 'Bicycle use increased from 6% to 19%. What is the percentage-point increase?', bn: 'Bicycle use ৬% থেকে ১৯%-এ বেড়েছে। percentage-point increase কত?' },
         options: ['216.7 percentage points.', '13 percentage points.', '13%.'],
+        explain: {
+          en: '19 − 6 = 13 percentage points. Approximately 216.7% is the relative percentage increase, not the percentage-point difference, and "13%" would wrongly mix the two.',
+          bn: '১৯ − ৬ = ১৩ percentage points। প্রায় ২১৬.৭% হলো relative percentage increase, percentage-point পার্থক্য না, আর "13%" দুটোকে ভুলভাবে মিশিয়ে ফেলবে।',
+        },
         correctIndex: 1,
-        explain:
-          '19 − 6 = 13 percentage points. Approximately 216.7% is the relative percentage increase, not the percentage-point difference, and "13%" would wrongly mix the two.',
       },
     },
     {

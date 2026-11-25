@@ -13,7 +13,7 @@ import { LESSONS, getLesson } from '../lib/writing-studio/lessons';
 import { task1CompleteWritingLesson as lesson } from '../lib/writing-studio/lessons/task1-complete-writing';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -35,21 +35,23 @@ const rel = (c: string) => (pp(c) / val(c, '2010')) * 100;
 const textOf = (id: string) => {
   const m = lesson.steps.find((s) => s.id === id)!.material;
   assert.ok(m && m.type === 'text', `${id} has text material`);
-  return m.paragraphs;
+  // 'complete-response' is the English model essay itself — always read its
+  // English form, whether or not this step's material is later localized.
+  return m.paragraphs.map((p) => localize('en', p));
 };
 const MODEL = textOf('complete-response').slice(0, 4);
 const MODEL_TEXT = MODEL.join('\n\n');
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [lesson.objective, localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, i.use]));
-    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${t.prompt} ${t.modelAnswer}`));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, localize('en', i.use)]));
+    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${localize('en', t.prompt)} ${t.modelAnswer}`));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -87,12 +89,13 @@ test('Academy: exactly seven Task 1 cards, numbered 1-7, with the seventh being 
   assert.equal(seventh.number, 7);
   assert.equal(seventh.title, 'Complete Task 1 Writing');
   assert.equal(seventh.builtLessonId, 'task1-complete-writing');
-  assert.match(seventh.description, /analysis/i);
-  assert.match(seventh.description, /introduction/);
-  assert.match(seventh.description, /overview/);
-  assert.match(seventh.description, /body paragraphs/);
-  assert.match(seventh.description, /language/);
-  assert.match(seventh.description, /complete, coherent response/);
+  const seventhDescription = localize('en', seventh.description);
+  assert.match(seventhDescription, /analysis/i);
+  assert.match(seventhDescription, /introduction/);
+  assert.match(seventhDescription, /overview/);
+  assert.match(seventhDescription, /body paragraphs/);
+  assert.match(seventhDescription, /language/);
+  assert.match(seventhDescription, /complete, coherent response/);
   assert.equal(new Set(TASK1_MODULES.map((m) => m.id)).size, 7);
   assert.equal(TASK1_MODULES.filter((m) => m.title === 'Complete Task 1 Writing').length, 1, 'no second "Complete Task 1 Writing" card');
 });
@@ -172,7 +175,7 @@ test('guided practice A-D: four chart-board tasks on the shared dataset, tagged 
   assert.match(a['task-b-overview'], /car use remained the most common.*bicycle use recorded the most notable increase.*Walking was the only category that remained unchanged/);
   assert.match(a['task-c-car-bus'], /52% to 38%.*14 percentage points.*24% to 21%/);
   assert.match(a['task-d-bicycle-train-walking'], /6% to 19%.*13 percentage points.*11% to 15%.*7% in both years/);
-  for (const t of m.tasks) assert.ok(t.prompt.length > 20 && t.modelAnswer.length > 20, t.id);
+  for (const t of m.tasks) assert.ok(localize('en', t.prompt).length > 20 && t.modelAnswer.length > 20, t.id);
 });
 test('no arbitrary rules are imposed: no mandatory "Overall", no fixed sentence/paragraph counts, no linking-word quota', () => {
   const t = allText();
@@ -223,7 +226,7 @@ test('answer keys follow the CONTENT: the option at correctIndex is the correct 
       assert.equal(i === c.correctIndex, isCorrect, `${id}: option ${i} ("${o}") — correctIndex points at the wrong option`);
       assert.equal(wrong.filter((w) => w.test(o)).length, isCorrect ? 0 : 1, `${id}: option ${i} ("${o}") must be exactly one known distractor`);
     });
-    assert.ok(c.explain.length > 40, `${id}: explanation`);
+    assert.ok(localize('en', c.explain).length > 40, `${id}: explanation`);
   }
 });
 test('the specified answer meaning is kept: each of the spec\'s letter keys maps to the same correct content after balancing', () => {
@@ -244,10 +247,11 @@ test('answer positions are balanced (computed from the data): no position over 6
 test('explanations identify answers by CONTENT, never by position, and give each answer the right verdict', () => {
   for (const id of IDS) {
     const c = lesson.steps.find((s) => s.id === id)!.check!;
-    assert.ok(!/\b(first|second|third|fourth|last)\b/i.test(c.explain), `${id}: positional wording in "${c.explain}"`);
-    assert.ok(!/\boption [a-d0-9]\b/i.test(c.explain), `${id}: option-letter wording`);
+    const explain = localize('en', c.explain);
+    assert.ok(!/\b(first|second|third|fourth|last)\b/i.test(explain), `${id}: positional wording in "${explain}"`);
+    assert.ok(!/\boption [a-d0-9]\b/i.test(explain), `${id}: option-letter wording`);
   }
-  const ex = (id: string) => lesson.steps.find((s) => s.id === id)!.check!.explain;
+  const ex = (id: string) => localize('en', lesson.steps.find((s) => s.id === id)!.check!.explain);
   assert.match(ex('task-analysis'), /19 − 6 = 13 percentage points/);
   assert.match(ex('task-analysis'), /216\.7%/);
   assert.match(ex('overview'), /data dumping/);
@@ -352,7 +356,7 @@ test('the model response passes the local full-task checks with no mistakes (pas
 test('time allocation adds up to the 20 minutes the lesson teaches', () => {
   assert.match(textOf('time-and-words')[0], /analyse and plan — 3 minutes; introduction — 2 minutes; overview — 3 minutes; body paragraphs — 9 minutes; review — 3 minutes/);
   assert.equal(3 + 2 + 3 + 9 + 3, 20);
-  assert.match(lesson.steps.find((s) => s.id === 'time-and-words')!.trainerMessage, /at least 150 words.*160–190/);
+  assert.match(localize('en', lesson.steps.find((s) => s.id === 'time-and-words')!.trainerMessage), /at least 150 words.*160–190/);
 });
 
 // ---------------------------------------------------------------- final assessment: FULL Task 1
@@ -366,7 +370,7 @@ test('the final exercise is a full Task 1 assessment: scope full, chart commute-
   assert.equal(f.skillFocus, undefined, 'a leftover skillFocus would suppress the band');
   assert.ok(!('skillFocus' in f) || f.skillFocus === undefined);
   assert.notEqual(f.checkScope, 'paragraph-only'); assert.notEqual(f.checkScope, 'overview-only'); assert.notEqual(f.checkScope, 'introduction-only');
-  const i = f.instructions;
+  const i = localize('en', f.instructions);
   for (const must of [/introduction/, /overview/, /supporting details/, /meaningful comparisons/, /accurately/, /about 20 minutes/, /at least 150 words/, /160–190/, /Do not explain why the figures changed/, /do not copy the model answer/]) assert.match(i, must);
   assert.match(i, /The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023\./);
   assert.ok(!/exactly|\b(two|three|four) paragraphs\b|fixed number/i.test(i), 'no fixed paragraph or sentence counts');

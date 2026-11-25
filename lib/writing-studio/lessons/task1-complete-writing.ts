@@ -31,153 +31,229 @@ export const task1CompleteWritingLesson: Lesson = {
   id: 'task1-complete-writing',
   task: 'task1',
   moduleId: 'task1-m7',
-  title: 'Complete Task 1 Writing',
-  objective:
-    'Combine analysis, an accurate introduction, a focused overview and logically grouped body paragraphs into one coherent Task 1 report of at least 150 words, then review and improve it.',
+  title: { en: 'Complete Task 1 Writing', bn: 'সম্পূর্ণ Task 1 লেখা' },
+  objective: {
+    en: 'Combine analysis, an accurate introduction, a focused overview and logically grouped body paragraphs into one coherent Task 1 report of at least 150 words, then review and improve it.',
+    bn: 'Analysis, সঠিক একটা Introduction, focused Overview আর logically group করা Body Paragraph — সবকিছু মিলিয়ে অন্তত ১৫০ শব্দের একটা সুসংগত Task 1 report লেখা, তারপর সেটা review করে আরও ভালো করা।',
+  },
   estMinutes: 50,
   steps: [
     {
       id: 'welcome',
       kind: 'intro',
-      title: 'From Individual Skills to a Complete Report',
-      trainerMessage:
-        'Welcome to the final lesson of the Task 1 course. So far, you have practised understanding visual information, writing accurate introductions, identifying main features, developing body paragraphs, and using precise vocabulary and grammar. Now you must combine these skills. A strong response does not simply describe every number. It selects, groups, compares and reports the most relevant information. Here is the key question: can you explain the visual clearly enough that a reader understands its main message without seeing every individual figure?',
+      title: { en: 'From Individual Skills to a Complete Report', bn: 'আলাদা আলাদা Skill থেকে একটা সম্পূর্ণ Report-এ' },
+      trainerMessage: {
+        en: 'Welcome to the final lesson of the Task 1 course. So far, you have practised understanding visual information, writing accurate introductions, identifying main features, developing body paragraphs, and using precise vocabulary and grammar. Now you must combine these skills. A strong response does not simply describe every number. It selects, groups, compares and reports the most relevant information. Here is the key question: can you explain the visual clearly enough that a reader understands its main message without seeing every individual figure?',
+        bn: 'Task 1 course-এর শেষ lesson-এ স্বাগতম। এতদিন তুমি practice করেছ visual information বোঝা, সঠিক introduction লেখা, মূল feature চিহ্নিত করা, body paragraph develop করা, আর নির্ভুল vocabulary আর grammar ব্যবহার করা। এবার এই সবকিছু একসাথে করতে হবে। একটা জোরালো response শুধু প্রতিটা সংখ্যা বর্ণনা করে না — এটা সবচেয়ে প্রাসঙ্গিক তথ্য select করে, group করে, compare করে আর report করে। মূল প্রশ্নটা হলো: তুমি কি visual-টা এতটা স্পষ্টভাবে বোঝাতে পারবে যে পাঠক প্রতিটা আলাদা figure না দেখেই এর মূল message বুঝে যাবে?',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'By the end of this lesson you should be able to: analyse a visual accurately before writing; write an introduction that accurately paraphrases the task; summarise the most important features in an overview; organise relevant figures into logically grouped body paragraphs; use accurate comparisons, tense, vocabulary and grammar; complete a coherent response of at least 150 words in about 20 minutes; and review and improve your own writing before submission.',
+          {
+            en: 'By the end of this lesson you should be able to: analyse a visual accurately before writing; write an introduction that accurately paraphrases the task; summarise the most important features in an overview; organise relevant figures into logically grouped body paragraphs; use accurate comparisons, tense, vocabulary and grammar; complete a coherent response of at least 150 words in about 20 minutes; and review and improve your own writing before submission.',
+            bn: 'এই lesson শেষে তুমি পারবে: লেখার আগে একটা visual নির্ভুলভাবে analyse করতে; task-টাকে সঠিকভাবে paraphrase করে একটা introduction লিখতে; overview-তে সবচেয়ে গুরুত্বপূর্ণ feature-গুলো summarise করতে; প্রাসঙ্গিক figure-গুলোকে logical ভাবে group করে body paragraph সাজাতে; সঠিক comparison, tense, vocabulary আর grammar ব্যবহার করতে; প্রায় ২০ মিনিটে অন্তত ১৫০ শব্দের একটা সুসংগত response শেষ করতে; আর জমা দেওয়ার আগে নিজের লেখা review করে আরও ভালো করতে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which approach best describes a strong Task 1 response?',
+        prompt: { en: 'Which approach best describes a strong Task 1 response?', bn: 'কোন approach-টা একটা জোরালো Task 1 response-কে সবচেয়ে ভালোভাবে describe করে?' },
         options: [
           'Describe every number in the order it appears.',
           'Select the most important features, summarise the overall picture and support it with relevant data.',
           'Use as many advanced vocabulary words as possible.',
         ],
         correctIndex: 1,
-        explain:
-          'Task 1 assesses accurate reporting, selection, comparison, organisation and language control — not the number of figures or the number of sophisticated words used.',
+        explain: {
+          en: 'Task 1 assesses accurate reporting, selection, comparison, organisation and language control — not the number of figures or the number of sophisticated words used.',
+          bn: 'Task 1-এ assess করা হয় নির্ভুল reporting, selection, comparison, organisation আর language control — কতগুলো figure বা কতগুলো advanced শব্দ ব্যবহার করেছ সেটা না।',
+        },
       },
     },
     {
       id: 'complete-structure',
       kind: 'explain',
-      title: 'One Coherent Report',
-      trainerMessage:
-        'A complete Task 1 response is not four unrelated pieces of writing. It is one coherent report. Each part has a different job, and none of them is rewarded for unnecessary complexity, memorised phrases or excessive data reporting.',
+      title: { en: 'One Coherent Report', bn: 'একটা সুসংগত Report' },
+      trainerMessage: {
+        en: 'A complete Task 1 response is not four unrelated pieces of writing. It is one coherent report. Each part has a different job, and none of them is rewarded for unnecessary complexity, memorised phrases or excessive data reporting.',
+        bn: 'একটা সম্পূর্ণ Task 1 response মানে চারটা আলাদা আলাদা লেখা না — এটা একটা সুসংগত report। প্রতিটা অংশের কাজ আলাদা, আর অপ্রয়োজনীয় জটিলতা, মুখস্থ করা phrase, বা বেশি বেশি data report করার জন্য কোনোটারই বাড়তি নম্বর পাওয়ার কথা না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'The shape of the report: Introduction → Overview → Body Paragraph 1 → Body Paragraph 2.',
-          'Introduction: what does the visual show? Overview: what are the most important patterns? Body paragraphs: which figures and comparisons support those patterns, grouped logically?',
-          'This is a useful shape for this chart, not a rigid template. The number of body paragraphs and how you group the information depend on what the visual shows.',
+          { en: 'The shape of the report: Introduction → Overview → Body Paragraph 1 → Body Paragraph 2.', bn: 'Report-এর গঠন: Introduction → Overview → Body Paragraph 1 → Body Paragraph 2।' },
+          {
+            en: 'Introduction: what does the visual show? Overview: what are the most important patterns? Body paragraphs: which figures and comparisons support those patterns, grouped logically?',
+            bn: 'Introduction: visual-টা কী দেখাচ্ছে? Overview: সবচেয়ে গুরুত্বপূর্ণ pattern-গুলো কী কী? Body paragraph: কোন কোন figure আর comparison সেই pattern-গুলোকে logically group করে support করছে?',
+          },
+          {
+            en: 'This is a useful shape for this chart, not a rigid template. The number of body paragraphs and how you group the information depend on what the visual shows.',
+            bn: 'এই chart-এর জন্য এই structure-টা useful, কিন্তু এটা কোনো কড়া template না। কয়টা body paragraph হবে আর তথ্যগুলো কীভাবে group করবে, সেটা নির্ভর করে visual-টা আসলে কী দেখাচ্ছে তার ওপর।',
+          },
         ],
       },
     },
     {
       id: 'task-analysis',
       kind: 'explain',
-      title: 'Understand the Complete Task',
-      trainerMessage:
-        'Here is the task you will work on throughout this lesson. Before writing, analyse it: identify the visual, the subject, the unit, the time points and the main features.',
+      title: { en: 'Understand the Complete Task', bn: 'পুরো Task-টা বোঝা' },
+      trainerMessage: {
+        en: 'Here is the task you will work on throughout this lesson. Before writing, analyse it: identify the visual, the subject, the unit, the time points and the main features.',
+        bn: 'এই lesson জুড়ে তুমি এই task নিয়েই কাজ করবে। লেখার আগে এটা analyse করো: visual-টা কী, subject কী, unit কী, কোন কোন সময় আর মূল feature-গুলো কী, সেটা চিহ্নিত করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
-          'Data (percentage of commuters, illustrative training figures). Car: 52% in 2010, 38% in 2023. Bus: 24% and 21%. Bicycle: 6% and 19%. Train: 11% and 15%. Walking: 7% and 7%.',
-          'Analyse before writing. Visual type: comparative bar chart. Subject: transport methods used by commuters. Location: one city. Time points: 2010 and 2023. Unit: percentage of commuters. Categories: five transport methods. Upward changes: bicycle and train. Downward changes: car and bus. Unchanged: walking. Largest category in both years: car. Most notable change: bicycle use increased from 6% to 19%.',
+          {
+            en: 'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
+            bn: 'Task: "The chart below compares the percentages of commuters who used five different methods of transport in one city in 2010 and 2023. Summarise the information by selecting and reporting the main features, and make comparisons where relevant."',
+          },
+          {
+            en: 'Data (percentage of commuters, illustrative training figures). Car: 52% in 2010, 38% in 2023. Bus: 24% and 21%. Bicycle: 6% and 19%. Train: 11% and 15%. Walking: 7% and 7%.',
+            bn: 'Data (commuter-দের percentage, illustrative training figure)। Car: ২০১০-এ 52%, ২০২৩-এ 38%। Bus: 24% আর 21%। Bicycle: 6% আর 19%। Train: 11% আর 15%। Walking: 7% আর 7%।',
+          },
+          {
+            en: 'Analyse before writing. Visual type: comparative bar chart. Subject: transport methods used by commuters. Location: one city. Time points: 2010 and 2023. Unit: percentage of commuters. Categories: five transport methods. Upward changes: bicycle and train. Downward changes: car and bus. Unchanged: walking. Largest category in both years: car. Most notable change: bicycle use increased from 6% to 19%.',
+            bn: 'লেখার আগে analyse করো। Visual type: comparative bar chart। Subject: commuter-দের transport method। Location: একটা city। Time point: 2010 আর 2023। Unit: commuter-দের percentage। Category: পাঁচটা transport method। বাড়তি changes: bicycle আর train। কমতি changes: car আর bus। অপরিবর্তিত: walking। দুই বছরেই সবচেয়ে বড় category: car। সবচেয়ে উল্লেখযোগ্য change: bicycle use 6% থেকে 19%-এ বেড়েছে।',
+          },
         ],
       },
       check: {
-        prompt: 'Which statement is supported by the chart?',
+        prompt: { en: 'Which statement is supported by the chart?', bn: 'কোন বাক্যটা chart দিয়ে support করা যায়?' },
         options: [
           'Bicycle use increased by 13 percentage points.',
           'Bicycle use increased by 13%.',
           'Bicycle use became the most popular transport method in 2023.',
         ],
         correctIndex: 0,
-        explain:
-          '19 − 6 = 13 percentage points. "13%" would wrongly describe a percentage-point difference as a percentage (the relative increase is approximately 216.7%), and car, not bicycle, remained the largest category in 2023.',
+        explain: {
+          en: '19 − 6 = 13 percentage points. "13%" would wrongly describe a percentage-point difference as a percentage (the relative increase is approximately 216.7%), and car, not bicycle, remained the largest category in 2023.',
+          bn: '19 − 6 = 13 percentage point। "13%" বললে একটা percentage-point পার্থক্যকে ভুলভাবে percentage হিসেবে describe করা হবে (relative increase প্রায় 216.7%), আর 2023-এও bicycle না, car-ই সবচেয়ে বড় category ছিল।',
+        },
       },
     },
     {
       id: 'planning',
       kind: 'explain',
-      title: 'Plan Before You Write',
-      trainerMessage:
-        'A short planning stage prevents inaccurate or disorganised writing. Use four questions, one for each part of the report.',
+      title: { en: 'Plan Before You Write', bn: 'লেখার আগে Plan করো' },
+      trainerMessage: {
+        en: 'A short planning stage prevents inaccurate or disorganised writing. Use four questions, one for each part of the report.',
+        bn: 'একটা ছোট planning stage ভুল বা অগোছালো লেখা থেকে বাঁচায়। report-এর প্রতিটা অংশের জন্য একটা করে, মোট চারটা প্রশ্ন ব্যবহার করো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'The four-part plan. 1. Introduction: what does the chart compare? 2. Overview: what are the two or three most important overall features? 3. Body 1: which related categories can be grouped together? 4. Body 2: what other meaningful categories and comparisons remain?',
-          'Worked plan. Introduction: a bar chart; five transport methods; one city; 2010 and 2023; percentages of commuters. Overview: car remained the most popular method despite declining; bicycle use increased substantially; walking was unchanged; train increased while bus declined. Body 1: car 52% to 38%; bus 24% to 21%; compare their downward changes. Body 2: bicycle 6% to 19%; train 11% to 15%; walking 7% to 7%; compare growth and stability.',
-          'Do not force every chart into the same paragraph grouping. Group according to the information shown.',
+          {
+            en: 'The four-part plan. 1. Introduction: what does the chart compare? 2. Overview: what are the two or three most important overall features? 3. Body 1: which related categories can be grouped together? 4. Body 2: what other meaningful categories and comparisons remain?',
+            bn: 'চার অংশের plan। ১. Introduction: chart-টা কী compare করছে? ২. Overview: সবচেয়ে গুরুত্বপূর্ণ দুই বা তিনটা overall feature কী? ৩. Body 1: কোন কোন সম্পর্কিত category একসাথে group করা যায়? ৪. Body 2: আর কোন গুরুত্বপূর্ণ category আর comparison বাকি আছে?',
+          },
+          {
+            en: 'Worked plan. Introduction: a bar chart; five transport methods; one city; 2010 and 2023; percentages of commuters. Overview: car remained the most popular method despite declining; bicycle use increased substantially; walking was unchanged; train increased while bus declined. Body 1: car 52% to 38%; bus 24% to 21%; compare their downward changes. Body 2: bicycle 6% to 19%; train 11% to 15%; walking 7% to 7%; compare growth and stability.',
+            bn: 'একটা worked plan। Introduction: একটা bar chart; পাঁচটা transport method; একটা city; 2010 আর 2023; commuter-দের percentage। Overview: car কমলেও সবচেয়ে জনপ্রিয় method হিসেবেই রয়ে গেছে; bicycle use যথেষ্ট বেড়েছে; walking অপরিবর্তিত; train বেড়েছে কিন্তু bus কমেছে। Body 1: car 52% থেকে 38%; bus 24% থেকে 21%; দুটোর কমতি তুলনা করো। Body 2: bicycle 6% থেকে 19%; train 11% থেকে 15%; walking 7% থেকে 7%; growth আর stability তুলনা করো।',
+          },
+          {
+            en: 'Do not force every chart into the same paragraph grouping. Group according to the information shown.',
+            bn: 'প্রতিটা chart-কে জোর করে একই paragraph grouping-এ ফেলো না। তথ্য যেভাবে দেখানো হয়েছে সেই অনুযায়ী group করো।',
+          },
         ],
       },
       check: {
-        prompt: 'Why is planning useful?',
+        prompt: { en: 'Why is planning useful?', bn: 'Planning কেন useful?' },
         options: [
           'It guarantees a Band 8.',
           'It allows you to avoid using figures.',
           'It helps select, group and organise information before writing.',
         ],
         correctIndex: 2,
-        explain:
-          'Planning lets you choose the features that matter, group related categories and decide the order of the report before you write. It guarantees no score, and the body paragraphs still need accurate figures.',
+        explain: {
+          en: 'Planning lets you choose the features that matter, group related categories and decide the order of the report before you write. It guarantees no score, and the body paragraphs still need accurate figures.',
+          bn: 'Planning তোমাকে গুরুত্বপূর্ণ feature বাছাই করতে, সম্পর্কিত category group করতে, আর লেখার আগেই report-এর order ঠিক করতে সাহায্য করে। এটা কোনো নম্বরের guarantee দেয় না, আর body paragraph-এ তখনও নির্ভুল figure দরকার।',
+        },
       },
     },
     {
       id: 'introduction',
       kind: 'explain',
-      title: 'Write the Introduction',
-      trainerMessage: 'The introduction tells the reader what the visual presents. It does not describe trends.',
+      title: { en: 'Write the Introduction', bn: 'Introduction লেখো' },
+      trainerMessage: {
+        en: 'The introduction tells the reader what the visual presents. It does not describe trends.',
+        bn: 'Introduction পাঠককে বলে visual-টা আসলে কী দেখাচ্ছে। এটা কোনো trend বর্ণনা করে না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'A good introduction identifies the chart or visual; preserves the subject and categories; preserves the location and time period; preserves the measurement; and uses accurate paraphrasing.',
-          'Model: "The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023."',
-          'Why it works: "compares" has been paraphrased as "illustrates"; "percentages" has been expressed as "proportions"; and the subject, location, categories and years are retained.',
-          'Avoid changing the meaning; adding information that is not shown; copying the task word for word without attempting a natural paraphrase; and replacing precise words with inaccurate synonyms.',
+          {
+            en: 'A good introduction identifies the chart or visual; preserves the subject and categories; preserves the location and time period; preserves the measurement; and uses accurate paraphrasing.',
+            bn: 'একটা ভালো introduction chart বা visual-টা কী সেটা চিহ্নিত করে; subject আর category অক্ষুণ্ণ রাখে; location আর সময়কাল অক্ষুণ্ণ রাখে; measurement অক্ষুণ্ণ রাখে; আর নির্ভুলভাবে paraphrase করে।',
+          },
+          {
+            en: 'Model: "The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023."',
+            bn: 'Model: "The bar chart illustrates the proportions of commuters using five different forms of transport in a city in 2010 and 2023."',
+          },
+          {
+            en: 'Why it works: "compares" has been paraphrased as "illustrates"; "percentages" has been expressed as "proportions"; and the subject, location, categories and years are retained.',
+            bn: 'এটা কেন কাজ করে: "compares"-কে "illustrates" দিয়ে paraphrase করা হয়েছে; "percentages"-কে "proportions" দিয়ে প্রকাশ করা হয়েছে; আর subject, location, category আর বছর ঠিক রাখা হয়েছে।',
+          },
+          {
+            en: 'Avoid changing the meaning; adding information that is not shown; copying the task word for word without attempting a natural paraphrase; and replacing precise words with inaccurate synonyms.',
+            bn: 'এড়িয়ে চলো: অর্থ পাল্টে ফেলা; chart-এ নেই এমন তথ্য যোগ করা; স্বাভাবিক paraphrase না করে task-টা হুবহু কপি করা; আর সঠিক শব্দের জায়গায় ভুল synonym বসানো।',
+          },
         ],
       },
       check: {
-        prompt: 'Which introduction preserves the task accurately?',
+        prompt: { en: 'Which introduction preserves the task accurately?', bn: 'কোন introduction-টা task-কে নির্ভুলভাবে অক্ষুণ্ণ রাখে?' },
         options: [
           'The chart illustrates the number of vehicles sold in five countries.',
           'The bar chart compares the proportions of commuters using five transport methods in one city in 2010 and 2023.',
           'The graph predicts how transport will change in the future.',
         ],
         correctIndex: 1,
-        explain:
-          'It keeps the chart type, the measurement (proportions), the subject (commuters), the five methods, the one city and both years. The others change the subject or measurement, or add a prediction the chart does not make.',
+        explain: {
+          en: 'It keeps the chart type, the measurement (proportions), the subject (commuters), the five methods, the one city and both years. The others change the subject or measurement, or add a prediction the chart does not make.',
+          bn: 'এটা chart type, measurement (proportions), subject (commuters), পাঁচটা method, একটা city আর দুটো বছরই ঠিক রাখে। বাকিগুলো subject বা measurement পাল্টে ফেলে, অথবা chart-এ নেই এমন একটা prediction যোগ করে।',
+        },
       },
     },
     {
       id: 'overview',
       kind: 'explain',
-      title: 'Write the Overview',
-      trainerMessage:
-        'The overview gives the reader the main message of the visual. It should identify the most important patterns, not repeat every figure.',
+      title: { en: 'Write the Overview', bn: 'Overview লেখো' },
+      trainerMessage: {
+        en: 'The overview gives the reader the main message of the visual. It should identify the most important patterns, not repeat every figure.',
+        bn: 'Overview পাঠককে visual-এর মূল message দেয়। এটা সবচেয়ে গুরুত্বপূর্ণ pattern-গুলো চিহ্নিত করবে, প্রতিটা figure আবার বলবে না।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'For this chart, useful features include: car use remained the highest, although it declined; bicycle use rose substantially; walking remained unchanged.',
-          'Model overview: "Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged."',
-          'What makes it effective: it identifies the dominant category; it identifies the most notable change; it includes a meaningful stability feature; and it does not list every number.',
-          'There is no mandatory phrase such as "Overall", and no universal rule that an overview must contain exactly two sentences. Accuracy and meaningful feature selection matter more.',
+          {
+            en: 'For this chart, useful features include: car use remained the highest, although it declined; bicycle use rose substantially; walking remained unchanged.',
+            bn: 'এই chart-এর জন্য useful feature হলো: car use কমলেও সবচেয়ে বেশি রয়ে গেছে; bicycle use যথেষ্ট বেড়েছে; walking অপরিবর্তিত রয়ে গেছে।',
+          },
+          {
+            en: 'Model overview: "Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged."',
+            bn: 'Model overview: "Overall, car use remained the most common form of transport despite a decline, while bicycle use recorded the most notable increase. Walking was the only category that remained unchanged."',
+          },
+          {
+            en: 'What makes it effective: it identifies the dominant category; it identifies the most notable change; it includes a meaningful stability feature; and it does not list every number.',
+            bn: 'এটা কেন কার্যকর: এটা dominant category চিহ্নিত করে; সবচেয়ে উল্লেখযোগ্য change চিহ্নিত করে; একটা অর্থবহ stability feature রাখে; আর প্রতিটা সংখ্যা তালিকা করে না।',
+          },
+          {
+            en: 'There is no mandatory phrase such as "Overall", and no universal rule that an overview must contain exactly two sentences. Accuracy and meaningful feature selection matter more.',
+            bn: '"Overall"-এর মতো কোনো বাধ্যতামূলক phrase নেই, আর overview-তে ঠিক দুইটাই বাক্য থাকতে হবে এমন কোনো universal নিয়মও নেই। নির্ভুলতা আর অর্থবহ feature বাছাই করাটাই বেশি গুরুত্বপূর্ণ।',
+          },
         ],
       },
       check: {
-        prompt: 'Which overview best summarises the chart?',
+        prompt: { en: 'Which overview best summarises the chart?', bn: 'কোন overview-টা chart-কে সবচেয়ে ভালোভাবে summarise করে?' },
         options: [
           'Overall, car use was 52% in 2010, bus use was 24%, bicycle use was 6%, train use was 11%, and walking was 7%.',
           'Overall, every transport method became more popular.',
           'Overall, car use remained the most popular method despite declining, whereas bicycle use increased considerably and walking remained stable.',
         ],
         correctIndex: 2,
-        explain:
-          'It names the dominant category, the most notable change and a stable feature without listing every figure. The list of 2010 figures is data dumping, and "every transport method became more popular" is false: car and bus declined and walking was unchanged.',
+        explain: {
+          en: 'It names the dominant category, the most notable change and a stable feature without listing every figure. The list of 2010 figures is data dumping, and "every transport method became more popular" is false: car and bus declined and walking was unchanged.',
+          bn: 'এটা dominant category, সবচেয়ে উল্লেখযোগ্য change আর একটা stable feature উল্লেখ করে, প্রতিটা figure তালিকা না করেই। 2010-এর figure-গুলোর তালিকা দেওয়াটা data dumping, আর "every transport method became more popular" কথাটা মিথ্যা: car আর bus কমেছে, আর walking অপরিবর্তিত ছিল।',
+        },
       },
     },
     {

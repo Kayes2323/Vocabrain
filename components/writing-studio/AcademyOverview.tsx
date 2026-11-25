@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { ArrowRight, BarChart3, BookOpenCheck, ClipboardList, GraduationCap, RotateCcw, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, RowGroup, Section, StatusChip } from '@/components/ds';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { cn } from '@/lib/utils';
 import { deriveAcademyStats } from '@/lib/writing-studio/progress';
-import type { ModuleSummary, TaskId, VisualTrainingArea } from '@/lib/writing-studio/types';
+import { localize, type ModuleSummary, type TaskId, type VisualTrainingArea } from '@/lib/writing-studio/types';
 import { LevelBadge } from './LevelBadge';
 
 const TASK_META: Record<TaskId, { label: string; tagline: string; exam: string }> = {
@@ -25,6 +26,11 @@ export function AcademyOverview({
   visuals?: VisualTrainingArea[];
 }) {
   const { profile } = useProfile();
+  const { locale, hasChosen } = useLocale();
+  // Bangla is the default for Task 1's Academy cards until a student has
+  // explicitly chosen a UI language; Task 2 always follows their normal
+  // locale choice, unchanged.
+  const contentLocale: 'en' | 'bn' = task === 'task1' && !hasChosen ? 'bn' : locale;
   const stats = deriveAcademyStats(profile?.writingStudio ?? { lessons: {}, practice: [], mistakes: [], exams: [] }, task, modules);
   const meta = TASK_META[task];
   const base = `/ielts/writing-studio/${task}`;
@@ -59,7 +65,7 @@ export function AcademyOverview({
         <Panel variant="brand" className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold tracking-wide text-brand uppercase">Continue learning</p>
-            <p className="font-medium">{builtModule.title}</p>
+            <p className="font-medium">{localize(contentLocale, builtModule.title)}</p>
           </div>
           <Button asChild size="sm" className="shrink-0">
             <Link href={`${base}/lesson/${builtModule.builtLessonId}`}>
@@ -81,8 +87,8 @@ export function AcademyOverview({
               >
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-muted-foreground">{m.number}</span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium leading-snug">{m.title}</p>
-                  <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">{m.description}</p>
+                  <p className="truncate font-medium leading-snug">{localize(contentLocale, m.title)}</p>
+                  <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">{localize(contentLocale, m.description)}</p>
                 </div>
                 <span className={cn('shrink-0 text-xs font-medium', done ? 'text-success' : 'text-muted-foreground')}>
                   {done ? 'Done' : m.builtLessonId ? 'Start' : 'Preview'}
@@ -102,8 +108,8 @@ export function AcademyOverview({
                 href={v.builtLessonId ? `${base}/chart-analysis-board` : `${base}/lesson/${v.id}`}
                 icon={BarChart3}
                 tint="blue"
-                title={v.title}
-                subtitle={v.description}
+                title={localize(contentLocale, v.title)}
+                subtitle={localize(contentLocale, v.description)}
                 wrapSubtitle
                 trailing={v.builtLessonId ? <StatusChip tone="brand">Built</StatusChip> : undefined}
               />

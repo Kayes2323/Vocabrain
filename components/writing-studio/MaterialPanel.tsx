@@ -1,6 +1,6 @@
 import { Check, X } from 'lucide-react';
 import { Panel, Section } from '@/components/ds';
-import type { MaterialBlock } from '@/lib/writing-studio/types';
+import { localize, type MaterialBlock } from '@/lib/writing-studio/types';
 import { ChartAnalysisBoard } from './ChartAnalysisBoard';
 import { IdeaDevelopmentBoard } from './IdeaDevelopmentBoard';
 
@@ -9,14 +9,14 @@ import { IdeaDevelopmentBoard } from './IdeaDevelopmentBoard';
  * current step's content rather than forcing everything into one layout
  * (spec §5B).
  */
-export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock; onBoardComplete?: () => void }) {
+export function MaterialPanel({ block, locale = 'en', onBoardComplete }: { block: MaterialBlock; locale?: 'en' | 'bn'; onBoardComplete?: () => void }) {
   switch (block.type) {
     case 'text':
       return (
         <div className="space-y-3">
           {block.paragraphs.map((p, i) => (
             <p key={i} className="text-[15px] leading-relaxed text-foreground/90">
-              {p}
+              {localize(locale, p)}
             </p>
           ))}
         </div>
@@ -37,7 +37,7 @@ export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock
             </p>
             <p className="text-[15px] leading-relaxed" lang="en">{block.weak}</p>
           </Panel>
-          {block.note && <p className="text-sm text-muted-foreground">{block.note}</p>}
+          {block.note && <p className="text-sm text-muted-foreground">{localize(locale, block.note)}</p>}
         </div>
       );
 
@@ -47,7 +47,7 @@ export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock
           {block.items.map((item) => (
             <Panel key={item.phrase} className="space-y-1 p-3.5">
               <p className="font-medium" lang="en">{item.phrase}</p>
-              <p className="text-sm text-muted-foreground">{item.use}</p>
+              <p className="text-sm text-muted-foreground">{localize(locale, item.use)}</p>
             </Panel>
           ))}
         </div>
@@ -56,7 +56,7 @@ export function MaterialPanel({ block, onBoardComplete }: { block: MaterialBlock
     case 'chart-board':
       return (
         <Section title="Visual Analysis Board" variant="label">
-          <ChartAnalysisBoard dataset={block.dataset} tasks={block.tasks} onComplete={onBoardComplete} compact />
+          <ChartAnalysisBoard dataset={block.dataset} tasks={block.tasks} locale={locale} onComplete={onBoardComplete} compact />
         </Section>
       );
 

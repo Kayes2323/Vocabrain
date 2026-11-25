@@ -11,7 +11,7 @@ import { visualInformationLesson } from '../lib/writing-studio/lessons/visual-in
 import { task1UnderstandingLesson } from '../lib/writing-studio/lessons/task1-understanding';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {

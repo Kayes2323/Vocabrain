@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { CHART_DATASETS, chartToTable } from '@/lib/writing-studio/charts';
 import { checkEssay, deriveScope, fromAI, fromLocal, type UnifiedFeedback } from '@/lib/writing-studio/feedback';
 import { recordLesson, recordMistakes } from '@/lib/writing-studio/progress';
-import type { Lesson } from '@/lib/writing-studio/types';
+import { localize, type Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
 import { MaterialPanel } from './MaterialPanel';
 import { TrainerPanel } from './TrainerPanel';
@@ -27,14 +27,16 @@ function CheckBlock({
   question,
   selected,
   onSelect,
+  locale,
 }: {
   question: NonNullable<Lesson['steps'][number]['check']>;
   selected: number | null;
   onSelect: (i: number) => void;
+  locale: 'en' | 'bn';
 }) {
   return (
     <div className="space-y-2.5">
-      <p className="font-medium">{question.prompt}</p>
+      <p className="font-medium">{localize(locale, question.prompt)}</p>
       <div className="space-y-2">
         {question.options.map((opt, i) => {
           const isSelected = selected === i;
@@ -53,7 +55,7 @@ function CheckBlock({
                 !showState && 'hover:border-foreground/20',
               )}
             >
-              <span>{opt}</span>
+              <span lang="en">{opt}</span>
               {showState && isCorrect && <Check className="size-4 shrink-0 text-success" />}
               {showState && isSelected && !isCorrect && <X className="size-4 shrink-0 text-destructive" />}
             </button>
@@ -61,7 +63,7 @@ function CheckBlock({
         })}
       </div>
       {selected !== null && (
-        <Callout tone={selected === question.correctIndex ? 'success' : 'warning'}>{question.explain}</Callout>
+        <Callout tone={selected === question.correctIndex ? 'success' : 'warning'}>{localize(locale, question.explain)}</Callout>
       )}
     </div>
   );
@@ -73,7 +75,12 @@ function CheckBlock({
  * Zone for the lesson's final task.
  */
 export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyHref: string }) {
-  const { locale } = useLocale();
+  const { locale, hasChosen } = useLocale();
+  // Bangla is the default learning language for the Task 1 curriculum until a
+  // student has explicitly picked a UI language on this device; Task 2 (and
+  // every other screen) keeps following the student's normal locale choice,
+  // unchanged, so this never alters Task 2's behaviour.
+  const contentLocale: 'en' | 'bn' = lesson.task === 'task1' && !hasChosen ? 'bn' : locale;
   const { updateProfile } = useProfile();
   const [stepIndex, setStepIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('learn');
@@ -107,7 +114,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   const taskNum: 1 | 2 = lesson.task === 'task1' ? 1 : 2;
 
   const submit = async () => {
-    const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope, !!lesson.finalPrompt.skillFocus);
+    const local = checkEssay(essay, lesson.finalPrompt.minWords, lesson.task, scope, !!lesson.finalPrompt.skillFocus, contentLocale);
     setSubmissions((n) => n + 1);
     setPhase('assessing');
 
@@ -115,14 +122,16 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     const res = await writingStudioFeedback(
       {
         task: taskNum,
-        prompt: `${lesson.finalPrompt.title}. ${lesson.finalPrompt.instructions}`,
+        // The AI only ever receives the English prompt — it is the instruction
+        // sent to the model, not learner-facing display text.
+        prompt: `${localize('en', lesson.finalPrompt.title)}. ${localize('en', lesson.finalPrompt.instructions)}`,
         minWords: lesson.finalPrompt.minWords,
         chart: chart ? chartToTable(chart) : undefined,
         skillFocus: lesson.finalPrompt.skillFocus,
         checkScope: lesson.finalPrompt.checkScope,
       },
       essay,
-      locale === 'bn' ? 'bn' : 'en',
+      contentLocale,
     );
     const unified = res.ok
       ? fromAI(res.feedback, local.wordCount, lesson.finalPrompt.minWords, lesson.finalPrompt.skillFocus)
@@ -157,7 +166,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         <div className="space-y-1.5">
           <h2 className="text-2xl font-semibold">Lesson complete</h2>
           <p className="text-muted-foreground">
-            "{lesson.title}" is done. Mino has logged this lesson and your {submissions > 1 ? `${submissions} attempts` : 'attempt'} toward your progress.
+            "{localize(contentLocale, lesson.title)}" is done. Mino has logged this lesson and your {submissions > 1 ? `${submissions} attempts` : 'attempt'} toward your progress.
           </p>
         </div>
         <Panel className="mx-auto max-w-sm text-left text-sm">
@@ -201,7 +210,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-2xl space-y-5">
         <TrainerPanel
-          lessonTitle={lesson.title}
+          lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Feedback"
           message={
             feedback.mistakes.length === 0
@@ -219,15 +228,15 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-5xl space-y-5">
         <TrainerPanel
-          lessonTitle={lesson.title}
+          lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Independent practice"
           message="Now it's your turn — no more hints. Use what you worked out above and write it in your own words."
         />
         <div className="grid gap-5 lg:grid-cols-2">
           <div className="space-y-4">
             <Panel className="space-y-2">
-              <p className="font-semibold">{lesson.finalPrompt.title}</p>
-              <p className="text-[15px] text-muted-foreground">{lesson.finalPrompt.instructions}</p>
+              <p className="font-semibold">{localize(contentLocale, lesson.finalPrompt.title)}</p>
+              <p className="text-[15px] text-muted-foreground">{localize(contentLocale, lesson.finalPrompt.instructions)}</p>
               {/* A skillFocus drill (e.g. an introduction-only paraphrase exercise) isn't
                   a full Task response — its word count is a guideline, not a hard
                   minimum, so it must not be worded as one. */}
@@ -257,10 +266,15 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <ProgressBar value={((stepIndex + 1) / lesson.steps.length) * 100} label={`Step ${stepIndex + 1} of ${lesson.steps.length}`} size="sm" />
-      <TrainerPanel lessonTitle={lesson.title} stepTitle={step.title} message={step.trainerMessage} hint={step.hint} />
+      <TrainerPanel
+        lessonTitle={localize(contentLocale, lesson.title)}
+        stepTitle={localize(contentLocale, step.title)}
+        message={localize(contentLocale, step.trainerMessage)}
+        hint={step.hint ? localize(contentLocale, step.hint) : undefined}
+      />
 
-      {step.material && <MaterialPanel block={step.material} onBoardComplete={() => setBoardDone(true)} />}
-      {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} />}
+      {step.material && <MaterialPanel block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} />}
+      {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} locale={contentLocale} />}
 
       <div className="flex items-center justify-between gap-2 border-t pt-4">
         <Button variant="ghost" onClick={goBack} disabled={stepIndex === 0}>

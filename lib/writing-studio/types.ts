@@ -7,6 +7,20 @@
 
 export type TaskId = 'task1' | 'task2';
 
+/**
+ * Learner-facing text that may need a Bangla counterpart. A plain string
+ * renders the same in every language — used for English sample sentences,
+ * target vocabulary/phrases, IELTS prompts and quoted text that must never be
+ * translated. Existing lesson content (a plain string) is still a valid
+ * `L10n`, so nothing elsewhere has to change for this type to be introduced.
+ */
+export type L10n = string | { en: string; bn: string };
+
+/** Resolves an `L10n` value for the given locale. A plain string is returned as-is for every locale. */
+export function localize(locale: 'en' | 'bn', value: L10n): string {
+  return typeof value === 'string' ? value : value[locale];
+}
+
 /** The four levels of the gradual-independence system (spec §13). */
 export type IndependenceLevel = 1 | 2 | 3 | 4;
 
@@ -21,8 +35,8 @@ export const INDEPENDENCE_LABEL: Record<IndependenceLevel, string> = {
 export interface ModuleSummary {
   id: string;
   number: number;
-  title: string;
-  description: string;
+  title: L10n;
+  description: L10n;
   /** If set, "Open" routes to this fully built lesson. Otherwise it opens a labelled content preview. */
   builtLessonId?: string;
 }
@@ -30,8 +44,8 @@ export interface ModuleSummary {
 /** One of the seven Task 1 visual-specific training areas (spec Module 7). */
 export interface VisualTrainingArea {
   id: string;
-  title: string;
-  description: string;
+  title: L10n;
+  description: L10n;
   builtLessonId?: string;
 }
 
@@ -68,8 +82,8 @@ export interface ChartDataset {
 export interface ChartBoardTask {
   id: string;
   order: number;
-  prompt: string;
-  /** Shown once the student checks their answer. */
+  prompt: L10n;
+  /** Shown once the student checks their answer. Always the English model sentence being taught — never translated. */
   modelAnswer: string;
   /** Which part of a Task 1 response this feature belongs in. */
   belongsIn: 'introduction' | 'overview' | 'body';
@@ -95,35 +109,39 @@ export interface IdeaBoardQuestion {
 // ---------------------------------------------------------------- Lessons
 
 export type MaterialBlock =
-  | { type: 'text'; paragraphs: string[] }
-  | { type: 'examples'; good: string; weak: string; note: string }
-  | { type: 'vocab'; items: { phrase: string; use: string }[] }
+  /** `paragraphs` is teaching prose — translatable. */
+  | { type: 'text'; paragraphs: L10n[] }
+  /** `good`/`weak` are the literal English sample sentences being taught and are never translated; `note` is the surrounding explanation. */
+  | { type: 'examples'; good: string; weak: string; note: L10n }
+  /** `phrase` is the target English vocabulary/collocation (never translated); `use` explains it. */
+  | { type: 'vocab'; items: { phrase: string; use: L10n }[] }
   | { type: 'chart-board'; dataset: ChartDataset; tasks: ChartBoardTask[] }
   | { type: 'idea-board'; question: IdeaBoardQuestion };
 
 export type StepKind = 'intro' | 'explain' | 'demonstrate' | 'check' | 'guided' | 'independent' | 'review';
 
 export interface CheckQuestion {
-  prompt: string;
+  prompt: L10n;
+  /** The candidate answers. Left untranslated by default: most Task 1 checks test recognising/choosing correct IELTS English, so the options are the literal English skill being tested. */
   options: string[];
   correctIndex: number;
-  explain: string;
+  explain: L10n;
 }
 
 export interface LessonStep {
   id: string;
   kind: StepKind;
-  title: string;
+  title: L10n;
   /** What Mino says for this step (Trainer Zone). */
-  trainerMessage: string;
-  hint?: string;
+  trainerMessage: L10n;
+  hint?: L10n;
   material?: MaterialBlock;
   check?: CheckQuestion;
 }
 
 export interface FinalPrompt {
-  title: string;
-  instructions: string;
+  title: L10n;
+  instructions: L10n;
   minWords: number;
   /** Reference chart id, when the final task needs one rendered alongside the editor. */
   chartId?: string;

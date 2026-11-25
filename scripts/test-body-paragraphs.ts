@@ -16,7 +16,7 @@ import { task1IntroductionLesson } from '../lib/writing-studio/lessons/task1-int
 import { visualInformationLesson } from '../lib/writing-studio/lessons/visual-information';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -42,15 +42,15 @@ const WORKED =
   "Denmark recorded the highest proportion throughout the period, with its share rising steadily from 14% in 2000 to 62% in 2020. This represented an increase of 48 percentage points and meant that its final figure was more than four times the initial level. Although Country B also experienced substantial growth, increasing from 6% to 27%, Country C rose more gradually from 9% to 16%.";
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [lesson.objective, localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, i.use]));
-    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${t.prompt} ${t.modelAnswer}`));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, localize('en', i.use)]));
+    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${localize('en', t.prompt)} ${t.modelAnswer}`));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -102,7 +102,7 @@ test('every check has the specified answer key, valid options and an explanation
     assert.equal(c.correctIndex, key, id);
     assert.ok(c.correctIndex >= 0 && c.correctIndex < c.options.length, id);
     assert.ok(c.options.length >= 3 && new Set(c.options).size === c.options.length, `${id}: options`);
-    assert.ok(c.explain.length > 30, `${id}: explanation`);
+    assert.ok(localize('en', c.explain).length > 30, `${id}: explanation`);
   }
 });
 // What each option IS, independent of where it sits: one correct pattern and the wrong/inferior patterns.
@@ -147,11 +147,12 @@ test('"intro" explanation assigns the right role to each option by CONTENT, so i
   assert.equal(c.options[c.correctIndex], bodyOpt, 'the correct answer is the body-paragraph sentence');
   // The explanation must quote every option; the role statement that follows each quote (up to the
   // next quoted option) must name that option's own role.
+  const explain = localize('en', c.explain);
   const clauseAround = (opt: string) => {
     const quote = opt.replace(/\.$/, '');
-    const at = c.explain.indexOf(quote);
+    const at = explain.indexOf(quote);
     assert.ok(at >= 0, `the explanation quotes the option: ${opt}`);
-    const after = c.explain.slice(at + quote.length);
+    const after = explain.slice(at + quote.length);
     const next = after.search(/\s"/);
     return next === -1 ? after : after.slice(0, next);
   };
@@ -165,7 +166,7 @@ test('"intro" explanation assigns the right role to each option by CONTENT, so i
   assert.ok(!/introduction|body[- ]paragraph/i.test(overview), `overview option mislabelled: ${overview}`);
   assert.match(intro, /introduction-style/);
   assert.ok(!/overview|body[- ]paragraph/i.test(intro), `introduction option mislabelled: ${intro}`);
-  assert.ok(!/\b(first|second|third)\b/i.test(c.explain), 'no positional references that go stale when options are reordered');
+  assert.ok(!/\b(first|second|third)\b/i.test(explain), 'no positional references that go stale when options are reordered');
 });
 test('the facts behind the correct answers and the data-based distractors hold in the dataset', () => {
   assert.equal(val('Denmark', '2000'), 14); assert.equal(val('Denmark', '2020'), 62); assert.equal(rise('Denmark'), 48);
@@ -221,7 +222,7 @@ test('every chart-board task has a non-empty prompt and model answer (5 reading 
     const m = s.material as Extract<MaterialBlock, { type: 'chart-board' }>;
     assert.deepEqual(m.tasks.map((t) => t.order), m.tasks.map((_, i) => i + 1));
     assert.equal(new Set(m.tasks.map((t) => t.id)).size, m.tasks.length);
-    for (const t of m.tasks) assert.ok(t.prompt.length > 15 && t.modelAnswer.length > 15, t.id);
+    for (const t of m.tasks) assert.ok(localize('en', t.prompt).length > 15 && t.modelAnswer.length > 15, t.id);
   }
 });
 
@@ -346,9 +347,10 @@ test('final prompt is a paragraph-only skill drill on the renewable-electricity 
   assert.equal(f.chartId, 'renewable-electricity');
   assert.equal(f.minWords, 70);
   assert.equal(deriveScope(lesson), 'paragraph-only');
-  assert.match(f.instructions, /Write ONE body paragraph/);
-  assert.match(f.instructions, /learning guide, not a universal IELTS rule/);
-  assert.ok(!/150|complete task 1|full task 1/i.test(f.instructions), f.instructions);
+  const instructions = localize('en', f.instructions);
+  assert.match(instructions, /Write ONE body paragraph/);
+  assert.match(instructions, /learning guide, not a universal IELTS rule/);
+  assert.ok(!/150|complete task 1|full task 1/i.test(instructions), instructions);
 });
 
 const drill = (t: string) => checkEssay(t, lesson.finalPrompt.minWords, 'task1', 'paragraph-only', true);

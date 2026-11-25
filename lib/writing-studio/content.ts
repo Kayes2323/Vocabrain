@@ -10,13 +10,76 @@ import type { ExamTaskContent, ModuleSummary, VisualTrainingArea } from './types
  * Academy card.
  */
 export const TASK1_MODULES: ModuleSummary[] = [
-  { id: 'task1-m1', number: 1, title: 'Understanding IELTS Writing Task 1', description: 'What Task 1 asks for, Task Achievement, and the basic response structure.', builtLessonId: 'task1-understanding' },
-  { id: 'task1-m2', number: 2, title: 'Understanding Visual Information', description: 'Reading line graphs, bar charts, pie charts, tables, maps and process diagrams.', builtLessonId: 'visual-information' },
-  { id: 'task1-m3', number: 3, title: 'Introduction Writing', description: 'Paraphrasing the question and writing a clear, accurate introduction.', builtLessonId: 'task1-introduction' },
-  { id: 'task1-m4', number: 4, title: 'Overview Mastery', description: 'Identifying the main trends and writing a strong, focused overview.', builtLessonId: 'overview-writing' },
-  { id: 'task1-m5', number: 5, title: 'Body Paragraph Development', description: 'Grouping data, making comparisons, and reporting figures with purpose.', builtLessonId: 'body-paragraphs' },
-  { id: 'task1-m6', number: 6, title: 'Vocabulary and Grammar for Task 1', description: 'Trend language, comparison language, tense choice and sentence variety.', builtLessonId: 'task1-vocab-grammar' },
-  { id: 'task1-m7', number: 7, title: 'Complete Task 1 Writing', description: 'Combine analysis, an accurate introduction, an overview, body paragraphs and precise language into one complete, coherent response.', builtLessonId: 'task1-complete-writing' },
+  {
+    id: 'task1-m1',
+    number: 1,
+    title: { en: 'Understanding IELTS Writing Task 1', bn: 'IELTS Writing Task 1 বোঝা' },
+    description: {
+      en: 'What Task 1 asks for, Task Achievement, and the basic response structure.',
+      bn: 'Task 1 আসলে কী চায়, Task Achievement কী, আর response-এর basic structure কেমন হয়।',
+    },
+    builtLessonId: 'task1-understanding',
+  },
+  {
+    id: 'task1-m2',
+    number: 2,
+    title: { en: 'Understanding Visual Information', bn: 'Visual Information বোঝা' },
+    description: {
+      en: 'Reading line graphs, bar charts, pie charts, tables, maps and process diagrams.',
+      bn: 'Line graph, bar chart, pie chart, table, map আর process diagram পড়তে শেখা।',
+    },
+    builtLessonId: 'visual-information',
+  },
+  {
+    id: 'task1-m3',
+    number: 3,
+    title: { en: 'Introduction Writing', bn: 'Introduction লেখা' },
+    description: {
+      en: 'Paraphrasing the question and writing a clear, accurate introduction.',
+      bn: 'প্রশ্নটা নিজের ভাষায় paraphrase করা আর একটা স্পষ্ট, সঠিক introduction লেখা।',
+    },
+    builtLessonId: 'task1-introduction',
+  },
+  {
+    id: 'task1-m4',
+    number: 4,
+    title: { en: 'Overview Mastery', bn: 'Overview-তে দক্ষতা' },
+    description: {
+      en: 'Identifying the main trends and writing a strong, focused overview.',
+      bn: 'মূল trend-গুলো চিহ্নিত করা আর একটা জোরালো, focused overview লেখা।',
+    },
+    builtLessonId: 'overview-writing',
+  },
+  {
+    id: 'task1-m5',
+    number: 5,
+    title: { en: 'Body Paragraph Development', bn: 'Body Paragraph তৈরি করা' },
+    description: {
+      en: 'Grouping data, making comparisons, and reporting figures with purpose.',
+      bn: 'তথ্য group করা, comparison করা, আর উদ্দেশ্য অনুযায়ী figure উল্লেখ করা।',
+    },
+    builtLessonId: 'body-paragraphs',
+  },
+  {
+    id: 'task1-m6',
+    number: 6,
+    title: { en: 'Vocabulary and Grammar for Task 1', bn: 'Task 1-এর জন্য Vocabulary আর Grammar' },
+    description: {
+      en: 'Trend language, comparison language, tense choice and sentence variety.',
+      bn: 'Trend-এর ভাষা, comparison-এর ভাষা, tense বেছে নেওয়া আর বাক্যে বৈচিত্র্য।',
+    },
+    builtLessonId: 'task1-vocab-grammar',
+  },
+  {
+    id: 'task1-m7',
+    number: 7,
+    title: { en: 'Complete Task 1 Writing', bn: 'সম্পূর্ণ Task 1 লেখা' },
+    description: {
+      en: 'Combine analysis, an accurate introduction, an overview, body paragraphs and precise language into one complete, coherent response.',
+      bn: 'Analysis, সঠিক introduction, overview, body paragraph আর নির্ভুল ভাষা — সবকিছু মিলিয়ে একটা সম্পূর্ণ, সুসংগত response তৈরি করা।',
+    },
+    builtLessonId: 'task1-complete-writing',
+  },
 ];
 
 export const TASK1_VISUALS: VisualTrainingArea[] = [
