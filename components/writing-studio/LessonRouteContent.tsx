@@ -1,8 +1,9 @@
 'use client';
 
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { TASK1_MODULES, TASK1_VISUALS, TASK2_MODULES } from '@/lib/writing-studio/content';
 import { getLesson } from '@/lib/writing-studio/lessons';
-import type { TaskId } from '@/lib/writing-studio/types';
+import { localize, type TaskId } from '@/lib/writing-studio/types';
 import { LessonPreview } from './LessonPreview';
 import { LessonRunner } from './LessonRunner';
 
@@ -14,6 +15,8 @@ const BUILT_LESSON: Record<TaskId, { id: string; label: string }> = {
 /** Resolves `[lessonId]` to a fully built lesson, a module/visual-area preview, or 404. */
 export function LessonRouteContent({ task, lessonId }: { task: TaskId; lessonId: string }) {
   const lesson = getLesson(lessonId);
+  const { locale, hasChosen } = useLocale();
+  const contentLocale: 'en' | 'bn' = task === 'task1' && !hasChosen ? 'bn' : locale;
   const academyHref = `/ielts/writing-studio/${task}`;
   const academyLabel = task === 'task1' ? 'Task 1 Academy' : 'Task 2 Academy';
 
@@ -21,7 +24,7 @@ export function LessonRouteContent({ task, lessonId }: { task: TaskId; lessonId:
     if (lesson.task !== task) {
       return (
         <LessonPreview
-          title={lesson.title}
+          title={localize(contentLocale, lesson.title)}
           objective="This lesson belongs to the other Academy."
           academyHref={academyHref}
           academyLabel={academyLabel}
@@ -39,8 +42,8 @@ export function LessonRouteContent({ task, lessonId }: { task: TaskId; lessonId:
 
   return (
     <LessonPreview
-      title={found.title}
-      objective={found.description}
+      title={localize(contentLocale, found.title)}
+      objective={localize(contentLocale, found.description)}
       academyHref={academyHref}
       academyLabel={academyLabel}
       builtLessonHref={`${academyHref}/lesson/${BUILT_LESSON[task].id}`}

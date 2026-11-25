@@ -5,11 +5,13 @@ import { ArrowRight, ClipboardList, GraduationCap, RotateCcw, Sparkles, Timer } 
 import { Button } from '@/components/ui/button';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
+import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import type { WritingStudioProgress } from '@/lib/models';
 import { TASK1_MODULES, TASK2_MODULES } from '@/lib/writing-studio/content';
 import { getLesson } from '@/lib/writing-studio/lessons';
 import { deriveAcademyStats, deriveMistakeCategories } from '@/lib/writing-studio/progress';
+import { localize } from '@/lib/writing-studio/types';
 import { LevelBadge } from '@/components/writing-studio/LevelBadge';
 
 const EMPTY_PROGRESS: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
@@ -17,6 +19,7 @@ const EMPTY_PROGRESS: WritingStudioProgress = { lessons: {}, practice: [], mista
 /** Mino Writing Studio — Dashboard (spec §4). A proper home screen, not a chat window. */
 export default function WritingStudioDashboard() {
   const { profile } = useProfile();
+  const { locale, hasChosen } = useLocale();
   const progress = profile?.writingStudio ?? EMPTY_PROGRESS;
   const task1 = deriveAcademyStats(progress, 'task1', TASK1_MODULES);
   const task2 = deriveAcademyStats(progress, 'task2', TASK2_MODULES);
@@ -29,6 +32,7 @@ export default function WritingStudioDashboard() {
   const lastLesson = getLesson(nextBuilt?.builtLessonId ?? 'overview-writing')!;
   const lastLessonTask = lastLesson.task === 'task1' ? 'task1' : 'task2';
   const lessonDone = !!progress.lessons[lastLesson.id];
+  const contentLocale: 'en' | 'bn' = lastLessonTask === 'task1' && !hasChosen ? 'bn' : locale;
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
@@ -52,7 +56,7 @@ export default function WritingStudioDashboard() {
         <Panel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 space-y-1">
             <p className="text-xs font-medium text-muted-foreground">{lastLessonTask === 'task1' ? 'Task 1 Academy' : 'Task 2 Academy'}</p>
-            <p className="font-semibold">{lastLesson.title}</p>
+            <p className="font-semibold">{localize(contentLocale, lastLesson.title)}</p>
             <ProgressBar value={lessonDone ? 100 : 0} label="Lesson progress" size="sm" className="mt-1 max-w-56" />
           </div>
           <Button asChild className="shrink-0">

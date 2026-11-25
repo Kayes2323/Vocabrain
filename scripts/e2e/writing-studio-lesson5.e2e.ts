@@ -5,6 +5,7 @@
 // scripts/test-body-paragraphs.ts independently verifies the answer keys themselves.
 //   bash scripts/e2e/run.sh writing-studio-lesson5
 import { bodyParagraphsLesson as lesson } from '../../lib/writing-studio/lessons/body-paragraphs';
+import { localize } from '../../lib/writing-studio/types';
 import { BASE, check, launch, report, shot, signUp, watchErrors } from './helpers';
 
 async function main() {
@@ -32,7 +33,7 @@ async function main() {
       if (step.check) {
         const c = step.check;
         await page.getByRole('button', { name: c.options[c.correctIndex], exact: true }).click();
-        await page.getByText(c.explain.slice(0, 40), { exact: false }).first().waitFor({ timeout: 10_000 });
+        await page.getByText(localize('en', c.explain).slice(0, 40), { exact: false }).first().waitFor({ timeout: 10_000 });
         answered++;
       }
       if (step.material?.type === 'chart-board') {

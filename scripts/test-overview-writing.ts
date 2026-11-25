@@ -14,7 +14,7 @@ import { task1UnderstandingLesson } from '../lib/writing-studio/lessons/task1-un
 import { visualInformationLesson } from '../lib/writing-studio/lessons/visual-information';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -38,15 +38,15 @@ const MODEL_2 =
 const ONE_SENTENCE = 'Although car use fell, it stayed the leading method, while cycling rose sharply and walking was unchanged.';
 
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, i.use]));
-    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${t.prompt} ${t.modelAnswer}`));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'vocab') parts.push(...m.items.flatMap((i) => [i.phrase, localize('en', i.use)]));
+    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${localize('en', t.prompt)} ${t.modelAnswer}`));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -60,7 +60,7 @@ test('existing identity is preserved: id overview-writing, module task1-m4, regi
   assert.equal(getLesson('overview-writing'), lesson);
   assert.equal(getLesson('task1-overview'), undefined, 'no duplicate overview lesson is registered');
   const m4 = TASK1_MODULES.find((m) => m.id === 'task1-m4')!;
-  assert.equal(m4.title, 'Overview Mastery');
+  assert.equal(localize('en', m4.title), 'Overview Mastery');
   assert.equal(m4.builtLessonId, 'overview-writing');
 });
 test('all intended teaching stages exist, in order (each multi-question group is consecutive check steps)', () => {
@@ -96,7 +96,7 @@ test('every question group has the specified, valid answer key, and every check 
     assert.equal(c.correctIndex, key, id);
     assert.ok(c.correctIndex >= 0 && c.correctIndex < c.options.length, id);
     assert.ok(c.options.length >= 3 && new Set(c.options).size === c.options.length, `${id}: options`);
-    assert.ok(c.explain.length > 30, `${id}: explanation`);
+    assert.ok(localize('en', c.explain).length > 30, `${id}: explanation`);
   }
 });
 test('the correct option is the accurate statement for each content check', () => {
@@ -124,7 +124,7 @@ test('the map clinic never rewards narrowing "changes" to "layout"', () => {
   const c = lesson.steps.find((s) => s.id === 'clinic-4')!.check!;
   assert.ok(!/layout/i.test(c.options[c.correctIndex]));
   assert.ok(/layout/i.test(c.options[1]) && c.correctIndex !== 1, 'the "layout" option is a distractor');
-  assert.match(c.explain, /narrows the meaning/);
+  assert.match(localize('en', c.explain), /narrows the meaning/);
 });
 
 // ---------------------------------------------------------------- dataset
@@ -144,7 +144,7 @@ test('the chart is the existing commute-methods dataset with the expected values
   assert.equal(lesson.finalPrompt.chartId, 'commute-methods');
 });
 test('the opening diagnostic says "five categories" (the dataset has five), never "six", and every stated count matches the chart', () => {
-  const prompt = lesson.steps.find((s) => s.id === 'intro')!.check!.prompt;
+  const prompt = localize('en', lesson.steps.find((s) => s.id === 'intro')!.check!.prompt);
   assert.equal(chart.categories.length, 5);
   assert.match(prompt, /\bfive categories\b/);
   assert.ok(!/\bsix\b/i.test(prompt), prompt);
@@ -238,10 +238,11 @@ test('final prompt is an overview-only skill drill on the commute chart', () => 
   assert.equal(f.chartId, 'commute-methods');
   assert.equal(f.minWords, 25);
   assert.equal(deriveScope(lesson), 'overview-only');
-  assert.match(f.instructions, /approximately two sentences/);
-  assert.match(f.instructions, /do not need to write an introduction or body paragraphs/);
-  assert.match(f.instructions, /overview-only skill exercise/);
-  assert.ok(!/150|full task|complete task 1 response|exactly two/i.test(f.instructions), f.instructions);
+  const finalInstructions = localize('en', f.instructions);
+  assert.match(finalInstructions, /approximately two sentences/);
+  assert.match(finalInstructions, /do not need to write an introduction or body paragraphs/);
+  assert.match(finalInstructions, /overview-only skill exercise/);
+  assert.ok(!/150|full task|complete task 1 response|exactly two/i.test(finalInstructions), finalInstructions);
 });
 
 const drill = (t: string) => checkEssay(t, lesson.finalPrompt.minWords, 'task1', 'overview-only', true);

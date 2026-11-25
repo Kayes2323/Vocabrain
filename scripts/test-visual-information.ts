@@ -9,7 +9,7 @@ import { getLesson } from '../lib/writing-studio/lessons';
 import { visualInformationLesson as lesson } from '../lib/writing-studio/lessons/visual-information';
 import { recordLesson } from '../lib/writing-studio/progress';
 import type { WritingStudioProgress } from '../lib/models';
-import type { MaterialBlock } from '../lib/writing-studio/types';
+import { localize, type MaterialBlock } from '../lib/writing-studio/types';
 
 let passed = 0;
 const test = (name: string, fn: () => void) => {
@@ -70,7 +70,7 @@ test('every check step has four options, a valid correctIndex and an explanation
     assert.ok(s.check, s.id);
     assert.equal(s.check.options.length, 4, s.id);
     assert.ok(s.check.correctIndex >= 0 && s.check.correctIndex < 4, s.id);
-    assert.ok(s.check.explain.length > 20, s.id);
+    assert.ok(localize('en', s.check.explain).length > 20, s.id);
   }
 });
 test('clinic correct answers are the accurate options (0-based indexes 1, 1, 2, 1)', () => {
@@ -112,14 +112,14 @@ test('bicycle has the largest relative growth; car is the largest category in bo
 
 /** All learner-facing text in the lesson, for scanning. */
 function allText(): string {
-  const parts: string[] = [lesson.objective, lesson.finalPrompt.instructions];
+  const parts: string[] = [localize('en', lesson.objective), localize('en', lesson.finalPrompt.instructions)];
   for (const s of lesson.steps) {
-    parts.push(s.trainerMessage);
+    parts.push(localize('en', s.trainerMessage));
     const m = s.material;
-    if (m?.type === 'text') parts.push(...m.paragraphs);
-    if (m?.type === 'examples') parts.push(m.good, m.weak, m.note);
-    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${t.prompt} ${t.modelAnswer}`));
-    if (s.check) parts.push(s.check.prompt, ...s.check.options, s.check.explain);
+    if (m?.type === 'text') parts.push(...m.paragraphs.map((p) => localize('en', p)));
+    if (m?.type === 'examples') parts.push(m.good, m.weak, localize('en', m.note));
+    if (m?.type === 'chart-board') parts.push(...m.tasks.map((t) => `${localize('en', t.prompt)} ${t.modelAnswer}`));
+    if (s.check) parts.push(localize('en', s.check.prompt), ...s.check.options, localize('en', s.check.explain));
   }
   return parts.join('\n');
 }
@@ -176,8 +176,9 @@ test('final prompt is a targeted overview drill on the commute chart', () => {
   assert.equal(f.skillFocus, 'Chart interpretation and key-feature selection');
   assert.equal(f.checkScope, 'overview-only');
   assert.equal(deriveScope(lesson), 'overview-only');
-  assert.match(f.instructions, /two-sentence overview/);
-  assert.match(f.instructions, /Do not write an introduction or body paragraph/);
+  const finalInstructions = localize('en', f.instructions);
+  assert.match(finalInstructions, /two-sentence overview/);
+  assert.match(finalInstructions, /Do not write an introduction or body paragraph/);
 });
 
 // ---------------------------------------------------------------- skill-drill feedback behaviour
