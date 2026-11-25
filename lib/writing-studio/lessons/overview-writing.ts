@@ -657,107 +657,144 @@ export const overviewWritingLesson: Lesson = {
     {
       id: 'clinic',
       kind: 'check',
-      title: 'Misconception Clinic (1 of 4)',
-      trainerMessage: 'Each question targets a specific error. A learner writes: "Car use was 52% in 2010 and 38% in 2023, while bus use was 24% and 21%."',
+      title: { en: 'Misconception Clinic (1 of 4)', bn: 'Misconception Clinic (১/৪)' },
+      trainerMessage: {
+        en: 'Each question targets a specific error. A learner writes: "Car use was 52% in 2010 and 38% in 2023, while bus use was 24% and 21%."',
+        bn: 'প্রতিটা প্রশ্ন একটা নির্দিষ্ট ভুলকে target করে। একজন learner লিখেছে: "Car use was 52% in 2010 and 38% in 2023, while bus use was 24% and 21%."',
+      },
       check: {
-        prompt: 'What is the main problem?',
+        prompt: { en: 'What is the main problem?', bn: 'মূল সমস্যাটা কী?' },
         options: [
           'The figures are incorrect.',
           'The response focuses on individual figures instead of the main overall patterns.',
           'The response uses the wrong tense.',
         ],
         correctIndex: 1,
-        explain:
-          'The figures are accurate, but the statement does not provide a sufficiently broad summary. It should identify the dominant category and significant changes.',
+        explain: {
+          en: 'The figures are accurate, but the statement does not provide a sufficiently broad summary. It should identify the dominant category and significant changes.',
+          bn: 'Figure-গুলো সঠিক, কিন্তু বাক্যটা যথেষ্ট বিস্তৃত একটা summary দেয় না। এর dominant category আর গুরুত্বপূর্ণ পরিবর্তনগুলো চিহ্নিত করা উচিত ছিল।',
+        },
       },
     },
     {
       id: 'clinic-2',
       kind: 'check',
-      title: 'Misconception Clinic (2 of 4)',
-      trainerMessage: 'A learner writes: "People increasingly chose bicycles because fuel prices became expensive."',
+      title: { en: 'Misconception Clinic (2 of 4)', bn: 'Misconception Clinic (২/৪)' },
+      trainerMessage: { en: 'A learner writes: "People increasingly chose bicycles because fuel prices became expensive."', bn: 'একজন learner লিখেছে: "People increasingly chose bicycles because fuel prices became expensive."' },
       check: {
-        prompt: 'What is wrong?',
+        prompt: { en: 'What is wrong?', bn: 'এখানে কী ভুল?' },
         options: [
           'The sentence uses a comparative structure.',
           'The chart does not provide evidence for the cause.',
           'The sentence is too short.',
         ],
         correctIndex: 1,
-        explain: 'A Task 1 overview should describe what the visual shows. It must not invent reasons.',
+        explain: { en: 'A Task 1 overview should describe what the visual shows. It must not invent reasons.', bn: 'একটা Task 1 overview visual-টা কী দেখাচ্ছে সেটাই বর্ণনা করা উচিত। এটা কারণ বানিয়ে বলতে পারে না।' },
       },
     },
     {
       id: 'clinic-3',
       kind: 'check',
-      title: 'Misconception Clinic (3 of 4)',
-      trainerMessage: 'A learner writes: "Walking became more popular between 2010 and 2023."',
+      title: { en: 'Misconception Clinic (3 of 4)', bn: 'Misconception Clinic (৩/৪)' },
+      trainerMessage: { en: 'A learner writes: "Walking became more popular between 2010 and 2023."', bn: 'একজন learner লিখেছে: "Walking became more popular between 2010 and 2023."' },
       check: {
-        prompt: 'What is wrong?',
+        prompt: { en: 'What is wrong?', bn: 'এখানে কী ভুল?' },
         options: [
           'Walking remained at 7% in both years, so it did not become more popular.',
           'Walking was the highest category.',
           'Walking disappeared in 2023.',
         ],
         correctIndex: 0,
-        explain: 'The chart shows 7% in 2010 and 7% in 2023: walking was unchanged. Claiming a rise is a false trend, however fluent the sentence is.',
+        explain: {
+          en: 'The chart shows 7% in 2010 and 7% in 2023: walking was unchanged. Claiming a rise is a false trend, however fluent the sentence is.',
+          bn: 'Chart দেখায় ২০১০-এ ৭% আর ২০২৩-এও ৭%: walking অপরিবর্তিত। বাক্যটা যতই সাবলীল হোক, বৃদ্ধি দাবি করাটা একটা ভুল trend।',
+        },
       },
     },
     {
       id: 'clinic-4',
       kind: 'check',
-      title: 'Misconception Clinic (4 of 4)',
-      trainerMessage: 'Back to accurate paraphrasing. The original map description is: "The maps show changes to a town centre between 1990 and 2020."',
+      title: { en: 'Misconception Clinic (4 of 4)', bn: 'Misconception Clinic (৪/৪)' },
+      trainerMessage: {
+        en: 'Back to accurate paraphrasing. The original map description is: "The maps show changes to a town centre between 1990 and 2020."',
+        bn: 'আবার সঠিক paraphrasing-এ ফিরে আসি। মূল map-এর বিবরণ: "The maps show changes to a town centre between 1990 and 2020."',
+      },
       check: {
-        prompt: 'Which paraphrase preserves the meaning most accurately?',
+        prompt: { en: 'Which paraphrase preserves the meaning most accurately?', bn: 'কোন paraphrase অর্থটা সবচেয়ে সঠিকভাবে ধরে রাখে?' },
         options: [
           'The maps illustrate how a town centre changed between 1990 and 2020.',
           'The maps compare the layout of a town centre between 1990 and 2020.',
           'The maps show the construction of new buildings in a town centre.',
         ],
         correctIndex: 0,
-        explain:
-          'The original says "changes", which can include several types of transformation. "Layout" narrows the meaning to one aspect, while the third option introduces a specific type of change that may not be supported.',
+        explain: {
+          en: 'The original says "changes", which can include several types of transformation. "Layout" narrows the meaning to one aspect, while the third option introduces a specific type of change that may not be supported.',
+          bn: 'মূল বাক্যে "changes" বলা হয়েছে, যার মধ্যে অনেক ধরনের পরিবর্তন থাকতে পারে। "Layout" অর্থটাকে একটা দিকে সীমাবদ্ধ করে দেয়, আর তৃতীয় option একটা নির্দিষ্ট ধরনের পরিবর্তন তুলে ধরে যা হয়তো সমর্থিত না।',
+        },
       },
     },
     {
       id: 'reflection',
       kind: 'review',
-      title: 'Reflection: Before You Write Your Overview',
-      trainerMessage:
-        'Before the final exercise, check that you can answer these five questions in your own words. Then compare with the suggested understanding.',
+      title: { en: 'Reflection: Before You Write Your Overview', bn: 'Reflection: তোমার Overview লেখার আগে' },
+      trainerMessage: {
+        en: 'Before the final exercise, check that you can answer these five questions in your own words. Then compare with the suggested understanding.',
+        bn: 'শেষ exercise-এর আগে, দেখো তুমি এই পাঁচটা প্রশ্নের উত্তর নিজের ভাষায় দিতে পারো কিনা। তারপর suggested understanding-এর সাথে মিলিয়ে দেখো।',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          '1. What is the main purpose of an overview? — To summarise the most important features.',
-          '2. Why should you avoid listing every figure? — Because an overview should synthesise, not reproduce the data.',
-          '3. How do you decide which features are most important? — By examining prominence, meaningful change, comparisons and accuracy.',
-          '4. What is the difference between describing a change and explaining its cause? — Describing a change reports what the chart shows; explaining a cause introduces a reason that may not be provided.',
-          '5. Can a one-sentence overview be effective? — Yes, if it clearly communicates the main features.',
-          'You can now identify dominant features, recognise important trends, compare categories, group related observations, and write a concise overview. Remember: do not describe everything you see. Explain what matters most. After the final exercise, your next lesson is Lesson 05 — Body Paragraph Development.',
+          { en: '1. What is the main purpose of an overview? — To summarise the most important features.', bn: '১. একটা Overview-এর মূল উদ্দেশ্য কী? — সবচেয়ে গুরুত্বপূর্ণ feature-গুলো summarise করা।' },
+          { en: '2. Why should you avoid listing every figure? — Because an overview should synthesise, not reproduce the data.', bn: '২. কেন প্রতিটা figure তালিকা করা এড়ানো উচিত? — কারণ একটা overview-এর কাজ data synthesise করা, সেটা আবার লেখা না।' },
+          {
+            en: '3. How do you decide which features are most important? — By examining prominence, meaningful change, comparisons and accuracy.',
+            bn: '৩. কোন feature-গুলো সবচেয়ে গুরুত্বপূর্ণ তা তুমি কীভাবে ঠিক করো? — prominence, meaningful পরিবর্তন, comparison, আর accuracy যাচাই করে।',
+          },
+          {
+            en: '4. What is the difference between describing a change and explaining its cause? — Describing a change reports what the chart shows; explaining a cause introduces a reason that may not be provided.',
+            bn: '৪. একটা পরিবর্তন বর্ণনা করা আর তার কারণ ব্যাখ্যা করার মধ্যে পার্থক্য কী? — পরিবর্তন বর্ণনা করা মানে chart যা দেখাচ্ছে তা জানানো; কারণ ব্যাখ্যা করা মানে এমন একটা কারণ আনা যা হয়তো দেওয়াই হয়নি।',
+          },
+          { en: '5. Can a one-sentence overview be effective? — Yes, if it clearly communicates the main features.', bn: '৫. এক-বাক্যের একটা overview কি কার্যকর হতে পারে? — হ্যাঁ, যদি এটা মূল feature-গুলো স্পষ্টভাবে জানায়।' },
+          {
+            en: 'You can now identify dominant features, recognise important trends, compare categories, group related observations, and write a concise overview. Remember: do not describe everything you see. Explain what matters most. After the final exercise, your next lesson is Lesson 05 — Body Paragraph Development.',
+            bn: 'তুমি এখন dominant feature চিহ্নিত করতে, গুরুত্বপূর্ণ trend চিনতে, category তুলনা করতে, related observation group করতে, আর একটা সংক্ষিপ্ত overview লিখতে পারো। মনে রাখবে: যা দেখছ তার সবকিছু বর্ণনা করো না। যেটা সবচেয়ে গুরুত্বপূর্ণ সেটা ব্যাখ্যা করো। এই শেষ exercise-এর পর, তোমার পরের lesson হলো Lesson 05 — Body Paragraph Development।',
+          },
         ],
       },
     },
     {
       id: 'independent-practice',
       kind: 'independent',
-      title: 'Final Independent Practice',
-      trainerMessage:
-        'Now it is your turn. Study the chart as long as you need — this focused exercise has no exam time limit. Write only the overview: no introduction and no body paragraphs. Think first: what is the biggest pattern, what is the most meaningful comparison, and which details can safely be left out?',
+      title: { en: 'Final Independent Practice', bn: 'শেষ Independent Practice' },
+      trainerMessage: {
+        en: 'Now it is your turn. Study the chart as long as you need — this focused exercise has no exam time limit. Write only the overview: no introduction and no body paragraphs. Think first: what is the biggest pattern, what is the most meaningful comparison, and which details can safely be left out?',
+        bn: 'এখন তোমার পালা। যতক্ষণ দরকার chart-টা দেখো — এই focused exercise-এ কোনো exam সময়সীমা নেই। শুধু overview-টা লেখো: কোনো Introduction না, কোনো body paragraph না। প্রথমে ভাবো: সবচেয়ে বড় pattern কী, সবচেয়ে meaningful comparison কী, আর কোন detail-গুলো নিরাপদে বাদ দেওয়া যায়?',
+      },
       material: {
         type: 'text',
         paragraphs: [
-          'The chart: the percentage of commuters using five transport methods in one city, 2010 and 2023. Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
-          'Write a clear overview of the chart in approximately two sentences. Identify the most important overall features, include accurate comparisons, highlight the most significant changes, avoid listing every figure, and avoid explaining reasons that are not shown in the chart.',
-          'This is an overview-only skill exercise. Model answers are examples, not strings you must reproduce: any accurate overview that identifies the main features and expresses them clearly is acceptable.',
+          {
+            en: 'The chart: the percentage of commuters using five transport methods in one city, 2010 and 2023. Car: 52% then 38%. Bus: 24% then 21%. Bicycle: 6% then 19%. Train: 11% then 15%. Walking: 7% then 7%.',
+            bn: 'Chart: একটা শহরে পাঁচটা transport পদ্ধতির ব্যবহারকারীর percentage, ২০১০ আর ২০২৩। Car: ৫২% তারপর ৩৮%। Bus: ২৪% তারপর ২১%। Bicycle: ৬% তারপর ১৯%। Train: ১১% তারপর ১৫%। Walking: ৭% তারপর ৭%।',
+          },
+          {
+            en: 'Write a clear overview of the chart in approximately two sentences. Identify the most important overall features, include accurate comparisons, highlight the most significant changes, avoid listing every figure, and avoid explaining reasons that are not shown in the chart.',
+            bn: 'প্রায় দুই বাক্যে chart-টার একটা স্পষ্ট overview লেখো। সবচেয়ে গুরুত্বপূর্ণ overall feature-গুলো চিহ্নিত করো, সঠিক comparison রাখো, সবচেয়ে উল্লেখযোগ্য পরিবর্তনগুলো তুলে ধরো, প্রতিটা figure তালিকা করা এড়াও, আর chart-এ দেখানো হয়নি এমন কারণ ব্যাখ্যা করা এড়াও।',
+          },
+          {
+            en: 'This is an overview-only skill exercise. Model answers are examples, not strings you must reproduce: any accurate overview that identifies the main features and expresses them clearly is acceptable.',
+            bn: 'এটা একটা overview-only skill exercise। Model answer গুলো উদাহরণ, হুবহু যা লিখতে হবে তা না: যেকোনো সঠিক overview যা মূল feature-গুলো চিহ্নিত করে আর স্পষ্টভাবে প্রকাশ করে, সেটাই গ্রহণযোগ্য।',
+          },
         ],
       },
     },
   ],
   finalPrompt: {
-    title: 'Write Your Own Overview',
-    instructions:
-      'Write a clear overview of the commute chart in approximately two sentences. Your overview should identify the most important overall features, include accurate comparisons, highlight the most significant changes, avoid listing every figure, and avoid explaining reasons that are not shown in the chart. You do not need to write an introduction or body paragraphs. This is an overview-only skill exercise.',
+    title: { en: 'Write Your Own Overview', bn: 'তোমার নিজের Overview লেখো' },
+    instructions: {
+      en: 'Write a clear overview of the commute chart in approximately two sentences. Your overview should identify the most important overall features, include accurate comparisons, highlight the most significant changes, avoid listing every figure, and avoid explaining reasons that are not shown in the chart. You do not need to write an introduction or body paragraphs. This is an overview-only skill exercise.',
+      bn: 'প্রায় দুই বাক্যে commute chart-এর একটা স্পষ্ট overview লেখো। তোমার overview-তে সবচেয়ে গুরুত্বপূর্ণ overall feature চিহ্নিত থাকা উচিত, সঠিক comparison থাকা উচিত, সবচেয়ে উল্লেখযোগ্য পরিবর্তনগুলো তুলে ধরা উচিত, প্রতিটা figure তালিকা করা এড়ানো উচিত, আর chart-এ দেখানো হয়নি এমন কারণ ব্যাখ্যা করা এড়ানো উচিত। তোমার Introduction বা body paragraph লেখার দরকার নেই। এটা একটা overview-only skill exercise।',
+    },
     minWords: 25,
     chartId: 'commute-methods',
     skillFocus: 'Task 1 overview feature selection and synthesis',
