@@ -62,6 +62,7 @@
     "test:e2e:writing": "bash scripts/e2e/run.sh writing",
     "test:e2e:writing-studio": "bash scripts/e2e/run.sh writing-studio",
     "test:e2e:writing-studio-lesson1": "bash scripts/e2e/run.sh writing-studio-lesson1",
+    "test:e2e:writing-studio-task1-bangla": "bash scripts/e2e/run.sh writing-studio-task1-bangla",
     "test:e2e:writing-studio-lesson2": "bash scripts/e2e/run.sh writing-studio-lesson2",
     "test:e2e:writing-studio-lesson3": "bash scripts/e2e/run.sh writing-studio-lesson3",
     "test:e2e:writing-studio-lesson4": "bash scripts/e2e/run.sh writing-studio-lesson4",
