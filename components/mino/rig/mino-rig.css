@@ -275,6 +275,8 @@
 @keyframes rig-greet-eye-closed { 0%, 45.99%, 66.01%, 100% { opacity: 0; } 46%, 66% { opacity: 1; } }
 @keyframes rig-greet-mouth-neutral { 0%, 10%, 80%, 100% { opacity: 1; } 10.01%, 79.99% { opacity: 0; } }
 @keyframes rig-greet-mouth-small { 0%, 10%, 80%, 100% { opacity: 0; } 10.01%, 79.99% { opacity: 1; } }
+/* the salute's sparkle is fully faded out before the greeting ends, so nothing pops off when idle takes over */
+@keyframes rig-greet-sparkle { 0%, 12% { opacity: 0; transform: scale(0.2) rotate(0); } 34% { opacity: 1; transform: scale(1.1) rotate(15deg); } 62% { opacity: 1; transform: scale(0.95) rotate(28deg); } 84%, 100% { opacity: 0; transform: scale(0.3) rotate(45deg); } }
 @keyframes rig-sparkle-pop { 0%, 24% { opacity: 0; transform: scale(0.2) rotate(0); } 40% { opacity: 1; transform: scale(1.1) rotate(15deg); } 70% { opacity: 1; transform: scale(0.9) rotate(30deg); } 90%, 100% { opacity: 0; transform: scale(0.3) rotate(50deg); } }
 .mino-rig[data-state='greeting'] .mino-rig__arm-l { animation: rig-greet-arm-l 500ms ease-in-out both; }
 .mino-rig[data-state='greeting'] .mino-rig__pencil { animation: rig-greet-pencil 500ms ease-in-out both; }
@@ -285,7 +287,7 @@
 .mino-rig[data-state='greeting'] .mino-rig__eye-closed { animation: rig-greet-eye-closed 500ms step-end both; }
 .mino-rig[data-state='greeting'] .mino-rig__mouth-neutral { animation: rig-greet-mouth-neutral 500ms step-end both; }
 .mino-rig[data-state='greeting'] .mino-rig__mouth-small { animation: rig-greet-mouth-small 500ms step-end both; }
-.mino-rig[data-state='greeting'] .mino-rig__sparkle-a { animation: rig-sparkle-pop 500ms ease-out 40ms both; }
+.mino-rig[data-state='greeting'] .mino-rig__sparkle-a { animation: rig-greet-sparkle 500ms ease-out both; }
 
 /* ========================== SPEAKING (held): 3-shape mouth cycle + subtle head/body movement ========================== */
 @keyframes rig-talk-neutral { 0%, 9.99%, 52%, 57.99%, 92%, 100% { opacity: 1; } 10%, 51.99%, 58%, 91.99% { opacity: 0; } }
