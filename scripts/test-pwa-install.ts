@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import {
   afterChoice,
   afterDismiss,
@@ -123,6 +123,10 @@ test('manifest: the installed app is called "Mino" (name + short_name); install 
   assert.equal(m.theme_color, '#1e2a4a');
   const icons = (m.icons ?? []).map((i) => `${i.src} ${i.sizes}`);
   assert.ok(icons.includes('/icon-192.png 192x192') && icons.includes('/icon-512.png 512x512'), icons.join(', '));
+  assert.ok(icons.includes('/icon-maskable-512.png 512x512') && icons.includes('/icon-48.png 48x48') && icons.includes('/apple-icon.png 180x180'), icons.join(', '));
+  assert.ok((m.icons ?? []).some((i) => i.src === '/icon-maskable-512.png' && i.purpose === 'maskable'), 'a maskable icon is declared');
+  assert.ok(!(m.icons ?? []).some((i) => i.src === '/icon.svg'), 'the old SVG mark is no longer the app icon');
+  for (const f of ['icon-48.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-icon.png', 'icon-light-32x32.png', 'icon-dark-32x32.png']) assert.ok(existsSync(join('public', f)), `public/${f} exists`);
   assert.ok(!/vocab ?brain/i.test(JSON.stringify(m)));
 });
 

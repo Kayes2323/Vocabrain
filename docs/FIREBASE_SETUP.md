@@ -57,7 +57,7 @@ or paste the file into **Firestore → Rules** and publish.
 
 ```bash
 pnpm emulators          # Auth + Firestore emulators on 9099 / 8080
-# .env.local: NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-vocabbrain, any API key/auth domain,
+# .env.local: NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-mino, any API key/auth domain,
 #             NEXT_PUBLIC_FIREBASE_USE_EMULATOR=true
 pnpm test:rules         # 16 security-rule checks (cross-user access, self-upgrade, validation)
 ```

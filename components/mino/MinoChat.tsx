@@ -11,6 +11,7 @@ import { useSpeechRecognition } from '@/components/practice/useSpeechRecognition
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { MinoMark } from '@/components/shell/MinoMark';
+import { MinoCoachMascot } from './MinoCoachMascot';
 import { askMino } from '@/lib/ai/client';
 import { getChallenge } from '@/lib/foundation';
 import { getCountry } from '@/lib/content/countries';
@@ -100,7 +101,10 @@ function Thinking({ slow }: { slow: boolean }) {
   const { t } = useLocale();
   return (
     <div className="flex items-center gap-3 motion-safe:animate-in motion-safe:fade-in" role="status">
-      <MinoMark size="sm" thinking />
+      {/* Mino writing in its notebook while the answer is on its way (the rig's writing state), in the shared violet aura. */}
+      <span className="mino-aura mino-aura--pulse -my-2 shrink-0">
+        <MinoCoachMascot pose="writing" size="sm" />
+      </span>
       {slow ? (
         <span className="text-sm text-muted-foreground">{t('mino.thinkingLonger')}</span>
       ) : (
@@ -360,7 +364,9 @@ export function MinoChat({ context, actions, greeting }: { context: MinoContext;
           {empty && (
             <>
               <div className="flex flex-col items-center gap-2 pt-4 text-center motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-500">
-                <MinoMark size="xl" alive />
+                <span className="mino-aura mino-aura--pulse">
+                  <MinoCoachMascot pose="welcome" size="lg" />
+                </span>
                 <p className="mt-1 text-2xl font-semibold tracking-tight">{MINO.name}</p>
                 <p className="text-[15px] text-muted-foreground">{t('mino.role')}</p>
               </div>

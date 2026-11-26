@@ -58,7 +58,8 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: 'Mino Premium',
               description: `Premium access to all IELTS vocabulary lessons and features (${plan})`,
-              images: ['https://vocabrain.com/logo.png'], // Replace with actual logo
+              // The approved Mino logo, served from this app (omitted when the public app URL is not configured).
+              ...(process.env.NEXT_PUBLIC_APP_URL ? { images: [`${process.env.NEXT_PUBLIC_APP_URL}/icon-512.png`] } : {}),
             },
             unit_amount: priceInfo.amount,
             recurring: {

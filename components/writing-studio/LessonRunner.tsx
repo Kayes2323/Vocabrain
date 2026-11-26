@@ -199,7 +199,10 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   if (phase === 'assessing') {
     return (
       <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-16 text-center">
-        <MinoCoachMascot pose="thinking" size="lg" />
+        {/* Mino writing in its notebook while it reads the answer (shared rig 'writing' state) in the violet aura */}
+        <span className="mino-aura mino-aura--pulse">
+          <MinoCoachMascot pose="writing" size="lg" />
+        </span>
         <p className="font-medium">Mino is reading your answer against the IELTS criteria…</p>
         <p className="text-sm text-muted-foreground">This usually takes a few seconds.</p>
       </div>
@@ -213,6 +216,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
           area={lesson.task}
           lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Feedback"
+          event={feedback.mistakes.length === 0 ? 'success' : 'struggle'}
           message={
             feedback.mistakes.length === 0
               ? "This is in good shape. Read the notes below, then we'll move on."

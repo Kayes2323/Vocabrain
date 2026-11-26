@@ -12,7 +12,7 @@ export const MINO_COACH_AREAS = ['task1', 'task2', 'my-brain'] as const;
 export type MinoCoachArea = (typeof MINO_COACH_AREAS)[number];
 
 /** Visual poses the mascot can hold. The identity (body/mask/props) never changes between them. */
-export const MINO_COACH_POSES = ['idle', 'enter', 'welcome', 'speaking', 'explaining', 'thinking', 'success', 'encouraging'] as const;
+export const MINO_COACH_POSES = ['idle', 'enter', 'welcome', 'speaking', 'explaining', 'thinking', 'writing', 'success', 'encouraging'] as const;
 export type MinoCoachPose = (typeof MINO_COACH_POSES)[number];
 
 /**
@@ -20,7 +20,7 @@ export type MinoCoachPose = (typeof MINO_COACH_POSES)[number];
  * are kept distinct from them: a screen says *what happened*, not *how to
  * look* — so the same event vocabulary works everywhere coaches appear.
  */
-export const MINO_COACH_EVENTS = ['idle', 'enter', 'speaking', 'explaining', 'thinking', 'success', 'struggle'] as const;
+export const MINO_COACH_EVENTS = ['idle', 'enter', 'speaking', 'explaining', 'thinking', 'writing', 'success', 'struggle'] as const;
 export type MinoCoachEvent = (typeof MINO_COACH_EVENTS)[number];
 
 /** The pose a reported event implies. One small, total mapping — easy to audit, easy to test. */
@@ -34,6 +34,8 @@ export function poseForEvent(event: MinoCoachEvent): MinoCoachPose {
       return 'explaining';
     case 'thinking':
       return 'thinking';
+    case 'writing':
+      return 'writing';
     case 'success':
       return 'success';
     case 'struggle':

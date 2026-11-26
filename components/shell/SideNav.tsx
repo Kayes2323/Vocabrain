@@ -31,7 +31,13 @@ export function SideNav() {
                     active ? cn(tint, 'font-semibold') : 'text-foreground/70 hover:bg-muted hover:text-foreground',
                   )}
                 >
-                  {featured ? <MinoMark size="sm" alive /> : <Icon className="size-5" aria-hidden />}
+                  {featured ? (
+                    <span data-nav-mino={active ? 'selected' : undefined}>
+                      <MinoMark size="sm" alive />
+                    </span>
+                  ) : (
+                    <Icon className="size-5" aria-hidden />
+                  )}
                   {t(labelKey)}
                   {featured && (
                     <span className="ml-auto rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-semibold text-brand">

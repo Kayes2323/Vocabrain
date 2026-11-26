@@ -45,7 +45,9 @@ export function MinoCoachWelcome({ area, onDismiss }: { area: MinoCoachArea; onD
 
   return (
     <Panel variant="brand" className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-6 sm:text-left">
-      <MinoCoachMascot key={replayKey} pose="welcome" size="xl" className="shrink-0" />
+      <span className="mino-aura mino-aura--pulse shrink-0">
+        <MinoCoachMascot key={replayKey} pose="welcome" size="xl" className="shrink-0" />
+      </span>
       <div className="min-w-0 flex-1 space-y-3">
         <p className="text-xs font-semibold tracking-wide text-brand uppercase">{role}</p>
         <p className="text-[15px] leading-relaxed text-foreground/90 text-pretty">{welcome}</p>

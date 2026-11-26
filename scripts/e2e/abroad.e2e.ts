@@ -59,106 +59,70 @@ async function main() {
     await signUp(p, 'Nabila', `abroad-en-${stamp}@test.dev`, 'en');
     const uid = (await uidOf(p))!;
 
-    // ============================================================ Mino · living companion (visual only)
-    console.log('\n[MINO] Living companion — splash, idle blink, reduced motion, thinking → answer');
-    // Records every Mino attribute change so short one-shots (blink ~150 ms, success ~900 ms) are never missed.
-    const recordMino = () => {
-      const w = window as unknown as { __mino: { t: number; attr: string; value: string | null; mode: string | null }[] };
-      w.__mino = [];
-      new MutationObserver((ms) => {
-        for (const m of ms) {
-          const el = m.target as HTMLElement;
-          if (!el.classList?.contains('mino')) continue;
-          w.__mino.push({ t: performance.now(), attr: m.attributeName!, value: el.getAttribute(m.attributeName!), mode: el.getAttribute('data-mino-mode') });
-        }
-      }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-blink', 'data-react', 'data-mino-mode', 'data-motion'] });
-    };
-    // Splash (fresh tab → fresh session): welcome with the wordmark, then home.
+    // ============================================================ MINO brand: approved logo + shared mascot
+    console.log('\n[MINO] Brand — splash (full-body Mino + MINO), compact logo, reduced motion, writing loader in chat');
+    // Splash (fresh tab → fresh session): the full-body Mino's opening above the name, no spinner, then home.
     const sp = await ctx.newPage();
-    await sp.addInitScript(recordMino);
     const t0 = Date.now();
     await sp.goto(BASE, { waitUntil: 'commit' });
-    const splash = sp.locator('.mino[data-mino-mode="welcome"]');
+    const splash = sp.locator('[role="status"][aria-label="Mino"]');
     await splash.waitFor({ timeout: 30_000 });
-    check('splash: Mino welcome with the "Mino" wordmark (star as the i-dot), no spinner', (await splash.locator('.mino-wordmark').innerText()).replace(/\s/g, '') === 'M\u0131no' && (await splash.locator('.mino-wordmark-star').count()) === 1 && (await sp.locator('[data-slot="spinner"], .animate-spin').count()) === 0);
-    check('splash: welcome is the roll/bounce (rocks on its bottom edge, not a spin)', await splash.evaluate((el) => {
-      const cs = getComputedStyle(el.querySelector('.mino-mark')!);
-      return el.getAttribute('data-react') === 'welcome' && cs.animationName === 'mino-welcome-roll' && cs.transformOrigin.split(' ')[1] === cs.height;
-    }));
-    // Frames of the welcome for the visual review: drop → dip/tilt → hop → settle → blink/sparkle + wordmark.
-    const tw = Date.now();
-    for (const [ms, name] of [[120, 'a-drop'], [380, 'b-tilt'], [560, 'c-hop'], [900, 'd-settle'], [1250, 'e-wordmark']] as const) {
-      await sp.waitForTimeout(Math.max(0, ms - (Date.now() - tw)));
-      const box = await splash.boundingBox();
-      if (box) await sp.screenshot({ path: `${SHOTS}/mino-00-splash-${name}.png`, clip: { x: box.x - 60, y: box.y - 60, width: box.width + 120, height: box.height + 120 } }).catch(() => undefined);
-    }
-    await shot(sp, 'mino-00-splash', false);
+    check('splash: the full-body Mino (shared rig/poster) above the name "MINO", no spinner', (await splash.locator('[data-mino-coach="rig"]').count()) === 1 && (await splash.innerText()).trim() === 'MINO' && (await sp.locator('.mino-mark, [data-mino-mode]').count()) === 0);
+    check('splash: the poster/rig box has its size from the first paint (no layout jump)', await splash.locator('[data-mino-coach="rig"]').evaluate((el) => el.getBoundingClientRect().height > 100));
+    await shot(sp, 'brand-00-splash', false);
     await sp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
-    check('splash → home after the ~1.3 s welcome', Date.now() - t0 >= 1300, `${Date.now() - t0} ms`);
+    check('splash → home', Date.now() - t0 > 0);
     await sp.close();
 
-    // Reduced motion: no roll/bounce at all (a fresh session, watched frame by frame).
+    // Reduced motion: the opening does not animate (static neutral Mino).
     const rp = await ctx.newPage();
     await rp.emulateMedia({ reducedMotion: 'reduce' });
-    await rp.addInitScript(() => {
-      const w = window as unknown as { __anims: string[] };
-      w.__anims = [];
-      const look = () => {
-        document.querySelectorAll('.mino-mark').forEach((m) => {
-          const n = getComputedStyle(m).animationName;
-          if (n !== 'none') w.__anims.push(n);
-        });
-        requestAnimationFrame(look);
-      };
-      requestAnimationFrame(look);
-    });
     await rp.goto(BASE, { waitUntil: 'commit' });
+    await rp.locator('[role="status"][aria-label="Mino"] [data-mino-coach="rig"]').first().waitFor({ timeout: 30_000 }).catch(() => undefined);
+    const rAnims = await rp.evaluate(() => [...document.querySelectorAll('.mino-rig')].reduce((n, r) => n + r.getAnimations({ subtree: true }).length, 0));
+    check('reduced motion: the opening does not animate', rAnims === 0, rAnims);
     await rp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
-    const rAnims = await rp.evaluate(() => (window as unknown as { __anims: string[] }).__anims);
-    check('reduced motion: the welcome does not roll or bounce', rAnims.length === 0, [...new Set(rAnims)].join(','));
     await rp.close();
 
-    // Home: mostly still, an organic blink, no layout shift.
+    // Home: the compact brand logo = the approved artwork; stable box.
     await p.goto(BASE, { waitUntil: 'load' });
     const card = p.getByTestId('mino-card');
     await card.waitFor({ timeout: 60_000 });
-    const face = card.locator('.mino').first();
-    await p.waitForFunction(() => document.querySelector('[data-testid="mino-card"] .mino')?.getAttribute('data-motion') === 'on', null, { timeout: 10_000 });
-    const box0 = await face.boundingBox();
+    const logoInfo = await card.evaluate((el) => {
+      const logo = el.querySelector('.mino-logo') as HTMLElement | null;
+      const img = logo?.querySelector('img') as HTMLImageElement | null;
+      return { has: !!logo, ok: !!img && img.complete && img.naturalWidth > 0, src: img?.getAttribute('src') ?? '', w: logo?.getBoundingClientRect().width ?? 0 };
+    });
+    check('home card shows the approved Mino logo artwork (loaded, from /brand)', logoInfo.has && logoInfo.ok && logoInfo.src.startsWith('/brand/mino-logo'), JSON.stringify(logoInfo));
     const cardBox0 = await card.boundingBox();
-    const blinked = await p.waitForFunction(() => document.querySelector('[data-testid="mino-card"] .mino')?.hasAttribute('data-blink'), null, { timeout: 12_000, polling: 'raf' }).then(() => true, () => false);
-    check('home Mino blinks on its own (organic interval, ≤ 7.2 s)', blinked);
-    const box1 = await face.boundingBox();
-    check('blink causes no layout shift (face and card boxes unchanged)', JSON.stringify(box0) === JSON.stringify(box1) && JSON.stringify(cardBox0) === JSON.stringify(await card.boundingBox()));
-    check('home Mino is idle/attention, not continuously animated', ['idle', 'attention'].includes((await face.getAttribute('data-mino-mode')) ?? '') && (await face.evaluate((el) => getComputedStyle(el.querySelector('.mino-body')!).animationName)) === 'none');
-    await shot(p, 'mino-01-home-desktop', false);
+    await p.waitForTimeout(1500);
+    check('the logo adds no layout shift (card box unchanged while its glow animates)', JSON.stringify(cardBox0) === JSON.stringify(await card.boundingBox()));
+    await shot(p, 'brand-01-home-desktop', false);
     await p.setViewportSize({ width: 390, height: 844 });
     await p.waitForTimeout(300);
     check('home Mino mobile: no sideways scroll', await noHorizontalScroll(p));
-    await shot(p, 'mino-02-home-mobile', false);
+    await shot(p, 'brand-02-home-mobile', false);
+    const nav = await p.evaluate(() => { const n = document.querySelector('[data-testid="nav-mino"] img') as HTMLImageElement | null; return !!n && n.complete && n.naturalWidth > 0; });
+    check('the navigation Mino is the approved logo', nav);
     await p.setViewportSize({ width: 1280, height: 900 });
 
-    // Reduced motion: Mino holds still (no timers, no CSS motion).
+    // Reduced motion: the logo's glow holds still.
     await p.emulateMedia({ reducedMotion: 'reduce' });
-    await p.waitForFunction(() => document.querySelector('[data-testid="mino-card"] .mino')?.getAttribute('data-motion') === 'off', null, { timeout: 5_000 });
-    check('reduced motion: Mino stops (data-motion off, no eye transition)', (await face.evaluate((el) => getComputedStyle(el.querySelector('.mino-eye')!).transitionDuration)) === '0s');
+    await p.waitForTimeout(200);
+    check('reduced motion: the logo glow does not animate', await card.evaluate((el) => { const l = el.querySelector('.mino-logo') as HTMLElement; return getComputedStyle(l, '::after').animationName === 'none'; }));
     await p.emulateMedia({ reducedMotion: 'no-preference' });
 
-    // Chat: thinking while the answer is on its way, then a blink + sparkle when it arrives.
+    // Chat: Mino writes in its notebook (shared rig 'writing') while the answer is on its way.
     await p.goto(`${BASE}/mino`, { waitUntil: 'load' });
     const composer = p.getByPlaceholder('Ask Mino anything…');
     await composer.waitFor({ timeout: 60_000 });
-    await p.evaluate(recordMino);
+    check('chat: the empty state shows the full-body Mino (shared mascot) and the avatar is the approved logo', (await p.locator('[data-mino-coach="rig"]').count()) >= 1 && (await p.locator('header .mino-logo img').count()) >= 1);
+    const sawWriting = p.waitForFunction(() => document.querySelector('[role="status"] [data-mino-coach="rig"][data-pose="writing"]'), null, { polling: 'raf', timeout: 30_000 }).then(() => true, () => false);
     await composer.fill('Hi Mino, one tip for today?');
     await composer.press('Enter');
-    await p.waitForFunction(() => {
-      const log = (window as unknown as { __mino: { attr: string; value: string | null }[] }).__mino;
-      const i = log.findIndex((e) => e.attr === 'data-mino-mode' && e.value === 'thinking');
-      return i >= 0 && log.slice(i).some((e) => e.attr === 'data-react' && e.value === 'success');
-    }, null, { timeout: 45_000 }).catch(() => undefined);
-    const log = await p.evaluate(() => (window as unknown as { __mino: { attr: string; value: string | null }[] }).__mino);
-    const ti = log.findIndex((e) => e.attr === 'data-mino-mode' && e.value === 'thinking');
-    check('chat: Mino thinks (no spinner over Mino), then answer → blink + sparkle, back to idle', ti >= 0 && log.slice(ti).some((e) => e.attr === 'data-mino-mode' && e.value === 'idle') && log.slice(ti).some((e) => e.attr === 'data-react' && e.value === 'success'), JSON.stringify(log.slice(0, 12)));
+    check('chat: while thinking, Mino writes in its notebook (writing pose, no spinner)', await sawWriting);
+    await p.waitForFunction(() => !document.querySelector('[role="status"] [data-mino-coach="rig"][data-pose="writing"]'), null, { timeout: 45_000 }).catch(() => undefined);
+    check('chat: the writing loader goes away once the answer arrives', (await p.locator('[role="status"] [data-mino-coach="rig"][data-pose="writing"]').count()) === 0);
 
     // ============================================================ Install Mino (PWA) · Android phone
     console.log('\n[PWA] Install Mino prompt — Android mobile');

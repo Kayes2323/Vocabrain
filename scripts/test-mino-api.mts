@@ -3,7 +3,7 @@
  * Run: pnpm emulators:exec "npx tsx scripts/test-mino-api.mts" (see package.json).
  */
 process.env.NEXT_PUBLIC_FIREBASE_USE_EMULATOR = 'true';
-process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||= 'demo-vocabbrain';
+process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ||= 'demo-mino';
 process.env.GEMINI_API_KEY = 'test-key-not-real';
 
 const PROJECT = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;

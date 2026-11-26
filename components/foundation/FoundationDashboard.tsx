@@ -6,6 +6,7 @@ import {
   SpellCheck, Type, type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, ScreenSkeleton, Section, StatusChip, useGuideReminder, type Tint } from '@/components/ds';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -217,13 +218,18 @@ function FoundationHome({ profile, fp }: { profile: UserProfile; fp: FoundationP
         {/* Reviews, quizzes and the check still get one clear reminder; lessons live on the cards. */}
         {(action.kind === 'review' || action.kind === 'quiz' || action.kind === 'check') && (
           <Panel variant="brand" className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" data-testid="foundation-next">
-            <div className="min-w-0 space-y-1">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="mino-aura mino-aura--pulse shrink-0">
+                <MinoCoachMascot pose="speaking" size="sm" />
+              </span>
+              <div className="min-w-0 space-y-1">
               <p className="text-xs font-semibold tracking-wider text-brand uppercase">{t('foundation.nextLabel')}</p>
               <p className="font-semibold tracking-tight text-balance">{step.title}</p>
               <p className="flex gap-1.5 text-sm text-muted-foreground">
                 <Sparkles className="mt-0.5 size-3.5 shrink-0 text-brand" aria-hidden />
                 <span className="line-clamp-2">{step.mino}</span>
               </p>
+              </div>
             </div>
             <Button asChild className="h-11 shrink-0" onClick={() => !fp.introSeenAt && update((p) => ({ ...p, introSeenAt: new Date().toISOString() }))}>
               <Link href={step.href}>

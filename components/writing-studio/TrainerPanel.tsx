@@ -2,7 +2,7 @@ import { Mic } from 'lucide-react';
 import { useMinoCoach } from '@/components/mino/MinoCoach';
 import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { Panel } from '@/components/ds';
-import type { MinoCoachArea } from '@/lib/mino/coach';
+import type { MinoCoachArea, MinoCoachEvent } from '@/lib/mino/coach';
 import { cn } from '@/lib/utils';
 
 /**
@@ -18,6 +18,7 @@ export function TrainerPanel({
   message,
   hint,
   onVoiceTap,
+  event = 'speaking',
   className,
 }: {
   area: MinoCoachArea;
@@ -26,9 +27,11 @@ export function TrainerPanel({
   message: string;
   hint?: string;
   onVoiceTap?: () => void;
+  /** What just happened, so Mino reacts (success / struggle → encouraging); default is the calm 'speaking' pose. */
+  event?: MinoCoachEvent;
   className?: string;
 }) {
-  const { pose, role, onPoseSettle } = useMinoCoach(area, 'speaking');
+  const { pose, role, onPoseSettle } = useMinoCoach(area, event);
   return (
     <Panel variant="brand" className={cn('space-y-3', className)}>
       <div className="flex items-start justify-between gap-3">

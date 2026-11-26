@@ -45,7 +45,7 @@ function poseSettleMs(pose: MinoCoachPose): number {
  * The public API is the original one (pose / size / onPoseSettle / className); `onController` additionally hands out
  * the controller for review tooling. Poses map onto the existing 10-state machine:
  *   welcome -> the opening "Soft Roll-In & Pencil Salute": entrance -> landing -> greeting -> idle (~1.4 s)
- *   enter -> entrance + landing · speaking · explaining · thinking · success · encouraging · idle -> the same states.
+ *   enter -> entrance + landing · speaking · explaining · thinking · writing · success · encouraging · idle -> the same states.
  * One-shot poses settle back to idle (onPoseSettle fires); held poses wait for the caller. The opening plays when the
  * mascot is mounted with that pose, never on a re-render. Motion pauses off-screen, on a hidden tab, under
  * prefers-reduced-motion or data-saver — the character still renders, it just stops moving.
@@ -95,6 +95,7 @@ export function MinoCoachMascot({
       case 'speaking':
       case 'explaining':
       case 'thinking':
+      case 'writing':
       case 'success':
       case 'encouraging':
         c.play(p);

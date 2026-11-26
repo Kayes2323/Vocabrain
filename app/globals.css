@@ -579,3 +579,58 @@
 
 /* Mino review page: progress bar for the ~1.4 s opening (review route only) */
 @keyframes review-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ===================== Mino violet identity (shared glow) =====================
+ * One soft violet aura, reused by the splash, the thinking/writing loader, welcome panels, the selected Mino
+ * navigation item and brief success reactions. Slow and quiet: no neon, text stays on its own readable background.
+ */
+:root { --mino-glow: 139 92 246; }
+.mino-aura { position: relative; isolation: isolate; }
+.mino-aura::before {
+  content: '';
+  position: absolute;
+  inset: -18% -12%;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--mino-glow) / 0.34), rgb(var(--mino-glow) / 0.14) 58%, transparent 78%);
+  opacity: 0.9;
+}
+.dark .mino-aura::before { background: radial-gradient(closest-side, rgb(var(--mino-glow) / 0.42), rgb(var(--mino-glow) / 0.18) 58%, transparent 78%); }
+@media (prefers-reduced-motion: no-preference) {
+  .mino-aura--pulse::before { animation: mino-aura-pulse 5s ease-in-out infinite; }
+  .mino-aura--in::before { animation: mino-aura-in 900ms ease-out both; }
+  .mino-logo[data-mode='idle']::after,
+  .mino-logo[data-mode='thinking']::after { animation: mino-aura-pulse 4.2s ease-in-out infinite; }
+  .mino-logo[data-mode='thinking']::after { animation-duration: 2.6s; }
+  .mino-logo[data-mode='attention']::after { animation: mino-logo-ring 2.4s ease-out infinite; }
+  .mino-logo[data-mode='success']::after { animation: mino-logo-flash 900ms ease-out 1 both; }
+}
+.mino-logo::after {
+  content: '';
+  position: absolute;
+  inset: -22%;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--mino-glow) / 0.38), transparent 72%);
+  opacity: 0;
+}
+.mino-logo[data-mode='idle']::after { opacity: 0.35; }
+.mino-logo[data-mode='thinking']::after { opacity: 0.55; }
+.mino-logo { isolation: isolate; border-radius: 22%; }
+@keyframes mino-aura-pulse { 0%, 100% { opacity: 0.55; transform: scale(0.97); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes mino-aura-in { from { opacity: 0; transform: scale(0.85); } to { opacity: 0.9; transform: scale(1); } }
+@keyframes mino-logo-ring { 0% { opacity: 0.7; transform: scale(0.85); } 100% { opacity: 0; transform: scale(1.35); } }
+@keyframes mino-logo-flash { 0% { opacity: 0; transform: scale(0.8); } 30% { opacity: 0.9; transform: scale(1.1); } 100% { opacity: 0; transform: scale(1.3); } }
+/* the selected Mino item in the navigation carries the same violet aura */
+[data-nav-mino='selected'] { position: relative; }
+[data-nav-mino='selected']::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: 999px;
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--mino-glow) / 0.32), transparent 75%);
+}
