@@ -74,7 +74,7 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   const charts = await p.getByTestId('ws-chart-card').evaluateAll((els) => els.map((e) => ({ id: e.getAttribute('data-chart-id'), state: e.getAttribute('data-state'), href: e.getAttribute('href'), text: (e as HTMLElement).innerText })));
   check(`${tag}: hub: exactly the seven chart types, in registry order`, JSON.stringify(charts.map((c) => c.id)) === JSON.stringify(VISUAL_IDS), JSON.stringify(charts.map((c) => c.id)));
   check(`${tag}: hub: each chart type is its own screen (distinct route under the hub)`, charts.every((c) => c.href === `${WS}/task1/learn/visual-information/${c.id}`) && new Set(charts.map((c) => c.href)).size === 7);
-  check(`${tag}: hub: nothing is falsely marked built — all seven are honest previews`, charts.every((c) => c.state === 'preview' && /Preview/.test(c.text)), JSON.stringify(charts.map((c) => c.state)));
+  check(`${tag}: hub: only Line Graphs is marked a course; the other six are honest previews`, charts.every((c) => (c.id === 'line-graphs' ? c.state === 'course' : c.state === 'preview' && /Preview/.test(c.text))), JSON.stringify(charts.map((c) => c.state)));
   check(`${tag}: hub: the core lecture is not duplicated among the chart cards`, !charts.some((c) => /visual-information\?from|lesson\/visual-information/.test(c.href ?? '')));
   check(`${tag}: hub: tap targets and no sideways scroll`, (await tapOk(p, '[data-testid="ws-chart-card"]')) && (await noHorizontalScroll(p)));
   await shot(p, `ws-nav-visual-${lang}`, false);
@@ -89,14 +89,17 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   await p.waitForURL(`**${WS}/task1/learn/visual-information`, { timeout: 30_000 });
   check(`${tag}: Back from the core lecture returns to the Visual Information hub`, path(p) === `${WS}/task1/learn/visual-information`);
 
-  // Line Graphs: its own area, never the generic overview lesson or the commute bar-chart board
+  // Line Graphs: its own course (Line Graph Mastery), never the generic overview lesson or the commute bar-chart board
   await p.locator('[data-chart-id="line-graphs"]').click();
   await p.waitForURL(`**${WS}/task1/learn/visual-information/line-graphs`, { timeout: 30_000 });
   await p.getByTestId('ws-chart-type').waitFor({ timeout: 60_000 });
   const lgLinks = await hrefs(p, 'main a');
-  check(`${tag}: Line Graphs opens its own area (a labelled preview)`, (await p.getByTestId('ws-chart-type').getAttribute('data-state')) === 'preview' && (await p.getByTestId('ws-chart-preview').count()) === 1 && /Line Graphs/.test(await p.locator('main h1').innerText()));
-  check(`${tag}: Line Graphs does NOT route to the generic overview lesson or the unrelated bar-chart board`, !lgLinks.some((h) => /overview-writing|chart-analysis-board/.test(h ?? '')) && (await p.locator('canvas, svg.recharts-surface').count()) === 0, JSON.stringify(lgLinks));
-  check(`${tag}: the only next step offered is the shared core lecture, clearly labelled`, JSON.stringify(lgLinks.filter((h) => h?.startsWith(`${WS}/task1/lesson`))) === JSON.stringify([`${WS}/task1/lesson/visual-information?from=visual`]));
+  check(`${tag}: Line Graphs opens its own area with its dedicated course`, (await p.getByTestId('ws-chart-type').getAttribute('data-state')) === 'course' && (await p.getByTestId('ws-chart-course-link').getAttribute('href')) === `${WS}/task1/lesson/line-graph-mastery?from=visual` && /Line Graphs/.test(await p.locator('main h1').innerText()));
+  check(`${tag}: Line Graphs does NOT route to the generic overview lesson or the unrelated bar-chart board`, !lgLinks.some((h) => /overview-writing|chart-analysis-board/.test(h ?? '')), JSON.stringify(lgLinks));
+  await p.getByTestId('ws-chart-course-link').click();
+  await p.waitForURL(`**${WS}/task1/lesson/line-graph-mastery*`, { timeout: 30_000 });
+  check(`${tag}: the course lesson's Back returns to the Line Graphs area`, (await p.getByTestId('ws-back').getAttribute('href')) === `${WS}/task1/learn/visual-information/line-graphs`);
+  await p.goto(BASE + `${WS}/task1/learn/visual-information/line-graphs`, { waitUntil: 'load' });
   for (const id of VISUAL_IDS.slice(1)) {
     await p.goto(BASE + `${WS}/task1/learn/visual-information/${id}`, { waitUntil: 'load' });
     await p.getByTestId('ws-chart-type').waitFor({ timeout: 60_000 });

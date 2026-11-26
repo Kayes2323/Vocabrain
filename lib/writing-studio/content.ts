@@ -83,7 +83,7 @@ export const TASK1_MODULES: ModuleSummary[] = [
 ];
 
 export const TASK1_VISUALS: VisualTrainingArea[] = [
-  { id: 'line-graphs', title: 'Line Graphs', description: 'Trends over time, rate of change, and crossing lines.', builtLessonId: 'overview-writing' },
+  { id: 'line-graphs', title: 'Line Graphs', description: 'Trends over time, rate of change, and crossing lines.', builtLessonId: 'line-graph-mastery', courseLessonId: 'line-graph-mastery' },
   { id: 'bar-charts', title: 'Bar Charts', description: 'Comparing categories at one or more points in time.' },
   { id: 'pie-charts', title: 'Pie Charts', description: 'Proportions, the largest/smallest share, and changes between two charts.' },
   { id: 'tables', title: 'Tables', description: 'Selecting what matters from a dense grid of numbers.' },

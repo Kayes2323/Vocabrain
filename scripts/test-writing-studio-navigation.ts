@@ -80,12 +80,14 @@ test('continue: nothing for a new learner; the started lesson first; otherwise t
   assert.equal(continueHref('task1', TASK1_MODULES[1]), '/ielts/writing-studio/task1/lesson/visual-information?from=visual');
 });
 
-test('every chart type is an honest preview today: no chart type borrows a generic lesson', () => {
+test('only Line Graphs is a course today; every other chart type is an honest preview', () => {
   assert.equal(TASK1_VISUALS.length, 7);
-  for (const v of TASK1_VISUALS) assert.equal(chartTypeState(v), 'preview', v.id);
-  // the legacy registry link on line-graphs (a generic overview lesson) must not make it a "course"
-  assert.equal(TASK1_VISUALS.find((v) => v.id === 'line-graphs')!.builtLessonId, 'overview-writing');
-  assert.equal(chartTypeState(TASK1_VISUALS.find((v) => v.id === 'line-graphs')!), 'preview');
+  for (const v of TASK1_VISUALS) assert.equal(chartTypeState(v), v.id === 'line-graphs' ? 'course' : 'preview', v.id);
+  const lg = TASK1_VISUALS.find((v) => v.id === 'line-graphs')!;
+  assert.equal(lg.courseLessonId, 'line-graph-mastery');
+  assert.ok(getLesson('line-graph-mastery'));
+  assert.equal(resolveLessonBack('task1', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/line-graphs');
+  assert.equal(resolveLessonBack('task2', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task2/learn');
 });
 
 test('a chart type becomes a course only through its own registered lesson id', () => {
