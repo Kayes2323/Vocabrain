@@ -9,9 +9,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Page } from 'playwright-core';
 import { BASE, check, launch, noHorizontalScroll, report, SHOTS, shot, watchErrors } from './helpers';
-import { RIG_MANIFEST, RIG_STAGE } from '../../components/mino/dev/coach-rig-manifest';
+import { RIG_MANIFEST, RIG_STAGE } from '../../components/mino/rig/coach-rig-manifest';
 import { COACH_ROLE, COACH_WELCOME } from '../../lib/mino/coach-messages';
-import { WRITING_ENTRY_MS, WRITING_PENCIL_TIP, WRITING_TIMELINE, writingPoint } from '../../components/mino/dev/coach-rig-writing.generated';
+import { WRITING_ENTRY_MS, WRITING_PENCIL_TIP, WRITING_TIMELINE, writingPoint } from '../../components/mino/rig/coach-rig-writing.generated';
 
 const STATES = ['idle', 'entrance', 'landing', 'greeting', 'speaking', 'explaining', 'writing', 'thinking', 'success', 'encouraging'] as const;
 const ONE_SHOT_MS: Record<string, number> = { entrance: 1050, landing: 420, greeting: 1100, success: 900, encouraging: 1350 };

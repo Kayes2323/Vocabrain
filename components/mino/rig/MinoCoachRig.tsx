@@ -18,6 +18,8 @@ export interface MinoCoachRigProps {
   onStateChange?: RigControllerOptions['onStateChange'];
   /** Receives the imperative controller once the artwork has decoded (for choreographies / face overrides). */
   onReady?: (controller: MinoRigController) => void;
+  /** Called (instead of onReady) if any layer image fails to decode, so a host can fall back to a static mascot. */
+  onFail?: () => void;
   /** Clip the entrance to the rig's own box (so Mino enters from outside the visible area). */
   clip?: boolean;
   className?: string;
@@ -37,16 +39,16 @@ const origin = (v: [number, number]): CSSProperties => ({ transformOrigin: p(v) 
 
 /**
  * The real Mino Coach rig: the approved Stage B artwork (19 independent layers) in a DOM hierarchy driven by
- * data-attributes + CSS keyframes (components/mino/dev/mino-rig.css) and the imperative MinoRigController.
+ * data-attributes + CSS keyframes (components/mino/rig/mino-rig.css) and the imperative MinoRigController.
  * React renders it once; animation never goes through React state.
  */
-function MinoCoachRigInner({ state = 'idle', point = 'right', onSettle, onStateChange, onReady, clip = false, className, label = 'Mino, your learning coach' }: MinoCoachRigProps) {
+function MinoCoachRigInner({ state = 'idle', point = 'right', onSettle, onStateChange, onReady, onFail, clip = false, className, label = 'Mino, your learning coach' }: MinoCoachRigProps) {
   const root = useRef<HTMLDivElement>(null);
   const ctrl = useRef<MinoRigController | null>(null);
   const wanted = useRef({ state, point });
-  const cbs = useRef({ onSettle, onReady, onStateChange });
+  const cbs = useRef({ onSettle, onReady, onStateChange, onFail });
   wanted.current = { state, point };
-  cbs.current = { onSettle, onReady, onStateChange };
+  cbs.current = { onSettle, onReady, onStateChange, onFail };
 
   useEffect(() => {
     const el = root.current;
@@ -56,8 +58,19 @@ function MinoCoachRigInner({ state = 'idle', point = 'right', onSettle, onStateC
     ctrl.current = c;
     // Show (and start the entrance) only after every layer has decoded: no pop-in, no half-built character.
     const imgs = Array.from(el.querySelectorAll('img'));
-    Promise.all(imgs.map((img) => img.decode().catch(() => undefined))).then(() => {
+    let failed = false;
+    Promise.all(
+      imgs.map((img) =>
+        img.decode().catch(() => {
+          failed = true;
+        }),
+      ),
+    ).then(() => {
       if (cancelled) return;
+      if (failed) {
+        cbs.current.onFail?.();
+        return;
+      }
       el.dataset.ready = 'true';
       c.play(wanted.current.state, { point: wanted.current.point });
       cbs.current.onReady?.(c);

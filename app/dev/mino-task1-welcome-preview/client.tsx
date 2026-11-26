@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Task1WelcomePreview } from '@/components/mino/dev/Task1WelcomePreview';
 import { RigStateControls } from '@/components/mino/dev/RigStateControls';
-import type { MinoRigController } from '@/components/mino/dev/coach-rig-controller';
-import type { CoachRigState, RigPointDirection } from '@/components/mino/dev/coach-preview-state';
+import type { MinoRigController } from '@/components/mino/rig/coach-rig-controller';
+import type { CoachRigState, RigPointDirection } from '@/components/mino/rig/coach-preview-state';
 
 export function Task1WelcomeClient() {
   const [ctrl, setCtrl] = useState<MinoRigController | null>(null);

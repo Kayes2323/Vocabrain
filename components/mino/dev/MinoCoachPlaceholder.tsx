@@ -3,10 +3,10 @@
 import { useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { motionAllowed } from '@/lib/mino/motion';
-import { rigStateHoldMs, type CoachRigState } from './coach-preview-state';
+import { rigStateHoldMs, type CoachRigState } from '../rig/coach-preview-state';
 import './mino-coach-rig.css';
 
-export type { CoachRigState } from './coach-preview-state';
+export type { CoachRigState } from '../rig/coach-preview-state';
 
 /**
  * PLACEHOLDER ANIMATION RIG — not the Mino character.

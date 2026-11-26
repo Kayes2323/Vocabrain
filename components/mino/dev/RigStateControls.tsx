@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef } from 'react';
-import { RIG_POINT_DIRECTIONS, isRigDormant, type CoachRigState, type RigPointDirection } from './coach-preview-state';
-import type { MinoRigController, RigEyes, RigMouth } from './coach-rig-controller';
+import { RIG_POINT_DIRECTIONS, isRigDormant, type CoachRigState, type RigPointDirection } from '../rig/coach-preview-state';
+import type { MinoRigController, RigEyes, RigMouth } from '../rig/coach-rig-controller';
 
 /** The states the Task 1 welcome flow uses (dormant ones are listed separately and never triggered by a flow). */
 export const ACTIVE_BUTTONS: { state: CoachRigState; label: string }[] = [

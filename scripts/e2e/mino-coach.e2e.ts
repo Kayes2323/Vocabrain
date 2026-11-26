@@ -19,7 +19,7 @@ async function main() {
 
     console.log('\n[1] Task 1 Academy: first-entry welcome');
     await p.goto(`${BASE}/ielts/writing-studio/task1`, { waitUntil: 'load' });
-    const mascot1 = p.locator('.mino-coach').first();
+    const mascot1 = p.locator('[data-mino-coach="rig"]').first();
     await mascot1.waitFor({ timeout: 30_000 });
     check('the full-body mascot renders on Task 1 Academy', await mascot1.isVisible());
     check('Task 1 shows its role label', await p.getByText('Writing Task 1 Coach', { exact: true }).isVisible());
@@ -62,7 +62,7 @@ async function main() {
     watchErrors(q, 'BN', errors);
     await signUp(q, 'Nusrat', `mino-coach-bn-${Date.now()}@test.dev`, 'bn');
     await q.goto(`${BASE}/ielts/writing-studio/task1`, { waitUntil: 'load' });
-    const mascotBn = q.locator('.mino-coach').first();
+    const mascotBn = q.locator('[data-mino-coach="rig"]').first();
     await mascotBn.waitFor({ timeout: 30_000 });
     const bnText = await q.locator('main').innerText();
     check('bn Task 1 welcome shows Bangla text', /[ঀ-৿]/.test(bnText));

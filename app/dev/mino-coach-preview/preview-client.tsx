@@ -2,11 +2,11 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { MinoCoachRig } from '@/components/mino/dev/MinoCoachRig';
+import { MinoCoachRig } from '@/components/mino/rig/MinoCoachRig';
 import { RigStateControls } from '@/components/mino/dev/RigStateControls';
-import type { MinoRigController } from '@/components/mino/dev/coach-rig-controller';
-import type { CoachRigState, RigPointDirection } from '@/components/mino/dev/coach-preview-state';
-import { RIG_MANIFEST, RIG_STAGE } from '@/components/mino/dev/coach-rig-manifest';
+import type { MinoRigController } from '@/components/mino/rig/coach-rig-controller';
+import type { CoachRigState, RigPointDirection } from '@/components/mino/rig/coach-preview-state';
+import { RIG_MANIFEST, RIG_STAGE } from '@/components/mino/rig/coach-rig-manifest';
 
 const SIZES = [
   { label: 'Desktop 420', px: 420 },

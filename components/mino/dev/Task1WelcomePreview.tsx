@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Panel, PageHeader } from '@/components/ds';
 import { coachText, COACH_ROLE, COACH_WELCOME } from '@/lib/mino/coach-messages';
-import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
-import { MinoCoachRig } from './MinoCoachRig';
-import type { MinoRigController } from './coach-rig-controller';
-import { WELCOME_SEQUENCE } from './coach-preview-state';
+import { MinoCoachMascotLegacy } from '@/components/mino/MinoCoachMascotLegacy';
+import { MinoCoachRig } from '../rig/MinoCoachRig';
+import type { MinoRigController } from '../rig/coach-rig-controller';
+import { WELCOME_SEQUENCE } from '../rig/coach-preview-state';
 
 /** How long Mino keeps "speaking" while the welcome text is on screen (no audio in this phase). */
 export const WELCOME_SPEAK_MS = 8000;
@@ -70,9 +70,9 @@ export function Task1WelcomePreview({ locale, onController }: { locale: 'en' | '
         </Panel>
       )}
       <section className="space-y-2" data-testid="task1-welcome-production-compare">
-        <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">For comparison: the current production mascot in the same slot (unchanged)</p>
+        <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">For comparison: the previous SVG mascot (kept as the fallback)</p>
         <Panel variant="brand" className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-6 sm:text-left">
-          <MinoCoachMascot pose="welcome" size="xl" className="shrink-0" />
+          <MinoCoachMascotLegacy pose="welcome" size="xl" className="shrink-0" />
           <div className="min-w-0 flex-1 space-y-3">
             <p className="text-xs font-semibold tracking-wide text-brand uppercase">{role}</p>
             <p className="text-[15px] leading-relaxed text-foreground/90 text-pretty">{welcome}</p>

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {
   COACH_RIG_STATES, evaluationSequence, isRigDormant, isRigOneShot, LESSON_START_SEQUENCE, REDUCED_MOTION_SETTLE_MS, RIG_DORMANT_STATES, RIG_ONE_SHOT_STATES,
   RIG_POINT_DIRECTIONS, rigBlinkAllowed, rigSettleTarget, rigStateHoldMs, WELCOME_SEQUENCE,
-} from '../components/mino/dev/coach-preview-state';
+} from '../components/mino/rig/coach-preview-state';
 
 let passed = 0;
 function test(name: string, fn: () => void) {
