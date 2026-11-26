@@ -68,7 +68,7 @@ async function main() {
     const splash = sp.locator('[role="status"][aria-label="Mino"]');
     await splash.waitFor({ timeout: 30_000 });
     check('splash: the full-body Mino (shared rig/poster) above the name "MINO", no spinner', (await splash.locator('[data-mino-coach="rig"]').count()) === 1 && (await splash.innerText()).trim() === 'MINO' && (await sp.locator('.mino-mark, [data-mino-mode]').count()) === 0);
-    check('splash: the mascot box is reserved from the first HTML (aspect ratio + width inline, poster present: no layout jump)', await splash.locator('[data-mino-coach="rig"]').evaluate((el) => !!(el.querySelector('.mino-rig') as HTMLElement | null)?.style.aspectRatio && /min\(100%/.test((el as HTMLElement).style.width) && !!el.querySelector('img.mino-poster')));
+    check('splash: the mascot box is reserved from the first HTML (aspect ratio + width inline, poster present: no layout jump)', await splash.locator('[data-mino-coach="rig"]').evaluate((el) => !!(el.querySelector('.mino-rig') as HTMLElement | null)?.style.aspectRatio && /px$/.test((el as HTMLElement).style.width) && !!el.querySelector('img.mino-poster')));
     await shot(sp, 'brand-00-splash', false);
     await sp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
     check('splash → home', Date.now() - t0 > 0);

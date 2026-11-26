@@ -122,7 +122,8 @@ export function MinoCoachMascot({
   if (failed) return <MinoCoachMascotLegacy pose={pose} size={size} onPoseSettle={onPoseSettle} className={className} />;
 
   return (
-    <span className={cn('relative inline-block shrink-0 align-top', className)} style={{ width: `min(100%, ${SIZE[size]}px)` }} data-mino-coach="rig" data-pose={pose} data-loaded={ready ? 'true' : 'false'} aria-hidden>
+    <span className={cn('relative inline-block shrink-0 align-top', className)} // px width + max-width (not a percentage width): the box keeps its size even inside a shrink-to-fit wrapper such as the violet aura
+      style={{ width: SIZE[size], maxWidth: '100%' }} data-mino-coach="rig" data-pose={pose} data-loaded={ready ? 'true' : 'false'} aria-hidden>
       <MinoCoachRig
         clip={isOpeningPose(pose)}
         onReady={(c) => {
