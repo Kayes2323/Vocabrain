@@ -80,7 +80,7 @@ function pushPull(known, rgb) {
 const rng = (seed) => () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
 
 // Fill `zone` pixels of layer `name`: smooth extension + fur residual taken from real pixels of the same layer.
-function fillZone(name, zone, { block = 32, seed = 7 } = {}) {
+function fillZone(name, zone, { block = 32, seed = 7, lowR = 4, maxRes = 38 } = {}) {
   const buf = L[name]; const zc = zone.reduce((a, v) => a + v, 0); if (!zc) return 0;
   const lowA = maskOf((i) => buf[i * 4 + 3] < 128);
   const bad = boxAny(zone.map((v, i) => (v || lowA[i] ? 1 : 0)), 3);              // keep 3 px away from holes and silhouette edges
@@ -90,16 +90,17 @@ function fillZone(name, zone, { block = 32, seed = 7 } = {}) {
   // residual = pixel - low-pass(known) (normalised box blur, radius 4, 2 passes)
   const wk = new Float32Array(N), ck = new Float32Array(N * 3); for (let i = 0; i < N; i++) if (known[i]) { wk[i] = 1; for (let c = 0; c < 3; c++) ck[i * 3 + c] = rgb[i * 3 + c]; }
   // channel-wise blur (simple, one-off cost)
-  const blurCh = (src, stride, c) => { const r = 4, tmp = new Float32Array(N), out = new Float32Array(N);
+  const blurCh = (src, stride, c) => { const r = lowR, tmp = new Float32Array(N), out = new Float32Array(N);
     for (let y = 0; y < H; y++) { let s = 0; for (let x = -r; x <= r; x++) s += src[(y * W + Math.min(W - 1, Math.max(0, x))) * stride + c]; for (let x = 0; x < W; x++) { tmp[y * W + x] = s; s += src[(y * W + Math.min(W - 1, x + r + 1)) * stride + c] - src[(y * W + Math.max(0, x - r)) * stride + c]; } }
     for (let x = 0; x < W; x++) { let s = 0; for (let y = -r; y <= r; y++) s += tmp[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { out[y * W + x] = s; s += tmp[Math.min(H - 1, y + r + 1) * W + x] - tmp[Math.max(0, y - r) * W + x]; } } return out; };
   const bw = blurCh(wk, 1, 0), low = [0, 1, 2].map((c) => blurCh(ck, 3, c));
   const res = new Float32Array(N * 3), resOk = new Uint8Array(N);
-  for (let i = 0; i < N; i++) if (known[i] && bw[i] > 40) { resOk[i] = 1; for (let c = 0; c < 3; c++) res[i * 3 + c] = rgb[i * 3 + c] - low[c][i] / bw[i]; }
+  for (let i = 0; i < N; i++) if (known[i] && bw[i] > 0.5 * (2 * lowR + 1) ** 2) { resOk[i] = 1; for (let c = 0; c < 3; c++) res[i * 3 + c] = rgb[i * 3 + c] - low[c][i] / bw[i]; }
   // valid source blocks (fully known+residual-ok) using an integral image
   const ii = new Int32Array((W + 1) * (H + 1)); for (let y = 0; y < H; y++) { let row = 0; for (let x = 0; x < W; x++) { row += resOk[y * W + x]; ii[(y + 1) * (W + 1) + x + 1] = ii[y * (W + 1) + x + 1] + row; } }
   const full = (x, y) => x + block <= W && y + block <= H && (ii[(y + block) * (W + 1) + x + block] - ii[y * (W + 1) + x + block] - ii[(y + block) * (W + 1) + x] + ii[y * (W + 1) + x]) === block * block;
-  const srcs = []; for (let y = 0; y + block <= H; y += 8) for (let x = 0; x + block <= W; x += 8) if (full(x, y)) srcs.push([x, y]);
+  const clean = (x, y) => { for (let yy = y; yy < y + block; yy += 2) for (let xx = x; xx < x + block; xx += 2) { const o = (yy * W + xx) * 3; if (Math.abs(res[o]) > maxRes || Math.abs(res[o + 1]) > maxRes || Math.abs(res[o + 2]) > maxRes) return false; } return true; };
+  const srcs = []; for (let y = 0; y + block <= H; y += 8) for (let x = 0; x + block <= W; x += 8) if (full(x, y) && clean(x, y)) srcs.push([x, y]);
   const rnd = rng(seed); const pick = new Map(); let count = 0;
   for (let i = 0; i < N; i++) if (zone[i]) { const x = i % W, y = (i / W) | 0; const bx = (x / block) | 0, by = (y / block) | 0, key = by * 4096 + bx;
     if (!pick.has(key)) pick.set(key, srcs.length ? srcs[(rnd() * srcs.length) | 0] : null);
@@ -143,8 +144,52 @@ const zArmR = maskOf((i) => hullArmR[i] && A('armRight', i) < 10 && OWN[i] === I
 const zNote = maskOf((i) => hullNote[i] && A('notebook', i) < 10 && OWN[i] === ID.armRight);
 const zFL = maskOf((i) => hullFL[i] && A('footL', i) < 10 && OWN[i] === ID.body), zFR = maskOf((i) => hullFR[i] && A('footR', i) < 10 && OWN[i] === ID.body);
 const widen = (zone, layerName, r = 3) => { const d = boxAny(zone, r); const b = L[layerName]; let c = 0; for (let i = 0; i < N; i++) if (d[i] && !zone[i] && b[i * 4 + 3] >= 10 && OWN[i] === ID[layerName] && !zone.__keep) { b[i * 4 + 3] = 0; zone[i] = 1; c++; } return c; };
-report.cleanup.edgeBandRefilled = { body: widen(zBody, 'body'), notebook: widen(zNote, 'notebook'), armRight: widen(zArmR, 'armRight'), armLeft: widen(zArmL, 'armLeft') };
-report.fills.body = fillZone('body', zBody, { block: 40, seed: 11 });
+// Contact shadows: the master bakes the pencil/arm/notebook shadows into the torso pixels around them. Those pixels are
+// refilled with clean fur and the darkening is kept as two separate semi-transparent layers (shadowL / shadowR) that
+// travel with the arms, so moving an arm drags its shadow along instead of leaving a ghost outline on the body.
+const SH_R = 10;
+const propsL = ['armLeft', 'pencil'].map((n) => ID[n]), propsR = ['armRight', 'notebook'].map((n) => ID[n]);
+const zProps = maskOf((i) => zBody[i] && (propsL.includes(OWN[i]) || propsR.includes(OWN[i])));
+const bandNear = boxAny(zProps, SH_R);
+const bandIdx = []; const origRGB = new Map();
+for (let i = 0; i < N; i++) if (bandNear[i] && !zBody[i] && L.body[i * 4 + 3] >= 10 && OWN[i] === ID.body) { bandIdx.push(i); origRGB.set(i, [L.body[i * 4], L.body[i * 4 + 1], L.body[i * 4 + 2], L.body[i * 4 + 3]]); }
+// side of each band pixel = side of the nearest prop pixel in the hole
+const sideOf = (i) => { const x = i % W, y = (i / W) | 0; let best = 1e9, side = 0; for (let dy = -SH_R - 2; dy <= SH_R + 2; dy++) for (let dx = -SH_R - 2; dx <= SH_R + 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (!zProps[j]) continue; const d = dx * dx + dy * dy; if (d < best) { best = d; side = propsL.includes(OWN[j]) ? 1 : 2; } } return side; };
+const sides = new Map(bandIdx.map((i) => [i, sideOf(i)]));
+for (const i of bandIdx) { L.body[i * 4 + 3] = 0; zBody[i] = 1; }
+report.cleanup.edgeBandRefilled = { body: bandIdx.length, notebook: widen(zNote, 'notebook'), armRight: widen(zArmR, 'armRight'), armLeft: widen(zArmL, 'armLeft') };
+report.fills.body = fillZone('body', zBody, { block: 56, seed: 11, lowR: 12, maxRes: 34 });
+{
+  L.shadowL = new Uint8Array(N * 4); L.shadowR = new Uint8Array(N * 4); recon.shadowL = new Uint8Array(N); recon.shadowR = new Uint8Array(N);
+  const lum = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b; const C = [18, 8, 56], lumC = lum(...C); let count = 0;
+  // per-pixel darkness is fur-noisy: smooth it so the shadow reads as a soft contact shadow, not speckle
+  const aL = new Float32Array(N), aR = new Float32Array(N);
+  for (const i of bandIdx) { const o = origRGB.get(i); const f = [L.body[i * 4], L.body[i * 4 + 1], L.body[i * 4 + 2]]; const lo = lum(o[0], o[1], o[2]), lf = lum(...f);
+    const a = Math.max(0, Math.min(0.7, (lf - lo) / Math.max(1, lf - lumC))); (sides.get(i) === 1 ? aL : aR)[i] = a; }
+  const bl = (src, r) => { const t = new Float32Array(N), o = new Float32Array(N);
+    for (let y = 0; y < H; y++) { let s2 = 0; for (let x = -r; x <= r; x++) s2 += src[y * W + Math.min(W - 1, Math.max(0, x))]; for (let x = 0; x < W; x++) { t[y * W + x] = s2 / (2 * r + 1); s2 += src[y * W + Math.min(W - 1, x + r + 1)] - src[y * W + Math.max(0, x - r)]; } }
+    for (let x = 0; x < W; x++) { let s2 = 0; for (let y = -r; y <= r; y++) s2 += t[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { o[y * W + x] = s2 / (2 * r + 1); s2 += t[Math.min(H - 1, y + r + 1) * W + x] - t[Math.max(0, y - r) * W + x]; } } return o; };
+  for (const [S, arr] of [[L.shadowL, bl(bl(aL, 4), 4)], [L.shadowR, bl(bl(aR, 4), 4)]]) for (let i = 0; i < N; i++) { const a = Math.min(0.6, arr[i] * 1.6); if (a < 0.04) continue; S[i * 4] = C[0]; S[i * 4 + 1] = C[1]; S[i * 4 + 2] = C[2]; S[i * 4 + 3] = Math.round(a * 255); count++; }
+  for (const n of ['shadowL', 'shadowR']) { if (!LAYERS.includes(n)) LAYERS.push(n); for (let i = 0; i < N; i++) if (L[n][i * 4 + 3]) recon[n][i] = 1; }
+  report.fills.shadowPx = count;
+}
+{ // brown/orange specks inside the torso interior (>8 px from its silhouette edge) are backpack bleed, not fur
+  const lowA = maskOf((i) => L.body[i * 4 + 3] < 128); const nearEdge = boxAny(lowA, 8); const b = L.body; const fixes = [];
+  for (let i = 0; i < N; i++) { if (b[i * 4 + 3] < 128 || nearEdge[i]) continue; const [h, sat, v] = rgbToHsv(b[i * 4], b[i * 4 + 1], b[i * 4 + 2]); if (!(sat > 0.25 && v > 0.2 && (h < 100 || h > 320))) continue;
+    const x = i % W, y = (i / W) | 0; let r = 0, g = 0, bb = 0, c = 0; for (let dy = -6; dy <= 6; dy++) for (let dx = -6; dx <= 6; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (b[j * 4 + 3] < 200) continue; const [h2, s2, v2] = rgbToHsv(b[j * 4], b[j * 4 + 1], b[j * 4 + 2]); if (h2 >= 232 && h2 <= 290 && s2 > 0.3) { r += b[j * 4]; g += b[j * 4 + 1]; bb += b[j * 4 + 2]; c++; } }
+    if (c) fixes.push([i, r / c, g / c, bb / c]); }
+  for (const [i, r, g, bb] of fixes) { b[i * 4] = Math.round(r); b[i * 4 + 1] = Math.round(g); b[i * 4 + 2] = Math.round(bb); recon.body[i] = 1; }
+  report.cleanup.bodyBleedSpecksFixed = fixes.length; }
+// smooth the ragged silhouette of the filled torso (hull ∩ soft-edged occluder shapes): soft threshold on a blurred alpha
+{
+  const a = new Float32Array(N); for (let i = 0; i < N; i++) a[i] = L.body[i * 4 + 3] / 255;
+  const blur = (src, r) => { const t = new Float32Array(N), o = new Float32Array(N);
+    for (let y = 0; y < H; y++) { let s = 0; for (let x = -r; x <= r; x++) s += src[y * W + Math.min(W - 1, Math.max(0, x))]; for (let x = 0; x < W; x++) { t[y * W + x] = s / (2 * r + 1); s += src[y * W + Math.min(W - 1, x + r + 1)] - src[y * W + Math.max(0, x - r)]; } }
+    for (let x = 0; x < W; x++) { let s = 0; for (let y = -r; y <= r; y++) s += t[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { o[y * W + x] = s / (2 * r + 1); s += t[Math.min(H - 1, y + r + 1) * W + x] - t[Math.max(0, y - r) * W + x]; } } return o; };
+  const b = blur(blur(a, 5), 5); let c = 0;
+  for (let i = 0; i < N; i++) if (zBody[i] && L.body[i * 4 + 3] > 0) { const v = Math.max(0, Math.min(1, (b[i] - 0.3) / 0.4)); const na = Math.round(v * 253); if (na !== L.body[i * 4 + 3]) { L.body[i * 4 + 3] = na; c++; } }
+  report.cleanup.bodyFillEdgeSmoothed = c;
+}
 report.fills.backpack = fillZone('backpack', zBP, { block: 24, seed: 13 });
 report.fills.armLeft = fillZone('armLeft', zArmL, { block: 16, seed: 17 });
 report.fills.armRight = fillZone('armRight', zArmR, { block: 16, seed: 19 });
@@ -160,6 +205,26 @@ const handRegion = maskOf((i) => OWN[i] === ID.armRight && handDil[i]);
 L.armRightHand = new Uint8Array(N * 4); recon.armRightHand = new Uint8Array(N);
 for (let i = 0; i < N; i++) if (handRegion[i]) { for (let c = 0; c < 4; c++) L.armRightHand[i * 4 + c] = L.armRight[i * 4 + c]; recon.armRightHand[i] = recon.armRight[i]; }
 if (!LAYERS.includes('armRightHand')) LAYERS.push('armRightHand');
+// Seam colours: master pixels along an internal seam are blends with whatever was behind them (body purple, arm violet...).
+// Re-colour those 1-3 px with the layer's own nearby interior colour so a moved layer never drags a stray halo along.
+{
+  const DEF = [['pencil', (i) => OWN[i] === ID.pencil], ['notebook', (i) => OWN[i] === ID.notebook], ['armLeft', (i) => OWN[i] === ID.armLeft], ['armRight', (i) => OWN[i] === ID.armRight], ['tag', (i) => OWN[i] === ID.tag]];
+  report.defringe = {};
+  for (const [n, inL] of DEF) {
+    const buf = L[n]; const edge = new Uint8Array(N), inner = new Uint8Array(N);
+    for (let i = 0; i < N; i++) { if (!inL(i) || buf[i * 4 + 3] === 0) continue; const x = i % W, y = (i / W) | 0; let best = 99;
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const o = OWN[yy * W + xx]; if (!o || o === ID[n]) continue; const d = Math.hypot(dx, dy); if (d < best) best = d; }
+      if (best <= 3) edge[i] = 1; else if (best > 4 && buf[i * 4 + 3] >= 250) inner[i] = 1; }
+    const fixes = [];
+    for (let i = 0; i < N; i++) if (edge[i]) { const x = i % W, y = (i / W) | 0; let r = 0, g = 0, b = 0, c = 0;
+      for (let dy = -7; dy <= 7; dy++) for (let dx = -7; dx <= 7; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (inner[j]) { r += buf[j * 4]; g += buf[j * 4 + 1]; b += buf[j * 4 + 2]; c++; } }
+      if (c >= 6) fixes.push([i, r / c, g / c, b / c]); }
+    for (const [i, r, g, b] of fixes) { buf[i * 4] = Math.round(r); buf[i * 4 + 1] = Math.round(g); buf[i * 4 + 2] = Math.round(b); recon[n][i] = 1; }
+    report.defringe[n] = fixes.length;
+  }
+}
+// armRightHand is a copy of the arm taken before this step: refresh it
+for (let i = 0; i < N; i++) if (handRegion[i]) { const a0 = L.armRightHand[i * 4 + 3]; if (a0) for (let c = 0; c < 3; c++) L.armRightHand[i * 4 + c] = L.armRight[i * 4 + c]; }
 const ORDER = ['backpack', 'footR', 'footL', 'body', 'tag', 'mask', 'mouth', 'eyeR', 'eyeL', 'armRight', 'notebook', 'armRightHand', 'armLeft', 'pencil'];
 const rank = Object.fromEntries(ORDER.map((n, k) => [n, k]));
 const featherJobs = [['tag', (i) => OWN[i] === ID.tag], ['mask', (i) => OWN[i] === ID.mask], ['notebook', (i) => OWN[i] === ID.notebook], ['armRight', (i) => OWN[i] === ID.armRight], ['armRightHand', (i) => handRegion[i]], ['armLeft', (i) => OWN[i] === ID.armLeft], ['pencil', (i) => OWN[i] === ID.pencil], ['body', (i) => OWN[i] === ID.body]];

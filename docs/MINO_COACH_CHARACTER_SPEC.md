@@ -39,10 +39,10 @@ Numbers marked *(estimate)* are still to be confirmed against final rigged artwo
 
 ## 3. Layers
 
-### 3.1 Layers (Stage B, all local; 19 transparent PNGs, 1536 × 1024)
+### 3.1 Layers (Stage B, all local; 19 artwork layers + 2 derived contact-shadow layers, 1536 × 1024)
 
 Draw order, back → front: `backpack`, `footR`, `footL`, `body`, `tag`, `mask`, `mouth*`, `eyeR*`,
-`eyeL*`, `armRight`, `notebook`, `armRightHand`, `armLeft`, `pencil`. The feet are *behind* the body
+`eyeL*`, `shadowR`, `armRight`, `notebook`, `armRightHand`, `shadowL`, `armLeft`, `pencil`. The feet are *behind* the body
 (the belly overlaps their tops); the right arm is behind the notebook at the top but its hand
 (`armRightHand`, a duplicate of the arm's lower part) is in front of the notebook's lower-right corner.
 
@@ -55,6 +55,7 @@ Draw order, back → front: `backpack`, `footR`, `footL`, `body`, `tag`, `mask`,
 | `body` | 486,554 | 242,369 original; **244,185 locally reconstructed** (torso under arms/props/tag, 48 px band under the mask edge) |
 | `backpack` | 128,438 | 56,270 original; **72,168 locally reconstructed** (behind tag/arm/pencil/body) |
 | `footL` / `footR` | 23,210 / 15,164 | original; 87 / 775 px reconstructed (top hidden by body) |
+| `shadowL`, `shadowR` | derived | **derived from the master**: the pencil/arm and arm/notebook contact shadows that the master bakes into the torso, separated so they travel with the arms |
 | `eyeL-closed`, `eyeR-closed`, `eyeR-wink` | 3,061 / 2,390 / 2,392 | **locally generated** (vector strokes, master ink colour, head-tilt angle) |
 | `mouth-small`, `mouth-wide` | 1,600 / 3,005 | **locally generated** (follows the master smile; wide has a muted tongue) |
 
@@ -176,3 +177,25 @@ used in `MinoCoachMascot.tsx`/`Mino.tsx`).
 Stage B output is local-only and awaiting QA approval. Stages C–E (rig integration into the isolated
 preview, Task 1 welcome experience, QA) wait for that approval. Nothing was uploaded to any external
 service and no credits were spent.
+
+## 10. Stage C/D — the rig (isolated, dev-only)
+
+Files: `components/mino/dev/{MinoCoachRig.tsx, coach-rig-controller.ts, coach-rig-manifest.ts, mino-rig.css, coach-preview-state.ts, RigStateControls.tsx, Task1WelcomePreview.tsx}`;
+routes `/dev/mino-coach-preview` and `/dev/mino-task1-welcome-preview` (both `notFound()` outside development); assets in `public/mino/coach/`
+(WebP + `manifest.json`, ≈360 KB total) with lossless sources and the canonical master under `assets/mino/coach/`. Production components are untouched.
+
+- **Hierarchy (z-order = DOM order):** `figure` → `pack(backpack)`, `footR`, `footL`, `torso` → [`body`, `tag`, `head` → (`mask`, `eyes`, `mouth`),
+  `arm-r` → (`shadowR`, `armRight`, `notebook`(+ writing stroke), `armRightHand`), `arm-l` → (`shadowL`, `armLeft`, `pencil`)].
+  Arms live in the torso so they follow breathing; the pencil is a child of the left arm (wrist pivot at the grip), the notebook and hand piece
+  children of the right arm.
+- **Stage:** crop x 150, y −64, 1200 × 1088 of the master canvas (head-room for the success hop). Every layer is placed in stage % from the manifest and
+  every pivot is a master-pixel point expressed in stage %, so the rig scales to any container.
+- **Controller:** `MinoRigController` is the only imperative piece. It writes `data-state` (10 states), `data-eyes`, `data-mouth`, `data-point` and
+  `data-motion`/`data-reduced`; handles one-shot settling, choreographies (`playSequence`), natural blinking (independent of the body state, 2.8–7.2 s,
+  occasional double blink), reduced-motion / save-data / off-screen / hidden-tab gating, and `destroy()`. React renders the rig once; animation never
+  triggers a re-render.
+- **State mapping:** welcome → `greeting` (arm-raise wave: arm up beside the head, wrist swing, one blink, one wink beat, small-open smile, sparkles);
+  pointing is a gesture inside `explaining` (`left | center | right`); `thinking` and `encouraging` are defined (CSS + state machine) but dormant and
+  never used by the Task 1 welcome flow.
+- **Locally drawn (no artwork asset exists):** the ground shadow (CSS gradient), the sparkles (CSS clip-path), and the writing stroke (SVG path).
+- **Reduced motion:** no CSS animation at all; one-shots settle after 260 ms so choreographies still advance.

@@ -9,8 +9,9 @@ const DIR = process.cwd() + '/'; const O = DIR + '../out2/', I = DIR + '../out/'
 const meta = JSON.parse(fs.readFileSync(O + 'complete.json'));
 const layers = meta.layers;
 const BASE = ['backpack', 'footR', 'footL', 'body', 'tag', 'mask'];
+const SHADOW_R = ['shadowR'], SHADOW_L = ['shadowL'];
 const FACE_DEFAULT = ['mouth', 'eyeR', 'eyeL'];
-const FRONT = ['armRight', 'notebook', 'armRightHand', 'armLeft', 'pencil'];
+const FRONT = ['shadowR', 'armRight', 'notebook', 'armRightHand', 'shadowL', 'armLeft', 'pencil'];
 const NEUTRAL = [...BASE, ...FACE_DEFAULT, ...FRONT];
 const rd = (n) => sharp(O + `layer-${n}.png`).ensureAlpha().raw().toBuffer();
 const px = {}; for (const n of Object.keys(layers)) px[n] = await rd(n);
@@ -51,8 +52,8 @@ const silB64 = 'data:image/png;base64,' + (await sharp(sil, { raw: { width: W, h
 const pivL = [540, 575], pivR = [1175, 540];
 const stack = (aL, aR, underlay) => `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${underlay ? `<rect width="100%" height="100%" fill="#d9d3f0"/><image href="${silB64}" width="${W}" height="${H}"/>` : ''}
 ${[...BASE, ...FACE_DEFAULT].map((n) => `<image href="${img[n]}" width="${W}" height="${H}"/>`).join('')}
-<g transform="rotate(${aR} ${pivR[0]} ${pivR[1]})"><image href="${img.armRight}" width="${W}" height="${H}"/><image href="${img.notebook}" width="${W}" height="${H}"/><image href="${img.armRightHand}" width="${W}" height="${H}"/></g>
-<g transform="rotate(${aL} ${pivL[0]} ${pivL[1]})"><image href="${img.armLeft}" width="${W}" height="${H}"/><image href="${img.pencil}" width="${W}" height="${H}"/></g></svg>`;
+<g transform="rotate(${aR} ${pivR[0]} ${pivR[1]})"><image href="${img.shadowR}" width="${W}" height="${H}"/><image href="${img.armRight}" width="${W}" height="${H}"/><image href="${img.notebook}" width="${W}" height="${H}"/><image href="${img.armRightHand}" width="${W}" height="${H}"/></g>
+<g transform="rotate(${aL} ${pivL[0]} ${pivL[1]})"><image href="${img.shadowL}" width="${W}" height="${H}"/><image href="${img.armLeft}" width="${W}" height="${H}"/><image href="${img.pencil}" width="${W}" height="${H}"/></g></svg>`;
 const frames = [['neutral', 0, 0], ['L arm -20°', -20, 0], ['L arm +20°', 20, 0], ['R arm -20°', 0, -20], ['R arm +20°', 0, 20], ['both -12° / +12°', -12, 12], ['both +12° / -12°', 12, -12], ['both -20° / +20°', -20, 20]];
 const gaps = {}; const gt = [];
 for (let k = 0; k < frames.length; k++) { const [label, aL, aR] = frames[k];
@@ -78,15 +79,16 @@ await sharp({ create: { width: 3 * (fw + 6), height: 2 * (fh + 6), channels: 3, 
 // ---------- 6) provenance counts + map + layer sheet ----------
 const holeF = fs.readFileSync(I + 'filled-mask.bin'), rimF = fs.readFileSync(I + 'rim-filled-mask.bin');
 const prov = {}; const gen = new Set(['eyeL-closed', 'eyeR-closed', 'eyeR-wink', 'mouth-small', 'mouth-wide']);
+const derived = new Set(['shadowL', 'shadowR']);
 for (const n of Object.keys(layers)) { const rc = fs.readFileSync(O + `recon-${n}.bin`); let orig = 0, rec = 0, proto = 0, g = 0;
-  for (let i = 0; i < N; i++) { const a = px[n][i * 4 + 3]; if (!a) continue; if (gen.has(n)) g++; else if (rc[i]) rec++; else if (n === 'mask' && (holeF[i] || rimF[i])) proto++; else orig++; }
+  for (let i = 0; i < N; i++) { const a = px[n][i * 4 + 3]; if (!a) continue; if (gen.has(n)) g++; else if (derived.has(n)) rec++; else if (rc[i]) rec++; else if (n === 'mask' && (holeF[i] || rimF[i])) proto++; else orig++; }
   prov[n] = { original: orig, locallyReconstructed: rec, prototypeFillOfMask: proto, locallyGenerated: g }; }
 const map = Buffer.alloc(N * 3); for (let i = 0; i < N * 3; i++) map[i] = 235;
 const paint = (n, col, which) => { const rc = fs.readFileSync(O + `recon-${n}.bin`); for (let i = 0; i < N; i++) { const a = px[n][i * 4 + 3] / 255; if (!a) continue; const isRec = rc[i], isProto = n === 'mask' && (holeF[i] || rimF[i]); if (which === 'orig' && (isRec || isProto)) continue; if (which === 'rec' && !(isRec || isProto)) continue; const c = which === 'orig' ? [px[n][i * 4], px[n][i * 4 + 1], px[n][i * 4 + 2]] : (isProto ? [255, 160, 0] : col); for (let k = 0; k < 3; k++) map[i * 3 + k] = Math.round(map[i * 3 + k] * (1 - a) + (which === 'orig' ? c[k] * 0.45 + 235 * 0.55 : c[k]) * a); } };
 for (const n of NEUTRAL) paint(n, null, 'orig'); for (const n of NEUTRAL) paint(n, [0, 200, 110], 'rec');
 await sharp(map, { raw: { width: W, height: H, channels: 3 } }).extract({ left: 180, top: 0, width: 1160, height: 1000 }).png().toFile(O + 'provenance-map.png');
 
-const order = ['backpack', 'body', 'footL', 'footR', 'tag', 'mask', 'eyeL', 'eyeR', 'mouth', 'eyeL-closed', 'eyeR-closed', 'eyeR-wink', 'mouth-small', 'mouth-wide', 'armLeft', 'armRight', 'armRightHand', 'notebook', 'pencil'];
+const order = ['backpack', 'body', 'footL', 'footR', 'tag', 'mask', 'eyeL', 'eyeR', 'mouth', 'eyeL-closed', 'eyeR-closed', 'eyeR-wink', 'mouth-small', 'mouth-wide', 'shadowL', 'shadowR', 'armLeft', 'armRight', 'armRightHand', 'notebook', 'pencil'];
 const cell = 340, cols = 5; const tiles = [];
 const checker = (w, h) => { const s = 12; let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="#fff"/>`; for (let y = 0; y < h; y += s) for (let x = 0; x < w; x += s) if (((x / s) + (y / s)) % 2 === 0) svg += `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="#d9d9e6"/>`; return Buffer.from(svg + '</svg>'); };
 for (let k = 0; k < order.length; k++) { const n = order[k]; const [x0, y0, x1, y1] = layers[n].bbox; let bx0 = x0, by0 = y0, bx1 = x1, by1 = y1; if (n === 'body') { bx0 = 222; bx1 = 1290; by0 = 19; by1 = 991; }
