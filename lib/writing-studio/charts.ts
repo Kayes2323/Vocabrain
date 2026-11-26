@@ -1,4 +1,5 @@
 import type { ChartDataset } from './types';
+import { CAMBRIDGE_12_T1_PHYSICAL_ACTIVITY } from './bar-charts';
 import { LINE_GRAPH_DATASETS } from './line-graphs';
 
 /** Turns a chart dataset into the plain table shape Mino's AI assessment takes as task data. */
@@ -12,9 +13,12 @@ export function chartToTable(chart: ChartDataset): { caption: string; headers: s
 
 /**
  * Sample Task 1 chart datasets for the prototype. Original, invented figures
- * — not from a real report and not Cambridge material — written to have a
- * clear overall trend plus a couple of features worth comparing, as a real
- * Task 1 chart would.
+ * — not from a real report — written to have a clear overall trend plus a
+ * couple of features worth comparing, as a real Task 1 chart would. The one
+ * deliberate exception is 'cambridge-12-t1-physical-activity' below: Bar
+ * Chart Mastery's whole premise is an authentic Cambridge IELTS chart, so
+ * that one entry is real exam data, sourced and cross-checked as described
+ * in bar-charts.ts.
  */
 export const CHART_DATASETS: Record<string, ChartDataset> = {
   'renewable-electricity': {
@@ -47,4 +51,5 @@ export const CHART_DATASETS: Record<string, ChartDataset> = {
   // than embedded in a lesson step, since it is never shown during the
   // five guided levels.
   'lg-06-independent-test': LINE_GRAPH_DATASETS['lg-06-independent-test'],
+  'cambridge-12-t1-physical-activity': CAMBRIDGE_12_T1_PHYSICAL_ACTIVITY,
 };

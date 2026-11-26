@@ -9,7 +9,18 @@ import { IdeaDevelopmentBoard } from './IdeaDevelopmentBoard';
  * current step's content rather than forcing everything into one layout
  * (spec §5B).
  */
-export function MaterialPanel({ block, locale = 'en', onBoardComplete }: { block: MaterialBlock; locale?: 'en' | 'bn'; onBoardComplete?: () => void }) {
+export function MaterialPanel({
+  block,
+  locale = 'en',
+  onBoardComplete,
+  context,
+}: {
+  block: MaterialBlock;
+  locale?: 'en' | 'bn';
+  onBoardComplete?: () => void;
+  /** Lesson/step this material is rendered in, forwarded to the chart-board's answer evaluator for context. */
+  context?: { lessonId: string; stepId: string };
+}) {
   switch (block.type) {
     case 'text':
       return (
@@ -56,7 +67,7 @@ export function MaterialPanel({ block, locale = 'en', onBoardComplete }: { block
     case 'chart-board':
       return (
         <Section title="Visual Analysis Board" variant="label">
-          <ChartAnalysisBoard dataset={block.dataset} tasks={block.tasks} locale={locale} onComplete={onBoardComplete} compact />
+          <ChartAnalysisBoard dataset={block.dataset} tasks={block.tasks} locale={locale} onComplete={onBoardComplete} context={context} compact />
         </Section>
       );
 

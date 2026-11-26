@@ -80,14 +80,19 @@ test('continue: nothing for a new learner; the started lesson first; otherwise t
   assert.equal(continueHref('task1', TASK1_MODULES[1]), '/ielts/writing-studio/task1/lesson/visual-information?from=visual');
 });
 
-test('only Line Graphs is a course today; every other chart type is an honest preview', () => {
+test('Line Graphs and Bar Charts are courses today; every other chart type is an honest preview', () => {
   assert.equal(TASK1_VISUALS.length, 7);
-  for (const v of TASK1_VISUALS) assert.equal(chartTypeState(v), v.id === 'line-graphs' ? 'course' : 'preview', v.id);
+  const COURSES = new Set(['line-graphs', 'bar-charts']);
+  for (const v of TASK1_VISUALS) assert.equal(chartTypeState(v), COURSES.has(v.id) ? 'course' : 'preview', v.id);
   const lg = TASK1_VISUALS.find((v) => v.id === 'line-graphs')!;
   assert.equal(lg.courseLessonId, 'line-graph-mastery');
   assert.ok(getLesson('line-graph-mastery'));
   assert.equal(resolveLessonBack('task1', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/line-graphs');
   assert.equal(resolveLessonBack('task2', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task2/learn');
+  const bc = TASK1_VISUALS.find((v) => v.id === 'bar-charts')!;
+  assert.equal(bc.courseLessonId, 'bar-chart-mastery');
+  assert.ok(getLesson('bar-chart-mastery'));
+  assert.equal(resolveLessonBack('task1', 'bar-chart-mastery', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
 });
 
 test('a chart type becomes a course only through its own registered lesson id', () => {
