@@ -1,9 +1,14 @@
 'use client';
 
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { ScreenSkeleton } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { TASK1_MODULES, TASK1_VISUALS, TASK2_MODULES } from '@/lib/writing-studio/content';
 import { getLesson } from '@/lib/writing-studio/lessons';
+import { resolveLessonBack } from '@/lib/writing-studio/navigation';
 import { localize, type TaskId } from '@/lib/writing-studio/types';
+import { WsBackBar } from './nav/common';
 import { LessonPreview } from './LessonPreview';
 import { LessonRunner } from './LessonRunner';
 
@@ -12,13 +17,24 @@ const BUILT_LESSON: Record<TaskId, { id: string; label: string }> = {
   task2: { id: 'idea-development', label: 'Developing One Idea Fully' },
 };
 
-/** Resolves `[lessonId]` to a fully built lesson, a module/visual-area preview, or 404. */
+/** Resolves `[lessonId]` to a fully built lesson, a module/visual-area preview, or 404. (useSearchParams needs a Suspense boundary.) */
 export function LessonRouteContent({ task, lessonId }: { task: TaskId; lessonId: string }) {
+  return (
+    <Suspense fallback={<ScreenSkeleton />}>
+      <LessonRoute task={task} lessonId={lessonId} />
+    </Suspense>
+  );
+}
+
+function LessonRoute({ task, lessonId }: { task: TaskId; lessonId: string }) {
   const lesson = getLesson(lessonId);
   const { locale, hasChosen } = useLocale();
   const contentLocale: 'en' | 'bn' = task === 'task1' && !hasChosen ? 'bn' : locale;
-  const academyHref = `/ielts/writing-studio/${task}`;
-  const academyLabel = task === 'task1' ? 'Task 1 Academy' : 'Task 2 Academy';
+  // The way back is the PARENT screen the lesson was opened from. `?from=` only ever selects one of a few fixed
+  // destinations (never a URL), and a direct link with no origin returns to the lesson's own parent.
+  const back = resolveLessonBack(task, lessonId, useSearchParams().get('from'));
+  const academyHref = back.href;
+  const academyLabel = localize(contentLocale, back.label);
 
   if (lesson) {
     if (lesson.task !== task) {
@@ -33,7 +49,12 @@ export function LessonRouteContent({ task, lessonId }: { task: TaskId; lessonId:
         />
       );
     }
-    return <LessonRunner lesson={lesson} academyHref={academyHref} />;
+    return (
+      <div className="mx-auto max-w-3xl space-y-2">
+        <WsBackBar href={academyHref} label={academyLabel} />
+        <LessonRunner lesson={lesson} academyHref={academyHref} backLabel={`${contentLocale === 'bn' ? 'ফিরে যান' : 'Back to'} ${academyLabel}`} />
+      </div>
+    );
   }
 
   const candidates = task === 'task1' ? [...TASK1_MODULES, ...TASK1_VISUALS] : TASK2_MODULES;

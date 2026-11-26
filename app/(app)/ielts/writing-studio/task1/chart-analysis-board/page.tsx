@@ -25,7 +25,7 @@ export default function ChartAnalysisBoardPage() {
         title="Visual Analysis Board"
         subtitle="Understand the chart before you write a single sentence."
         backHref="/ielts/writing-studio/task1"
-        backLabel="Task 1 Academy"
+        backLabel="Task 1"
       />
       <Callout tone="neutral">
         Work through each question in your own words, then check it against the model answer. Each one is tagged for
