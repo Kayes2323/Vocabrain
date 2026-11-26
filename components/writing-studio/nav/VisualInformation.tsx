@@ -91,7 +91,7 @@ export function VisualInformationHub() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[15px] leading-snug font-semibold">{l(v.title)}</span>
-                  <span className="mt-0.5 block text-sm leading-snug text-muted-foreground line-clamp-2">{l(v.description)}</span>
+                  <span className="mt-0.5 text-sm leading-snug text-muted-foreground line-clamp-2">{l(v.description)}</span>
                 </span>
                 <span className="flex shrink-0 flex-col items-end gap-1">
                   <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-medium', state === 'course' ? 'bg-brand-soft text-brand' : 'bg-muted text-muted-foreground')}>

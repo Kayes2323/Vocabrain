@@ -99,8 +99,8 @@ export function LessonCard({
         {done ? <Check className="size-5" /> : number}
       </span>
       <span className="min-w-0 flex-1">
-        <span data-testid="ws-card-title" className="block text-[15px] leading-snug font-semibold text-balance line-clamp-2">{title}</span>
-        <span className="mt-0.5 block text-sm leading-snug text-muted-foreground line-clamp-2">{description}</span>
+        <span data-testid="ws-card-title" className="text-[15px] leading-snug font-semibold text-balance line-clamp-2">{title}</span>
+        <span className="mt-0.5 text-sm leading-snug text-muted-foreground line-clamp-2">{description}</span>
       </span>
       <span className="flex shrink-0 flex-col items-end gap-0.5 text-right">
         <span className={cn('text-xs font-medium whitespace-nowrap', done ? 'text-success' : status === 'in-progress' ? 'text-brand' : 'text-muted-foreground')}>{statusLabel}</span>
