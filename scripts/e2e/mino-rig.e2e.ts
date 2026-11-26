@@ -11,6 +11,7 @@ import type { Page } from 'playwright-core';
 import { BASE, check, launch, noHorizontalScroll, report, SHOTS, shot, watchErrors } from './helpers';
 import { RIG_MANIFEST, RIG_STAGE } from '../../components/mino/dev/coach-rig-manifest';
 import { COACH_ROLE, COACH_WELCOME } from '../../lib/mino/coach-messages';
+import { WRITING_ENTRY_MS, WRITING_PENCIL_TIP, WRITING_TIMELINE, writingPoint } from '../../components/mino/dev/coach-rig-writing.generated';
 
 const STATES = ['idle', 'entrance', 'landing', 'greeting', 'speaking', 'explaining', 'writing', 'thinking', 'success', 'encouraging'] as const;
 const ONE_SHOT_MS: Record<string, number> = { entrance: 1050, landing: 420, greeting: 1100, success: 900, encouraging: 1350 };
@@ -21,12 +22,11 @@ const rigRect = (p: Page, sel: string) => p.evaluate((s) => { const r = document
 /** Play a state, hold it (block the settle timer) and freeze every animation of the rig at time t. */
 async function freezeAt(p: Page, state: string, t: number) {
   await p.evaluate(async ([s, tt]) => {
-    const realSet = window.setTimeout;
-    window.setTimeout = ((fn: TimerHandler, ms?: number, ...a: unknown[]) => (ms && ms >= 200 && ms <= 1500 ? 0 : realSet(fn as () => void, ms, ...a))) as typeof window.setTimeout;
+    const root = document.querySelector('.mino-rig')!;
+    root.setAttribute('data-hold', 'true'); // inspection mode: one-shots are not auto-settled
     (document.querySelector(`[data-testid="rig-state-${s}"]`) as HTMLButtonElement).click();
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-    document.querySelector('.mino-rig')!.getAnimations({ subtree: true }).forEach((a) => { a.pause(); a.currentTime = tt as number; });
-    window.setTimeout = realSet;
+    await new Promise((r) => setTimeout(r, 330)); // outlast the 190 ms pose bridge
+    root.getAnimations({ subtree: true }).forEach((a) => { a.pause(); a.currentTime = tt as number; });
   }, [state, t] as const);
   await p.waitForTimeout(40);
 }
@@ -146,10 +146,61 @@ async function main() {
     check('notebook never leaves the right hand (offset ≈ constant in every state)', maxN < 0.03, maxN.toFixed(3));
     check('right hand piece stays fused to the right arm', maxH < 0.005, maxH.toFixed(4));
 
+    console.log('\n[6b] Writing: the pencil tip follows the strokes on the notebook');
+    const stagePct = (x: number, y: number) => [((x - RIG_STAGE.x) / RIG_STAGE.w) * 100, ((y - RIG_STAGE.y) / RIG_STAGE.h) * 100];
+    let worstTip = 0, tipSamples = 0;
+    for (const seg of WRITING_TIMELINE) {
+      if (seg.type !== 'line') continue;
+      for (const uu of [0.1, 0.3, 0.5, 0.7, 0.9]) {
+        const u = uu * (seg.k === 2 ? 0.65 : 1);
+        const tAbs = WRITING_ENTRY_MS + seg.t0 + (seg.t1 - seg.t0) * (seg.k === 2 ? uu : u);
+        await freezeAt(p, 'writing', tAbs);
+        const [tx, ty] = stagePct(...WRITING_PENCIL_TIP), [nx, ny] = stagePct(...writingPoint(seg.k, u));
+        const d = await p.evaluate(([a, b, c, e]) => {
+          const mk = (parent: string, x: number, y: number) => { const el = document.createElement('i'); el.style.cssText = `position:absolute;left:${x}%;top:${y}%;width:0;height:0`; document.querySelector(parent)!.appendChild(el); const r = el.getBoundingClientRect(); el.remove(); return [r.x, r.y]; };
+          const tip = mk('.mino-rig__pencil', a, b), tgt = mk('.mino-rig__notebook', c, e);
+          return Math.hypot(tip[0] - tgt[0], tip[1] - tgt[1]) / document.querySelector('.mino-rig')!.getBoundingClientRect().width;
+        }, [tx, ty, nx, ny] as const);
+        worstTip = Math.max(worstTip, d); tipSamples++;
+      }
+    }
+    check(`pencil tip stays on the stroke (${tipSamples} samples; worst ${(worstTip * 1200).toFixed(1)} master px)`, worstTip * 1200 < 9, worstTip);
+
+    console.log('\n[6c] Transitions: no snaps, and every interruption ends at rest');
+    await p.evaluate(() => { (document.querySelector('.mino-rig') as HTMLElement).setAttribute('data-hold', 'false'); });
+    await p.click('[data-testid="rig-state-idle"]');
+    await p.waitForTimeout(700);
+    await p.evaluate(() => {
+      const w = window as unknown as { __poseLog: { t: number; g: string; a: number; x: number; y: number }[]; __poseStop: boolean };
+      w.__poseLog = []; w.__poseStop = false;
+      const groups = ['arm-l', 'arm-r', 'pencil', 'head', 'torso', 'notebook'];
+      const tick = () => { const t = performance.now(); for (const g of groups) { const m = new DOMMatrixReadOnly(getComputedStyle(document.querySelector(`.mino-rig__${g}`)!).transform); w.__poseLog.push({ t, g, a: (Math.atan2(m.b, m.a) * 180) / Math.PI, x: m.e, y: m.f }); } if (!w.__poseStop) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    });
+    const seqSteps: [string, number][] = [['explaining', 1500], ['writing', 1500], ['greeting', 450], ['speaking', 900], ['success', 350], ['explaining', 1300], ['entrance', 500], ['writing', 900], ['landing', 200], ['speaking', 600], ['idle', 900], ['explaining', 1400], ['idle', 900], ['writing', 1200], ['idle', 900]];
+    for (const [st, ms] of seqSteps) { await p.click(`[data-testid="rig-state-${st}"]`); await p.waitForTimeout(ms); }
+    const log = await p.evaluate(() => { (window as unknown as { __poseStop: boolean }).__poseStop = true; return (window as unknown as { __poseLog: { t: number; g: string; a: number; x: number; y: number }[] }).__poseLog; });
+    let maxAng = 0, maxAngAt = '';
+    const last: Record<string, { t: number; a: number }> = {};
+    for (const e of log) { const q = last[e.g]; if (q) { let da = Math.abs(e.a - q.a); if (da > 180) da = 360 - da; const dt = Math.max(1, e.t - q.t); if (dt < 120 && da / dt > maxAng) { maxAng = da / dt; maxAngAt = e.g; } } last[e.g] = { t: e.t, a: e.a }; }
+    check(`no pose snap across 15 interrupted transitions (peak ${maxAng.toFixed(2)}°/ms on ${maxAngAt}; a hard cut would exceed 5°/ms)`, maxAng < 1.4, maxAng);
+    const rest = await p.evaluate(() => ['arm-l', 'arm-r', 'pencil', 'head', 'notebook', 'figure'].map((g) => { const m = new DOMMatrixReadOnly(getComputedStyle(document.querySelector(`.mino-rig__${g}`)!).transform); return { g, rot: Math.abs((Math.atan2(m.b, m.a) * 180) / Math.PI), tr: Math.hypot(m.e, m.f) }; }));
+    check('after the last interruption the character is back at rest (every group within 2° / 4 px)', rest.every((r) => r.rot < 2 && r.tr < 4), JSON.stringify(rest));
+    for (const [from, to] of [['explaining', 'idle'], ['writing', 'greeting'], ['greeting', 'explaining'], ['speaking', 'writing']] as const) {
+      await p.click(`[data-testid="rig-state-${from}"]`); await p.waitForTimeout(1400);
+      await p.click(`[data-testid="rig-state-${to}"]`);
+      const bridged = await p.getAttribute('.mino-rig', 'data-bridge');
+      check(`${from} → ${to}: state is "${to}" immediately and the pose bridge runs`, (await p.getAttribute('.mino-rig', 'data-state')) === to && bridged === 'true', bridged);
+      await p.waitForTimeout(600);
+      check(`${from} → ${to}: the bridge ends and ${to} plays`, (await p.getAttribute('.mino-rig', 'data-bridge')) === null);
+    }
+    await p.click('[data-testid="rig-state-idle"]');
+    await p.waitForTimeout(500);
+
     console.log('\n[7] Arm rotation at ±20° and combined ±12° leaves no torso gap');
     await p.evaluate(() => { (document.querySelector('[data-testid="rig-frame"]') as HTMLElement).style.background = '#ff00ff'; (document.querySelector('[data-testid="rig-frame"]') as HTMLElement).style.backgroundImage = 'none'; });
     const frameEl = await p.$('[data-testid="rig-frame"]');
-    const regions = [{ name: 'left torso under the arm', x0: 440, y0: 650, x1: 560, y1: 760 }, { name: 'right torso under the notebook', x0: 930, y0: 650, x1: 1100, y1: 790 }];
+    const regions = [{ name: 'left torso under the arm', x0: 440, y0: 650, x1: 560, y1: 760 }, { name: 'right torso under the notebook', x0: 930, y0: 650, x1: 1020, y1: 770 }];
     for (const [label, aL, aR] of [['L −20°', -20, 0], ['L +20°', 20, 0], ['R −20°', 0, -20], ['R +20°', 0, 20], ['both −12°/+12°', -12, 12], ['both +12°/−12°', 12, -12]] as const) {
       await freezeAt(p, 'idle', 0);
       await p.evaluate(([l, r]) => { const a = document.querySelector('.mino-rig__arm-l') as HTMLElement, b = document.querySelector('.mino-rig__arm-r') as HTMLElement; a.style.animation = 'none'; b.style.animation = 'none'; a.style.transform = `rotate(${l}deg)`; b.style.transform = `rotate(${r}deg)`; }, [aL, aR] as const);

@@ -13,6 +13,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const st = JSON.parse(fs.readFileSync(IN + 'stats.json'));
 const LAYERS = st.LAYERS, ID = st.ID;
 const OWN = fs.readFileSync(IN + 'ownership.bin');
+const MS = await sharp(DIR + 'master.png').ensureAlpha().raw().toBuffer(); const MA = (i) => MS[i * 4 + 3]; // master alpha
 const L = {}; for (const n of LAYERS) L[n] = Uint8Array.from(await sharp(IN + `layer-${n}.png`).ensureAlpha().raw().toBuffer());
 const recon = {}; for (const n of LAYERS) recon[n] = new Uint8Array(N); // 1 = pixel not taken from the master
 const A = (n, i) => L[n][i * 4 + 3];
@@ -139,6 +140,34 @@ const zBP = maskOf((i) => hullBP[i] && A('backpack', i) < 10 && OWN[i] !== 0 && 
   const near = boxAny(zBody, 8); const b = L.body; let c = 0;
   for (let i = 0; i < N; i++) if (near[i] && !zBody[i] && b[i * 4 + 3] > 0) { const [h, sat, v] = rgbToHsv(b[i * 4], b[i * 4 + 1], b[i * 4 + 2]); const pale = sat < 0.3 && v > 0.6, foreign = sat > 0.25 && v > 0.25 && (h < 100 || h > 320); if (pale || foreign) { b[i * 4 + 3] = 0; zBody[i] = 1; c++; } }
   report.cleanup.bodyLeftoversRefilled = c; }
+// Outline of the true torso: along rows where the arms/notebook hide the silhouette, interpolate it (minimum-curvature)
+// from the visible rows above and below, and never fill beyond it - the hull alone can bulge wider than the real body.
+{
+  // exterior = transparent pixels connected to the image border (small transparent slivers inside the figure don't count)
+  const EXT = new Uint8Array(N); { const st3 = new Int32Array(N); let sp = 0; const push = (j) => { if (!EXT[j] && MA(j) < 40) { EXT[j] = 1; st3[sp++] = j; } };
+    for (let x = 0; x < W; x++) { push(x); push((H - 1) * W + x); } for (let y = 0; y < H; y++) { push(y * W); push(y * W + W - 1); }
+    while (sp) { const i = st3[--sp]; const x = i % W, y = (i / W) | 0; if (x > 0) push(i - 1); if (x < W - 1) push(i + 1); if (y > 0) push(i - W); if (y < H - 1) push(i + W); } }
+  const exterior = (i) => { const x = i % W, y = (i / W) | 0; for (const [dx, dy] of [[-4, 0], [4, 0], [0, -4], [0, 4], [-3, -3], [3, 3], [-3, 3], [3, -3]]) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) return true; const j = yy * W + xx; if (EXT[j]) return true; if ([ID.backpack, ID.tag, ID.footL, ID.footR].includes(OWN[j])) return true; } return false; };
+  // a row's silhouette edge is "visible" when the first/last non-backpack pixel on it belongs to the torso itself
+  // (not to an arm, the pencil, the notebook, a foot or the mask which may stick out past it)
+  const xl = new Float32Array(H).fill(NaN), xr = new Float32Array(H).fill(NaN);
+  const skip = (o) => o === ID.backpack || o === ID.tag;
+  for (let y = 0; y < H; y++) {
+    let x = 0; for (; x < W; x++) { const i = y * W + x; if (MA(i) > 128 && !skip(OWN[i])) break; }
+    if (x < W && OWN[y * W + x] === ID.body) xl[y] = x;
+    let x2 = W - 1; for (; x2 >= 0; x2--) { const i = y * W + x2; if (MA(i) > 128 && !skip(OWN[i])) break; }
+    if (x2 >= 0 && OWN[y * W + x2] === ID.body) xr[y] = x2;
+  }
+  const relax = (arr) => { const known = arr.map((v) => !Number.isNaN(v)); let a = -1, b = -1; for (let y = 0; y < H; y++) if (known[y]) { if (a < 0) a = y; b = y; }
+    // linear start, then minimum-curvature relaxation on the unknown rows
+    for (let y = a; y <= b; y++) if (!known[y]) { let y0 = y; while (!known[y0]) y0--; let y1 = y; while (!known[y1]) y1++; arr[y] = arr[y0] + ((arr[y1] - arr[y0]) * (y - y0)) / (y1 - y0); }
+    for (let it = 0; it < 4000; it++) for (let y = a + 2; y <= b - 2; y++) if (!known[y]) arr[y] = (4 * (arr[y - 1] + arr[y + 1]) - (arr[y - 2] + arr[y + 2])) / 6; return { a, b, known }; };
+  const L0 = relax(xl), R0 = relax(xr);
+  let clipped = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; if (!zBody[i]) continue; const inL = y >= L0.a && y <= L0.b, inR = y >= R0.a && y <= R0.b; if ((inL && x < xl[y] + 2) || (inR && x > xr[y] - 2)) { zBody[i] = 0; clipped++; } }
+  report.cleanup.bodyFillClippedToOutline = clipped;
+  report.cleanup.outlineRows = { L: [L0.a, L0.b], R: [R0.a, R0.b], sample: [300, 450, 550, 650, 750, 850].map((y) => [y, Math.round(xl[y]), Math.round(xr[y])]) };
+}
 const zArmL = maskOf((i) => hullArmL[i] && A('armLeft', i) < 10 && OWN[i] === ID.pencil);
 const zArmR = maskOf((i) => hullArmR[i] && A('armRight', i) < 10 && OWN[i] === ID.notebook);
 const zNote = maskOf((i) => hullNote[i] && A('notebook', i) < 10 && OWN[i] === ID.armRight);
@@ -154,11 +183,15 @@ const bandNear = boxAny(zProps, SH_R);
 const bandIdx = []; const origRGB = new Map();
 for (let i = 0; i < N; i++) if (bandNear[i] && !zBody[i] && L.body[i * 4 + 3] >= 10 && OWN[i] === ID.body) { bandIdx.push(i); origRGB.set(i, [L.body[i * 4], L.body[i * 4 + 1], L.body[i * 4 + 2], L.body[i * 4 + 3]]); }
 // side of each band pixel = side of the nearest prop pixel in the hole
-const sideOf = (i) => { const x = i % W, y = (i / W) | 0; let best = 1e9, side = 0; for (let dy = -SH_R - 2; dy <= SH_R + 2; dy++) for (let dx = -SH_R - 2; dx <= SH_R + 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (!zProps[j]) continue; const d = dx * dx + dy * dy; if (d < best) { best = d; side = propsL.includes(OWN[j]) ? 1 : 2; } } return side; };
-const sides = new Map(bandIdx.map((i) => [i, sideOf(i)]));
+const sideOf = (i) => { const x = i % W, y = (i / W) | 0; let best = 1e9, side = 0; for (let dy = -SH_R - 2; dy <= SH_R + 2; dy++) for (let dx = -SH_R - 2; dx <= SH_R + 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const j = yy * W + xx; if (!zProps[j]) continue; const d = dx * dx + dy * dy; if (d < best) { best = d; side = propsL.includes(OWN[j]) ? 1 : 2; } } return { side, dist: Math.sqrt(best) }; };
+const sides = new Map(bandIdx.map((i) => [i, sideOf(i).side])); const bandDist = new Map(bandIdx.map((i) => [i, sideOf(i).dist]));
 for (const i of bandIdx) { L.body[i * 4 + 3] = 0; zBody[i] = 1; }
 report.cleanup.edgeBandRefilled = { body: bandIdx.length, notebook: widen(zNote, 'notebook'), armRight: widen(zArmR, 'armRight'), armLeft: widen(zArmL, 'armLeft') };
 report.fills.body = fillZone('body', zBody, { block: 56, seed: 11, lowR: 12, maxRes: 34 });
+// blend the refilled band back into the original fur across its width (clean fur next to the object, original shading
+// further out) so there is no ring/seam where the refill ends
+for (const i of bandIdx) { const o = origRGB.get(i); const d = bandDist.get(i) ?? 0; const t = Math.max(0, Math.min(1, (d / SH_R - 0.15) / 0.85)); const w = t * t * (3 - 2 * t);
+  for (let c = 0; c < 3; c++) L.body[i * 4 + c] = Math.round(L.body[i * 4 + c] * (1 - w) + o[c] * w); L.body[i * 4 + 3] = Math.max(L.body[i * 4 + 3], o[3]); }
 {
   L.shadowL = new Uint8Array(N * 4); L.shadowR = new Uint8Array(N * 4); recon.shadowL = new Uint8Array(N); recon.shadowR = new Uint8Array(N);
   const lum = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b; const C = [18, 8, 56], lumC = lum(...C); let count = 0;
@@ -180,6 +213,21 @@ report.fills.body = fillZone('body', zBody, { block: 56, seed: 11, lowR: 12, max
     if (c) fixes.push([i, r / c, g / c, bb / c]); }
   for (const [i, r, g, bb] of fixes) { b[i * 4] = Math.round(r); b[i * 4 + 1] = Math.round(g); b[i * 4 + 2] = Math.round(bb); recon.body[i] = 1; }
   report.cleanup.bodyBleedSpecksFixed = fixes.length; }
+// Replace the extracted shadow estimate (it left dark squiggles when an arm moved over the white mask) with a clean synthetic
+// soft contact shadow: the blurred silhouette of the object, nudged down-right, so it follows the arm/pencil/notebook anywhere.
+{
+  const blurF = (src, r) => { const t = new Float32Array(N), o = new Float32Array(N);
+    for (let y = 0; y < H; y++) { let s2 = 0; for (let x = -r; x <= r; x++) s2 += src[y * W + Math.min(W - 1, Math.max(0, x))]; for (let x = 0; x < W; x++) { t[y * W + x] = s2 / (2 * r + 1); s2 += src[y * W + Math.min(W - 1, x + r + 1)] - src[y * W + Math.max(0, x - r)]; } }
+    for (let x = 0; x < W; x++) { let s2 = 0; for (let y = -r; y <= r; y++) s2 += t[Math.min(H - 1, Math.max(0, y)) * W + x]; for (let y = 0; y < H; y++) { o[y * W + x] = s2 / (2 * r + 1); s2 += t[Math.min(H - 1, y + r + 1) * W + x] - t[Math.max(0, y - r) * W + x]; } } return o; };
+  const C2 = [22, 10, 64]; let total = 0;
+  for (const [S, names] of [['shadowL', ['armLeft', 'pencil']], ['shadowR', ['armRight', 'notebook', 'armRightHand']]]) {
+    const obj = new Float32Array(N); for (const n of names) if (L[n]) for (let i = 0; i < N; i++) { const a = L[n][i * 4 + 3] / 255; if (a > obj[i]) obj[i] = a; }
+    const b = blurF(blurF(blurF(obj, 5), 5), 5); const buf = new Uint8Array(N * 4); const DX = 2, DY = 7;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const sx = x - DX, sy = y - DY; if (sx < 0 || sy < 0 || sx >= W || sy >= H) continue; const a = Math.min(0.2, b[sy * W + sx] * 0.42); if (a < 0.02) continue; const i = y * W + x; buf[i * 4] = C2[0]; buf[i * 4 + 1] = C2[1]; buf[i * 4 + 2] = C2[2]; buf[i * 4 + 3] = Math.round(a * 255); total++; }
+    L[S] = buf; recon[S] = new Uint8Array(N); for (let i = 0; i < N; i++) if (buf[i * 4 + 3]) recon[S][i] = 1;
+  }
+  report.fills.syntheticShadowPx = total;
+}
 // smooth the ragged silhouette of the filled torso (hull ∩ soft-edged occluder shapes): soft threshold on a blurred alpha
 {
   const a = new Float32Array(N); for (let i = 0; i < N; i++) a[i] = L.body[i * 4 + 3] / 255;
@@ -228,11 +276,13 @@ for (let i = 0; i < N; i++) if (handRegion[i]) { const a0 = L.armRightHand[i * 4
 const ORDER = ['backpack', 'footR', 'footL', 'body', 'tag', 'mask', 'mouth', 'eyeR', 'eyeL', 'armRight', 'notebook', 'armRightHand', 'armLeft', 'pencil'];
 const rank = Object.fromEntries(ORDER.map((n, k) => [n, k]));
 const featherJobs = [['tag', (i) => OWN[i] === ID.tag], ['mask', (i) => OWN[i] === ID.mask], ['notebook', (i) => OWN[i] === ID.notebook], ['armRight', (i) => OWN[i] === ID.armRight], ['armRightHand', (i) => handRegion[i]], ['armLeft', (i) => OWN[i] === ID.armLeft], ['pencil', (i) => OWN[i] === ID.pencil], ['body', (i) => OWN[i] === ID.body]];
+// a seam may only be softened where a layer behind really covers the pixel; otherwise it would punch a see-through halo
+const behindCovers = (n, i) => { const r = rank[n]; for (const m of ORDER) if (rank[m] < r && L[m] && L[m][i * 4 + 3] >= 200) return true; return false; };
 for (const [n, inLayer] of featherJobs) {
   let c = 0; const buf = L[n];
   for (let i = 0; i < N; i++) { if (!inLayer(i) || buf[i * 4 + 3] === 0) continue; const x = i % W, y = (i / W) | 0; let best = 99;
     for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue; const o = OWN[yy * W + xx]; if (!o || o === ID[n] && n !== 'armRightHand') continue; const on = LAYERS[o - 1]; if (n === 'armRightHand' && on === 'armRight') continue; if (rank[on] >= rank[n]) continue; const d = Math.hypot(dx, dy); if (d < best) best = d; }
-    if (best <= 3) { const f = Math.min(1, 0.35 + 0.25 * best); buf[i * 4 + 3] = Math.round(buf[i * 4 + 3] * f); c++; } }
+    if (best <= 3 && behindCovers(n, i)) { const f = Math.min(1, 0.35 + 0.25 * best); buf[i * 4 + 3] = Math.round(buf[i * 4 + 3] * f); c++; } }
   report.feather[n] = c;
 }
 
@@ -281,6 +331,36 @@ const mbx = Math.round(mcx) - 70, mby = Math.round(mcY) - 30;
 await drawShape('mouth-small', [mbx, mby, 140, 90], mouthOpen(mhw * 0.62, 11, false));
 await drawShape('mouth-wide', [mbx, mby, 140, 100], mouthOpen(mhw * 0.88, 27, true));
 
+// ---------------- mask under the eyes: smooth quadratic surface (closed-eye / wink states show no socket patch) ----------------
+// The open-eye layers carry the eye halo themselves; when an eye is closed the mask beneath must look like plain mask.
+// Fit a quadratic surface to a ring of clean mask pixels around each eye and use it inside the eye + halo, ramping back to
+// the original pixels so there is no visible edge.
+{
+  const mk = L.mask; const maskA = maskOf((i) => mk[i * 4 + 3] >= 250); const edgeFar = erodeBox(maskA, 16);
+  const solve = (A2, b2) => { const n = b2.length; const M = A2.map((r, i) => [...r, b2[i]]); for (let c = 0; c < n; c++) { let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r; [M[c], M[p]] = [M[p], M[c]]; for (let r = c + 1; r < n; r++) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; } } const x = new Array(n).fill(0); for (let r = n - 1; r >= 0; r--) { let v = M[r][n]; for (let k = r + 1; k < n; k++) v -= M[r][k] * x[k]; x[r] = v / M[r][r]; } return x; };
+  let changed = 0;
+  const eyesBox = [st.stats.eyeL.bbox, st.stats.eyeR.bbox];
+  const mouthC = [(st.stats.mouth.bbox[0] + st.stats.mouth.bbox[2]) / 2, (st.stats.mouth.bbox[1] + st.stats.mouth.bbox[3]) / 2];
+  for (let e = 0; e < 2; e++) {
+    const [x0, y0, x1, y1] = eyesBox[e]; const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, rx = (x1 - x0) / 2, ry = (y1 - y0) / 2;
+    const other = eyesBox[1 - e]; const ocx = (other[0] + other[2]) / 2, ocy = (other[1] + other[3]) / 2, orx = (other[2] - other[0]) / 2, ory = (other[3] - other[1]) / 2;
+    const rn = (x, y) => Math.hypot((x - cx) / rx, (y - cy) / ry);
+    const on = (x, y) => Math.hypot((x - ocx) / orx, (y - ocy) / ory);
+    const AtA = Array.from({ length: 6 }, () => new Array(6).fill(0)); const Atb = [0, 1, 2].map(() => new Array(6).fill(0)); let cnt = 0;
+    for (let y = Math.max(0, Math.floor(cy - ry * 2.3)); y < Math.min(H, Math.ceil(cy + ry * 2.3)); y++) for (let x = Math.max(0, Math.floor(cx - rx * 2.3)); x < Math.min(W, Math.ceil(cx + rx * 2.3)); x++) {
+      const i = y * W + x; const r = rn(x, y); if (r < 1.75 || r > 2.25 || !edgeFar[i] || OWN[i] !== ID.mask || recon.mask[i]) continue; if (on(x, y) < 1.9 || Math.hypot(x - mouthC[0], y - mouthC[1]) < 70) continue;
+      const u = (x - cx) / rx, v = (y - cy) / ry; const f = [1, u, v, u * u, u * v, v * v]; cnt++;
+      for (let a = 0; a < 6; a++) { for (let b2 = 0; b2 < 6; b2++) AtA[a][b2] += f[a] * f[b2]; for (let c = 0; c < 3; c++) Atb[c][a] += f[a] * mk[i * 4 + c]; } }
+    if (cnt < 400) { report.maskEyeSurface = { ...(report.maskEyeSurface || {}), [e]: 'skipped' }; continue; }
+    const coef = [0, 1, 2].map((c) => solve(AtA.map((r) => [...r]), Atb[c]));
+    for (let y = Math.max(0, Math.floor(cy - ry * 1.7)); y < Math.min(H, Math.ceil(cy + ry * 1.7)); y++) for (let x = Math.max(0, Math.floor(cx - rx * 1.7)); x < Math.min(W, Math.ceil(cx + rx * 1.7)); x++) {
+      const i = y * W + x; const r = rn(x, y); if (r >= 1.65 || mk[i * 4 + 3] === 0 || OWN[i] !== ID.mask) continue; if (Math.hypot(x - mouthC[0], y - mouthC[1]) < 62) continue; if (on(x, y) < 1.5) continue;
+      const w = r <= 1.3 ? 1 : (1.65 - r) / 0.35, ww = w * w * (3 - 2 * w); const u = (x - cx) / rx, v = (y - cy) / ry; const f = [1, u, v, u * u, u * v, v * v];
+      for (let c = 0; c < 3; c++) { let val = 0; for (let a = 0; a < 6; a++) val += coef[c][a] * f[a]; mk[i * 4 + c] = Math.max(0, Math.min(255, Math.round(mk[i * 4 + c] * (1 - ww) + val * ww))); }
+      recon.mask[i] = 1; changed++; }
+  }
+  report.maskEyeSurface = { ...(report.maskEyeSurface || {}), changedPx: changed };
+}
 // ---------------- write ----------------
 const written = {};
 for (const n of LAYERS) {

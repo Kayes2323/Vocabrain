@@ -199,3 +199,19 @@ routes `/dev/mino-coach-preview` and `/dev/mino-task1-welcome-preview` (both `no
   never used by the Task 1 welcome flow.
 - **Locally drawn (no artwork asset exists):** the ground shadow (CSS gradient), the sparkles (CSS clip-path), and the writing stroke (SVG path).
 - **Reduced motion:** no CSS animation at all; one-shots settle after 260 ms so choreographies still advance.
+
+## 11. Visual QA pass (real-time playback) — changes
+
+- **State transitions:** interrupting a state now eases every animated group back to rest through a pose bridge (190–440 ms, longer for far poses
+  such as the raised wave arm) before the next state starts; `data-state` is the requested state immediately and `data-bridge` pauses the CSS while the
+  bridge runs. States whose loop begins away from rest (writing, thinking) ease in first. Verified by an in-browser frame sampler (no snap above
+  1.2°/ms across 15 interrupted transitions; a hard cut would be >5°/ms) and a rest-pose check after the last interruption.
+- **Writing:** keyframes are generated (`scripts/mino-art/gen-rig-writing.mjs`) so the pencil tip follows the three handwriting strokes (worst error
+  0.3 master px over 15 sampled points); the pencil lies flatter so the eraser stays clear of the eye.
+- **Pointing:** the arm stays near the shoulder and the wrist swings the pencil (right ≈ 29° above horizontal, centre steeper, left raised) instead of
+  carrying the arm across the chest.
+- **Torso reconstruction:** fill is clipped to an outline interpolated from the visible silhouette (no hull bulge), the 10 px band around each object is
+  blended back into the original fur (no ring), and contact shadows are synthetic soft shadows that follow the arm/pencil/notebook.
+- **Face:** the mask under the eyes is a smooth quadratic surface fitted to clean mask pixels, so closed-eye/wink states show no socket patch.
+- **Seams:** feathering is applied only where a layer behind really covers the pixel (no see-through halos); seam audit: 49 non-opaque px inside the
+  neutral silhouette (silhouette interior 657,961 px).

@@ -83,15 +83,15 @@
    "file": "body.webp",
    "x": 217,
    "y": 17,
-   "w": 1014,
+   "w": 1015,
    "h": 896,
-   "visiblePx": 486528,
+   "visiblePx": 450512,
    "provenance": "original+locally-reconstructed",
-   "originalPx": 237218,
-   "locallyReconstructedPx": 249310,
+   "originalPx": 237522,
+   "locallyReconstructedPx": 212990,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 166470
+   "webpBytes": 156288
   },
   {
    "name": "tag",
@@ -106,7 +106,7 @@
    "locallyReconstructedPx": 2490,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 17344
+   "webpBytes": 17346
   },
   {
    "name": "mask",
@@ -117,11 +117,11 @@
    "h": 513,
    "visiblePx": 193218,
    "provenance": "original+locally-reconstructed",
-   "originalPx": 148940,
-   "locallyReconstructedPx": 0,
-   "prototypeFillPx": 44278,
+   "originalPx": 75967,
+   "locallyReconstructedPx": 82472,
+   "prototypeFillPx": 34779,
    "locallyGeneratedPx": 0,
-   "webpBytes": 16858
+   "webpBytes": 15992
   },
   {
    "name": "mouth",
@@ -246,17 +246,17 @@
   {
    "name": "shadowR",
    "file": "shadowR.webp",
-   "x": 903,
-   "y": 473,
-   "w": 283,
-   "h": 381,
-   "visiblePx": 11659,
+   "x": 912,
+   "y": 485,
+   "w": 379,
+   "h": 383,
+   "visiblePx": 89904,
    "provenance": "derived-from-master",
    "originalPx": 0,
-   "locallyReconstructedPx": 11659,
+   "locallyReconstructedPx": 89904,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 8934
+   "webpBytes": 5488
   },
   {
    "name": "armRight",
@@ -271,7 +271,7 @@
    "locallyReconstructedPx": 2327,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 10172
+   "webpBytes": 9986
   },
   {
    "name": "notebook",
@@ -286,7 +286,7 @@
    "locallyReconstructedPx": 7683,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 14332
+   "webpBytes": 14082
   },
   {
    "name": "armRightHand",
@@ -301,22 +301,22 @@
    "locallyReconstructedPx": 215,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 2266
+   "webpBytes": 2264
   },
   {
    "name": "shadowL",
    "file": "shadowL.webp",
-   "x": 421,
-   "y": 447,
-   "w": 296,
-   "h": 357,
-   "visiblePx": 18556,
+   "x": 366,
+   "y": 461,
+   "w": 349,
+   "h": 334,
+   "visiblePx": 70179,
    "provenance": "derived-from-master",
    "originalPx": 0,
-   "locallyReconstructedPx": 18556,
+   "locallyReconstructedPx": 70179,
    "prototypeFillPx": 0,
    "locallyGeneratedPx": 0,
-   "webpBytes": 13092
+   "webpBytes": 5330
   },
   {
    "name": "armLeft",

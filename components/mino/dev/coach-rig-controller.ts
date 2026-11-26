@@ -23,6 +23,14 @@ import {
   type RigPointDirection,
 } from './coach-preview-state';
 
+/** Every group that carries a state animation: their live pose is bridged back to rest when a state is interrupted. */
+const POSE_GROUPS = ['figure', 'pack', 'torso', 'tag', 'head', 'eyes', 'arm-r', 'arm-l', 'notebook', 'pencil', 'shadow'] as const;
+/** How long the pose bridge takes (ms) and how far from rest a group must be before a bridge is worth playing. */
+export const RIG_BRIDGE_MS = 190;
+/** A pose far from rest (e.g. the raised wave arm) takes longer to ease back so it never looks like a flick. */
+export const RIG_BRIDGE_MAX_MS = 440;
+const BRIDGE_MIN = { translatePx: 3, rotateDeg: 1.8, scale: 0.016 };
+
 export type RigEyes = 'open' | 'closed' | 'wink';
 export type RigMouth = 'neutral' | 'small' | 'wide';
 
@@ -54,6 +62,9 @@ export class MinoRigController {
   private reducedMq: MediaQueryList | null = null;
   private destroyed = false;
   private motionOn = false;
+  private bridgeAnims: Animation[] = [];
+  private bridgeTimer: ReturnType<typeof setTimeout> | undefined;
+  private groupEls: HTMLElement[] | null = null;
 
   constructor(root: HTMLElement, opts: RigControllerOptions = {}) {
     this.root = root;
@@ -109,21 +120,77 @@ export class MinoRigController {
     this.setState(this.sequence[0], options);
   }
 
+  private groups(): HTMLElement[] {
+    if (!this.groupEls) this.groupEls = POSE_GROUPS.map((g) => this.root.querySelector<HTMLElement>(`.mino-rig__${g}`)).filter((e): e is HTMLElement => !!e);
+    return this.groupEls;
+  }
+
+  /** True when the element is visibly away from its rest pose (matrix or opacity). */
+  private away(el: HTMLElement): boolean {
+    const cs = getComputedStyle(el);
+    if (parseFloat(cs.opacity) < 0.98) return true;
+    const t = cs.transform;
+    if (!t || t === 'none') return false;
+    const m = new DOMMatrixReadOnly(t);
+    const rot = (Math.atan2(m.b, m.a) * 180) / Math.PI;
+    return Math.hypot(m.e, m.f) > BRIDGE_MIN.translatePx || Math.abs(rot) > BRIDGE_MIN.rotateDeg || Math.abs(Math.hypot(m.a, m.b) - 1) > BRIDGE_MIN.scale || Math.abs(Math.hypot(m.c, m.d) - 1) > BRIDGE_MIN.scale;
+  }
+
+  /**
+   * Interrupting a state must never leave the character in that state's pose: capture the live pose of every
+   * animated group, drop the old state, ease the groups back to rest (script animations outrank the CSS ones),
+   * and only then start the next state from rest. Reduced motion / nothing displaced → no bridge, instant switch.
+   */
   private setState(next: CoachRigState, options: RigPlayOptions = {}): void {
     clearTimeout(this.settleTimer);
+    clearTimeout(this.bridgeTimer);
     this.cancelBlinkReopen();
+    const live = this.motionOn ? this.groups().filter((el) => this.away(el)) : [];
+    const poses = live.map((el) => ({ el, transform: getComputedStyle(el).transform, opacity: getComputedStyle(el).opacity }));
+    for (const a of this.bridgeAnims) a.cancel();
+    this.bridgeAnims = [];
+    const farDeg = poses.reduce((mx, { transform }) => { if (transform === 'none') return mx; const m = new DOMMatrixReadOnly(transform); return Math.max(mx, Math.abs((Math.atan2(m.b, m.a) * 180) / Math.PI)); }, 0);
+    const bridgeMs = Math.min(RIG_BRIDGE_MAX_MS, Math.round(RIG_BRIDGE_MS + farDeg * 1.9));
+    this.state = next;
+    this.opts.onStateChange?.(next);
+    if (!rigBlinkAllowed(next)) this.cancelBlink();
+    if (poses.length === 0) {
+      this.applyState(next, options);
+      return;
+    }
+    // `data-state` is the requested state right away; `data-bridge` pauses all CSS animation while the live pose is eased to rest
     if (options.point) this.root.dataset.point = options.point;
-    // Restart CSS animations cleanly: clear, force a style flush, then apply.
+    this.root.dataset.state = next;
+    this.root.dataset.bridge = 'true';
+    this.root.dataset.eyes = 'open';
+    this.bridgeAnims = poses.map(({ el, transform, opacity }) =>
+      el.animate([{ transform: transform === 'none' ? 'none' : transform, opacity }, { transform: 'none', opacity: '1' }], { duration: bridgeMs, easing: 'cubic-bezier(0.4, 0, 0.2, 1)' }),
+    );
+    this.bridgeTimer = setTimeout(() => {
+      for (const a of this.bridgeAnims) a.cancel();
+      this.bridgeAnims = [];
+      if (this.destroyed || this.state !== next) return;
+      delete this.root.dataset.bridge;
+      this.armState(next);
+    }, bridgeMs);
+  }
+
+  /** Start `next` from rest: restarts CSS animations cleanly (clear, flush, apply) and arms the settle/blink timers. */
+  private applyState(next: CoachRigState, options: RigPlayOptions): void {
+    delete this.root.dataset.bridge;
+    if (options.point) this.root.dataset.point = options.point;
     this.root.dataset.state = '';
     void this.root.offsetWidth;
     this.root.dataset.state = next;
     this.root.dataset.eyes = 'open';
-    this.state = next;
-    this.opts.onStateChange?.(next);
-    if (!rigBlinkAllowed(next)) this.cancelBlink();
-    else if (this.motionOn) this.scheduleBlink();
+    this.armState(next);
+  }
+
+  private armState(next: CoachRigState): void {
+    if (rigBlinkAllowed(next) && this.motionOn) this.scheduleBlink();
     const hold = rigStateHoldMs(next);
-    if (hold > 0) {
+    // data-hold="true" (preview/inspection only) keeps one-shots on screen instead of auto-settling
+    if (hold > 0 && this.root.dataset.hold !== 'true') {
       const ms = this.motionOn ? hold : REDUCED_MOTION_SETTLE_MS;
       this.settleTimer = setTimeout(() => this.settle(), ms);
     }
@@ -197,6 +264,8 @@ export class MinoRigController {
   destroy(): void {
     this.destroyed = true;
     clearTimeout(this.settleTimer);
+    clearTimeout(this.bridgeTimer);
+    for (const a of this.bridgeAnims) a.cancel();
     this.cancelBlink();
     this.io?.disconnect();
     this.io = null;

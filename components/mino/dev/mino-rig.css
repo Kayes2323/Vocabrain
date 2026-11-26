@@ -1,3 +1,4 @@
+@import './mino-rig-writing.generated.css';
 /*
  * Mino Coach — REAL ARTWORK rig styling (approved Stage B layers).
  * Namespace `.mino-rig__*` (separate from the placeholder `.mino-coach-rig__*` and from the shipped `.mino-coach`).
@@ -15,16 +16,18 @@
   isolation: isolate;
   contain: layout style;
   overflow: visible;
-  --pt-rot: -42deg;
-  --pt-x: 3%;
-  --pt-y: -3%;
+  /* pointing (explaining): arm rotation, wrist (pencil) rotation, arm translate, head turn */
+  --pt-arm: -28deg;
+  --pt-wrist: -52deg;
+  --pt-x: 1.4%;
+  --pt-y: -1.2%;
   --pt-head: -2deg;
 }
 .mino-rig[data-clip='true'] {
   overflow: hidden;
 }
-.mino-rig[data-point='center'] { --pt-rot: -66deg; --pt-x: 6%; --pt-y: -5%; --pt-head: 0deg; }
-.mino-rig[data-point='left'] { --pt-rot: 112deg; --pt-x: -3%; --pt-y: -5%; --pt-head: 2.2deg; }
+.mino-rig[data-point='center'] { --pt-arm: -34deg; --pt-wrist: -54deg; --pt-x: 1.8%; --pt-y: -1.2%; --pt-head: 0deg; }
+.mino-rig[data-point='left'] { --pt-arm: 118deg; --pt-wrist: 16deg; --pt-x: -9.5%; --pt-y: -3.8%; --pt-head: 2.2deg; }
 
 .mino-rig__stage {
   position: absolute;
@@ -120,6 +123,7 @@
 
 /* off-screen / hidden tab: pause. Reduced motion: no animation at all (static neutral pose). */
 .mino-rig[data-motion='off'] * { animation-play-state: paused !important; }
+.mino-rig[data-bridge='true'] .mino-rig__stage * { animation: none !important; }
 .mino-rig[data-reduced='true'] *,
 .mino-rig[data-reduced='true'] *::before { animation: none !important; transition: none !important; }
 
@@ -162,8 +166,8 @@
 }
 @keyframes rig-enter-pack { 0% { transform: rotate(14deg); } 58% { transform: rotate(-9deg); } 78% { transform: rotate(3deg); } 100% { transform: rotate(0); } }
 @keyframes rig-enter-tag { 0% { transform: rotate(26deg); } 58% { transform: rotate(-20deg); } 80% { transform: rotate(7deg); } 100% { transform: rotate(0); } }
-@keyframes rig-enter-arm-l { 0% { transform: rotate(-22deg); } 58% { transform: rotate(14deg); } 80% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
-@keyframes rig-enter-arm-r { 0% { transform: rotate(18deg); } 58% { transform: rotate(-10deg); } 80% { transform: rotate(3deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-arm-l { 0% { transform: rotate(0deg); } 12% { transform: rotate(-22deg); } 58% { transform: rotate(14deg); } 80% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-arm-r { 0% { transform: rotate(0deg); } 12% { transform: rotate(18deg); } 58% { transform: rotate(-10deg); } 80% { transform: rotate(3deg); } 100% { transform: rotate(0); } }
 @keyframes rig-enter-shadow { 0% { opacity: 0; transform: scale(0.5, 0.7); } 60% { opacity: 0.2; transform: scale(0.8, 0.9); } 72% { opacity: 1; transform: scale(1.08, 1.05); } 100% { opacity: 1; transform: scale(1, 1); } }
 @keyframes rig-enter-gaze { 0%, 55% { transform: translate(0.5%, -0.2%); } 100% { transform: translate(0, 0); } }
 .mino-rig[data-state='entrance'] .mino-rig__figure { animation: rig-enter-figure 1050ms cubic-bezier(0.22, 0.8, 0.3, 1) both; }
@@ -243,15 +247,21 @@
 
 /* ========================== EXPLAINING (held): turn toward the content, point with the pencil ========================== */
 @keyframes rig-explain-arm-l {
-  0%, 10% { transform: rotate(0) translate(0, 0); }
-  28% { transform: rotate(var(--pt-rot)) translate(var(--pt-x), var(--pt-y)); }
-  36% { transform: rotate(calc(var(--pt-rot) - 5deg)) translate(var(--pt-x), var(--pt-y)); }
-  46% { transform: rotate(calc(var(--pt-rot) + 3deg)) translate(var(--pt-x), var(--pt-y)); }
-  56% { transform: rotate(calc(var(--pt-rot) - 4deg)) translate(var(--pt-x), var(--pt-y)); }
-  72% { transform: rotate(var(--pt-rot)) translate(var(--pt-x), var(--pt-y)); }
-  88%, 100% { transform: rotate(0) translate(0, 0); }
+  0%, 10% { transform: translate(0, 0) rotate(0deg); }
+  28% { transform: translate(var(--pt-x), var(--pt-y)) rotate(var(--pt-arm)); }
+  38% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) - 3deg)); }
+  48% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) + 2deg)); }
+  58% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) - 3deg)); }
+  72% { transform: translate(var(--pt-x), var(--pt-y)) rotate(var(--pt-arm)); }
+  88%, 100% { transform: translate(0, 0) rotate(0deg); }
 }
-@keyframes rig-explain-pencil { 0%, 10%, 88%, 100% { transform: rotate(0); } 28%, 72% { transform: rotate(-8deg); } }
+@keyframes rig-explain-pencil {
+  0%, 10%, 88%, 100% { transform: rotate(0deg); }
+  28%, 72% { transform: rotate(var(--pt-wrist)); }
+  40% { transform: rotate(calc(var(--pt-wrist) + 4deg)); }
+  52% { transform: rotate(calc(var(--pt-wrist) - 3deg)); }
+  62% { transform: rotate(calc(var(--pt-wrist) + 4deg)); }
+}
 @keyframes rig-explain-head { 0%, 10%, 90%, 100% { transform: rotate(0) translateX(0); } 28%, 76% { transform: rotate(var(--pt-head)) translateX(0.5%); } }
 @keyframes rig-explain-arm-r { 0%, 10%, 90%, 100% { transform: rotate(0); } 28%, 76% { transform: rotate(2.2deg); } }
 @keyframes rig-explain-gaze { 0%, 10%, 90%, 100% { transform: translate(0, 0); } 28%, 76% { transform: translate(0.55%, -0.2%); } }
@@ -264,35 +274,7 @@
 .mino-rig[data-state='explaining'] .mino-rig__mouth-small { animation: rig-talk-small 1300ms step-end infinite; }
 .mino-rig[data-state='explaining'] .mino-rig__mouth-wide { animation: none; }
 
-/* ========================== WRITING (held): hand + wrist scribble on the notebook ========================== */
-@keyframes rig-write-arm-l {
-  0%, 100% { transform: translate(21.0%, -3.4%) rotate(-12deg); }
-  12% { transform: translate(20.6%, -3.0%) rotate(-11deg); }
-  24% { transform: translate(21.5%, -3.7%) rotate(-13deg); }
-  36% { transform: translate(20.8%, -2.8%) rotate(-11.5deg); }
-  48% { transform: translate(21.8%, -3.6%) rotate(-13deg); }
-  60% { transform: translate(21.0%, -3.0%) rotate(-12deg); }
-  72% { transform: translate(22.0%, -3.7%) rotate(-13.5deg); }
-  84% { transform: translate(21.2%, -2.9%) rotate(-12deg); }
-}
-/* wrist: the pencil lies flatter (eraser clear of the eye), tip scribbles on the page */
-@keyframes rig-write-pencil { 0%, 100% { transform: rotate(-20deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(-22deg); } 75% { transform: rotate(-15deg); } }
-@keyframes rig-write-arm-r { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(15.8deg); } }
-@keyframes rig-write-head { 0%, 100% { transform: rotate(-1.4deg) translateY(0.35%); } 50% { transform: rotate(-0.8deg) translateY(0.45%); } }
-@keyframes rig-write-gaze { 0%, 100% { transform: translate(0.45%, 0.8%); } 50% { transform: translate(0.55%, 0.9%); } }
-@keyframes rig-write-stroke { 0% { stroke-dashoffset: 1; } 28% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
-@keyframes rig-write-stroke-2 { 0%, 26% { stroke-dashoffset: 1; } 54% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
-@keyframes rig-write-stroke-3 { 0%, 52% { stroke-dashoffset: 1; } 80% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; } }
-@keyframes rig-write-stroke-fade { 0% { opacity: 0.85; } 88% { opacity: 0.85; } 100% { opacity: 0; } }
-.mino-rig[data-state='writing'] .mino-rig__arm-l { animation: rig-write-arm-l 0.9s ease-in-out infinite; }
-.mino-rig[data-state='writing'] .mino-rig__pencil { animation: rig-write-pencil 0.9s ease-in-out infinite; }
-.mino-rig[data-state='writing'] .mino-rig__arm-r { animation: rig-write-arm-r 3s ease-in-out infinite; }
-.mino-rig[data-state='writing'] .mino-rig__head { animation: rig-write-head 3s ease-in-out infinite; }
-.mino-rig[data-state='writing'] .mino-rig__eyes { animation: rig-write-gaze 3s ease-in-out infinite; }
-.mino-rig[data-state='writing'] .mino-rig__stroke { animation: rig-write-stroke-fade 3.4s linear infinite; }
-.mino-rig[data-state='writing'] .mino-rig__stroke path:nth-child(1) { animation: rig-write-stroke 3.4s linear infinite; }
-.mino-rig[data-state='writing'] .mino-rig__stroke path:nth-child(2) { animation: rig-write-stroke-2 3.4s linear infinite; }
-.mino-rig[data-state='writing'] .mino-rig__stroke path:nth-child(3) { animation: rig-write-stroke-3 3.4s linear infinite; }
+/* ========================== WRITING (held): generated, see mino-rig-writing.generated.css ========================== */
 
 /* ========================== SUCCESS (≈900 ms): one small happy hop ========================== */
 @keyframes rig-success-figure {
@@ -324,12 +306,14 @@
 .mino-rig[data-state='success'] .mino-rig__sparkle-c { animation: rig-sparkle-pop 900ms ease-out 220ms both; }
 
 /* ========================== THINKING / ENCOURAGING: defined, dormant (not used by the Task 1 welcome) ========================== */
-@keyframes rig-think-gaze { 0%, 100% { transform: translate(0.6%, -0.5%); } 30% { transform: translate(-0.5%, -0.55%); } 62% { transform: translate(0.6%, -0.5%); } }
-@keyframes rig-think-arm-l { 0%, 100% { transform: rotate(-58deg) translate(5%, -5.5%); } 50% { transform: rotate(-61deg) translate(5%, -5.8%); } }
+@keyframes rig-think-in-arm-l { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(5%, -5.5%) rotate(-58deg); } }
+@keyframes rig-think-arm-l { 0%, 100% { transform: translate(5%, -5.5%) rotate(-58deg); } 50% { transform: translate(5%, -5.8%) rotate(-61deg); } }
+@keyframes rig-think-in-head { from { transform: rotate(0deg); } to { transform: rotate(1.6deg); } }
 @keyframes rig-think-head { 0%, 100% { transform: rotate(1.6deg); } 50% { transform: rotate(2.2deg); } }
+@keyframes rig-think-gaze { 0%, 100% { transform: translate(0.6%, -0.5%); } 30% { transform: translate(-0.5%, -0.55%); } 62% { transform: translate(0.6%, -0.5%); } }
 .mino-rig[data-state='thinking'] .mino-rig__eyes { animation: rig-think-gaze 3.2s ease-in-out infinite; }
-.mino-rig[data-state='thinking'] .mino-rig__arm-l { animation: rig-think-arm-l 3.4s ease-in-out infinite; }
-.mino-rig[data-state='thinking'] .mino-rig__head { animation: rig-think-head 3.4s ease-in-out infinite; }
+.mino-rig[data-state='thinking'] .mino-rig__arm-l { animation: rig-think-in-arm-l 420ms ease-out both, rig-think-arm-l 3.4s ease-in-out 420ms infinite; }
+.mino-rig[data-state='thinking'] .mino-rig__head { animation: rig-think-in-head 420ms ease-out both, rig-think-head 3.4s ease-in-out 420ms infinite; }
 @keyframes rig-encourage-head { 0%, 100% { transform: rotate(0); } 30%, 75% { transform: rotate(-2.4deg); } }
 @keyframes rig-encourage-arm-l { 0%, 100% { transform: rotate(0); } 32%, 70% { transform: rotate(-24deg) translate(1.6%, -2%); } }
 @keyframes rig-encourage-mouth-neutral { 0%, 24%, 84%, 100% { opacity: 1; } 24.01%, 83.99% { opacity: 0; } }

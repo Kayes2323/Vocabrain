@@ -35,10 +35,16 @@ export function MinoCoachPreviewClient() {
   const [size, setSize] = useState<number>(420);
   const [pivots, setPivots] = useState(false);
   const [slow, setSlow] = useState(false);
+  const [hold, setHold] = useState(false);
   const [log, setLog] = useState<string[]>([]);
   const rootWrap = useRef<HTMLDivElement>(null);
 
   const note = useCallback((s: string) => setLog((l) => [`${new Date().toLocaleTimeString()}  ${s}`, ...l].slice(0, 12)), []);
+
+  // inspection mode: one-shots stay on screen instead of auto-settling
+  useEffect(() => {
+    rootWrap.current?.querySelector<HTMLElement>('.mino-rig')?.setAttribute('data-hold', hold ? 'true' : 'false');
+  }, [hold]);
 
   // slow motion (0.25x) for defect hunting: applied to every running animation of the rig, re-applied on state change
   useEffect(() => {
@@ -56,13 +62,13 @@ export function MinoCoachPreviewClient() {
         <p className="inline-block rounded bg-amber-100 px-2 py-1 text-xs font-semibold tracking-wide text-amber-800 uppercase">Dev-only — not reachable in production</p>
         <h1 className="text-2xl font-semibold">Mino Coach — real artwork rig preview</h1>
         <p className="text-sm text-muted-foreground">
-          The approved Stage B artwork (19 independent layers) in the existing DOM/CSS rig. Trigger each state below; slow motion and pivot markers help spot defects. The shipped mascot in Task 1/Task 2/My Brain is untouched.{' '}
+          The approved Stage B artwork (21 independent layers: 19 artwork + 2 contact-shadow) in the existing DOM/CSS rig. Trigger each state below; slow motion and pivot markers help spot defects. The shipped mascot in Task 1/Task 2/My Brain is untouched.{' '}
           <Link className="underline" href="/dev/mino-task1-welcome-preview">Open the Task 1 welcome placement preview →</Link>
         </p>
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[auto_1fr]">
-        <div className="space-y-3">
+        <div className="space-y-3 lg:sticky lg:top-4 lg:self-start">
           <div ref={rootWrap} className="relative mx-auto rounded-xl border border-dashed border-border bg-[repeating-conic-gradient(#f4f4f5_0_25%,#fff_0_50%)] bg-[length:20px_20px] p-0" style={{ width: size, maxWidth: '100%' }} data-testid="rig-frame">
             <MinoCoachRig
               onReady={(c) => { setCtrl(c); note('artwork decoded, rig ready'); }}
@@ -76,6 +82,7 @@ export function MinoCoachPreviewClient() {
               <button key={s.px} type="button" className={`rounded-full border px-3 py-1 ${size === s.px ? 'border-foreground bg-foreground text-background' : 'border-border bg-card'}`} onClick={() => setSize(s.px)}>{s.label}</button>
             ))}
             <label className="flex items-center gap-1"><input type="checkbox" checked={pivots} onChange={(e) => setPivots(e.target.checked)} /> pivots</label>
+            <label className="flex items-center gap-1"><input type="checkbox" checked={hold} onChange={(e) => setHold(e.target.checked)} /> hold one-shots</label>
             <label className="flex items-center gap-1"><input type="checkbox" checked={slow} onChange={(e) => setSlow(e.target.checked)} /> slow (0.25×)</label>
           </div>
           <p className="text-center text-xs text-muted-foreground" data-testid="rig-active">active: <b>{active}</b></p>

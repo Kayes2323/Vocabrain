@@ -33,6 +33,16 @@ const diff = { diffPx, pct: +(100 * diffPx / N).toFixed(3), maxChannelDiff: +max
 let worst = []; for (let i = 0; i < N; i++) { const sa = src[i * 4 + 3] / 255, ca = comp[i * 4 + 3] / 255; let d = Math.abs(src[i * 4 + 3] - comp[i * 4 + 3]); for (let c = 0; c < 3; c++) d = Math.max(d, Math.abs(src[i * 4 + c] * sa + lav[c] * (1 - sa) - (comp[i * 4 + c] * ca + lav[c] * (1 - ca)))); if (d > 8) worst.push([i % W, (i / W) | 0, d]); }
 diff.over8 = worst.length; if (worst.length) diff.over8Bbox = [Math.min(...worst.map((p) => p[0])), Math.min(...worst.map((p) => p[1])), Math.max(...worst.map((p) => p[0])), Math.max(...worst.map((p) => p[1]))];
 
+// seam audit: inside the neutral silhouette (4 px in from the edge) the composite must be fully opaque
+{
+  const solidM = new Uint8Array(N); for (let i = 0; i < N; i++) solidM[i] = src[i * 4 + 3] >= 250 ? 1 : 0;
+  const inv = new Uint8Array(N); for (let i = 0; i < N; i++) inv[i] = solidM[i] ? 0 : 1;
+  const tmp = new Int32Array(N), dil = new Uint8Array(N); const r = 4;
+  for (let y = 0; y < H; y++) { const pre = new Int32Array(W + 1); for (let x = 0; x < W; x++) pre[x + 1] = pre[x] + inv[y * W + x]; for (let x = 0; x < W; x++) tmp[y * W + x] = pre[Math.min(W, x + r + 1)] - pre[Math.max(0, x - r)]; }
+  for (let x = 0; x < W; x++) { const pre = new Int32Array(H + 1); for (let y = 0; y < H; y++) pre[y + 1] = pre[y] + tmp[y * W + x]; for (let y = 0; y < H; y++) dil[y * W + x] = pre[Math.min(H, y + r + 1)] - pre[Math.max(0, y - r)] > 0 ? 1 : 0; }
+  let seam = 0, interior = 0; for (let i = 0; i < N; i++) if (!dil[i]) { interior++; if (comp[i * 4 + 3] < 250) seam++; }
+  diff.seamAudit = { interiorPx: interior, nonOpaquePx: seam };
+}
 // ---------- 2) hull (for gap definition) ----------
 function hullPts(m) { const pts = []; for (let y = 0; y < H; y++) { let f = -1, l = -1; for (let x = 0; x < W; x++) if (m[y * W + x]) { if (f < 0) f = x; l = x; } if (f >= 0) { pts.push([f, y]); pts.push([l, y]); } }
   pts.sort((p, q) => p[0] - q[0] || p[1] - q[1]); const cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);

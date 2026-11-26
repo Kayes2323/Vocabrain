@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { MinoRigController, type RigControllerOptions } from './coach-rig-controller';
 import { RIG_ASPECT, RIG_MANIFEST, RIG_STAGE, rigLayerSrc, rigLayerStyle, rigOrigin, type RigLayerName } from './coach-rig-manifest';
 import type { CoachRigState, RigPointDirection } from './coach-preview-state';
+import { WRITING_STROKE_PATHS } from './coach-rig-writing.generated';
 import './mino-rig.css';
 
 export interface MinoCoachRigProps {
@@ -121,9 +122,9 @@ function MinoCoachRigInner({ state = 'idle', point = 'right', onSettle, onStateC
               <div className="mino-rig__notebook" style={origin(piv.notebookCentre)}>
                 <Layer name="notebook" />
                 <svg className="mino-rig__stroke" viewBox={`${RIG_STAGE.x} ${RIG_STAGE.y} ${RIG_STAGE.w} ${RIG_STAGE.h}`} aria-hidden>
-                  <path d="M972 655 q22 -9 44 0 t44 0 t44 -2" pathLength={1} />
-                  <path d="M966 696 q24 -9 48 0 t48 0 t40 -2" pathLength={1} />
-                  <path d="M960 737 q20 -8 40 0 t40 0" pathLength={1} />
+                  {WRITING_STROKE_PATHS.map((d, i) => (
+                    <path key={i} d={d} pathLength={1} />
+                  ))}
                 </svg>
               </div>
               <Layer name="armRightHand" />
