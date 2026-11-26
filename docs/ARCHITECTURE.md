@@ -217,21 +217,17 @@ READ → DISCOVER → SAVE → UNDERSTAND → RECALL → USE → REVIEW → MAST
 | Today's Learning | `lib/engine/daily-plan.ts` | Vocabulary Review (due words), Reading, Writing, Speaking; tasks complete automatically from real activity |
 | Mino | `getMinoInsight`, `getNextActions` | Vocabulary-first guidance using due and missed words, personalised with the student's name |
 
-## 8. Deployment and domain (audited)
+## 8. Deployment and domain
 
 | | |
 | --- | --- |
-| Hosting | Vercel, team `kayes2323's projects`, Git-connected to `kayes2323/vocabrain` |
-| Projects | `vocabrain` (domain `vocabrain.vercel.app`) and `vocabrain-5lyb` (domain `vocabrain-5lyb.vercel.app`), both building the same repo |
-| Custom domain | None. The team's only custom domains belong to another product |
-| `vocabrain.vercel.app` | Returned 404: the project had no framework preset. Fixed by setting the framework to Next.js; production updates on the next `main` deploy |
-| `vocabrain-5lyb.vercel.app` | Serves the old v2 app from `main` |
+| Hosting | Vercel, team `kayes2323's projects`, Git-connected to the Mino GitHub repository (see `docs/BRAND_MIGRATION.md` for the rename status) |
+| Project | `mino` (Vercel project id `prj_I1RGzsU6ziNOUIS8tXjtdtsvAqJt`; renamed from the old product name, Git link unchanged) |
+| Public hostnames | `mino-ielts.vercel.app` (Mino-branded) and the legacy hostname, both served by the production deployment; `mino.vercel.app` and `mino-ai.vercel.app` are owned by other Vercel teams and cannot be used |
+| Custom domain | None yet. Connect one to the `mino` project, then set `NEXT_PUBLIC_APP_URL` and add it to Firebase **Authorized domains** |
 | Protection | Vercel Authentication on preview URLs; production `*.vercel.app` domains are public |
+| Review routes | `/dev/mino-*` answer 404 on a Production deployment and are available only in development and on Vercel Preview deployments (`lib/mino/review-gate.ts`) |
 | Routing | Next.js App Router on Vercel: every route (e.g. `/ielts/vocabulary/bands/6`) works on direct visit and refresh |
-
-Recommended: use `vocabrain.vercel.app` as the product URL (or connect a custom domain to the `vocabrain`
-project and set `NEXT_PUBLIC_APP_URL`), and remove the duplicate `vocabrain-5lyb` project once production
-is verified.
 
 ## 9. Roadmap
 

@@ -1,6 +1,6 @@
 # Mino Foundation Rewrite — Claude Code Integration Guide
 
-**Purpose:** This is the handoff contract for integrating the rewritten Foundation teaching content into Vocabrain. Claude Code should implement the content faithfully, not invent or paraphrase a new curriculum.
+**Purpose:** This is the handoff contract for integrating the rewritten Foundation teaching content into Mino. Claude Code should implement the content faithfully, not invent or paraphrase a new curriculum.
 
 ## Current status
 - Rewrite branch: `mino/foundation-content-quality-pilot`

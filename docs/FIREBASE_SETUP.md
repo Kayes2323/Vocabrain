@@ -5,10 +5,10 @@ The app reads its configuration from environment variables; nothing is hard-code
 
 ## 1. Create the project
 
-1. [Firebase console](https://console.firebase.google.com) → **Add project** (e.g. `vocab-brain`).
+1. [Firebase console](https://console.firebase.google.com) → **Add project** (e.g. `mino`).
 2. **Build → Authentication → Get started → Sign-in method**: enable **Email/Password**.
    Optionally enable **Google**.
-3. **Authentication → Settings → Authorized domains**: add `vocabrain.vercel.app` (and any custom domain).
+3. **Authentication → Settings → Authorized domains**: add every hostname that serves the app: `mino-ielts.vercel.app`, the legacy production hostname (until it is retired), and any custom domain. **Google sign-in (popup) fails with `auth/unauthorized-domain` on a hostname that is not listed here**; email/password works everywhere.
 4. **Build → Firestore Database → Create database** (production mode, region close to Bangladesh,
    e.g. `asia-south1`).
 5. **Project settings → Your apps → Web (`</>`)**: register a web app and copy the config values.
