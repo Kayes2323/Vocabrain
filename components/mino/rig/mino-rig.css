@@ -1,0 +1,406 @@
+@import './mino-rig-writing.generated.css';
+/*
+ * Mino Coach — REAL ARTWORK rig styling (approved Stage B layers).
+ * Namespace `.mino-rig__*` (separate from the placeholder `.mino-coach-rig__*` and from the shipped `.mino-coach`).
+ *
+ * Every layer group is an absolutely positioned box covering the whole stage (inset 0), so
+ *  - layer images are placed in stage % straight from the manifest (see coach-rig-manifest.ts), and
+ *  - each group's inline `transform-origin` is a master-pixel pivot expressed in stage %.
+ * Motion is transform/opacity only. One `data-state` drives everything; `data-eyes` / `data-mouth` / `data-point`
+ * are independent channels. React never re-renders to animate; MinoRigController flips these attributes.
+ */
+
+.mino-rig {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  contain: layout style;
+  overflow: visible;
+  /* pointing (explaining): arm rotation, wrist (pencil) rotation, arm translate, head turn */
+  --pt-arm: -28deg;
+  --pt-wrist: -52deg;
+  --pt-x: 1.4%;
+  --pt-y: -1.2%;
+  --pt-head: -2deg;
+}
+.mino-rig[data-clip='true'] {
+  overflow: hidden;
+}
+.mino-rig[data-point='center'] { --pt-arm: -34deg; --pt-wrist: -54deg; --pt-x: 1.8%; --pt-y: -1.2%; --pt-head: 0deg; }
+.mino-rig[data-point='left'] { --pt-arm: 118deg; --pt-wrist: 16deg; --pt-x: -9.5%; --pt-y: -3.8%; --pt-head: 2.2deg; }
+
+.mino-rig__stage {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.mino-rig[data-ready='true'] .mino-rig__stage {
+  opacity: 1;
+}
+.mino-rig__figure,
+.mino-rig__pack,
+.mino-rig__torso,
+.mino-rig__tag,
+.mino-rig__head,
+.mino-rig__eyes,
+.mino-rig__mouth,
+.mino-rig__arm-r,
+.mino-rig__arm-l,
+.mino-rig__notebook,
+.mino-rig__pencil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+.mino-rig__eyes,
+.mino-rig__mouth { will-change: auto; }
+.mino-rig__layer {
+  position: absolute;
+  display: block;
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* ground shadow (CSS only: the artwork has no shadow layer) */
+.mino-rig__shadow {
+  position: absolute;
+  left: 22.5%;
+  top: 93.4%;
+  width: 58%;
+  height: 5.2%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgb(24 16 64 / 0.28) 0%, rgb(24 16 64 / 0.12) 55%, transparent 72%);
+  transform-origin: 50% 50%;
+}
+
+/* ---- facial channels (independent of the body state) ---- */
+.mino-rig__eye-closed,
+.mino-rig__eye-wink,
+.mino-rig__mouth-small,
+.mino-rig__mouth-wide { opacity: 0; }
+.mino-rig[data-eyes='closed'] .mino-rig__eye-open { opacity: 0; }
+.mino-rig[data-eyes='closed'] .mino-rig__eye-closed { opacity: 1; }
+.mino-rig[data-eyes='wink'] .mino-rig__eye-open[data-layer='eyeR'] { opacity: 0; }
+.mino-rig[data-eyes='wink'] .mino-rig__eye-wink { opacity: 1; }
+.mino-rig[data-mouth='small'] .mino-rig__mouth-neutral,
+.mino-rig[data-mouth='wide'] .mino-rig__mouth-neutral { opacity: 0; }
+.mino-rig[data-mouth='small'] .mino-rig__mouth-small,
+.mino-rig[data-mouth='wide'] .mino-rig__mouth-wide { opacity: 1; }
+
+/* sparkles + writing stroke: locally drawn (no artwork asset exists for them) */
+.mino-rig__sparkle {
+  position: absolute;
+  width: 5%;
+  aspect-ratio: 1;
+  opacity: 0;
+  background: radial-gradient(circle, #fff7c2 0 14%, #ffd84d 15% 100%);
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  transform-origin: 50% 50%;
+}
+.mino-rig__sparkle-a { left: 22%; top: 17%; }
+.mino-rig__sparkle-b { left: 74%; top: 11%; width: 3.6%; }
+.mino-rig__sparkle-c { left: 85%; top: 34%; width: 3%; }
+.mino-rig__stroke {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
+}
+.mino-rig__stroke path {
+  fill: none;
+  stroke: #3d4157;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* off-screen / hidden tab: pause. Reduced motion: no animation at all (static neutral pose). */
+.mino-rig[data-motion='off'] * { animation-play-state: paused !important; }
+.mino-rig[data-bridge='true'] .mino-rig__stage * { animation: none !important; }
+.mino-rig[data-reduced='true'] *,
+.mino-rig[data-reduced='true'] *::before { animation: none !important; transition: none !important; }
+
+/* ========================== IDLE (and the quiet base of held states) ========================== */
+@keyframes rig-breathe {
+  0%, 100% { transform: translateY(0) scale(1, 1); }
+  50% { transform: translateY(-0.22%) scale(1.003, 1.011); }
+}
+@keyframes rig-head-idle {
+  0%, 100% { transform: rotate(0) translateY(0); }
+  50% { transform: rotate(0.5deg) translateY(-0.12%); }
+}
+@keyframes rig-arm-l-idle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(1.4deg); } }
+@keyframes rig-arm-r-idle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-1.1deg); } }
+@keyframes rig-pack-idle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(0.7deg); } }
+@keyframes rig-tag-idle { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(2.6deg); } }
+@keyframes rig-gaze-idle {
+  0%, 42%, 100% { transform: translate(0, 0); }
+  50%, 70% { transform: translate(0.32%, 0.1%); }
+  78% { transform: translate(-0.12%, 0); }
+}
+.mino-rig:is([data-state='idle'], [data-state='speaking'], [data-state='explaining'], [data-state='writing'], [data-state='thinking']) .mino-rig__torso {
+  animation: rig-breathe 4.2s ease-in-out infinite;
+}
+.mino-rig[data-state='idle'] .mino-rig__head { animation: rig-head-idle 5.4s ease-in-out infinite; }
+.mino-rig[data-state='idle'] .mino-rig__arm-l { animation: rig-arm-l-idle 5s ease-in-out infinite; }
+.mino-rig[data-state='idle'] .mino-rig__arm-r { animation: rig-arm-r-idle 5.6s ease-in-out infinite 0.6s; }
+.mino-rig:is([data-state='idle'], [data-state='speaking'], [data-state='explaining'], [data-state='writing']) .mino-rig__pack { animation: rig-pack-idle 4.8s ease-in-out infinite 0.35s; }
+.mino-rig:is([data-state='idle'], [data-state='speaking'], [data-state='explaining'], [data-state='writing']) .mino-rig__tag { animation: rig-tag-idle 3.9s ease-in-out infinite 0.6s; }
+.mino-rig[data-state='idle'] .mino-rig__eyes { animation: rig-gaze-idle 9s ease-in-out infinite; }
+
+/* ========================== OPENING SEQUENCE — "Soft Roll-In & Pencil Salute" (≈1400 ms) ==========================
+ * entrance 600 ms  = phase 1 peek-in (0–200: from the left edge of the mascot box, curious head tilt, eyes toward the learner,
+ *                    gentle anticipation) + phase 2 soft roll-in (200–600: small curved path, 10–15° temporary body tilt,
+ *                    alternating foot lifts, backpack/tag lagging behind). Never rotates through 360°.
+ * landing  300 ms  = phase 3 one small hop + squash/recovery (the head is counter-scaled so the face mask never distorts;
+ *                    pencil + notebook swing a little behind the body).
+ * greeting 500 ms  = phase 4 pencil salute (≈360 ms: pencil raised slightly, one natural blink, small head tilt, notebook
+ *                    stays attached) + phase 5 ready settle (≈140 ms) back to the exact rest pose, then idle takes over.
+ * Every animation starts and ends at the neutral rest pose, so the states chain without a snap.
+ */
+@keyframes rig-enter-figure {
+  0.0% { transform: translate(-66.00%, 0.00%) rotate(-2.00deg); opacity: 0.00; }
+  6.67% { transform: translate(-64.54%, 0.00%) rotate(-2.31deg); opacity: 1.00; }
+  16.67% { transform: translate(-59.00%, 0.00%) rotate(-3.50deg); opacity: 1.00; }
+  26.67% { transform: translate(-53.46%, 0.00%) rotate(-4.69deg); opacity: 1.00; }
+  33.33% { transform: translate(-52.00%, 0.00%) rotate(-5.00deg); opacity: 1.00; }
+  40.0% { transform: translate(-49.48%, -0.83%) rotate(0.01deg); opacity: 1.00; }
+  46.67% { transform: translate(-44.12%, -1.80%) rotate(6.23deg); opacity: 1.00; }
+  53.33% { transform: translate(-37.12%, -2.64%) rotate(10.69deg); opacity: 1.00; }
+  60.0% { transform: translate(-29.34%, -3.20%) rotate(12.77deg); opacity: 1.00; }
+  66.67% { transform: translate(-21.55%, -3.40%) rotate(13.50deg); opacity: 1.00; }
+  73.33% { transform: translate(-14.36%, -3.20%) rotate(12.77deg); opacity: 1.00; }
+  80.0% { transform: translate(-8.29%, -2.64%) rotate(10.69deg); opacity: 1.00; }
+  86.67% { transform: translate(-3.74%, -1.80%) rotate(7.52deg); opacity: 1.00; }
+  93.33% { transform: translate(-0.94%, -0.83%) rotate(3.71deg); opacity: 1.00; }
+  100.0% { transform: translate(-0.00%, -0.00%) rotate(0.00deg); opacity: 1.00; }
+}
+@keyframes rig-enter-shadow {
+  0.0% { transform: translateX(-113.8%) scale(1.000); opacity: 0.00; }
+  6.67% { transform: translateX(-111.3%) scale(1.000); opacity: 0.43; }
+  16.67% { transform: translateX(-101.7%) scale(1.000); opacity: 0.55; }
+  26.67% { transform: translateX(-92.2%) scale(1.000); opacity: 0.68; }
+  33.33% { transform: translateX(-89.7%) scale(1.000); opacity: 0.76; }
+  40.0% { transform: translateX(-85.3%) scale(0.958); opacity: 0.84; }
+  46.67% { transform: translateX(-76.1%) scale(0.910); opacity: 0.92; }
+  53.33% { transform: translateX(-64.0%) scale(0.868); opacity: 1.00; }
+  60.0% { transform: translateX(-50.6%) scale(0.840); opacity: 1.00; }
+  66.67% { transform: translateX(-37.2%) scale(0.830); opacity: 1.00; }
+  73.33% { transform: translateX(-24.8%) scale(0.840); opacity: 1.00; }
+  80.0% { transform: translateX(-14.3%) scale(0.868); opacity: 1.00; }
+  86.67% { transform: translateX(-6.4%) scale(0.910); opacity: 1.00; }
+  93.33% { transform: translateX(-1.6%) scale(0.958); opacity: 1.00; }
+  100.0% { transform: translateX(-0.0%) scale(1.000); opacity: 1.00; }
+}
+@keyframes rig-enter-head { 0%, 33% { transform: rotate(-7deg); } 50% { transform: rotate(-3deg); } 66% { transform: rotate(2.6deg); } 84% { transform: rotate(-1deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-gaze { 0%, 40% { transform: translate(0.95%, -0.3%); } 72% { transform: translate(0.5%, -0.1%); } 100% { transform: translate(0, 0); } }
+@keyframes rig-enter-pack { 0%, 33% { transform: rotate(0); } 52% { transform: rotate(-9deg); } 72% { transform: rotate(6deg); } 88% { transform: rotate(-2deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-tag { 0%, 36% { transform: rotate(0); } 56% { transform: rotate(-16deg); } 76% { transform: rotate(11deg); } 90% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-arm-l { 0%, 30% { transform: rotate(0); } 52% { transform: rotate(-9deg); } 72% { transform: rotate(8deg); } 88% { transform: rotate(-2deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-arm-r { 0%, 30% { transform: rotate(0); } 52% { transform: rotate(5deg); } 72% { transform: rotate(-4deg); } 88% { transform: rotate(1.4deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-notebook { 0%, 40% { transform: rotate(0); } 58% { transform: rotate(-3deg); } 76% { transform: rotate(3.4deg); } 90% { transform: rotate(-1deg); } 100% { transform: rotate(0); } }
+@keyframes rig-enter-foot-l { 0%, 36% { transform: translateY(0) rotate(0); } 47% { transform: translateY(-10%) rotate(-6deg); } 60% { transform: translateY(0) rotate(0); } 100% { transform: translateY(0) rotate(0); } }
+@keyframes rig-enter-foot-r { 0%, 52% { transform: translateY(0) rotate(0); } 63% { transform: translateY(-10%) rotate(5deg); } 76% { transform: translateY(0) rotate(0); } 100% { transform: translateY(0) rotate(0); } }
+.mino-rig[data-state='entrance'] .mino-rig__figure { animation: rig-enter-figure 600ms linear both; }
+.mino-rig[data-state='entrance'] .mino-rig__head { animation: rig-enter-head 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__eyes { animation: rig-enter-gaze 600ms ease-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__pack { animation: rig-enter-pack 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__tag { animation: rig-enter-tag 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__arm-l { animation: rig-enter-arm-l 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__arm-r { animation: rig-enter-arm-r 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__notebook { animation: rig-enter-notebook 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__foot-l { animation: rig-enter-foot-l 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__foot-r { animation: rig-enter-foot-r 600ms ease-in-out both; }
+.mino-rig[data-state='entrance'] .mino-rig__shadow { animation: rig-enter-shadow 600ms linear both; }
+
+/* ---- LANDING (300 ms): one small hop, squash on touchdown, controlled recovery ---- */
+@keyframes rig-land-figure {
+  0% { transform: translateY(0) scale(1, 1); animation-timing-function: ease-out; }
+  10% { transform: translateY(0.4%) scale(1.02, 0.972); animation-timing-function: ease-out; }
+  38% { transform: translateY(-5.2%) scale(0.985, 1.03); animation-timing-function: ease-in; }
+  64% { transform: translateY(0) scale(1.055, 0.93); animation-timing-function: ease-out; }
+  82% { transform: translateY(-0.4%) scale(0.992, 1.012); animation-timing-function: ease-in-out; }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+/* inverse of the figure's squash: the head (mask, eyes, mouth) keeps its shape while the body squashes */
+@keyframes rig-land-head {
+  0% { transform: scale(1, 1); animation-timing-function: ease-out; }
+  10% { transform: scale(0.98, 1.029); animation-timing-function: ease-out; }
+  38% { transform: scale(1.015, 0.971); animation-timing-function: ease-in; }
+  64% { transform: scale(0.948, 1.075); animation-timing-function: ease-out; }
+  82% { transform: scale(1.008, 0.988); animation-timing-function: ease-in-out; }
+  100% { transform: scale(1, 1); }
+}
+@keyframes rig-land-pack { 0% { transform: rotate(0); } 38% { transform: rotate(4deg); } 64% { transform: rotate(-6deg); } 85% { transform: rotate(2deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-tag { 0% { transform: rotate(0); } 38% { transform: rotate(9deg); } 66% { transform: rotate(-13deg); } 86% { transform: rotate(4deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-arm-l { 0% { transform: rotate(0); } 38% { transform: rotate(-7deg); } 64% { transform: rotate(6deg); } 85% { transform: rotate(-2deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-pencil { 0% { transform: rotate(0); } 38% { transform: rotate(-9deg); } 66% { transform: rotate(10deg); } 86% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-arm-r { 0% { transform: rotate(0); } 38% { transform: rotate(3.4deg); } 64% { transform: rotate(-3deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-notebook { 0% { transform: rotate(0); } 42% { transform: rotate(-3deg); } 68% { transform: rotate(3.6deg); } 88% { transform: rotate(-1.2deg); } 100% { transform: rotate(0); } }
+@keyframes rig-land-shadow { 0% { transform: scale(1); opacity: 1; } 38% { transform: scale(0.82); opacity: 0.6; } 64% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+.mino-rig[data-state='landing'] .mino-rig__figure { animation: rig-land-figure 300ms linear both; }
+.mino-rig[data-state='landing'] .mino-rig__head { animation: rig-land-head 300ms linear both; }
+.mino-rig[data-state='landing'] .mino-rig__pack { animation: rig-land-pack 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__tag { animation: rig-land-tag 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__arm-l { animation: rig-land-arm-l 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__pencil { animation: rig-land-pencil 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__arm-r { animation: rig-land-arm-r 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__notebook { animation: rig-land-notebook 300ms ease-in-out both; }
+.mino-rig[data-state='landing'] .mino-rig__shadow { animation: rig-land-shadow 300ms ease-in-out both; }
+
+/* ---- GREETING (500 ms): pencil salute (≈360 ms) + ready settle (≈140 ms) ---- */
+@keyframes rig-greet-arm-l {
+  0% { transform: translate(0, 0) rotate(0); }
+  26% { transform: translate(1.1%, -1.5%) rotate(-18deg); }
+  44% { transform: translate(1.1%, -1.6%) rotate(-16deg); }
+  58% { transform: translate(1.0%, -1.4%) rotate(-18deg); }
+  76% { transform: translate(0.2%, -0.3%) rotate(-3deg); }
+  90% { transform: translate(0, 0) rotate(0.8deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+/* the salute is mostly wrist: the pencil lifts and tips toward the learner, then returns */
+@keyframes rig-greet-pencil { 0%, 6% { transform: rotate(0); } 26% { transform: rotate(-15deg); } 44% { transform: rotate(-9deg); } 58% { transform: rotate(-15deg); } 76% { transform: rotate(-3deg); } 90% { transform: rotate(1deg); } 100% { transform: rotate(0); } }
+@keyframes rig-greet-arm-r { 0%, 100% { transform: rotate(0); } 46% { transform: rotate(1deg); } 78% { transform: rotate(-0.5deg); } }
+@keyframes rig-greet-head { 0%, 100% { transform: rotate(0) translateY(0); } 20%, 62% { transform: rotate(-3.2deg) translateY(-0.2%); } 82% { transform: rotate(-0.8deg) translateY(0); } }
+@keyframes rig-greet-torso { 0% { transform: translateY(0) scale(1, 1); } 24% { transform: translateY(-0.7%) scale(0.997, 1.008); } 60% { transform: translateY(-0.3%) scale(1, 1); } 84% { transform: translateY(0.1%) scale(1.002, 0.998); } 100% { transform: translateY(0) scale(1, 1); } }
+/* one natural blink (≈100 ms) while the head is tilted */
+@keyframes rig-greet-eye-open { 0%, 45.99%, 66.01%, 100% { opacity: 1; } 46%, 66% { opacity: 0; } }
+@keyframes rig-greet-eye-closed { 0%, 45.99%, 66.01%, 100% { opacity: 0; } 46%, 66% { opacity: 1; } }
+@keyframes rig-greet-mouth-neutral { 0%, 10%, 80%, 100% { opacity: 1; } 10.01%, 79.99% { opacity: 0; } }
+@keyframes rig-greet-mouth-small { 0%, 10%, 80%, 100% { opacity: 0; } 10.01%, 79.99% { opacity: 1; } }
+/* the salute's sparkle is fully faded out before the greeting ends, so nothing pops off when idle takes over */
+@keyframes rig-greet-sparkle { 0%, 12% { opacity: 0; transform: scale(0.2) rotate(0); } 34% { opacity: 1; transform: scale(1.1) rotate(15deg); } 62% { opacity: 1; transform: scale(0.95) rotate(28deg); } 84%, 100% { opacity: 0; transform: scale(0.3) rotate(45deg); } }
+@keyframes rig-sparkle-pop { 0%, 24% { opacity: 0; transform: scale(0.2) rotate(0); } 40% { opacity: 1; transform: scale(1.1) rotate(15deg); } 70% { opacity: 1; transform: scale(0.9) rotate(30deg); } 90%, 100% { opacity: 0; transform: scale(0.3) rotate(50deg); } }
+.mino-rig[data-state='greeting'] .mino-rig__arm-l { animation: rig-greet-arm-l 500ms ease-in-out both; }
+.mino-rig[data-state='greeting'] .mino-rig__pencil { animation: rig-greet-pencil 500ms ease-in-out both; }
+.mino-rig[data-state='greeting'] .mino-rig__arm-r { animation: rig-greet-arm-r 500ms ease-in-out both; }
+.mino-rig[data-state='greeting'] .mino-rig__head { animation: rig-greet-head 500ms ease-in-out both; }
+.mino-rig[data-state='greeting'] .mino-rig__torso { animation: rig-greet-torso 500ms ease-in-out both; }
+.mino-rig[data-state='greeting'] .mino-rig__eye-open { animation: rig-greet-eye-open 500ms step-end both; }
+.mino-rig[data-state='greeting'] .mino-rig__eye-closed { animation: rig-greet-eye-closed 500ms step-end both; }
+.mino-rig[data-state='greeting'] .mino-rig__mouth-neutral { animation: rig-greet-mouth-neutral 500ms step-end both; }
+.mino-rig[data-state='greeting'] .mino-rig__mouth-small { animation: rig-greet-mouth-small 500ms step-end both; }
+.mino-rig[data-state='greeting'] .mino-rig__sparkle-a { animation: rig-greet-sparkle 500ms ease-out both; }
+
+/* ========================== SPEAKING (held): 3-shape mouth cycle + subtle head/body movement ========================== */
+@keyframes rig-talk-neutral { 0%, 9.99%, 52%, 57.99%, 92%, 100% { opacity: 1; } 10%, 51.99%, 58%, 91.99% { opacity: 0; } }
+@keyframes rig-talk-small { 0%, 9.99%, 22%, 39.99%, 52%, 57.99%, 70%, 81.99%, 92%, 100% { opacity: 0; } 10%, 21.99%, 40%, 51.99%, 58%, 69.99%, 82%, 91.99% { opacity: 1; } }
+@keyframes rig-talk-wide { 0%, 21.99%, 40%, 69.99%, 82%, 100% { opacity: 0; } 22%, 39.99%, 70%, 81.99% { opacity: 1; } }
+@keyframes rig-speak-head { 0%, 100% { transform: rotate(0) translate(0, 0); } 25% { transform: rotate(-1.3deg) translate(0.12%, -0.1%); } 55% { transform: rotate(0.9deg) translate(-0.1%, 0); } 80% { transform: rotate(-0.6deg) translate(0.06%, -0.08%); } }
+@keyframes rig-speak-arm-l { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-7deg) translate(0.4%, -0.6%); } 62% { transform: rotate(-2deg); } }
+@keyframes rig-speak-pencil { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-5deg); } 62% { transform: rotate(2deg); } }
+@keyframes rig-speak-arm-r { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-1.6deg); } }
+.mino-rig[data-state='speaking'] .mino-rig__mouth-neutral { animation: rig-talk-neutral 1300ms step-end infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__mouth-small { animation: rig-talk-small 1300ms step-end infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__mouth-wide { animation: rig-talk-wide 1300ms step-end infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__head { animation: rig-speak-head 2.6s ease-in-out infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__arm-l { animation: rig-speak-arm-l 3.2s ease-in-out infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__pencil { animation: rig-speak-pencil 3.2s ease-in-out infinite; }
+.mino-rig[data-state='speaking'] .mino-rig__arm-r { animation: rig-speak-arm-r 4s ease-in-out infinite; }
+
+/* ========================== EXPLAINING (held): turn toward the content, point with the pencil ========================== */
+@keyframes rig-explain-arm-l {
+  0%, 10% { transform: translate(0, 0) rotate(0deg); }
+  28% { transform: translate(var(--pt-x), var(--pt-y)) rotate(var(--pt-arm)); }
+  38% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) - 3deg)); }
+  48% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) + 2deg)); }
+  58% { transform: translate(var(--pt-x), var(--pt-y)) rotate(calc(var(--pt-arm) - 3deg)); }
+  72% { transform: translate(var(--pt-x), var(--pt-y)) rotate(var(--pt-arm)); }
+  88%, 100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes rig-explain-pencil {
+  0%, 10%, 88%, 100% { transform: rotate(0deg); }
+  28%, 72% { transform: rotate(var(--pt-wrist)); }
+  40% { transform: rotate(calc(var(--pt-wrist) + 4deg)); }
+  52% { transform: rotate(calc(var(--pt-wrist) - 3deg)); }
+  62% { transform: rotate(calc(var(--pt-wrist) + 4deg)); }
+}
+@keyframes rig-explain-head { 0%, 10%, 90%, 100% { transform: rotate(0) translateX(0); } 28%, 76% { transform: rotate(var(--pt-head)) translateX(0.5%); } }
+@keyframes rig-explain-arm-r { 0%, 10%, 90%, 100% { transform: rotate(0); } 28%, 76% { transform: rotate(2.2deg); } }
+@keyframes rig-explain-gaze { 0%, 10%, 90%, 100% { transform: translate(0, 0); } 28%, 76% { transform: translate(0.55%, -0.2%); } }
+.mino-rig[data-state='explaining'] .mino-rig__arm-l { animation: rig-explain-arm-l 4.6s ease-in-out infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__pencil { animation: rig-explain-pencil 4.6s ease-in-out infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__head { animation: rig-explain-head 4.6s ease-in-out infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__arm-r { animation: rig-explain-arm-r 4.6s ease-in-out infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__eyes { animation: rig-explain-gaze 4.6s ease-in-out infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__mouth-neutral { animation: rig-talk-neutral 1300ms step-end infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__mouth-small { animation: rig-talk-small 1300ms step-end infinite; }
+.mino-rig[data-state='explaining'] .mino-rig__mouth-wide { animation: none; }
+
+/* ========================== WRITING (held): generated, see mino-rig-writing.generated.css ========================== */
+
+/* ========================== SUCCESS (≈900 ms): one small happy hop ========================== */
+@keyframes rig-success-figure {
+  0% { transform: translateY(0) scale(1, 1); }
+  14% { transform: translateY(0.2%) scale(1.02, 0.965); }
+  40% { transform: translateY(-4.2%) scale(0.99, 1.02); }
+  62% { transform: translateY(0) scale(1.02, 0.97); }
+  78% { transform: translateY(-0.5%) scale(0.998, 1.006); }
+  100% { transform: translateY(0) scale(1, 1); }
+}
+@keyframes rig-success-arm-l { 0%, 100% { transform: rotate(0); } 36%, 62% { transform: rotate(-16deg) translate(1%, -1.6%); } }
+@keyframes rig-success-arm-r { 0%, 100% { transform: rotate(0); } 36%, 62% { transform: rotate(5deg); } }
+@keyframes rig-success-head { 0%, 100% { transform: rotate(0); } 30%, 66% { transform: rotate(-2deg); } }
+@keyframes rig-success-shadow { 0%, 100% { transform: scale(1, 1); opacity: 1; } 40% { transform: scale(0.84, 0.8); opacity: 0.7; } }
+@keyframes rig-success-eye-open-r { 0%, 19.99%, 72.01%, 100% { opacity: 1; } 20%, 72% { opacity: 0; } }
+@keyframes rig-success-eye-wink { 0%, 19.99%, 72.01%, 100% { opacity: 0; } 20%, 72% { opacity: 1; } }
+@keyframes rig-success-mouth-neutral { 0%, 14%, 80%, 100% { opacity: 1; } 14.01%, 79.99% { opacity: 0; } }
+@keyframes rig-success-mouth-wide { 0%, 14%, 80%, 100% { opacity: 0; } 14.01%, 79.99% { opacity: 1; } }
+.mino-rig[data-state='success'] .mino-rig__figure { animation: rig-success-figure 900ms ease-in-out both; }
+.mino-rig[data-state='success'] .mino-rig__arm-l { animation: rig-success-arm-l 900ms ease-in-out both; }
+.mino-rig[data-state='success'] .mino-rig__arm-r { animation: rig-success-arm-r 900ms ease-in-out both; }
+.mino-rig[data-state='success'] .mino-rig__head { animation: rig-success-head 900ms ease-in-out both; }
+.mino-rig[data-state='success'] .mino-rig__shadow { animation: rig-success-shadow 900ms ease-in-out both; }
+.mino-rig[data-state='success'] .mino-rig__eye-open[data-layer='eyeR'] { animation: rig-success-eye-open-r 900ms step-end both; }
+.mino-rig[data-state='success'] .mino-rig__eye-wink { animation: rig-success-eye-wink 900ms step-end both; }
+.mino-rig[data-state='success'] .mino-rig__mouth-neutral { animation: rig-success-mouth-neutral 900ms step-end both; }
+.mino-rig[data-state='success'] .mino-rig__mouth-wide { animation: rig-success-mouth-wide 900ms step-end both; }
+.mino-rig[data-state='success'] .mino-rig__sparkle-a { animation: rig-sparkle-pop 900ms ease-out 120ms both; }
+.mino-rig[data-state='success'] .mino-rig__sparkle-c { animation: rig-sparkle-pop 900ms ease-out 220ms both; }
+
+/* ========================== THINKING / ENCOURAGING: defined, dormant (not used by the Task 1 welcome) ========================== */
+@keyframes rig-think-in-arm-l { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(5%, -5.5%) rotate(-58deg); } }
+@keyframes rig-think-arm-l { 0%, 100% { transform: translate(5%, -5.5%) rotate(-58deg); } 50% { transform: translate(5%, -5.8%) rotate(-61deg); } }
+@keyframes rig-think-in-head { from { transform: rotate(0deg); } to { transform: rotate(1.6deg); } }
+@keyframes rig-think-head { 0%, 100% { transform: rotate(1.6deg); } 50% { transform: rotate(2.2deg); } }
+@keyframes rig-think-gaze { 0%, 100% { transform: translate(0.6%, -0.5%); } 30% { transform: translate(-0.5%, -0.55%); } 62% { transform: translate(0.6%, -0.5%); } }
+.mino-rig[data-state='thinking'] .mino-rig__eyes { animation: rig-think-gaze 3.2s ease-in-out infinite; }
+.mino-rig[data-state='thinking'] .mino-rig__arm-l { animation: rig-think-in-arm-l 420ms ease-out both, rig-think-arm-l 3.4s ease-in-out 420ms infinite; }
+.mino-rig[data-state='thinking'] .mino-rig__head { animation: rig-think-in-head 420ms ease-out both, rig-think-head 3.4s ease-in-out 420ms infinite; }
+@keyframes rig-encourage-head { 0%, 100% { transform: rotate(0); } 30%, 75% { transform: rotate(-2.4deg); } }
+@keyframes rig-encourage-arm-l { 0%, 100% { transform: rotate(0); } 32%, 70% { transform: rotate(-24deg) translate(1.6%, -2%); } }
+@keyframes rig-encourage-mouth-neutral { 0%, 24%, 84%, 100% { opacity: 1; } 24.01%, 83.99% { opacity: 0; } }
+@keyframes rig-encourage-mouth-small { 0%, 24%, 84%, 100% { opacity: 0; } 24.01%, 83.99% { opacity: 1; } }
+.mino-rig[data-state='encouraging'] .mino-rig__head { animation: rig-encourage-head 1350ms ease-in-out both; }
+.mino-rig[data-state='encouraging'] .mino-rig__arm-l { animation: rig-encourage-arm-l 1350ms ease-in-out both; }
+.mino-rig[data-state='encouraging'] .mino-rig__mouth-neutral { animation: rig-encourage-mouth-neutral 1350ms step-end both; }
+.mino-rig[data-state='encouraging'] .mino-rig__mouth-small { animation: rig-encourage-mouth-small 1350ms step-end both; }
+
+/* ========================== LOADING POSTER (central MinoCoachMascot) ==========================
+ * Same box as the rig. Shown while the layer images decode; fades out once the live rig is ready (the rig's rest pose is
+ * pixel-identical, so the swap is seamless). For opening poses the poster only appears after a short grace period, so a
+ * fast/cached load goes straight into the entrance without ever showing it.
+ */
+.mino-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 1;
+  transition: opacity 140ms ease-out;
+}
+.mino-poster[data-opening='true'] { animation: mino-poster-in 140ms ease-out 200ms both; }
+.mino-poster[data-ready='true'] { opacity: 0; animation: none; visibility: hidden; transition: opacity 140ms ease-out, visibility 0s linear 140ms; }
+@keyframes mino-poster-in { from { opacity: 0; } to { opacity: 1; } }

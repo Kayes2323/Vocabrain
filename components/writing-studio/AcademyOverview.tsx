@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, BarChart3, BookOpenCheck, ClipboardList, GraduationCap, RotateCcw, Timer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, RowGroup, Section, StatusChip } from '@/components/ds';
+import { MinoCoachWelcome } from '@/components/mino/MinoCoachWelcome';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { cn } from '@/lib/utils';
@@ -40,6 +41,8 @@ export function AcademyOverview({
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <PageHeader title={meta.label} subtitle={meta.tagline} backHref="/ielts/writing-studio" backLabel="Writing Studio" />
+
+      <MinoCoachWelcome area={task} />
 
       <Panel className="space-y-3">
         <div className="flex items-center justify-between gap-3">

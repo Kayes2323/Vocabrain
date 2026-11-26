@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight, BrainCircuit, Check, Clock, Flame, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { PageHeader, Panel, ProgressBar, ScreenSkeleton, Section } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useBrain } from '@/components/providers/BrainProvider';
@@ -51,7 +52,10 @@ export function VocabFoundationHome() {
       {/* What should I do next? One dominant action. */}
       <Panel variant="brand" className="space-y-5 p-6">
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <span className="mino-aura mino-aura--pulse shrink-0" data-testid="vf-mino">
+            <MinoCoachMascot pose="speaking" size="sm" />
+          </span>
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-muted-foreground">{t('vocabFoundation.mission.title')}</p>
             <p className="mt-1 text-xl font-semibold tracking-tight">
               {mission.done ? t('vocabFoundation.mission.done') : nothingNew ? t('vocabFoundation.mission.allDiscovered') : t('vocabFoundation.mission.canFinish')}

@@ -14,7 +14,7 @@ import { LEXICON, LIBRARY } from '../../lib/content/reading-library';
 import { wordId } from '../../lib/engine';
 import { BASE, check, getDoc, launch, noHorizontalScroll, report, shot, signIn, signUp, uidOf, watchErrors } from './helpers';
 
-const FS = 'http://127.0.0.1:8080/v1/projects/demo-vocabbrain/databases/(default)/documents';
+const FS = 'http://127.0.0.1:8080/v1/projects/demo-mino/databases/(default)/documents';
 const errors: string[] = [];
 const stamp = Date.now();
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));

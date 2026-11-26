@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight, BookOpen, Clock, Headphones, Mic, PenLine, RotateCcw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { Panel, ProgressBar, StatusChip } from '@/components/ds';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import {
@@ -104,6 +105,10 @@ export function LessonPlayer({ module, lesson }: { module: Module; lesson: Lesso
     return (
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <Panel variant={outcome === 'practice' ? 'muted' : 'brand'} className="space-y-3 text-center">
+          {/* Mino reacts to the result with the shared rig: a short success hop, or a gentle encouraging nod */}
+          <span className="mino-aura mino-aura--pulse inline-block">
+            <MinoCoachMascot pose={(isTest ? finished.score >= PASS_SCORE : outcome !== 'practice') ? 'success' : 'encouraging'} size="md" />
+          </span>
           <p className="text-sm text-muted-foreground">{text(lesson.title)}</p>
           <h1 className="text-2xl font-semibold">
             {isTest ? t(finished.score >= PASS_SCORE ? 'foundation.lesson.testPassed' : 'foundation.lesson.testNotYet') : t(`foundation.lesson.resultTitle.${outcome}`)}

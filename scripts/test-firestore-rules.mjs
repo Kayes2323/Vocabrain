@@ -4,7 +4,7 @@ import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword, signOut }
 import { getFirestore, connectFirestoreEmulator, doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 
 const mk = (name) => {
-  const app = initializeApp({ apiKey: 'fake', projectId: 'demo-vocabbrain', authDomain: 'demo.firebaseapp.com' }, name);
+  const app = initializeApp({ apiKey: 'fake', projectId: 'demo-mino', authDomain: 'demo.firebaseapp.com' }, name);
   const auth = getAuth(app); connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
   const db = getFirestore(app); connectFirestoreEmulator(db, '127.0.0.1', 8080);
   return { auth, db };

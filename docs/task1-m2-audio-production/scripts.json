@@ -1,0 +1,304 @@
+{
+ "module": "Task 1 — Module 2: Understanding Visual Information",
+ "voice": "Sarah A v2 (ElevenLabs Sarah EXAVITQu4vr4xnSDxMaL, eleven_v3, stability 0.4, similarity 0.75, speed 1.0, -16 LUFS)",
+ "note": "Verbatim approved narration scripts. Paragraphs are the exact audio segments in order; the 3 English example sentences are kept in English.",
+ "clips": [
+  {
+   "id": "01",
+   "title": "INTRO",
+   "filename": "task1-m2-01-intro.mp3",
+   "paragraphs": [
+    "হাই, আবারও স্বাগতম!",
+    "আগের lesson-এ আমরা শিখেছি, IELTS Academic Writing Task 1 আসলে আপনার কাছে কী চায়।",
+    "আজ আমরা এমন একটা গুরুত্বপূর্ণ skill তৈরি করব, যেটা লেখা শুরু করার আগেই আপনার দরকার।",
+    "সেটা হলো—একটা visual বা chart-কে সঠিকভাবে বোঝা।",
+    "ধরুন, IELTS exam-এ আপনি একটা chart পেলেন। সময় বাঁচানোর জন্য সঙ্গে সঙ্গেই লেখা শুরু করলেন।",
+    "কিন্তু আপনি যদি unit ভুল বোঝেন, মূল trend মিস করেন, অথবা ভুল category-র মধ্যে comparison করেন, তাহলে আপনার grammar চমৎকার হলেও description ভুল হয়ে যাবে।",
+    "তাই আজ থেকে একটা অভ্যাস তৈরি করব।",
+    "Visual-টা কী বলছে, সেটা পুরোপুরি না বুঝে আমরা লেখা শুরু করব না।",
+    "চলুন, ধাপে ধাপে শিখি।"
+   ]
+  },
+  {
+   "id": "02",
+   "title": "VISUAL ANATOMY",
+   "filename": "task1-m2-02-visual-anatomy.mp3",
+   "paragraphs": [
+    "এবার আসুন, একটা chart-এর ভেতরে কী কী থাকে, সেটা বুঝে নিই।",
+    "আলাদা আলাদা number পড়ার আগে প্রথমে visual-টার structure দেখুন।",
+    "প্রথমে title দেখবেন। Title আপনাকে বলে দেয়, chart-টি আসলে কোন বিষয় নিয়ে।",
+    "এরপর axis, label এবং category দেখবেন। এগুলো থেকে বোঝা যায় কী measure করা হচ্ছে, অথবা কোন বিষয়গুলোর মধ্যে comparison করা হচ্ছে।",
+    "একটা সাধারণ graph-এ horizontal axis বা x-axis সাধারণত সময় অথবা category দেখায়। আর vertical axis বা y-axis সাধারণত measured quantity দেখায়।",
+    "তবে একটা বিষয় মনে রাখবেন—সব graph-এ একই নিয়ম ধরে নেওয়া যাবে না। Axis-এর আসল label অবশ্যই পড়বেন।",
+    "এরপর আসবে legend।",
+    "Legend আপনাকে বুঝিয়ে দেয়, প্রতিটি colour, line, symbol অথবা bar কোন data বা group-কে represent করছে।",
+    "একাধিক country বা group থাকলে legend ভুল পড়ার কারণে আপনি এক group-এর figure অন্য group-এর বলে লিখে ফেলতে পারেন।",
+    "তাই মনে রাখবেন, chart দেখেই সঙ্গে সঙ্গে description শুরু করবেন না।",
+    "প্রথম কাজ হলো chart-এর structure বোঝা।"
+   ]
+  },
+  {
+   "id": "03",
+   "title": "UNITS",
+   "filename": "task1-m2-03-units.mp3",
+   "paragraphs": [
+    "এখন আসি এমন একটা ভুলে, যেটা খুব সহজেই আপনার পুরো description ভুল করে দিতে পারে।",
+    "সেটা হলো—number দেখা, কিন্তু তার unit খেয়াল না করা।",
+    "শুধু ৪০ সংখ্যাটা দেখলে আপনি আসলে খুব বেশি কিছু জানতে পারেন না। কারণ ৪০ কী বোঝাচ্ছে, সেটা নির্ভর করে তার unit-এর ওপর।",
+    "একটা chart percentage, মানুষের সংখ্যা, টাকা, ঘণ্টা, টন, kilometre অথবা অন্য কোনো quantity measure করতে পারে।",
+    "যেমন, 40 percent মানে প্রতি একশোতে চল্লিশ। এটা স্বয়ংক্রিয়ভাবে ৪০ জন মানুষ বোঝায় না।",
+    "আবার ৪০ dollar মানে টাকার পরিমাণ, percentage নয়।",
+    "এবার আমাদের commuting chart-এর উদাহরণ দেখি।",
+    "এখানে unit হলো—percentage of commuters।",
+    "তাই ২০১০ সালে car ব্যবহারকারীদের value ৫২ মানে ৫২ শতাংশ commuter car ব্যবহার করেছেন। এর অর্থ ৫২ জন মানুষ নয়।",
+    "সঠিকভাবে লিখলে হবে:",
+    "\"Car use accounted for 52% of commuters in 2010.\"",
+    "কিন্তু \"There were 52 car users in 2010\" লিখলে ভুল হবে।",
+    "কেন?",
+    "কারণ chart-টি মানুষের absolute number নয়, percentage দেখাচ্ছে।",
+    "তাই প্রতিটি value interpret করার আগে তার unit চিহ্নিত করবেন।",
+    "Number নয়, number-এর meaning বুঝবেন।"
+   ]
+  },
+  {
+   "id": "04",
+   "title": "TIME AND CATEGORIES",
+   "filename": "task1-m2-04-time-categories.mp3",
+   "paragraphs": [
+    "এবার বুঝে নিই, chart-এ আসলে কোন বিষয়গুলোর comparison করা হচ্ছে।",
+    "আপনি কি বছর তুলনা করছেন? মাস? বিভিন্ন দেশ? বয়সের group? নাকি ভিন্ন ভিন্ন method?",
+    "এই প্রশ্নের উত্তরই ঠিক করে দেয়, আপনার description কেমন হওয়া উচিত।",
+    "ধরুন, একটা chart ২০০০ থেকে ২০২০ সাল পর্যন্ত তথ্য দেখাচ্ছে। এখানে সময়ের সঙ্গে পরিবর্তন বোঝার সুযোগ আছে।",
+    "কিন্তু একই বছরে পাঁচটি শহরের comparison দেখানো হলে, সেটা মূলত category-র মধ্যে পার্থক্য দেখায়। সময়ের সঙ্গে পরিবর্তন নয়।",
+    "এখানে starting date এবং ending date খুব ভালোভাবে খেয়াল করবেন।",
+    "যেমন, ২০১০ থেকে ২০২৩ সালে কোনো value বেড়েছে—আর ২০২৩ থেকে ২০১০ সালে কমেছে—এই দুইভাবে বললে অর্থ এক থাকে না।",
+    "আমাদের commuting chart-এ দুটি period হলো ২০১০ এবং ২০২৩।",
+    "তাই আমরা এই দুই বছরের মধ্যে বিভিন্ন commuting method-এর proportion কীভাবে পরিবর্তিত হয়েছে, সেটা তুলনা করতে পারি।",
+    "কিন্তু chart যদি শুধু একটি বছরের তথ্য দেখায়, তাহলে কোনো trend বানিয়ে বলবেন না।",
+    "আপনি category তুলনা করতে পারবেন, কিন্তু অন্য কোনো সময়ের তথ্য ছাড়া সময়ের সঙ্গে বৃদ্ধি বা হ্রাসের দাবি করতে পারবেন না।",
+    "যা chart দেখায়, শুধু সেটাই বলবেন।"
+   ]
+  },
+  {
+   "id": "05",
+   "title": "LEGEND",
+   "filename": "task1-m2-05-legend.mp3",
+   "paragraphs": [
+    "এখন আসি legend-এর গুরুত্বে।",
+    "একটা visual-এ যখন একাধিক line, colour অথবা group থাকে, তখন legend খুবই গুরুত্বপূর্ণ হয়ে ওঠে।",
+    "কারণ comparison করার আগে আপনাকে জানতে হবে, কোন data series কোন group-এর প্রতিনিধিত্ব করছে।",
+    "আমাদের commuting chart-এর উদাহরণ দেখি।",
+    "এখানে প্রথম series ২০১০ সালের তথ্য দেখায় এবং দ্বিতীয় series ২০২৩ সালের তথ্য দেখায়।",
+    "তাই car use-এর ক্ষেত্রে সঠিক comparison হবে—২০১০ সালে ৫২ শতাংশ এবং ২০২৩ সালে ৩৮ শতাংশ।",
+    "কিন্তু যদি আপনি বছর দুটি উল্টে লিখে ফেলেন, তাহলে সংখ্যাগুলো chart থেকে নেওয়া হলেও আপনার description ভুল হবে।",
+    "অর্থাৎ, শুধু number ঠিক রাখলেই হবে না। Number-টি কোন year বা category-র, সেটাও ঠিক রাখতে হবে।",
+    "Accurate data attribution is just as important as accurate numbers.",
+    "তাই লেখার আগে legend আবার একবার দেখে নেবেন।"
+   ]
+  },
+  {
+   "id": "06",
+   "title": "TREND OR STATIC",
+   "filename": "task1-m2-06-trend-or-static.mp3",
+   "paragraphs": [
+    "একটা গুরুত্বপূর্ণ প্রশ্ন করি।",
+    "প্রতিটি visual কি আসলেই trend দেখায়?",
+    "উত্তর হলো—না।",
+    "প্রথমে আপনাকে বুঝতে হবে, visual-টি সময়ের সঙ্গে পরিবর্তন দেখাচ্ছে, নাকি একটি নির্দিষ্ট সময়ে বিভিন্ন category-র comparison দেখাচ্ছে।",
+    "ধরুন, একটি line graph-এ ২০০০, ২০০৫, ২০১০, ২০১৫ এবং ২০২০ সালের renewable electricity generation দেখানো হয়েছে।",
+    "এখানে সময়ের সঙ্গে পরিবর্তন দেখা সম্ভব।",
+    "কিন্তু একটি pie chart যদি শুধু ২০২০ সালে পাঁচটি company-র market share দেখায়, তাহলে সেটি দিয়ে কোনো company সময়ের সঙ্গে বেড়েছে—এমন দাবি করা যাবে না।",
+    "আপনি বলতে পারেন, ২০২০ সালে Company A-এর share সবচেয়ে বেশি ছিল।",
+    "কিন্তু অন্য সময়ের তথ্য ছাড়া বলতে পারবেন না যে Company A-এর share বেড়েছে।",
+    "Dynamic visual-এ সাধারণত time-based data থাকে। Static visual একটি নির্দিষ্ট সময়ে category-র মধ্যে comparison দেখাতে পারে।",
+    "আবার map স্থানগত পরিবর্তন বা পার্থক্য দেখাতে পারে। Process diagram দেখায় বিভিন্ন stage অথবা sequence।",
+    "তাই প্রতিটি visual-এর ওপর জোর করে rising বা falling trend-এর ভাষা ব্যবহার করবেন না।",
+    "প্রথমে visual-এর ধরন বুঝুন, তারপর সঠিক ভাষা বেছে নিন।"
+   ]
+  },
+  {
+   "id": "07",
+   "title": "COMPARISON",
+   "filename": "task1-m2-07-comparison.mp3",
+   "paragraphs": [
+    "এবার আপনি chart-এর structure, unit এবং period বুঝে গেছেন।",
+    "এখন data comparison করার সময়।",
+    "প্রথমে খুঁজুন—কোন value বেড়েছে, কোনটি কমেছে, কোনটি স্থিতিশীল থেকেছে।",
+    "এরপর দেখুন, কোন category-র value সবচেয়ে বেশি, কোনটির সবচেয়ে কম এবং category-গুলোর মধ্যে কী ধরনের relationship আছে।",
+    "আমাদের commuting chart-এর figure-গুলো দেখি।",
+    "Car use ৫২ শতাংশ থেকে ৩৮ শতাংশে কমেছে।",
+    "Bicycle use ৬ শতাংশ থেকে ১৯ শতাংশে বেড়েছে।",
+    "Bus use ২৪ শতাংশ থেকে সামান্য কমে ২১ শতাংশ হয়েছে।",
+    "Train use ১১ শতাংশ থেকে ১৫ শতাংশে বেড়েছে।",
+    "আর walking দুই বছরেই ৭ শতাংশে অপরিবর্তিত থেকেছে।",
+    "এখানে একটা গুরুত্বপূর্ণ বিষয় মনে রাখবেন।",
+    "ছোট পরিবর্তনকে dramatic বলবেন না। আবার কোনো value অনেক পরিবর্তিত হলে সেটাকে stable বলবেন না।",
+    "আপনার ব্যবহৃত শব্দ অবশ্যই প্রকৃত পরিবর্তনের size এবং direction-এর সঙ্গে মিলতে হবে।",
+    "আরও একটি পার্থক্য বুঝতে হবে।",
+    "সবচেয়ে বড় value আর সবচেয়ে দ্রুত বৃদ্ধি পাওয়া value এক জিনিস নয়।",
+    "২০২৩ সালেও car use সবচেয়ে বড় category ছিল। কিন্তু bicycle use-এ relative growth সবচেয়ে বেশি হয়েছে।",
+    "তাই শুধু কে সবচেয়ে বড়, সেটা নয়—কীভাবে পরিবর্তন হয়েছে, সেটাও বুঝুন।"
+   ]
+  },
+  {
+   "id": "08",
+   "title": "TWO TYPES OF CHANGE",
+   "filename": "task1-m2-08-change-types.mp3",
+   "paragraphs": [
+    "এবার আমরা এমন একটি পার্থক্য শিখব, যেটা অনেক IELTS learner গুলিয়ে ফেলেন।",
+    "Percentage-point change এবং percentage growth এক জিনিস নয়।",
+    "চলুন, bicycle use-এর উদাহরণ দিয়ে বুঝি।",
+    "২০১০ সালে bicycle use ছিল ৬ শতাংশ। ২০২৩ সালে সেটা বেড়ে হয়েছে ১৯ শতাংশ।",
+    "Percentage-point change বের করতে হলে শেষের percentage থেকে শুরুর percentage বিয়োগ করতে হয়।",
+    "অর্থাৎ, ১৯ minus ৬ সমান ১৩।",
+    "তাই bicycle use বেড়েছে ১৩ percentage points।",
+    "কিন্তু relative percentage growth হিসাব করা হয় পরিবর্তনকে শুরুর value-র সঙ্গে তুলনা করে।",
+    "এর হিসাব হলো:",
+    "১৯ minus ৬, এরপর ৬ দিয়ে ভাগ, তারপর ১০০ দিয়ে গুণ।",
+    "ফলাফল প্রায় ২১৬.৭ শতাংশ, অর্থাৎ প্রায় ২১৭ শতাংশ relative growth।",
+    "তাহলে বুঝতে পারছেন, একই পরিবর্তনকে দুইভাবে প্রকাশ করা যায়।",
+    "Bicycle use বেড়েছে ১৩ percentage points, যা প্রায় ২১৭ শতাংশ relative growth-এর সমান।",
+    "শুধু ১৩ শতাংশ বেড়েছে বললে সেটা ভুল হবে।",
+    "Task 1-এ প্রতিবার relative growth হিসাব করার প্রয়োজন নেই। আপনার কাজ হলো data-কে সঠিকভাবে প্রকাশ করা।",
+    "দুটি percentage-এর পরিবর্তন বর্ণনা করার সময় percentage points প্রায়ই সবচেয়ে পরিষ্কার option।",
+    "মনে রাখবেন—",
+    "১৩ percentage points-এর পার্থক্যকে ১৩ percent increase বলবেন না, যদি relative calculation সেটা সমর্থন না করে।"
+   ]
+  },
+  {
+   "id": "09",
+   "title": "KEY FEATURES",
+   "filename": "task1-m2-09-key-features.mp3",
+   "paragraphs": [
+    "এবার আসি Task 1-এর একটি অত্যন্ত গুরুত্বপূর্ণ skill-এ।",
+    "একটা chart-এ অনেকগুলো value থাকতে পারে। কিন্তু ভালো Task 1 response-এ প্রতিটি value বর্ণনা করার প্রয়োজন নেই।",
+    "আপনাকে সবচেয়ে গুরুত্বপূর্ণ তথ্যগুলো বেছে নিতে হবে।",
+    "প্রথমে খুঁজুন—সবচেয়ে বেশি বা সবচেয়ে কম value কোনটি।",
+    "কোন category-তে সবচেয়ে বড় increase বা decrease হয়েছে?",
+    "কোনো value কি অপরিবর্তিত রয়েছে?",
+    "কোথাও কি অস্বাভাবিক পার্থক্য অথবা group-গুলোর মধ্যে স্পষ্ট contrast আছে?",
+    "এই pattern-গুলোই আপনার attention পাওয়ার যোগ্য।",
+    "একটা ভালো overview পাঠককে visual-এর মূল message বুঝিয়ে দেয়। এটি সংখ্যার তালিকা নয়।",
+    "আমাদের commuting chart-এ দুটি গুরুত্বপূর্ণ feature লক্ষ্য করুন।",
+    "প্রথমত, car use যথেষ্ট কমে গেলেও দুই বছরেই এটি সবচেয়ে জনপ্রিয় commuting method ছিল।",
+    "দ্বিতীয়ত, bicycle use অনেক বেড়েছে এবং car use-এর সঙ্গে ব্যবধান কমিয়েছে।",
+    "Walking অপরিবর্তিত ছিল। এটিও একটি তথ্য, তবে এটি secondary feature হতে পারে। Body paragraph-এ কাজে লাগলেও overview-এর সবচেয়ে গুরুত্বপূর্ণ headline নাও হতে পারে।",
+    "তাই data এলোমেলোভাবে বাদ দেবেন না।",
+    "যে তথ্যগুলো মূল pattern ব্যাখ্যা করতে সাহায্য করে, সেগুলো বেছে নিন।",
+    "ভালো writer সব number লেখেন না। ভালো writer সবচেয়ে গুরুত্বপূর্ণ information নির্বাচন করেন।"
+   ]
+  },
+  {
+   "id": "10",
+   "title": "GUIDED CHART ANALYSIS",
+   "filename": "task1-m2-10-guided-analysis.mp3",
+   "paragraphs": [
+    "এবার আপনার শেখা method-টি বাস্তবে প্রয়োগ করার সময়।",
+    "Mino-র ভেতরে আপনি একটি commuting chart দেখতে পাবেন।",
+    "তাড়াহুড়ো করবেন না।",
+    "প্রতিটি প্রশ্নের উত্তর chart দেখে দেবেন। নিজের স্মৃতি অথবা আন্দাজের ওপর নির্ভর করবেন না।",
+    "প্রথমে খেয়াল করুন—chart-এ কী measure করা হয়েছে এবং unit কী।",
+    "এরপর দেখুন, কোন দুটি বছর তুলনা করা হচ্ছে।",
+    "তারপর car use কীভাবে পরিবর্তিত হয়েছে, সঠিক figure-সহ সেটি বোঝার চেষ্টা করুন।",
+    "এরপর bicycle use-এর দিকে তাকান। কোন method-এ সবচেয়ে বেশি relative increase হয়েছে? এর starting value এবং ending value কত?",
+    "এরপর খুঁজে বের করুন, কোন category অপরিবর্তিত ছিল।",
+    "সবশেষে পুরো chart-এর দিকে একবার তাকান।",
+    "নিজেকে প্রশ্ন করুন—একজন পাঠকের লক্ষ্য করা উচিত এমন সবচেয়ে গুরুত্বপূর্ণ overall pattern কোনটি?",
+    "প্রতিটি প্রশ্নের উত্তর দেওয়ার আগে chart-এর তথ্য আবার যাচাই করুন।",
+    "মনে রাখবেন, আমাদের উদ্দেশ্য শুধু সঠিক answer নির্বাচন করা নয়।",
+    "আমরা শিখছি কীভাবে visual-কে নিজের ভাষায় সঠিকভাবে বুঝতে হয়।",
+    "চলুন, এবার আপনি নিজে চেষ্টা করুন।"
+   ]
+  },
+  {
+   "id": "11",
+   "title": "MISREADING CLINIC 1",
+   "filename": "task1-m2-11-misreading-clinic.mp3",
+   "paragraphs": [
+    "এবার আমরা একটি ছোট skill test করব।",
+    "কিছু ভুল আছে, যেগুলো প্রথম দেখায় সঠিক মনে হতে পারে। কিন্তু সেগুলো chart-এর meaning পরিবর্তন করে দেয়।",
+    "প্রথম প্রশ্নটি দেখুন।",
+    "আমাদের chart commuter-দের percentage measure করে।",
+    "কিন্তু একজন student লিখেছে:",
+    "\"There were 52 car users in 2010.\"",
+    "এখানে ভুলটা কোথায়?",
+    "একটু ভেবে দেখুন।",
+    "আপনার উত্তর নির্বাচন করার আগে মনে রাখুন—chart-এর unit কী ছিল?",
+    "সময় নিয়ে উত্তর দিন।"
+   ]
+  },
+  {
+   "id": "12",
+   "title": "MISREADING CLINIC 2",
+   "filename": "task1-m2-12-misreading-clinic-2.mp3",
+   "paragraphs": [
+    "এবার পরিবর্তনের direction এবং size যাচাই করি।",
+    "Car use ২০১০ সালে ছিল ৫২ শতাংশ। ২০২৩ সালে তা কমে হয়েছে ৩৮ শতাংশ।",
+    "এখন প্রশ্ন হলো, কোন statement-টি সঠিক?",
+    "আপনার উত্তর বেছে নেওয়ার আগে subtraction-টা একবার যাচাই করুন।",
+    "পরিবর্তনটি কি increase, নাকি decrease?",
+    "আর সেটি কত percentage points?",
+    "তাড়াহুড়ো করবেন না। সঠিক direction এবং সঠিক unit—দুটিই গুরুত্বপূর্ণ।"
+   ]
+  },
+  {
+   "id": "13",
+   "title": "MISREADING CLINIC 3",
+   "filename": "task1-m2-13-misreading-clinic-3.mp3",
+   "paragraphs": [
+    "এবার এমন একটি category দেখব, যেখানে কোনো পরিবর্তন হয়নি।",
+    "Walking-এর value ২০১০ সালেও ছিল ৭ শতাংশ, ২০২৩ সালেও ছিল ৭ শতাংশ।",
+    "এখন বলুন, সবচেয়ে accurate description কোনটি?",
+    "এখানে increase বা decrease-এর শব্দ ব্যবহার করার আগে দুই বছরের value মিলিয়ে দেখুন।",
+    "আপনার উত্তর নির্বাচন করুন।",
+    "মনে রাখবেন, data অপরিবর্তিত থাকলে আপনার description-ও সেই বাস্তবতা প্রকাশ করতে হবে।"
+   ]
+  },
+  {
+   "id": "14",
+   "title": "MISREADING CLINIC 4",
+   "filename": "task1-m2-14-misreading-clinic-4.mp3",
+   "paragraphs": [
+    "এটাই আমাদের শেষ misreading question।",
+    "এবার পুরো commuting chart-এর overall interpretation নিয়ে ভাবুন।",
+    "একটি ভালো interpretation-এ chart-এর সবচেয়ে গুরুত্বপূর্ণ pattern-গুলো সঠিকভাবে উঠে আসতে হবে।",
+    "খেয়াল করুন—car use সবচেয়ে বড় category ছিল কি না, bicycle use কীভাবে পরিবর্তিত হয়েছে, এবং chart কি আসলেই কোনো কারণ ব্যাখ্যা করেছে?",
+    "শুধু chart-এ থাকা তথ্যের ওপর ভিত্তি করে উত্তর নির্বাচন করুন।",
+    "কোনো কারণ নিজে থেকে যোগ করবেন না।",
+    "সময় নিয়ে সবচেয়ে নির্ভরযোগ্য interpretation-টি বেছে নিন।"
+   ]
+  },
+  {
+   "id": "15",
+   "title": "INDEPENDENT REVIEW",
+   "filename": "task1-m2-15-independent-review.mp3",
+   "paragraphs": [
+    "দারুণ! আপনি এখন লেখার আগে chart বোঝার method অনুশীলন করেছেন।",
+    "এবার একই method নিজে নিজে প্রয়োগ করার সময়।",
+    "যেকোনো Task 1 response লেখার আগে নিজেকে কয়েকটি প্রশ্ন করবেন।",
+    "Visual-এর subject কী?",
+    "এর unit কী?",
+    "কোন period অথবা category দেখানো হয়েছে?",
+    "প্রতিটি data series কী represent করছে?",
+    "Visual-টি কি সময়ের সঙ্গে পরিবর্তন দেখাচ্ছে, নাকি একটি নির্দিষ্ট সময়ের category comparison?",
+    "এরপর আরও কিছু বিষয় যাচাই করবেন।",
+    "কোন value বেড়েছে?",
+    "কোনটি কমেছে?",
+    "কোনটি স্থিতিশীল থেকেছে?",
+    "কোন category সবচেয়ে বেশি বা সবচেয়ে কম?",
+    "সবচেয়ে গুরুত্বপূর্ণ এক বা দুটি pattern কী?",
+    "সবশেষে নিজের interpretation আবার পরীক্ষা করুন।",
+    "কোনো year উল্টে ফেলেননি তো?",
+    "Percentage-কে মানুষের absolute number-এর সঙ্গে গুলিয়ে ফেলেননি তো?",
+    "Percentage points আর percentage growth এক করে ফেলেননি তো?",
+    "Visual-এ উল্লেখ নেই, এমন কোনো কারণ অথবা ব্যক্তিগত মতামত যোগ করেননি তো?",
+    "মনে রাখবেন, একজন ভালো writer শুধু number দেখেন না। তিনি বোঝেন, সেই number-গুলোর অর্থ কী।",
+    "আপনি তখনই লেখা শুরু করার জন্য প্রস্তুত, যখন visual-এর মূল message নিজের ভাষায় নির্ভুলভাবে ব্যাখ্যা করতে পারবেন।",
+    "এবার আপনার final practice-এর পালা।",
+    "একটি সংক্ষিপ্ত, দুই বাক্যের overview লিখুন। Car use-এর মূল pattern এবং bicycle use-এর বড় পরিবর্তন—এই দুটি বিষয় তুলে ধরুন।",
+    "সব figure তালিকা করবেন না। শুধু সবচেয়ে গুরুত্বপূর্ণ message-টি পরিষ্কারভাবে প্রকাশ করুন।",
+    "আমি আপনার উত্তর দেখার জন্য অপেক্ষা করছি।"
+   ]
+  }
+ ]
+}

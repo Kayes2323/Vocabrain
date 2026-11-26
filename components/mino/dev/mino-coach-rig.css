@@ -1,0 +1,277 @@
+/*
+ * PLACEHOLDER rig styling for the Mino Coach animation-architecture preview.
+ * Deliberately plain grey/dashed shapes with text labels — not a visual
+ * design, and never to be confused with the approved Mino character. Own
+ * namespace (`mino-coach-rig__*`) so it can never collide with the shipped
+ * `.mino`/`.mino-coach` classes used in app/globals.css.
+ *
+ * Geometry follows docs/MINO_COACH_CHARACTER_SPEC.md §4's pivot table. Swap
+ * these shapes for real layered artwork (background-image per layer) once
+ * it exists; the state machine and these animations should not need to
+ * change.
+ */
+
+.mino-coach-rig {
+  position: relative;
+  width: min(100%, 24rem);
+  aspect-ratio: 1;
+  isolation: isolate;
+  overflow: visible;
+  font-family: ui-monospace, 'SF Mono', monospace;
+}
+.mino-coach-rig__badge {
+  position: absolute;
+  top: -1.9rem;
+  left: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+}
+.mino-coach-rig__stage {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 88%;
+}
+.mino-coach-rig[data-motion='off'] * {
+  animation-play-state: paused;
+}
+.mino-coach-rig__layer {
+  position: absolute;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+.mino-coach-rig__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- layer geometry (placeholder shapes only) ---- */
+.mino-coach-rig__shadow {
+  left: 28%; top: 85%; width: 44%; height: 6%;
+  background: rgba(0, 0, 0, 0.14);
+  border-radius: 50%;
+}
+.mino-coach-rig__backpack {
+  left: 8%; top: 52%; width: 28%; height: 32%;
+  background: #e4e4e7; border: 2px dashed #a1a1aa; border-radius: 18%;
+  transform-origin: 50% 20%;
+}
+.mino-coach-rig__backpack-strap {
+  left: 30%; top: 38%; width: 5%; height: 32%;
+  background: #d4d4d8; border-radius: 40%;
+  transform-origin: 50% 0%;
+}
+.mino-coach-rig__backpack-tag {
+  left: 13%; top: 48%; width: 9%; height: 6%;
+  background: #d4d4d8; border-radius: 30%;
+  transform-origin: 50% 0%;
+}
+.mino-coach-rig__feet {
+  left: 34%; top: 85%; width: 32%; height: 9%;
+  background: #3f3f46; border-radius: 40%;
+  transform-origin: 50% 100%;
+}
+.mino-coach-rig__body {
+  left: 18%; top: 22%; width: 64%; height: 58%;
+  background: #f4f4f5; border: 3px dashed #a1a1aa; border-radius: 48% 48% 44% 44%;
+  transform-origin: 50% 80%;
+}
+.mino-coach-rig__face-mask {
+  left: 32%; top: 24%; width: 36%; height: 40%;
+  background: #fafafa; border: 2px dashed #d4d4d8; border-radius: 50% 50% 35% 35%;
+  transform-origin: 50% 0%;
+}
+.mino-coach-rig__eyes-open, .mino-coach-rig__eyes-closed, .mino-coach-rig__eyes-wink {
+  left: 37%; top: 33%; width: 26%; height: 8%;
+  background: #e5e7eb; border: 1px dashed #9ca3af; border-radius: 0.2rem;
+  font-size: 0.55rem; color: #6b7280; display: flex; align-items: center; justify-content: center;
+}
+.mino-coach-rig__eyes-open::after { content: 'eyes: open'; }
+.mino-coach-rig__eyes-closed::after { content: 'eyes: closed'; }
+.mino-coach-rig__eyes-wink::after { content: 'eyes: wink'; }
+.mino-coach-rig__eyes-closed, .mino-coach-rig__eyes-wink { opacity: 0; }
+
+.mino-coach-rig__mouth-neutral, .mino-coach-rig__mouth-mid, .mino-coach-rig__mouth-wide {
+  left: 42%; top: 50%; width: 16%; height: 6%;
+  background: #e5e7eb; border: 1px dashed #9ca3af; border-radius: 0.2rem;
+  font-size: 0.5rem; color: #6b7280; display: flex; align-items: center; justify-content: center;
+}
+.mino-coach-rig__mouth-neutral::after { content: 'mouth: neutral'; }
+.mino-coach-rig__mouth-mid::after { content: 'mouth: mid'; }
+.mino-coach-rig__mouth-wide::after { content: 'mouth: wide'; }
+.mino-coach-rig__mouth-mid, .mino-coach-rig__mouth-wide { opacity: 0; }
+
+.mino-coach-rig__arm {
+  width: 16%; height: 30%;
+  background: rgba(161, 161, 170, 0.5); border: 2px dashed #71717a; border-radius: 40%;
+}
+.mino-coach-rig__arm-pencil { left: 10%; top: 44%; transform-origin: 50% 0%; }
+.mino-coach-rig__arm-notebook { left: 74%; top: 44%; transform-origin: 50% 0%; }
+.mino-coach-rig__pencil {
+  left: 20%; top: 70%; width: 60%; height: 22%;
+  background: #fbbf24; border-radius: 30%; transform: rotate(20deg);
+}
+.mino-coach-rig__notebook {
+  left: 10%; top: 68%; width: 80%; height: 28%;
+  background: #f4f4f5; border: 1px solid #d4d4d8; border-radius: 10%;
+  transform-origin: 50% 0%;
+}
+.mino-coach-rig__writing-stroke {
+  left: 0; top: 0; width: 100%; height: 100%; opacity: 0;
+}
+.mino-coach-rig__writing-stroke path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+.mino-coach-rig__sparkle {
+  width: 4%; height: 4%; background: #fbbf24; opacity: 0;
+  clip-path: polygon(50% 0%, 61% 35%, 100% 50%, 61% 65%, 50% 100%, 39% 65%, 0% 50%, 39% 35%);
+  transform-origin: 50% 50%;
+}
+.mino-coach-rig__sparkle-1 { left: 72%; top: 14%; }
+.mino-coach-rig__sparkle-2 { left: 20%; top: 20%; }
+
+/* ---- idle (continuous, low-intensity) ---- */
+.mino-coach-rig[data-state='idle'] .mino-coach-rig__body { animation: rig-breathe 4.2s ease-in-out infinite; }
+.mino-coach-rig[data-state='idle'] .mino-coach-rig__eyes-open { animation: rig-blink 5.4s ease-in-out infinite; }
+.mino-coach-rig[data-state='idle'] .mino-coach-rig__backpack-strap { animation: rig-sway 6s ease-in-out infinite; }
+
+/* ---- entrance (one-shot) ---- */
+.mino-coach-rig[data-state='entrance'] .mino-coach-rig__stage { animation: rig-entrance 1.05s cubic-bezier(0.22, 0.75, 0.3, 1) both; }
+.mino-coach-rig[data-state='entrance'] .mino-coach-rig__backpack { animation: rig-backpack-follow 1.05s cubic-bezier(0.22, 0.75, 0.3, 1) 60ms both; }
+
+/* ---- landing (one-shot) ---- */
+.mino-coach-rig[data-state='landing'] .mino-coach-rig__stage { animation: rig-landing-bounce 420ms ease both; }
+.mino-coach-rig[data-state='landing'] .mino-coach-rig__shadow { animation: rig-shadow-pulse 420ms ease both; }
+.mino-coach-rig[data-state='landing'] .mino-coach-rig__backpack-strap { animation: rig-sway 420ms ease both; }
+
+/* ---- greeting (one-shot) ---- */
+.mino-coach-rig[data-state='greeting'] .mino-coach-rig__stage { animation: rig-settle-bounce 900ms ease both; }
+.mino-coach-rig[data-state='greeting'] .mino-coach-rig__arm-pencil { animation: rig-wave 1.1s ease-in-out; }
+.mino-coach-rig[data-state='greeting'] .mino-coach-rig__eyes-open { animation: rig-greet-eye-hide 1.1s ease both; }
+.mino-coach-rig[data-state='greeting'] .mino-coach-rig__eyes-wink { animation: rig-greet-eye-show 1.1s ease both; }
+.mino-coach-rig[data-state='greeting'] .mino-coach-rig__sparkle { animation: rig-pop 500ms ease 300ms both; }
+
+/* ---- speaking (held) ---- */
+.mino-coach-rig[data-state='speaking'] .mino-coach-rig__mouth-neutral { animation: rig-mouth-neutral 900ms ease-in-out infinite; }
+.mino-coach-rig[data-state='speaking'] .mino-coach-rig__mouth-mid { animation: rig-mouth-mid 900ms ease-in-out infinite; }
+.mino-coach-rig[data-state='speaking'] .mino-coach-rig__mouth-wide { animation: rig-mouth-wide 900ms ease-in-out infinite; }
+.mino-coach-rig[data-state='speaking'] .mino-coach-rig__stage { animation: rig-nod 2.4s ease-in-out infinite; }
+.mino-coach-rig[data-state='speaking'] .mino-coach-rig__arm-pencil { animation: rig-gesture 2.2s ease-in-out infinite; }
+
+/* ---- explaining (held) ---- */
+.mino-coach-rig[data-state='explaining'] .mino-coach-rig__arm-pencil { animation: rig-point 2s cubic-bezier(0.3, 0.7, 0.4, 1) infinite; }
+.mino-coach-rig[data-state='explaining'] .mino-coach-rig__face-mask { animation: rig-tilt 700ms ease both; }
+
+/* ---- writing (held) ---- */
+.mino-coach-rig[data-state='writing'] .mino-coach-rig__arm-pencil { animation: rig-write-reach 1.6s ease-in-out infinite; }
+.mino-coach-rig[data-state='writing'] .mino-coach-rig__notebook { animation: rig-tilt-small 1.6s ease-in-out infinite; }
+.mino-coach-rig[data-state='writing'] .mino-coach-rig__writing-stroke { animation: rig-stroke-draw 1.6s ease-in-out infinite; }
+.mino-coach-rig[data-state='writing'] .mino-coach-rig__writing-stroke path { animation: rig-stroke-path 1.6s ease-in-out infinite; }
+
+/* ---- thinking (held) ---- */
+.mino-coach-rig[data-state='thinking'] .mino-coach-rig__eyes-open { animation: rig-look 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite; }
+.mino-coach-rig[data-state='thinking'] .mino-coach-rig__body { animation: rig-breathe 2.4s ease-in-out infinite; }
+.mino-coach-rig[data-state='thinking'] .mino-coach-rig__arm-pencil { animation: rig-think-tap 1.8s ease-in-out infinite; }
+
+/* ---- success (one-shot) ---- */
+.mino-coach-rig[data-state='success'] .mino-coach-rig__stage { animation: rig-hop 700ms cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.mino-coach-rig[data-state='success'] .mino-coach-rig__feet { animation: rig-feet-lift 700ms cubic-bezier(0.3, 0.7, 0.4, 1) both; }
+.mino-coach-rig[data-state='success'] .mino-coach-rig__eyes-open { animation: rig-greet-eye-hide 700ms ease both; }
+.mino-coach-rig[data-state='success'] .mino-coach-rig__eyes-wink { animation: rig-greet-eye-show 700ms ease both; }
+.mino-coach-rig[data-state='success'] .mino-coach-rig__sparkle { animation: rig-pop 600ms ease 100ms both; }
+
+/* ---- encouraging (one-shot) ---- */
+.mino-coach-rig[data-state='encouraging'] .mino-coach-rig__face-mask { animation: rig-reassure 1.3s ease-in-out both; }
+.mino-coach-rig[data-state='encouraging'] .mino-coach-rig__arm-pencil { animation: rig-gentle-pat 1.3s ease-in-out both; }
+
+@keyframes rig-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.025); } }
+@keyframes rig-blink { 0%, 92%, 100% { opacity: 1; } 95% { opacity: 0; } }
+@keyframes rig-sway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(3deg); } }
+@keyframes rig-entrance {
+  0% { opacity: 0; transform: translateX(-22%) scale(0.92); }
+  55% { opacity: 1; transform: translateX(3%) scale(1.01); }
+  75% { transform: translateX(-1%) scale(0.99); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes rig-backpack-follow {
+  0% { transform: translateX(-26%) rotate(-4deg); }
+  60% { transform: translateX(4%) rotate(2deg); }
+  100% { transform: none; }
+}
+@keyframes rig-landing-bounce {
+  0% { transform: translateY(-8%); }
+  55% { transform: translateY(2%); }
+  100% { transform: translateY(0); }
+}
+@keyframes rig-shadow-pulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  55% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes rig-settle-bounce {
+  0% { transform: translateY(-5%); }
+  55% { transform: translateY(1%); }
+  100% { transform: translateY(0); }
+}
+@keyframes rig-wave {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-24deg); }
+  60% { transform: rotate(-8deg); }
+}
+@keyframes rig-greet-eye-hide { 0%, 50%, 72%, 100% { opacity: 1; } 61% { opacity: 0; } }
+@keyframes rig-greet-eye-show { 0%, 50%, 72%, 100% { opacity: 0; } 61% { opacity: 1; } }
+@keyframes rig-pop {
+  0% { transform: scale(0.4) rotate(0deg); opacity: 0; }
+  55% { transform: scale(1.25) rotate(45deg); opacity: 1; }
+  100% { transform: scale(1) rotate(90deg); opacity: 0.9; }
+}
+@keyframes rig-mouth-neutral { 0%, 8%, 92%, 100% { opacity: 1; } 15%, 85% { opacity: 0; } }
+@keyframes rig-mouth-mid { 0%, 92%, 100% { opacity: 0; } 15%, 28%, 72%, 85% { opacity: 1; } 45%, 55% { opacity: 0; } }
+@keyframes rig-mouth-wide { 0%, 30%, 70%, 100% { opacity: 0; } 45%, 55% { opacity: 1; } }
+@keyframes rig-nod { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5%); } }
+@keyframes rig-gesture { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-6deg); } }
+@keyframes rig-point { 0%, 100% { transform: rotate(-55deg); } 50% { transform: rotate(-62deg); } }
+@keyframes rig-tilt { 0% { transform: rotate(0deg); } 100% { transform: rotate(-3deg); } }
+@keyframes rig-tilt-small { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-4deg); } }
+@keyframes rig-write-reach { 0%, 100% { transform: rotate(-20deg); } 40%, 70% { transform: rotate(-55deg); } }
+@keyframes rig-stroke-draw { 0%, 15%, 100% { opacity: 0; } 25%, 85% { opacity: 1; } }
+@keyframes rig-stroke-path { 0%, 15% { stroke-dashoffset: 1; } 55%, 85% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 1; } }
+@keyframes rig-look {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4%); }
+  55% { transform: translateX(4%); }
+  75% { transform: translateX(0); }
+}
+@keyframes rig-think-tap { 0%, 100% { transform: rotate(-70deg); } 50% { transform: rotate(-76deg); } }
+@keyframes rig-hop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-10%) rotate(-5deg); }
+  65% { transform: translateY(-3%) rotate(4deg); }
+}
+@keyframes rig-feet-lift {
+  0%, 100% { transform: translateY(0); }
+  35% { transform: translateY(-14%); }
+  65% { transform: translateY(-4%); }
+}
+@keyframes rig-reassure { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(2deg); } }
+@keyframes rig-gentle-pat { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-10deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .mino-coach-rig *, .mino-coach-rig__stage { animation: none !important; transition: none !important; }
+  .mino-coach-rig__eyes-open { opacity: 1; }
+  .mino-coach-rig__eyes-closed, .mino-coach-rig__eyes-wink { opacity: 0; }
+  .mino-coach-rig__mouth-neutral { opacity: 1; }
+  .mino-coach-rig__mouth-mid, .mino-coach-rig__mouth-wide { opacity: 0; }
+}

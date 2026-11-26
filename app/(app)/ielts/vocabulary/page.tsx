@@ -9,6 +9,7 @@ import { useProfile } from '@/components/providers/ProfileProvider';
 import { useUpgrade } from '@/components/providers/UpgradeProvider';
 import { CardGrid, ListRow, ModuleCard, PageHeader, Panel, RowGroup, ScreenSkeleton, Section, StatusChip } from '@/components/ds';
 import { BrainSummaryPanel } from '@/components/brain/BrainSummaryPanel';
+import { MinoCoachWelcome } from '@/components/mino/MinoCoachWelcome';
 import { FREE_BAND_LEVEL } from '@/lib/constants';
 import { getAllBands, getVocabularyByBand } from '@/lib/ielts-vocabulary';
 import { VOCABULARY_DATA } from '@/lib/vocabulary';
@@ -26,6 +27,8 @@ export default function VocabularyPage() {
   return (
     <div className="space-y-8">
       <PageHeader title={t('skills.vocabulary')} subtitle={t('vocabulary.subtitle')} backHref="/ielts" backLabel={t('nav.ielts')} />
+
+      <MinoCoachWelcome area="my-brain" />
 
       <CardGrid className="xl:grid-cols-2">
         <ModuleCard
