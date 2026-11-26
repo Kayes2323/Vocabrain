@@ -108,7 +108,7 @@ export function AcademyOverview({
             {visuals.map((v) => (
               <ModuleCard
                 key={v.id}
-                href={v.builtLessonId ? `${base}/chart-analysis-board` : `${base}/lesson/${v.id}`}
+                href={v.builtLessonId ? `${base}/lesson/${v.builtLessonId}` : `${base}/lesson/${v.id}`}
                 icon={BarChart3}
                 tint="blue"
                 title={localize(contentLocale, v.title)}

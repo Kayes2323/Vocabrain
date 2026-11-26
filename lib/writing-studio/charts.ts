@@ -1,4 +1,5 @@
 import type { ChartDataset } from './types';
+import { LINE_GRAPH_DATASETS } from './line-graphs';
 
 /** Turns a chart dataset into the plain table shape Mino's AI assessment takes as task data. */
 export function chartToTable(chart: ChartDataset): { caption: string; headers: string[]; rows: string[][] } {
@@ -41,4 +42,9 @@ export const CHART_DATASETS: Record<string, ChartDataset> = {
     ],
     note: 'Figures are illustrative, written for this trainer; they are not real city data.',
   },
+  // The Line Graph Mastery course's unseen independent-test chart. It is
+  // looked up by id here (same as every other final-task chart) rather
+  // than embedded in a lesson step, since it is never shown during the
+  // five guided levels.
+  'lg-06-independent-test': LINE_GRAPH_DATASETS['lg-06-independent-test'],
 };
