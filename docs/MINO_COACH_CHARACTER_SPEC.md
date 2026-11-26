@@ -39,42 +39,38 @@ Numbers marked *(estimate)* are still to be confirmed against final rigged artwo
 
 ## 3. Layers
 
-### 3.1 Extracted from the master (Stage B, local, exact where noted)
+### 3.1 Layers (Stage B, all local; 19 transparent PNGs, 1536 × 1024)
 
-Back → front draw order. Pixel counts are from `scripts/mino-art/stage-b/extract.mjs`.
+Draw order, back → front: `backpack`, `footR`, `footL`, `body`, `tag`, `mask`, `mouth*`, `eyeR*`,
+`eyeL*`, `armRight`, `notebook`, `armRightHand`, `armLeft`, `pencil`. The feet are *behind* the body
+(the belly overlaps their tops); the right arm is behind the notebook at the top but its hand
+(`armRightHand`, a duplicate of the arm's lower part) is in front of the notebook's lower-right corner.
 
-| # | Layer | Visible px | Bounding box (x0,y0–x1,y1) | Status |
-|---|-------|-----------:|----------------------------|--------|
-| 1 | `backpack` | 56,270 | 222,303–544,847 | exact; holes under tag / left arm / pencil / body |
-| 2 | `body` | 255,532 | 219,19–1229,910 | exact; large holes under both arms, props, mask, feet |
-| 3 | `footL` | 23,171 | 505,798–736,973 | exact; top edge hidden under body |
-| 4 | `footR` | 14,389 | 792,844–989,952 | exact; top edge hidden under body |
-| 5 | `tag` | 12,984 | 213,515–342,690 | exact (purple tag + metal clasp) |
-| 6 | `mask` | 193,218 | 549,158–1115,666 | exact *except* under eyes/mouth: flat-white **prototype fill** (see §8) |
-| 7 | `eyeL` | 22,968 | 634,286–805,451 | exact incl. highlight; anti-aliased rim split from the mask |
-| 8 | `eyeR` | 14,788 | 942,261–1070,404 | exact incl. highlight; anti-aliased rim split from the mask |
-| 9 | `mouth` | 1,622 | 838,392–930,424 | exact neutral smile |
-| 10 | `armLeft` | 35,475 | 375,550–604,790 | exact visible area; part under the pencil hidden |
-| 11 | `armRight` | 21,344 | 1137,490–1281,741 | exact visible area; part under the notebook hidden |
-| 12 | `notebook` | 59,784 | 920,488–1203,849 | exact; bite hidden under the right arm |
-| 13 | `pencil` | 23,918 | 439,465–702,771 | exact, fully visible |
+| Layer | Visible px | Provenance |
+|-------|-----------:|------------|
+| `pencil`, `eyeL`, `eyeR`, `mouth`, `tag` | — | **original** master pixels (eyes/mouth carry their anti-aliased halo, split from the mask) |
+| `armLeft` / `armRight` / `armRightHand` | 36,079 / 22,604 / 4,374 | original; 1,455 / 1,854 / 215 px locally reconstructed (area hidden by pencil / notebook) + fringe cleanup |
+| `notebook` | 63,796 | original; 5,100 px reconstructed (bite hidden by the right hand) |
+| `mask` | 193,218 | original; 44,278 px **prototype fill** (flat-white estimate under eyes/mouth and their halos) |
+| `body` | 486,554 | 242,369 original; **244,185 locally reconstructed** (torso under arms/props/tag, 48 px band under the mask edge) |
+| `backpack` | 128,438 | 56,270 original; **72,168 locally reconstructed** (behind tag/arm/pencil/body) |
+| `footL` / `footR` | 23,210 / 15,164 | original; 87 / 775 px reconstructed (top hidden by body) |
+| `eyeL-closed`, `eyeR-closed`, `eyeR-wink` | 3,061 / 2,390 / 2,392 | **locally generated** (vector strokes, master ink colour, head-tilt angle) |
+| `mouth-small`, `mouth-wide` | 1,600 / 3,005 | **locally generated** (follows the master smile; wide has a muted tongue) |
 
-The left eye and right eye are separate layers (left ≈ 172×166 px, right ≈ 129×144 px: the master
-head is slightly tilted/perspective-skewed and the two eyes are *not* the same size or level). The
-feet are separate layers too. 178 disconnected alpha-1 specks outside the character are dropped.
+Reconstruction = smooth multi-scale extension of neighbouring real pixels + fur-texture residual
+copied from real pixels of the same layer. No AI model, no external service. Internal seams
+(arm/pencil/notebook/tag/mask/body edges, 1–3 px) are feathered so rotated layers composite without
+hard aliasing.
 
-### 3.2 Still missing (cannot be derived from the master)
+### 3.2 Still missing
 
-| File | Needed for |
+| Asset | Needed for |
 |------|-----------|
-| `eyes-closed` L/R | blink |
-| `eye-wink` (right eye closed curve) | greeting/success beat |
-| `mouth-open-small`, `mouth-open-wide` | speaking cycle |
-| `body-under-arms` (hidden torso/shoulder pixels) | any arm rotation (see gap test) |
-| `arm-left/right` hidden portions; `notebook` bite; `backpack` hidden areas | clean overlap under motion |
 | `writing-stroke` (vector) | writing state |
-| `sparkle` | greeting/success/idle sparkle |
-| `shadow` (soft ground ellipse) | landing/success |
+| `sparkle` | greeting / success / idle |
+| `shadow` (soft ground ellipse) | landing / success |
+| Higher-fidelity hand-painted torso/backpack under the arms | only if art-direction review rejects the local reconstruction |
 
 ## 4. Proportions & pivots (master pixels; fractions of 1536×1024 in brackets)
 
@@ -160,21 +156,23 @@ used in `MinoCoachMascot.tsx`/`Mino.tsx`).
 
 ## 8. Gaps, honest limits and prototype fills
 
-- **Hidden pixels are not invented.** Where a part is covered by another in the master (torso under
-  the arms/pencil/notebook, arm under the pencil, notebook under the arm, backpack under the tag and
-  arm, foot tops under the body) the layer has a hole. Stage B's arm-rotation test shows these holes
-  open up as soon as an arm moves; they need new artwork before any arm motion is production-ready.
-- **One labelled prototype fill:** the flat-white mask area under the eyes/mouth (≈ 39k px incl. the
-  anti-aliased eye/mouth rims) is filled with a smooth estimate of the surrounding mask so the eyes
-  and mouth can be separate layers. It is a prototype, not master pixels.
-- Exact recomposite of the extracted layers differs from the master by at most 12/255 per channel
-  (mean 2.2 over differing pixels; 41,254 px = 2.6%), almost entirely from that fill and from the
-  master's 253/254 alpha under the eyes. Details in the Stage B report.
-- Not produced and not claimed: any new facial art, any inpainted body/arm pixels, any audio.
-- Approved Bangla audio is out of scope for this phase.
+- **Reconstructed, not original:** torso under arms/props, backpack interior, arm-under-pencil,
+  notebook-under-hand, foot tops, and the mask under the eyes/mouth are *locally reconstructed
+  estimates* (see §3.1). They are invisible at neutral and prevent gaps during motion, but they are not
+  art-directed pixels. The body fill extends to the convex hull of the visible torso, so a slightly wider
+  body can peek out if an arm swings far away.
+- **Generated face states** are drawn from measurements of the master (ink colour, stroke thickness,
+  head tilt) but are new art; they need art-direction review. The closed-eye states reveal a faint soft
+  patch where the original eye halo was.
+- **Neutral recomposite vs master:** 79.9% of pixels are bit-identical; ~248k differ by only 1–2 levels
+  (the master's alpha is 253–254, so overlapping layers stack to 255); ~13k differ by 9–32 and ~15k by
+  >32 — all 1–3 px seam rims from feathering. Max channel difference 252 at isolated seam pixels.
+- **Motion test:** both arms rotated ±20° / ±12° add **0** exposed-gap pixels (985 px baseline = soft
+  silhouette edge). Pivots are estimates.
+- Not produced: writing stroke, sparkle, ground shadow, any audio.
 
 ## 9. Next step
 
-Stage B output is local-only. Stages C–E (rig integration into the isolated preview, Task 1 welcome
-experience, QA) wait for artwork approval and for a decision on how the missing assets in §3.2 are
-produced. Nothing is uploaded to any external service without explicit approval.
+Stage B output is local-only and awaiting QA approval. Stages C–E (rig integration into the isolated
+preview, Task 1 welcome experience, QA) wait for that approval. Nothing was uploaded to any external
+service and no credits were spent.

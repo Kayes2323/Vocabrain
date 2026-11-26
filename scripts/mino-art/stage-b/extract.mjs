@@ -201,7 +201,7 @@ const filledMask = new Uint8Array(N); // 1 where the prototype fill invented pix
   // widen holes by 6 px so the antialiased ring is also re-estimated from clean mask pixels
   let todo = new Uint8Array(N);
   for (let i = 0; i < N; i++) if (holeRegion(i)) todo[i] = 1;
-  for (let pass = 0; pass < 6; pass++) { const nt = todo.slice(); for (let i = 0; i < N; i++) if (todo[i]) { const x = i % W, y = (i / W) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) { const j = yy * W + xx; if (OWN[j] === ID.mask || OWN[j] === ID.body) { nt[j] = 1; } } } } todo = nt; }
+  for (let pass = 0; pass < 28; pass++) { const nt = todo.slice(); for (let i = 0; i < N; i++) if (todo[i]) { const x = i % W, y = (i / W) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { if ((pass & 1) && dx !== 0 && dy !== 0) continue; const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) { const j = yy * W + xx; if (OWN[j] === ID.mask || OWN[j] === ID.body) { nt[j] = 1; } } } } todo = nt; }
   // pixels in `todo` that are mask-owned are treated as unknown (re-estimated) for the *estimate only*
   const known = new Uint8Array(N), val = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) if (OWN[i] === ID.mask && !todo[i]) { known[i] = 1; val[i * 3] = R(i); val[i * 3 + 1] = G(i); val[i * 3 + 2] = B(i); }
@@ -242,7 +242,7 @@ const rimFilled = new Uint8Array(N); // mask pixels replaced by the prototype es
 for (const n of ['eyeL', 'eyeR', 'mouth']) {
   const own = (i) => OWN[i] === ID[n];
   const near = new Uint8Array(N);
-  for (let i = 0; i < N; i++) if (own(i)) { const x = i % W, y = (i / W) | 0; for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) near[yy * W + xx] = 1; } }
+  for (let i = 0; i < N; i++) if (own(i)) { const x = i % W, y = (i / W) | 0; const RR = n === 'mouth' ? 6 : 24; for (let dy = -RR; dy <= RR; dy++) for (let dx = -RR; dx <= RR; dx++) { if (dx * dx + dy * dy > RR * RR) continue; const xx = x + dx, yy = y + dy; if (xx >= 0 && yy >= 0 && xx < W && yy < H) near[yy * W + xx] = 1; } }
   const [dr, dg, db] = darkC[n]; const Lc = 0.299 * dr + 0.587 * dg + 0.114 * db;
   const L = layer[n], ML = layer.mask;
   for (let i = 0; i < N; i++) {
@@ -252,7 +252,7 @@ for (const n of ['eyeL', 'eyeR', 'mouth']) {
     const lbg = 0.299 * maskRGB[i * 3] + 0.587 * maskRGB[i * 3 + 1] + 0.114 * maskRGB[i * 3 + 2];
     const lp = 0.299 * R(i) + 0.587 * G(i) + 0.114 * B(i);
     const a = Math.max(0, Math.min(1, (lbg - lp) / Math.max(1, lbg - Lc)));
-    if (a <= 0.02) continue;                                // pure mask pixel: leave as is
+    if (a <= 0.004) continue;                               // pure mask pixel: leave as is
     L[i * 4] = Math.round(dr); L[i * 4 + 1] = Math.round(dg); L[i * 4 + 2] = Math.round(db); L[i * 4 + 3] = Math.round(a * 255);
     ML[i * 4] = Math.round(maskRGB[i * 3]); ML[i * 4 + 1] = Math.round(maskRGB[i * 3 + 1]); ML[i * 4 + 2] = Math.round(maskRGB[i * 3 + 2]); ML[i * 4 + 3] = 255;
     rimFilled[i] = 1;
