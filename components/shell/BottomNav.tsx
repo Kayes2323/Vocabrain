@@ -44,6 +44,7 @@ export function BottomNav() {
                       active ? 'ring-brand-soft scale-105' : 'ring-card',
                     )}
                     data-testid="nav-mino"
+                    data-nav-mino={active ? 'selected' : undefined}
                   >
                     <MinoMark size="md" alive />
                   </span>

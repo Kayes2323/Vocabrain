@@ -6,4 +6,4 @@
 set -euo pipefail
 SPECS="${*:-tenses articles agreement prepositions connectors complex punctuation common-errors vocabulary ielts-intro listening reading reading-library writing speaking teaching brain abroad home curriculum plan plan-daily progress ielts-hub}"
 cd "$(dirname "$0")/../.."
-exec npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-vocabbrain "bash scripts/e2e/serve-and-test.sh $SPECS"
+exec npx -y firebase-tools@15 emulators:exec --only auth,firestore --project demo-mino "bash scripts/e2e/serve-and-test.sh $SPECS"

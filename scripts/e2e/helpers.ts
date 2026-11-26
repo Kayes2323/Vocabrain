@@ -8,7 +8,7 @@ import { CHALLENGES, MODULES, canonicalAnswer, type Exercise } from '../../lib/f
 import { orderWords } from '../../lib/foundation/grade';
 
 export const BASE = process.env.E2E_BASE_URL ?? 'http://localhost:3105';
-const FS = 'http://127.0.0.1:8080/v1/projects/demo-vocabbrain/databases/(default)/documents';
+const FS = 'http://127.0.0.1:8080/v1/projects/demo-mino/databases/(default)/documents';
 export const SHOTS = process.env.E2E_SHOTS ?? path.join(process.cwd(), '.e2e-shots');
 
 export type Lang = 'en' | 'bn';

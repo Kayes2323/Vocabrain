@@ -1,6 +1,6 @@
 # Mino Foundation — Phase 1 Content Audit
 
-**Repository:** `Kayes2323/Vocabrain`  
+**Repository:** the Mino repository (`Kayes2323/mino`; rename status in `docs/BRAND_MIGRATION.md`)  
 **Audit target:** Existing IELTS Foundation content under `lib/foundation/content/`, catalogue in `index.ts`, model in `lib/foundation/model.ts`, and existing answer-audit report.  
 **Status:** Initial full-catalogue audit with representative source inspection. This is not a claim that every individual lesson has already been manually line-edited or clinically/academically validated. The lesson-level pass must continue in batches before rewriting content.
 

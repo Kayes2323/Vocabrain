@@ -9,8 +9,8 @@ mkdir -p "$LOGS"
 set -m
 
 export NEXT_PUBLIC_FIREBASE_API_KEY=demo-key
-export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=demo-vocabbrain.firebaseapp.com
-export NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-vocabbrain
+export NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=demo-mino.firebaseapp.com
+export NEXT_PUBLIC_FIREBASE_PROJECT_ID=demo-mino
 export NEXT_PUBLIC_FIREBASE_APP_ID=demo-app
 export NEXT_PUBLIC_FIREBASE_USE_EMULATOR=true
 export GEMINI_API_KEY=e2e-dummy-not-a-real-key

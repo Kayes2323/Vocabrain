@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Check, PartyPopper, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, StatusChip } from '@/components/ds';
-import { MinoMark } from '@/components/shell/MinoMark';
 import { minoReact } from '@/components/mino/Mino';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { writingStudioFeedback } from '@/lib/ai/client';
@@ -218,7 +218,10 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   if (phase === 'assessing') {
     return (
       <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-16 text-center">
-        <MinoMark size="xl" thinking />
+        {/* Mino writing in its notebook while it reads the answer (shared rig 'writing' state) in the violet aura */}
+        <span className="mino-aura mino-aura--pulse">
+          <MinoCoachMascot pose="writing" size="lg" />
+        </span>
         <p className="font-medium">Mino is reading your answer against the IELTS criteria…</p>
         <p className="text-sm text-muted-foreground">This usually takes a few seconds.</p>
       </div>
@@ -229,8 +232,10 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-2xl space-y-5">
         <TrainerPanel
+          area={lesson.task}
           lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Feedback"
+          event={feedback.mistakes.length === 0 ? 'success' : 'struggle'}
           message={
             feedback.mistakes.length === 0
               ? "This is in good shape. Read the notes below, then we'll move on."
@@ -247,6 +252,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-5xl space-y-5">
         <TrainerPanel
+          area={lesson.task}
           lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Independent practice"
           message="Now it's your turn — no more hints. Use what you worked out above and write it in your own words."
@@ -286,6 +292,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     <div className="mx-auto max-w-2xl space-y-5">
       <ProgressBar value={((stepIndex + 1) / lesson.steps.length) * 100} label={`Step ${stepIndex + 1} of ${lesson.steps.length}`} size="sm" />
       <TrainerPanel
+        area={lesson.task}
         lessonTitle={localize(contentLocale, lesson.title)}
         stepTitle={localize(contentLocale, step.title)}
         message={localize(contentLocale, step.trainerMessage)}

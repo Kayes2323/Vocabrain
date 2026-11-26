@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Mino } from '@/components/mino/Mino';
+import { MinoMark } from '@/components/shell/MinoMark';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { afterChoice, afterDismiss, installDelay, INSTALL_DELAY_KEY, isIOS, shouldOfferInstall } from '@/lib/pwa/install';
 import {
@@ -81,8 +81,8 @@ export function InstallPrompt() {
       className="fixed inset-x-4 bottom-[calc(6.25rem+env(safe-area-inset-bottom))] z-40 rounded-2xl border bg-card p-4 shadow-[0_8px_30px_rgb(15_23_42/0.12)] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 md:inset-x-auto md:right-6 md:bottom-6 md:w-[360px]"
     >
       <div className="flex items-start gap-3">
-        {/* Arrives with a small blink + sparkle, nothing bigger. */}
-        <Mino mode="success" size="sm" />
+        {/* The approved Mino logo; arrives with one soft violet glow, nothing bigger. */}
+        <MinoMark size="md" mode="success" />
         <div className="min-w-0 flex-1 space-y-1">
           <p id="install-mino-title" className="font-semibold">
             {phone ? t('pwa.titlePhone') : t('pwa.titleDesktop')}
