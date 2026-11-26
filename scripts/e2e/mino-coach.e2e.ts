@@ -22,9 +22,35 @@ async function main() {
     const mascot1 = p.locator('[data-mino-coach="rig"]').first();
     await mascot1.waitFor({ timeout: 30_000 });
     check('the full-body mascot renders on Task 1 Academy', await mascot1.isVisible());
+    // The rig must actually be on screen (not just its wrapper): ready, fully opaque, character inside its box after the entrance.
+    await p.waitForSelector('[data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
+    await p.waitForTimeout(2600);
+    const geo = await p.evaluate(() => {
+      const root = document.querySelector('[data-mino-coach="rig"] .mino-rig') as HTMLElement;
+      const body = root.querySelector('[data-layer="body"]') as HTMLElement;
+      const rr = root.getBoundingClientRect();
+      const br = body.getBoundingClientRect();
+      return { ready: root.dataset.ready, state: root.dataset.state, stage: getComputedStyle(root.querySelector('.mino-rig__stage') as HTMLElement).opacity, rootH: rr.height, inside: br.left >= rr.left - 2 && br.right <= rr.right + 2 && br.top >= rr.top - 2 && br.bottom <= rr.bottom + 2, bodyW: br.width, loaded: (body as HTMLImageElement).naturalWidth > 0 };
+    });
+    check('welcome rig: artwork decoded and visible (ready, opaque, character inside its box)', geo.ready === 'true' && geo.stage === '1' && geo.rootH > 100 && geo.inside && geo.loaded && geo.bodyW > 80, JSON.stringify(geo));
     check('Task 1 shows its role label', await p.getByText('Writing Task 1 Coach', { exact: true }).isVisible());
     check('welcome offers Start, Replay and Skip', (await p.getByRole('button', { name: 'Start learning' }).isVisible()) && (await p.getByRole('button', { name: 'Replay welcome' }).isVisible()) && (await p.getByText('Skip').isVisible()));
     await shot(p, 'mino-coach-en-01-task1-welcome');
+
+    await shot(p, 'mino-coach-en-01b-task1-welcome-settled');
+    console.log('\n[1b] Lesson trainer panel shows the rig');
+    await p.goto(`${BASE}/ielts/writing-studio/task1/lesson/task1-understanding`, { waitUntil: 'load' });
+    await p.waitForSelector('[data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
+    await p.waitForTimeout(1500);
+    const lesson = await p.evaluate(() => {
+      const root = document.querySelector('[data-mino-coach="rig"] .mino-rig') as HTMLElement;
+      const r = root.getBoundingClientRect();
+      return { w: r.width, h: r.height, state: root.dataset.state, op: getComputedStyle(root.querySelector('.mino-rig__stage') as HTMLElement).opacity };
+    });
+    check('lesson trainer panel: rig visible at a usable size, speaking', lesson.w >= 80 && lesson.h >= 70 && lesson.op === '1' && lesson.state === 'speaking', JSON.stringify(lesson));
+    await shot(p, 'mino-coach-en-01c-lesson-panel', false);
+    await p.goto(`${BASE}/ielts/writing-studio/task1`, { waitUntil: 'load' });
+    await p.getByRole('button', { name: 'Replay welcome' }).waitFor({ timeout: 30_000 });
 
     console.log('\n[2] Replay restarts the mascot without dismissing the welcome');
     await p.getByRole('button', { name: 'Replay welcome' }).click();
