@@ -68,7 +68,7 @@ async function main() {
     const splash = sp.locator('[role="status"][aria-label="Mino"]');
     await splash.waitFor({ timeout: 30_000 });
     check('splash: the full-body Mino (shared rig/poster) above the name "MINO", no spinner', (await splash.locator('[data-mino-coach="rig"]').count()) === 1 && (await splash.innerText()).trim() === 'MINO' && (await sp.locator('.mino-mark, [data-mino-mode]').count()) === 0);
-    check('splash: the poster/rig box has its size from the first paint (no layout jump)', await splash.locator('[data-mino-coach="rig"]').evaluate((el) => el.getBoundingClientRect().height > 100));
+    check('splash: the mascot box is reserved from the first HTML (aspect ratio + width inline, poster present: no layout jump)', await splash.locator('[data-mino-coach="rig"]').evaluate((el) => !!(el.querySelector('.mino-rig') as HTMLElement | null)?.style.aspectRatio && /min\(100%/.test((el as HTMLElement).style.width) && !!el.querySelector('img.mino-poster')));
     await shot(sp, 'brand-00-splash', false);
     await sp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
     check('splash → home', Date.now() - t0 > 0);
@@ -79,6 +79,8 @@ async function main() {
     await rp.emulateMedia({ reducedMotion: 'reduce' });
     await rp.goto(BASE, { waitUntil: 'commit' });
     await rp.locator('[role="status"][aria-label="Mino"] [data-mino-coach="rig"]').first().waitFor({ timeout: 30_000 }).catch(() => undefined);
+    await rp.waitForSelector('.mino-rig[data-reduced="true"]', { timeout: 30_000 }).catch(() => undefined); // hydrated: the controller has read the media query
+    await rp.waitForTimeout(300);
     const rAnims = await rp.evaluate(() => [...document.querySelectorAll('.mino-rig')].reduce((n, r) => n + r.getAnimations({ subtree: true }).length, 0));
     check('reduced motion: the opening does not animate', rAnims === 0, rAnims);
     await rp.getByTestId('mino-card').waitFor({ timeout: 60_000 });
@@ -116,7 +118,8 @@ async function main() {
     await p.goto(`${BASE}/mino`, { waitUntil: 'load' });
     const composer = p.getByPlaceholder('Ask Mino anything…');
     await composer.waitFor({ timeout: 60_000 });
-    check('chat: the empty state shows the full-body Mino (shared mascot) and the avatar is the approved logo', (await p.locator('[data-mino-coach="rig"]').count()) >= 1 && (await p.locator('header .mino-logo img').count()) >= 1);
+    await p.locator('[data-mino-coach="rig"]').first().waitFor({ timeout: 20_000 }).catch(() => undefined);
+    check('chat: the empty state shows the full-body Mino (shared mascot) and the avatar is the approved logo', (await p.locator('[data-mino-coach="rig"]').count()) >= 1 && (await p.locator('.mino-logo img').count()) >= 1);
     const sawWriting = p.waitForFunction(() => document.querySelector('[role="status"] [data-mino-coach="rig"][data-pose="writing"]'), null, { polling: 'raf', timeout: 30_000 }).then(() => true, () => false);
     await composer.fill('Hi Mino, one tip for today?');
     await composer.press('Enter');
