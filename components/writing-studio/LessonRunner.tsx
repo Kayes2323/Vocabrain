@@ -11,13 +11,16 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { writingStudioFeedback } from '@/lib/ai/client';
 import { cn } from '@/lib/utils';
+import { findLessonStepAudio } from '@/lib/writing-studio/audio-manifest';
 import { CHART_DATASETS, chartToTable } from '@/lib/writing-studio/charts';
 import { checkEssay, deriveScope, fromAI, fromLocal, type UnifiedFeedback } from '@/lib/writing-studio/feedback';
 import { recordLesson, recordMistakes } from '@/lib/writing-studio/progress';
 import { localize, type Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
+import { LessonAudioControls } from './LessonAudioControls';
 import { MaterialPanel } from './MaterialPanel';
 import { TrainerPanel } from './TrainerPanel';
+import { useLessonStepAudio } from './useLessonStepAudio';
 import { WSChart } from './WSChart';
 import { WritingEditor } from './WritingEditor';
 
@@ -93,10 +96,26 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   const step = lesson.steps[stepIndex];
   const isLastStep = stepIndex === lesson.steps.length - 1;
 
+  const audio = useLessonStepAudio({ lessonId: lesson.id, stepId: step.id, active: phase === 'learn' });
+
   useEffect(() => {
     setCheckAnswer(null);
     setBoardDone(false);
   }, [stepIndex]);
+
+  // Warm the browser's own HTTP cache for the next slide's clip while the
+  // current one plays, without holding a second Audio instance or any
+  // component state — a failed/absent prefetch is silently ignored, it
+  // only means the next slide loads at normal speed instead of instantly.
+  useEffect(() => {
+    if (phase !== 'learn' || isLastStep) return;
+    const next = lesson.steps[stepIndex + 1];
+    const asset = next ? findLessonStepAudio(lesson.id, next.id) : undefined;
+    if (!asset) return;
+    const controller = new AbortController();
+    fetch(asset.path, { signal: controller.signal }).catch(() => {});
+    return () => controller.abort();
+  }, [phase, isLastStep, lesson.id, lesson.steps, stepIndex]);
 
   const needsCheckAnswer = !!step.check && checkAnswer === null;
   const needsBoard = (step.material?.type === 'chart-board' || step.material?.type === 'idea-board') && !boardDone;
@@ -272,6 +291,16 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         message={localize(contentLocale, step.trainerMessage)}
         hint={step.hint ? localize(contentLocale, step.hint) : undefined}
       />
+      {!!findLessonStepAudio(lesson.id, step.id) && (
+        <LessonAudioControls
+          status={audio.status}
+          audioOn={audio.audioOn}
+          onToggleAudio={audio.setAudioOn}
+          onPlay={audio.play}
+          onPause={audio.pause}
+          onReplay={audio.replay}
+        />
+      )}
 
       {step.material && <MaterialPanel block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} />}
       {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} locale={contentLocale} />}
