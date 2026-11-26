@@ -210,6 +210,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-2xl space-y-5">
         <TrainerPanel
+          area={lesson.task}
           lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Feedback"
           message={
@@ -228,6 +229,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     return (
       <div className="mx-auto max-w-5xl space-y-5">
         <TrainerPanel
+          area={lesson.task}
           lessonTitle={localize(contentLocale, lesson.title)}
           stepTitle="Independent practice"
           message="Now it's your turn — no more hints. Use what you worked out above and write it in your own words."
@@ -267,6 +269,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
     <div className="mx-auto max-w-2xl space-y-5">
       <ProgressBar value={((stepIndex + 1) / lesson.steps.length) * 100} label={`Step ${stepIndex + 1} of ${lesson.steps.length}`} size="sm" />
       <TrainerPanel
+        area={lesson.task}
         lessonTitle={localize(contentLocale, lesson.title)}
         stepTitle={localize(contentLocale, step.title)}
         message={localize(contentLocale, step.trainerMessage)}

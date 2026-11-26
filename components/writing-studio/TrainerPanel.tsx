@@ -1,14 +1,18 @@
 import { Mic } from 'lucide-react';
-import { MinoMark } from '@/components/shell/MinoMark';
+import { useMinoCoach } from '@/components/mino/MinoCoach';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { Panel } from '@/components/ds';
+import type { MinoCoachArea } from '@/lib/mino/coach';
 import { cn } from '@/lib/utils';
 
 /**
- * Zone A — the Trainer Zone. Mino's identity, the lesson title and a short
+ * Zone A — the Trainer Zone. The shared Mino Coach mascot (same character as
+ * the Academy welcome, in its 'speaking' pose), the lesson title and a short
  * instructional message. Voice entry is a prototype affordance only (no
  * audio is recorded); clicking it says so rather than pretending to listen.
  */
 export function TrainerPanel({
+  area,
   lessonTitle,
   stepTitle,
   message,
@@ -16,6 +20,7 @@ export function TrainerPanel({
   onVoiceTap,
   className,
 }: {
+  area: MinoCoachArea;
   lessonTitle: string;
   stepTitle: string;
   message: string;
@@ -23,13 +28,14 @@ export function TrainerPanel({
   onVoiceTap?: () => void;
   className?: string;
 }) {
+  const { pose, role, onPoseSettle } = useMinoCoach(area, 'speaking');
   return (
     <Panel variant="brand" className={cn('space-y-3', className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <MinoMark size="md" alive />
+          <MinoCoachMascot pose={pose} size="sm" onPoseSettle={onPoseSettle} />
           <div>
-            <p className="text-xs font-semibold tracking-wide text-brand uppercase">Mino · Writing Trainer</p>
+            <p className="text-xs font-semibold tracking-wide text-brand uppercase">{role}</p>
             <p className="text-sm font-medium text-muted-foreground">{lessonTitle}</p>
           </div>
         </div>
