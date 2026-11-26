@@ -332,6 +332,232 @@
   .mino-status > span:first-child { opacity: 1; }
 }
 
+/* Mino Coach, the full-body mascot (components/mino/MinoCoachMascot.tsx). One
+   drawing, reused everywhere; only the pose (data-pose) changes. Off-screen,
+   hidden tab or data-saver: whatever is running holds still, same as the
+   small mark above. */
+.mino-coach-mark .coach-body-shape,
+.mino-coach-mark .coach-eye,
+.mino-coach-mark .coach-eye-right,
+.mino-coach-mark .coach-mouth-closed,
+.mino-coach-mark .coach-mouth-open,
+.mino-coach-mark .coach-sparkle,
+.mino-coach-mark .coach-backpack,
+.mino-coach-mark .coach-mask {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.mino-coach[data-motion='off'] * {
+  animation-play-state: paused;
+}
+.mino-coach-mark .coach-mouth-open {
+  opacity: 0;
+}
+.mino-coach-mark .coach-sparkle {
+  opacity: 0;
+  transform-origin: center;
+}
+.mino-coach-mark .coach-arm-left {
+  transform-origin: 40px 114px;
+}
+.mino-coach-mark .coach-arm-right {
+  transform-origin: 160px 114px;
+}
+
+/* Idle: slow breathing, a natural occasional blink, rare sparkle, very subtle
+   backpack sway — intentionally low-intensity (never constantly bouncing). */
+.mino-coach[data-pose='idle'] .coach-body-shape,
+.mino-coach[data-pose='idle'] .coach-mask {
+  animation: coach-breathe 4.2s ease-in-out infinite;
+}
+.mino-coach[data-pose='idle'] .coach-eye-left {
+  animation: coach-blink 5.4s ease-in-out infinite;
+}
+.mino-coach[data-pose='idle'] .coach-backpack-strap {
+  animation: coach-sway 6s ease-in-out infinite;
+}
+
+/* Entrance: rolls in from the side, lands, settles with a small bounce; the
+   backpack follows with a short secondary-motion delay. Translate/rotate/
+   scale only — the character never distorts. */
+.mino-coach[data-pose='enter'] {
+  animation: coach-enter 1.2s cubic-bezier(0.22, 0.75, 0.3, 1) both;
+}
+.mino-coach[data-pose='enter'] .coach-backpack {
+  animation: coach-backpack-follow 1.2s cubic-bezier(0.22, 0.75, 0.3, 1) 60ms both;
+}
+.mino-coach[data-pose='enter'] .coach-eye-left {
+  animation: coach-blink-once 1.45s ease both;
+}
+.mino-coach[data-pose='enter'] .coach-sparkle {
+  animation: coach-pop 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 980ms both;
+}
+
+/* Welcome gesture: a friendly wave from the pencil arm, a gentle bounce, mask
+   tilts toward the learner, one sparkle. */
+.mino-coach[data-pose='welcome'] {
+  animation: coach-settle-bounce 900ms ease both;
+}
+.mino-coach[data-pose='welcome'] .coach-arm-left {
+  animation: coach-wave 1.1s ease-in-out 2;
+}
+.mino-coach[data-pose='welcome'] .coach-mask {
+  animation: coach-tilt 900ms ease both;
+}
+.mino-coach[data-pose='welcome'] .coach-sparkle {
+  animation: coach-pop 500ms cubic-bezier(0.2, 0.8, 0.2, 1) 300ms both;
+}
+
+/* Speaking: the mouth opens and closes on a controlled loop (never left open
+   continuously), a small head bob, a light gesture from the pencil arm. */
+.mino-coach[data-pose='speaking'] .coach-mouth-closed {
+  animation: coach-mouth-closed-flicker 900ms steps(1) infinite;
+}
+.mino-coach[data-pose='speaking'] .coach-mouth-open {
+  animation: coach-mouth-open-flicker 900ms steps(1) infinite;
+}
+.mino-coach[data-pose='speaking'] .coach-mask {
+  animation: coach-nod 2.4s ease-in-out infinite;
+}
+.mino-coach[data-pose='speaking'] .coach-arm-left {
+  animation: coach-gesture 2.2s ease-in-out infinite;
+}
+
+/* Explaining: the pencil arm raises and points, held (not looping), with a
+   small repeating "tap" to keep it feeling alive; mask turns slightly toward
+   the content. */
+.mino-coach[data-pose='explaining'] .coach-arm-left {
+  animation: coach-point 2s cubic-bezier(0.3, 0.7, 0.4, 1) infinite;
+}
+.mino-coach[data-pose='explaining'] .coach-mask {
+  animation: coach-tilt 700ms ease both;
+}
+
+/* Thinking: eyes glance side to side, slow breathing, the pencil hovers near
+   the mask — no spinner, no fake progress. */
+.mino-coach[data-pose='thinking'] .coach-eyes {
+  animation: coach-look 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+.mino-coach[data-pose='thinking'] .coach-body-shape {
+  animation: coach-breathe 2.4s ease-in-out infinite;
+}
+.mino-coach[data-pose='thinking'] .coach-arm-left {
+  animation: coach-think-tap 1.8s ease-in-out infinite;
+}
+
+/* Success: a small joyful hop, then a sparkle — tied to a confirmed result,
+   never to a bare click. */
+.mino-coach[data-pose='success'] {
+  animation: coach-hop 700ms cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+.mino-coach[data-pose='success'] .coach-sparkle {
+  animation: coach-pop 600ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
+}
+
+/* Encouraging: calm and reassuring — a slow nod, never exaggerated
+   disappointment, nothing that reads as judging the learner. */
+.mino-coach[data-pose='encouraging'] .coach-mask {
+  animation: coach-reassure 1.3s ease-in-out both;
+}
+.mino-coach[data-pose='encouraging'] .coach-arm-left {
+  animation: coach-gentle-pat 1.3s ease-in-out both;
+}
+
+@keyframes coach-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+@keyframes coach-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.12); }
+}
+@keyframes coach-blink-once {
+  0%, 70%, 85%, 100% { transform: scaleY(1); }
+  78% { transform: scaleY(0.12); }
+}
+@keyframes coach-sway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.5deg); }
+}
+@keyframes coach-enter {
+  0% { opacity: 0; transform: translateX(-24%) scale(0.92); }
+  55% { opacity: 1; transform: translateX(3%) scale(1.01); }
+  75% { transform: translateX(-1%) scale(0.99); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes coach-backpack-follow {
+  0% { transform: translateX(-30%) rotate(-4deg); }
+  60% { transform: translateX(4%) rotate(2deg); }
+  100% { transform: none; }
+}
+@keyframes coach-settle-bounce {
+  0% { transform: translateY(-6%); }
+  55% { transform: translateY(1.5%); }
+  100% { transform: translateY(0); }
+}
+@keyframes coach-wave {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-22deg); }
+  60% { transform: rotate(-8deg); }
+}
+@keyframes coach-tilt {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-3deg); }
+}
+@keyframes coach-pop {
+  0% { transform: scale(0.4) rotate(0deg); opacity: 0; }
+  55% { transform: scale(1.25) rotate(45deg); opacity: 1; }
+  100% { transform: scale(1) rotate(90deg); opacity: 0.9; }
+}
+@keyframes coach-mouth-closed-flicker {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+@keyframes coach-mouth-open-flicker {
+  0%, 45% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+@keyframes coach-nod {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5%); }
+}
+@keyframes coach-gesture {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-6deg); }
+}
+@keyframes coach-point {
+  0%, 100% { transform: rotate(-52deg); }
+  50% { transform: rotate(-58deg); }
+}
+@keyframes coach-look {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  55% { transform: translateX(3px); }
+  75% { transform: translateX(0); }
+}
+@keyframes coach-think-tap {
+  0%, 100% { transform: rotate(-70deg); }
+  50% { transform: rotate(-76deg); }
+}
+@keyframes coach-hop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  35% { transform: translateY(-10%) rotate(-5deg); }
+  65% { transform: translateY(-3%) rotate(4deg); }
+}
+@keyframes coach-reassure {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+@keyframes coach-gentle-pat {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-10deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mino-coach *, .mino-coach-mark * { animation: none !important; transition: none !important; }
+  .mino-coach-mark .coach-mouth-closed { opacity: 1; }
+  .mino-coach-mark .coach-mouth-open { opacity: 0; }
+}
+
 /* Highlights and notes in a test (see components/test/annotationHighlights.ts). */
 ::highlight(vb-hl) {
   background-color: #fde68a;

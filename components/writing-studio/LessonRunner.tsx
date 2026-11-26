@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Check, PartyPopper, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Callout, Panel, ProgressBar, StatusChip } from '@/components/ds';
-import { MinoMark } from '@/components/shell/MinoMark';
 import { minoReact } from '@/components/mino/Mino';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import { writingStudioFeedback } from '@/lib/ai/client';
@@ -199,7 +199,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   if (phase === 'assessing') {
     return (
       <div className="mx-auto flex max-w-xl flex-col items-center gap-4 py-16 text-center">
-        <MinoMark size="xl" thinking />
+        <MinoCoachMascot pose="thinking" size="lg" />
         <p className="font-medium">Mino is reading your answer against the IELTS criteria…</p>
         <p className="text-sm text-muted-foreground">This usually takes a few seconds.</p>
       </div>
