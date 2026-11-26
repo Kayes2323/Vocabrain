@@ -1,5 +1,6 @@
 import { frameRms, type ClipIndex } from '@/lib/ielts';
 import { speechRecognitionSupported } from '@/components/practice/useSpeechRecognition';
+import { holdMinoCalm } from '@/lib/mino/living-bus';
 
 /** The examiner needs a voice, a microphone and speech-to-text. Without all three the tap-through mode is used. */
 export function examinerSupported(): boolean {
@@ -123,13 +124,18 @@ function playClip(path: string): Promise<boolean> {
  * that was stopped on purpose is never read again by the fallback.
  */
 export async function sayLine(text: string, isCancelled: () => boolean, clip?: string): Promise<void> {
-  const started = epoch;
-  if (clip && (await playClip(clip))) return;
-  if (epoch !== started || isCancelled()) return;
-  for (const part of sentences(text)) {
+  const calm = holdMinoCalm(); // decorative Mino motion stays calm while the examiner speaks
+  try {
+    const started = epoch;
+    if (clip && (await playClip(clip))) return;
     if (epoch !== started || isCancelled()) return;
-    await speakOne(part);
-    await sleep(180);
+    for (const part of sentences(text)) {
+      if (epoch !== started || isCancelled()) return;
+      await speakOne(part);
+      await sleep(180);
+    }
+  } finally {
+    calm();
   }
 }
 

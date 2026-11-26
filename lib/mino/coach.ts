@@ -12,7 +12,7 @@ export const MINO_COACH_AREAS = ['task1', 'task2', 'my-brain'] as const;
 export type MinoCoachArea = (typeof MINO_COACH_AREAS)[number];
 
 /** Visual poses the mascot can hold. The identity (body/mask/props) never changes between them. */
-export const MINO_COACH_POSES = ['idle', 'enter', 'welcome', 'speaking', 'explaining', 'thinking', 'writing', 'success', 'encouraging'] as const;
+export const MINO_COACH_POSES = ['idle', 'enter', 'welcome', 'greeting', 'speaking', 'explaining', 'thinking', 'writing', 'success', 'encouraging'] as const;
 export type MinoCoachPose = (typeof MINO_COACH_POSES)[number];
 
 /**
@@ -56,6 +56,8 @@ export function poseHoldMs(pose: MinoCoachPose): number {
       return 1400;
     case 'welcome':
       return 1300;
+    case 'greeting':
+      return 650;
     default:
       return 0; // idle / speaking / explaining / thinking hold until the caller changes the event
   }

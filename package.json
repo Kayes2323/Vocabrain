@@ -26,6 +26,7 @@
     "test:mino-knowledge": "npx -y tsx scripts/test-mino-knowledge.ts",
     "test:mino-motion": "npx -y tsx scripts/test-mino-motion.ts",
     "test:mino-rig": "npx -y tsx scripts/test-mino-coach-rig.ts",
+    "test:mino-living": "npx -y tsx scripts/test-mino-living.ts",
     "test:mino-rig-assets": "npx -y tsx scripts/test-mino-rig-assets.ts",
     "test:pwa-install": "npx -y tsx scripts/test-pwa-install.ts",
     "test:journey": "npx -y tsx scripts/test-journey-phases.ts",

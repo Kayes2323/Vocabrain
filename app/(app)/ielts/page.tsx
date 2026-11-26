@@ -1,54 +1,39 @@
 'use client';
 
-import { PenLine } from 'lucide-react';
+import { Calculator, Layers, PenLine, Radar } from 'lucide-react';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { useProfile } from '@/components/providers/ProfileProvider';
-import { CardGrid, ModuleCard, PageHeader, ScreenSkeleton, Section, StatusChip, type Tint } from '@/components/ds';
-import { IELTS_SKILLS, type IELTSSkill } from '@/lib/constants';
-import { formatBand } from '@/lib/engine';
+import { CardGrid, ListRow, ModuleCard, PageHeader, RowGroup, ScreenSkeleton, Section, StatusChip, type Tint } from '@/components/ds';
 import { PlanHubCard } from '@/components/plan/PlanHubCard';
-import { IELTS_SECTIONS, IELTS_TOOLS, sectionKey, type SectionDef } from '@/lib/navigation';
-import type { UserProfile } from '@/lib/models';
+import { IELTS_SECTIONS, IELTS_TOOLS, sectionKey } from '@/lib/navigation';
 
-const byId = (id: string) => [...IELTS_SECTIONS, ...IELTS_TOOLS].find((s) => s.id === id)!;
-
-function SectionCard({ section, profile, tint }: { section: SectionDef; profile: UserProfile; tint: Tint }) {
-  const { t } = useLocale();
-  let trailing: React.ReactNode;
-  if ((IELTS_SKILLS as readonly string[]).includes(section.id)) {
-    const band = profile.ielts.currentBands[section.id as IELTSSkill];
-    if (band !== undefined) {
-      const behind = profile.ielts.targetBand !== undefined && band < profile.ielts.targetBand;
-      trailing = <StatusChip tone={behind ? 'warning' : 'success'}>{formatBand(band)}</StatusChip>;
-    }
-  }
-  // The test library is browsable but carries no tests yet, so the card says so
-  // rather than letting a student open 48 empty entries to find out.
-  if (section.id === 'cambridge') trailing = <StatusChip>{t('common.soon')}</StatusChip>;
-  return (
-    <ModuleCard
-      href={section.href}
-      icon={section.icon}
-      tint={tint}
-      title={t(sectionKey(section.id, 'title'))}
-      subtitle={t(`ielts.cards.${section.id}`)}
-      trailing={trailing}
-      wrapSubtitle
-    />
-  );
-}
+const sectionById = (id: string) => [...IELTS_SECTIONS, ...IELTS_TOOLS].find((s) => s.id === id)!;
 
 /**
- * The IELTS hub, in order: My IELTS Plan (with a link to Progress), IELTS
- * Foundation, IELTS Practice (the four skills), Practice Tests, Band Score
- * Calculator. Every card is one tap to its own page.
+ * The IELTS hub, a focused learning pathway:
+ *   My IELTS Plan → IELTS Learning (Foundation, Listening Learning, Writing Learning)
+ *   → Tests & Library (Full Mock Test, IELTS Test Library) → More Tools (Band Score Calculator).
+ *
+ * This page only chooses what is SHOWN. Nothing behind it was removed: the four skill practice pages
+ * (/ielts/practice/listening, /ielts/reading, /ielts/practice/writing, /ielts/practice/speaking), Practice Tests
+ * (/ielts/tests), their data, sessions and scoring all stay registered in lib/navigation.ts and reachable by their
+ * own routes, ready for future integration. Home's Quick Access and Today's plan still link to them.
  */
 export default function IELTSPage() {
   const { t } = useLocale();
   const { profile } = useProfile();
   if (!profile) return <ScreenSkeleton />;
 
-  const card = (id: string, tint: Tint) => <SectionCard key={id} section={byId(id)} profile={profile} tint={tint} />;
+  // Routes come from the one registry (lib/navigation.ts); only the wording differs from the skill cards.
+  const learn: { id: string; key: 'foundation' | 'listening' | 'writing'; href: string; icon: typeof Layers; tint: Tint }[] = [
+    { id: 'foundation', key: 'foundation', href: sectionById('foundation').href, icon: Layers, tint: 'lavender' },
+    { id: 'listening-lab', key: 'listening', href: sectionById('listening-lab').href, icon: Radar, tint: 'blue' },
+    // The Mino Writing Studio is a shipped feature (16 lessons, AI feedback, saved progress): no "New"/"Prototype" labelling.
+    { id: 'writing-studio', key: 'writing', href: '/ielts/writing-studio', icon: PenLine, tint: 'brand' },
+  ];
+  const mock = sectionById('full-mock-test');
+  const library = sectionById('cambridge');
+  const calculator = sectionById('band-calculator');
 
   return (
     <div className="space-y-7" data-testid="ielts-hub">
@@ -58,44 +43,34 @@ export default function IELTSPage() {
         <PlanHubCard profile={profile} />
       </section>
 
-      <Section title={t('ielts.groups.learn')} variant="label" id="hub-learn">
+      <Section title={t('ielts.groups.learning')} variant="label" id="hub-learn">
         <CardGrid className="xl:grid-cols-2">
-          {card('foundation', 'lavender')}
-          {card('listening-lab', 'blue')}
+          {learn.map((c) => (
+            <ModuleCard key={c.id} href={c.href} icon={c.icon} tint={c.tint} title={t(`ielts.learnCards.${c.key}.title`)} subtitle={t(`ielts.learnCards.${c.key}.subtitle`)} wrapSubtitle />
+          ))}
         </CardGrid>
       </Section>
 
-      <Section title={t('ielts.groups.practice')} variant="label" id="hub-practice">
-        <CardGrid className="xl:grid-cols-2">{['listening', 'reading', 'writing', 'speaking'].map((id) => card(id, 'blue'))}</CardGrid>
-      </Section>
-
-      {/* New, in-preview feature. Kept outside the IELTS_SECTIONS registry (which
-          assumes a current/target band) since this is a self-contained prototype;
-          English-only copy for now, see the Writing Studio build report. */}
-      <Section title="New" variant="label" id="hub-writing-studio">
-        <CardGrid>
+      <Section title={t('ielts.groups.testsLibrary')} variant="label" id="hub-test">
+        <CardGrid className="xl:grid-cols-2">
+          <ModuleCard href={mock.href} icon={mock.icon} tint="green" title={t(sectionKey(mock.id, 'title'))} subtitle={t(`ielts.cards.${mock.id}`)} wrapSubtitle />
+          {/* The library is browsable but carries no tests yet: the card says so rather than letting a student open 48 empty entries to find out. */}
           <ModuleCard
-            href="/ielts/writing-studio"
-            icon={PenLine}
-            tint="brand"
-            title="Mino Writing Studio"
-            subtitle="An interactive Writing trainer: lessons, a chart board, idea development, exam mode."
-            trailing={<StatusChip tone="brand">Prototype</StatusChip>}
+            href={library.href}
+            icon={library.icon}
+            tint="blue"
+            title={t(sectionKey(library.id, 'title'))}
+            subtitle={t(`ielts.cards.${library.id}`)}
+            trailing={<StatusChip>{t('common.soon')}</StatusChip>}
             wrapSubtitle
           />
         </CardGrid>
       </Section>
 
-      <Section title={t('ielts.groups.test')} variant="label" id="hub-test">
-        <CardGrid className="xl:grid-cols-2">
-          {card('mock-tests', 'yellow')}
-          {card('full-mock-test', 'green')}
-          {card('cambridge', 'blue')}
-        </CardGrid>
-      </Section>
-
-      <Section title={t('ielts.groups.tools')} variant="label" id="hub-tools">
-        <CardGrid>{card('band-calculator', 'neutral')}</CardGrid>
+      <Section title={t('ielts.groups.more')} variant="label" id="hub-tools">
+        <RowGroup>
+          <ListRow href={calculator.href} icon={Calculator} title={t(sectionKey(calculator.id, 'title'))} description={t(`ielts.cards.${calculator.id}`)} />
+        </RowGroup>
       </Section>
     </div>
   );

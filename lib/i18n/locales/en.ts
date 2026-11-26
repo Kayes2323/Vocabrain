@@ -1543,8 +1543,14 @@ export const en = {
   },
   ielts: {
     subtitle: 'Learn, practise and track your progress.',
-    groups: { learn: 'Learn', practice: 'IELTS Practice', test: 'Practice Tests', plan: 'My IELTS Plan', tools: 'Tools' },
+    groups: { learn: 'Learn', practice: 'IELTS Practice', test: 'Practice Tests', plan: 'My IELTS Plan', tools: 'Tools', learning: 'IELTS Learning', testsLibrary: 'Tests & Library', more: 'More Tools' },
     hub: { createTitle: 'Create your IELTS Plan', createBody: 'Add your target band and test date; Mino sets your daily tasks.', create: 'Create my plan', target: 'Target band', testDate: 'Test date', today: 'Today’s progress', continue: 'Continue', progress: 'See your progress' },
+    // The three primary learning cards of the IELTS page (titles + subtitles). Routes: lib/navigation.ts.
+    learnCards: {
+      foundation: { title: 'IELTS Foundation', subtitle: 'Build the English foundations you need for IELTS, step by step' },
+      listening: { title: 'Listening Learning', subtitle: 'Sound Gym and structured listening skill development' },
+      writing: { title: 'Writing Learning', subtitle: 'Step-by-step IELTS Writing Task 1 and Task 2 training' },
+    },
     cards: {
       foundation: 'The English you need for IELTS, step by step',
       'listening-lab': 'Your personal listening trainer: Sound Gym and five more skill modules',

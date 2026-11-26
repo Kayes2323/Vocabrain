@@ -7,11 +7,12 @@ import { MinoCoachRig } from './rig/MinoCoachRig';
 import type { MinoRigController } from './rig/coach-rig-controller';
 import { WELCOME_SEQUENCE, WELCOME_TOTAL_MS, rigStateHoldMs } from './rig/coach-preview-state';
 import { MinoCoachMascotLegacy } from './MinoCoachMascotLegacy';
+import { registerMinoPresence } from '@/lib/mino/living-bus';
 
 export type { MinoCoachPose } from '@/lib/mino/coach';
 
 /** Width in px (the rig is wider than tall: a 1200x1088 stage). */
-const SIZE = { sm: 96, md: 150, lg: 210, xl: 300 } as const;
+const SIZE = { xs: 64, sm: 96, md: 150, lg: 210, xl: 300 } as const;
 export type MinoCoachSize = keyof typeof SIZE;
 
 /** The static rest-pose frame shown while the 21 layer images load (same box and aspect as the rig: no layout shift). */
@@ -27,6 +28,8 @@ function poseSettleMs(pose: MinoCoachPose): number {
       return WELCOME_TOTAL_MS;
     case 'enter':
       return rigStateHoldMs('entrance') + rigStateHoldMs('landing');
+    case 'greeting':
+      return rigStateHoldMs('greeting');
     case 'success':
       return rigStateHoldMs('success');
     case 'encouraging':
@@ -60,6 +63,9 @@ export function MinoCoachMascot({
   onPoseSettle,
   onController,
   className,
+  px,
+  live = true,
+  decorative = false,
 }: {
   pose?: MinoCoachPose;
   size?: MinoCoachSize;
@@ -68,6 +74,18 @@ export function MinoCoachMascot({
   /** Review tooling only: receives the rig controller once the artwork is ready (and null when it goes away). */
   onController?: (controller: MinoRigController | null) => void;
   className?: string;
+  /** Exact width in px (overrides `size`): for compact placements such as the navigation button. */
+  px?: number;
+  /**
+   * false → only the static poster (no 21-layer download, nothing animates). The decorative surfaces use it until the
+   * page is idle, and permanently under reduced motion / data saver. Flipping it to true mounts the live rig.
+   */
+  live?: boolean;
+  /**
+   * A purely decorative placement (the navigation button, the Home card): it does not count as a teaching Mino, so it
+   * never stops the decorative rotation. Teaching / reacting surfaces leave this false and are registered as "present".
+   */
+  decorative?: boolean;
 }) {
   const ctrl = useRef<MinoRigController | null>(null);
   const poseRef = useRef(pose);
@@ -80,6 +98,9 @@ export function MinoCoachMascot({
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
 
+  // A teaching / reacting Mino on screen has priority over the decorative rotation (lib/mino/living-bus.ts).
+  useEffect(() => (decorative ? undefined : registerMinoPresence()), [decorative]);
+
   const apply = useCallback((p: MinoCoachPose) => {
     const c = ctrl.current;
     if (!c) return;
@@ -91,6 +112,7 @@ export function MinoCoachMascot({
       case 'welcome':
         c.playSequence(WELCOME_SEQUENCE);
         break;
+      case 'greeting':
       case 'idle':
       case 'speaking':
       case 'explaining':
@@ -119,21 +141,23 @@ export function MinoCoachMascot({
 
   useEffect(() => () => controllerCb.current?.(null), []);
 
-  if (failed) return <MinoCoachMascotLegacy pose={pose} size={size} onPoseSettle={onPoseSettle} className={className} />;
+  if (failed) return <MinoCoachMascotLegacy pose={pose === 'greeting' ? 'welcome' : pose} size={size === 'xs' ? 'sm' : size} onPoseSettle={onPoseSettle} className={className} />;
 
   return (
     <span className={cn('relative inline-block shrink-0 align-top', className)} // px width + max-width (not a percentage width): the box keeps its size even inside a shrink-to-fit wrapper such as the violet aura
-      style={{ width: SIZE[size], maxWidth: '100%' }} data-mino-coach="rig" data-pose={pose} data-loaded={ready ? 'true' : 'false'} aria-hidden>
-      <MinoCoachRig
-        clip={isOpeningPose(pose)}
-        onReady={(c) => {
-          ctrl.current = c;
-          apply(poseRef.current); // same tick as the rig becoming visible: no idle flash before an opening
-          setReady(true);
-          controllerCb.current?.(c);
-        }}
-        onFail={() => setFailed(true)}
-      />
+      style={{ width: px ?? SIZE[size], maxWidth: '100%' }} data-mino-coach="rig" data-pose={pose} data-loaded={ready ? 'true' : 'false'} aria-hidden>
+      {live && (
+        <MinoCoachRig
+          clip={isOpeningPose(pose)}
+          onReady={(c) => {
+            ctrl.current = c;
+            apply(poseRef.current); // same tick as the rig becoming visible: no idle flash before an opening
+            setReady(true);
+            controllerCb.current?.(c);
+          }}
+          onFail={() => setFailed(true)}
+        />
+      )}
       {/* Static Mino while loading. Opening poses wait a beat before showing it, so a cached/fast load never flashes it. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img className="mino-poster" data-ready={ready ? 'true' : 'false'} data-opening={isOpeningPose(pose) ? 'true' : 'false'} src={MINO_POSTER_SRC} alt="" aria-hidden draggable={false} decoding="async" fetchPriority="high" />

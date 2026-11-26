@@ -1542,8 +1542,14 @@ export const bn: LocaleDictionary = {
   },
   ielts: {
     subtitle: 'শিখুন, practice করুন, progress দেখুন।',
-    groups: { learn: 'Learn', practice: 'IELTS Practice', test: 'Practice Tests', plan: 'My IELTS Plan', tools: 'Tools' },
+    groups: { learn: 'Learn', practice: 'IELTS Practice', test: 'Practice Tests', plan: 'My IELTS Plan', tools: 'Tools', learning: 'IELTS Learning', testsLibrary: 'Tests & Library', more: 'More Tools' },
     hub: { createTitle: 'আপনার IELTS Plan তৈরি করুন', createBody: 'Target band আর test-এর তারিখ দিন, প্রতিদিনের কাজ Mino ঠিক করে দেবে।', create: 'Plan তৈরি করুন', target: 'Target band', testDate: 'Test-এর তারিখ', today: 'আজকের অগ্রগতি', continue: 'চালিয়ে যান', progress: 'আপনার Progress দেখুন' },
+    // IELTS পাতার তিনটি প্রধান learning card (নাম + subtitle)। Route: lib/navigation.ts।
+    learnCards: {
+      foundation: { title: 'IELTS Foundation', subtitle: 'IELTS-এর জন্য প্রয়োজনীয় English-এর ভিত্তি ধাপে ধাপে গড়ুন' },
+      listening: { title: 'Listening Learning', subtitle: 'Sound Gym আর ধাপে ধাপে listening skill তৈরির training' },
+      writing: { title: 'Writing Learning', subtitle: 'IELTS Writing Task 1 ও Task 2 ধাপে ধাপে শিখুন' },
+    },
     cards: {
       foundation: 'IELTS-এর জন্য প্রয়োজনীয় English ধাপে ধাপে শিখুন',
       'listening-lab': 'আপনার নিজের listening trainer: Sound Gym আর আরও ৫টা skill module',
