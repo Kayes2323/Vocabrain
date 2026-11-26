@@ -7,6 +7,7 @@ import { useLocale } from '@/components/providers/LocaleProvider';
 import { READ_SECONDS, type ObjectiveSection } from '@/lib/ielts';
 import { cn } from '@/lib/utils';
 import { formatClock } from './labels';
+import { holdMinoCalm } from '@/lib/mino/living-bus';
 
 /** True when every part has a narrated recording, which a student can wind back and skip through. */
 export const canPractiseByPart = (section: ObjectiveSection) => section.parts.every((p) => p.audio?.src && p.audio.narrated);
@@ -32,14 +33,18 @@ export function PracticeListeningPlayer({ section, onPartStart }: { section: Obj
   useEffect(() => {
     const a = new Audio(src);
     audio.current = a;
+    let calm: (() => void) | undefined; // Mino's decorative motion stays calm while this plays
+    const hush = () => { calm ??= holdMinoCalm(); };
+    const unhush = () => { calm?.(); calm = undefined; };
     setPlaying(false);
     setClock({ t: 0, d: 0 });
     a.onloadedmetadata = () => setClock((c) => ({ ...c, d: a.duration || 0 }));
     a.ontimeupdate = () => setClock({ t: a.currentTime, d: a.duration || 0 });
-    a.onplay = () => setPlaying(true);
-    a.onpause = () => setPlaying(false);
-    a.onended = () => setPlaying(false);
+    a.onplay = () => { setPlaying(true); hush(); };
+    a.onpause = () => { setPlaying(false); unhush(); };
+    a.onended = () => { setPlaying(false); unhush(); };
     return () => {
+      unhush();
       a.pause();
       a.onplay = a.onpause = a.onended = a.ontimeupdate = a.onloadedmetadata = null;
     };

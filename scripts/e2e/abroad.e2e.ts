@@ -90,12 +90,13 @@ async function main() {
     await p.goto(BASE, { waitUntil: 'load' });
     const card = p.getByTestId('mino-card');
     await card.waitFor({ timeout: 60_000 });
+    await p.waitForSelector('[data-testid="mino-card-avatar"] [data-mino-coach="rig"][data-loaded="true"]', { timeout: 30_000 });
     const logoInfo = await card.evaluate((el) => {
-      const logo = el.querySelector('.mino-logo') as HTMLElement | null;
-      const img = logo?.querySelector('img') as HTMLImageElement | null;
-      return { has: !!logo, ok: !!img && img.complete && img.naturalWidth > 0, src: img?.getAttribute('src') ?? '', w: logo?.getBoundingClientRect().width ?? 0 };
+      const rig = el.querySelector('[data-testid="mino-card-avatar"] [data-mino-coach="rig"]') as HTMLElement | null;
+      const body = rig?.querySelector('[data-layer="body"]') as HTMLImageElement | null;
+      return { has: !!rig, ok: !!body && body.complete && body.naturalWidth > 0, src: body?.getAttribute('src') ?? '', w: rig?.getBoundingClientRect().width ?? 0 };
     });
-    check('home card shows the approved Mino logo artwork (loaded, from /brand)', logoInfo.has && logoInfo.ok && logoInfo.src.startsWith('/brand/mino-logo'), JSON.stringify(logoInfo));
+    check('home card shows the approved full-body Mino (shared rig, artwork loaded from /mino/coach)', logoInfo.has && logoInfo.ok && logoInfo.src.startsWith('/mino/coach/') && logoInfo.w > 60, JSON.stringify(logoInfo));
     const cardBox0 = await card.boundingBox();
     await p.waitForTimeout(1500);
     check('the logo adds no layout shift (card box unchanged while its glow animates)', JSON.stringify(cardBox0) === JSON.stringify(await card.boundingBox()));
@@ -104,22 +105,22 @@ async function main() {
     await p.waitForTimeout(300);
     check('home Mino mobile: no sideways scroll', await noHorizontalScroll(p));
     await shot(p, 'brand-02-home-mobile', false);
-    const nav = await p.evaluate(() => { const n = document.querySelector('[data-testid="nav-mino"] img') as HTMLImageElement | null; return !!n && n.complete && n.naturalWidth > 0; });
-    check('the navigation Mino is the approved logo', nav);
+    const nav = await p.evaluate(() => { const n = document.querySelector('[data-testid="nav-mino"] img.mino-poster') as HTMLImageElement | null; return !!n && n.complete && n.naturalWidth > 0; });
+    check('the navigation Mino is the approved full-body Mino (poster/rig of the shared mascot)', nav);
     await p.setViewportSize({ width: 1280, height: 900 });
 
     // Reduced motion: the logo's glow holds still.
     await p.emulateMedia({ reducedMotion: 'reduce' });
     await p.waitForTimeout(200);
-    check('reduced motion: the logo glow does not animate', await card.evaluate((el) => { const l = el.querySelector('.mino-logo') as HTMLElement; return getComputedStyle(l, '::after').animationName === 'none'; }));
+    check('reduced motion: the Home card glow does not animate', await card.evaluate((el) => { const l = el.querySelector('[data-testid="mino-card-avatar"]') as HTMLElement; return getComputedStyle(l, '::before').animationName === 'none'; }));
     await p.emulateMedia({ reducedMotion: 'no-preference' });
 
     // Chat: Mino writes in its notebook (shared rig 'writing') while the answer is on its way.
     await p.goto(`${BASE}/mino`, { waitUntil: 'load' });
     const composer = p.getByPlaceholder('Ask Mino anything…');
     await composer.waitFor({ timeout: 60_000 });
-    await p.locator('[data-mino-coach="rig"]').first().waitFor({ timeout: 20_000 }).catch(() => undefined);
-    check('chat: the empty state shows the full-body Mino (shared mascot) and the avatar is the approved logo', (await p.locator('[data-mino-coach="rig"]').count()) >= 1 && (await p.locator('.mino-logo img').count()) >= 1);
+    await p.locator('main [data-mino-coach="rig"]').first().waitFor({ timeout: 20_000 }).catch(() => undefined);
+    check('chat: the empty state shows the full-body Mino (shared mascot) and the avatar is the approved logo', (await p.locator('main [data-mino-coach="rig"]').count()) >= 1 && (await p.locator('.mino-logo img').count()) >= 1);
     const sawWriting = p.waitForFunction(() => document.querySelector('[role="status"] [data-mino-coach="rig"][data-pose="writing"]'), null, { polling: 'raf', timeout: 30_000 }).then(() => true, () => false);
     await composer.fill('Hi Mino, one tip for today?');
     await composer.press('Enter');
@@ -186,7 +187,7 @@ async function main() {
       await prompt.waitFor({ timeout: 15_000 });
       await a.evaluate(() => localStorage.setItem('mino.installDelayMs', '1200'));
       check('Android phone: "Install Mino on your phone" with the body, Install + Not now', /Install Mino on your phone/.test(await prompt.innerText()) && /home screen/.test(await prompt.innerText()) && (await prompt.getByRole('button', { name: 'Install' }).isVisible()) && (await prompt.getByRole('button', { name: 'Not now' }).isVisible()));
-      check('install card has the small Mino beside it', (await prompt.locator('.mino').count()) === 1);
+      check('install card has the small Mino beside it', (await prompt.locator('.mino-logo').count()) === 1);
       await a.waitForTimeout(500);
       const pbox = (await prompt.boundingBox())!;
       const nav = await a.locator('nav').filter({ has: a.getByRole('link') }).last().boundingBox();

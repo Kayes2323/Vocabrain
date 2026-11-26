@@ -1,3 +1,5 @@
+import { holdMinoCalm } from '@/lib/mino/living-bus';
+
 /** Reads a word aloud with the browser's speech synthesis (if available). */
 export function speakWord(text: string) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
@@ -5,6 +7,8 @@ export function speakWord(text: string) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-GB';
   utterance.rate = 0.9;
+  const calm = holdMinoCalm(); // decorative Mino motion stays calm while the word is read
+  utterance.onend = utterance.onerror = () => calm();
   window.speechSynthesis.speak(utterance);
   return true;
 }
