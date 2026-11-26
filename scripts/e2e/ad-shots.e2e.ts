@@ -162,9 +162,9 @@ async function main() {
       await go(p, '/ielts', (q) => q.getByTestId('hub-plan-card').waitFor({ timeout: 60_000 }));
       await p.getByTestId('hub-plan-today').waitFor({ timeout: 30_000 });
       await both(p, '02-ielts-hub');
-      await p.locator('#hub-practice').scrollIntoViewIfNeeded();
+      await p.locator('#hub-test').scrollIntoViewIfNeeded();
       await p.waitForTimeout(500);
-      await shot(p, '02-ielts-hub-practice', false);
+      await shot(p, '02-ielts-hub-tests', false);
     });
     await step('03 my plan', async () => {
       await go(p, '/ielts/plan', (q) => q.getByTestId('plan-saved').waitFor({ timeout: 60_000 }));

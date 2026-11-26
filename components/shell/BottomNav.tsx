@@ -5,13 +5,14 @@ import { usePathname } from 'next/navigation';
 import { useLocale } from '@/components/providers/LocaleProvider';
 import { PRIMARY_NAV, isNavActive } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
-import { MinoMark } from './MinoMark';
+import { MinoLivingMascot } from '@/components/mino/MinoLivingMascot';
 
 /**
  * Mobile primary navigation. Hidden from md upwards, where SideNav takes over.
  * Each tab has its own soft color when active; Mino sits raised in the middle
- * and is always alive (it blinks now and then; motion pauses when the bar is
- * hidden or the tab is in the background, and stops for reduced motion).
+ * as a small living copy of the full-body mascot (components/mino/MinoLivingMascot.tsx): it breathes and blinks,
+ * and now and then plays one of its existing animations. It pauses when hidden, off-screen or when another Mino
+ * is teaching, and stays still for reduced motion.
  */
 export function BottomNav() {
   const pathname = usePathname();
@@ -46,7 +47,10 @@ export function BottomNav() {
                     data-testid="nav-mino"
                     data-nav-mino={active ? 'selected' : undefined}
                   >
-                    <MinoMark size="md" alive />
+                    {/* The approved full-body Mino, kept inside the circle (overflow clipped): no gesture can reach the neighbouring tabs. */}
+                    <span className="relative block size-12 overflow-hidden rounded-full" data-testid="nav-mino-clip">
+                      <MinoLivingMascot px={66} className="absolute" style={{ left: -9, top: -3 }} />
+                    </span>
                   </span>
                 ) : (
                   <span

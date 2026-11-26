@@ -5,6 +5,7 @@ import { AlertCircle, Loader2, Pause, Play, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { AudioAsset } from '@/lib/listening';
+import { holdMinoCalm } from '@/lib/mino/living-bus';
 
 const SPEEDS = [0.75, 0.9, 1, 1.25] as const;
 
@@ -39,6 +40,9 @@ export function AudioLessonPlayer({ asset, onComplete, className }: { asset: Aud
     completedRef.current = false;
     const a = new Audio(asset.path);
     audioRef.current = a;
+    let calm: (() => void) | undefined; // Mino's decorative motion stays calm while this plays
+    const hush = () => { calm ??= holdMinoCalm(); };
+    const unhush = () => { calm?.(); calm = undefined; };
     a.preload = 'metadata';
     a.onloadedmetadata = () => {
       setState('ready');
@@ -46,16 +50,18 @@ export function AudioLessonPlayer({ asset, onComplete, className }: { asset: Aud
     };
     a.onerror = () => setState('error');
     a.ontimeupdate = () => setClock({ t: a.currentTime, d: a.duration || 0 });
-    a.onplay = () => setPlaying(true);
-    a.onpause = () => setPlaying(false);
+    a.onplay = () => { setPlaying(true); hush(); };
+    a.onpause = () => { setPlaying(false); unhush(); };
     a.onended = () => {
       setPlaying(false);
+      unhush();
       if (!completedRef.current) {
         completedRef.current = true;
         onComplete?.();
       }
     };
     return () => {
+      unhush();
       a.pause();
       a.src = '';
     };

@@ -19,14 +19,14 @@ async function main() {
 
     console.log('\n[1] Task 1 Academy: first-entry welcome');
     await p.goto(`${BASE}/ielts/writing-studio/task1`, { waitUntil: 'load' });
-    const mascot1 = p.locator('[data-mino-coach="rig"]').first();
+    const mascot1 = p.locator('main [data-mino-coach="rig"]').first();
     await mascot1.waitFor({ timeout: 30_000 });
     check('the full-body mascot renders on Task 1 Academy', await mascot1.isVisible());
     // The rig must actually be on screen (not just its wrapper): ready, fully opaque, character inside its box after the entrance.
-    await p.waitForSelector('[data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
+    await p.waitForSelector('main [data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
     await p.waitForTimeout(2600);
     const geo = await p.evaluate(() => {
-      const root = document.querySelector('[data-mino-coach="rig"] .mino-rig') as HTMLElement;
+      const root = document.querySelector('main [data-mino-coach="rig"] .mino-rig') as HTMLElement;
       const body = root.querySelector('[data-layer="body"]') as HTMLElement;
       const rr = root.getBoundingClientRect();
       const br = body.getBoundingClientRect();
@@ -40,10 +40,10 @@ async function main() {
     await shot(p, 'mino-coach-en-01b-task1-welcome-settled');
     console.log('\n[1b] Lesson trainer panel shows the rig');
     await p.goto(`${BASE}/ielts/writing-studio/task1/lesson/task1-understanding`, { waitUntil: 'load' });
-    await p.waitForSelector('[data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
+    await p.waitForSelector('main [data-mino-coach="rig"] .mino-rig[data-ready="true"]', { timeout: 30_000 });
     await p.waitForTimeout(1500);
     const lesson = await p.evaluate(() => {
-      const root = document.querySelector('[data-mino-coach="rig"] .mino-rig') as HTMLElement;
+      const root = document.querySelector('main [data-mino-coach="rig"] .mino-rig') as HTMLElement;
       const r = root.getBoundingClientRect();
       return { w: r.width, h: r.height, state: root.dataset.state, op: getComputedStyle(root.querySelector('.mino-rig__stage') as HTMLElement).opacity };
     });
@@ -88,7 +88,7 @@ async function main() {
     watchErrors(q, 'BN', errors);
     await signUp(q, 'Nusrat', `mino-coach-bn-${Date.now()}@test.dev`, 'bn');
     await q.goto(`${BASE}/ielts/writing-studio/task1`, { waitUntil: 'load' });
-    const mascotBn = q.locator('[data-mino-coach="rig"]').first();
+    const mascotBn = q.locator('main [data-mino-coach="rig"]').first();
     await mascotBn.waitFor({ timeout: 30_000 });
     const bnText = await q.locator('main').innerText();
     check('bn Task 1 welcome shows Bangla text', /[ঀ-৿]/.test(bnText));

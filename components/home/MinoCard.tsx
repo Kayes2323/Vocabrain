@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Panel } from '@/components/ds';
-import { MinoMark } from '@/components/shell/MinoMark';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
+import { useMinoRigAllowed } from '@/components/mino/MinoLivingMascot';
+import { homeCardPose } from '@/lib/mino/living';
 import { minoReact } from '@/components/mino/Mino';
 import { useBrainContext } from '@/components/brain/useBrainContext';
 import { useLocale } from '@/components/providers/LocaleProvider';
@@ -23,16 +25,21 @@ export function MinoCard({ profile }: { profile: UserProfile }) {
   const brain = useBrainContext();
   const name = profile.displayName;
   const dayDone = buildDailyPlan(profile, brain).tasks.every((task) => task.done);
+  const rigAllowed = useMinoRigAllowed();
   if (!gap && dayDone) return null;
+  const insight = getMinoInsight(profile, brain);
 
   return (
     // Hover / tap → Mino blinks; an open profile gap gets one soft attention pulse.
     <Panel variant="brand" className="space-y-3" onPointerEnter={() => minoReact('blink')} data-testid="mino-card">
       <div className="flex items-start gap-3">
-        <MinoMark mode={gap ? 'attention' : 'idle'} />
+        {/* The approved full-body Mino in the shared violet aura: one welcoming / encouraging beat for this message, then calm. */}
+        <span className="mino-aura mino-aura--in shrink-0" data-testid="mino-card-avatar">
+          <MinoCoachMascot px={84} pose={homeCardPose(insight.key)} live={rigAllowed} decorative />
+        </span>
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-semibold text-brand">{t('mino.insightLabel')}</p>
-          <p className="text-[15px] text-foreground/90 text-pretty">“{name ? `${name}, ` : ''}{m(getMinoInsight(profile, brain))}”</p>
+          <p className="text-[15px] text-foreground/90 text-pretty">“{name ? `${name}, ` : ''}{m(insight)}”</p>
         </div>
       </div>
 
