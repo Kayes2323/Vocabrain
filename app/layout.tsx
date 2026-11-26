@@ -42,16 +42,16 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/icon-light-32x32.png',
+        url: '/icon-light-32x32.png?v=mino',
         media: '(prefers-color-scheme: light)',
       },
       {
-        url: '/icon-dark-32x32.png',
+        url: '/icon-dark-32x32.png?v=mino',
         media: '(prefers-color-scheme: dark)',
       },
-      { url: '/icon-48.png', sizes: '48x48', type: 'image/png' },
+      { url: '/icon-48.png?v=mino', sizes: '48x48', type: 'image/png' },
     ],
-    apple: '/apple-icon.png',
+    apple: '/apple-icon.png?v=mino',
   },
 }
 

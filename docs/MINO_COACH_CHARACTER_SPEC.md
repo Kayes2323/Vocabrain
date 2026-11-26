@@ -140,7 +140,7 @@ state (`entrance`, `landing`, `greeting`, `success`) plays once and the componen
 its caller when it has settled to `idle`; held states (`speaking`, `explaining`, `writing`,
 `thinking`) stay until the caller explicitly changes them. No internal timers outlive the
 component — every `setTimeout` is cleared on unmount or state change (the same pattern already
-used in `MinoCoachMascot.tsx`/`Mino.tsx`).
+used in `MinoCoachMascot.tsx`).
 
 ## 7. Animation technology
 

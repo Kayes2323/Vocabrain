@@ -5,7 +5,7 @@ Motion only adds life. One component renders Mino everywhere.
 
 ## API
 ```tsx
-<Mino mode="idle" size="md" animated wordmark={false} />   // components/mino/Mino.tsx
+<MinoMark size="md" mode="idle" />   // components/shell/MinoMark.tsx -> the approved logo
 <MinoMark alive | thinking | mode=… />                      // same drawing, old API kept
 minoReact('blink' | 'sparkle' | 'success' | 'attention' | 'celebrate')    // one-shot, visible Minos only
 ```
@@ -26,8 +26,8 @@ Leaving `thinking` plays blink + sparkle (the answer is ready).
   route change (blink), Mino chat header (thinking → answer → success).
 
 ## App icon
-`public/icon.svg`, favicons, `icon-192/512.png`, `apple-icon.png` are rendered from the same geometry
-(face + star, no wordmark): `node scripts/brand/mino-icons.mjs`.
+The app icon, favicons, `icon-192/512/maskable`, `apple-icon.png` are resized from the approved logo only
+(`assets/brand/mino-logo-approved.png`): `node scripts/brand/gen-mino-logo.mjs`. Nothing is redrawn.
 
 ## Install Mino (PWA)
 - `components/pwa/InstallPrompt.tsx` (mounted in AppShell), rules in `lib/pwa/install.ts`

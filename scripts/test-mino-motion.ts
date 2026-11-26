@@ -95,22 +95,6 @@ test('welcome is a roll/bounce on the bottom edge (not a spin); only translate/r
   assert.match(css, /\.mino\[data-react='celebrate'\] \.mino-mark/);
 });
 
-test('brand: the app icon is drawn from the exact same geometry as the component (face + star, no wordmark)', () => {
-  const component = readFileSync('components/mino/Mino.tsx', 'utf8');
-  const icon = readFileSync('public/icon.svg', 'utf8');
-  for (const part of [
-    'x="2" y="2" width="44" height="44" rx="15"',
-    'x="15" y="18" width="5" height="10" rx="2.5"',
-    'x="28" y="18" width="5" height="10" rx="2.5"',
-    'M36 8.5l1.1 2.9 2.9 1.1-2.9 1.1L36 16.5l-1.1-2.9L32 12.5l2.9-1.1z',
-  ]) {
-    assert.ok(component.includes(part), `component: ${part}`);
-    assert.ok(icon.includes(part), `icon: ${part}`);
-  }
-  assert.ok(!/Mino<|>M</.test(icon), 'no wordmark in the icon');
-  assert.ok(icon.includes('#5252d8'), 'brand colour');
-});
-
 test('reduced motion is honoured in CSS too (no animation, no transition)', () => {
   const css = readFileSync('app/globals.css', 'utf8');
   assert.match(css, /prefers-reduced-motion: reduce\)\s*\{\s*\.mino \*, \.mino-mark \*/);
