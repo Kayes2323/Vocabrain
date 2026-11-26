@@ -14,7 +14,7 @@ import { COACH_ROLE, COACH_WELCOME } from '../../lib/mino/coach-messages';
 import { WRITING_ENTRY_MS, WRITING_PENCIL_TIP, WRITING_TIMELINE, writingPoint } from '../../components/mino/rig/coach-rig-writing.generated';
 
 const STATES = ['idle', 'entrance', 'landing', 'greeting', 'speaking', 'explaining', 'writing', 'thinking', 'success', 'encouraging'] as const;
-const ONE_SHOT_MS: Record<string, number> = { entrance: 1050, landing: 420, greeting: 1100, success: 900, encouraging: 1350 };
+const ONE_SHOT_MS: Record<string, number> = { entrance: 600, landing: 300, greeting: 500, success: 900, encouraging: 1350 };
 
 const NAME_SHIM = 'window.__name = window.__name || ((f) => f);'; // tsx/esbuild keepNames helper used inside page.evaluate callbacks
 const rigRect = (p: Page, sel: string) => p.evaluate((s) => { const r = document.querySelector(s)!.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }, sel);
@@ -111,7 +111,7 @@ async function main() {
     await p.click('[data-testid="rig-seq-welcome"]');
     const seen: string[] = [];
     for (let i = 0; i < 40; i++) { const st = await p.getAttribute('.mino-rig', 'data-state'); if (st && seen[seen.length - 1] !== st) seen.push(st); await p.waitForTimeout(100); }
-    check('welcome = entrance → landing → greeting → speaking, in order, ending held on speaking', seen.join('>') === 'entrance>landing>greeting>speaking', seen.join('>'));
+    check('opening = entrance → landing → greeting → idle, in order, ending in idle (~1.4 s)', seen.join('>') === 'entrance>landing>greeting>idle', seen.join('>'));
     await p.click('[data-testid="rig-seq-lesson"]');
     await p.waitForTimeout(200);
     check('lesson start begins with explaining (a held state)', (await p.getAttribute('.mino-rig', 'data-state')) === 'explaining');
@@ -135,7 +135,7 @@ async function main() {
     await freezeAt(p, 'idle', 0);
     const base = await dist();
     let maxP = 0, maxN = 0, maxH = 0;
-    for (const [s, dur] of [['greeting', 1100], ['explaining', 4600], ['writing', 3400], ['speaking', 3200], ['success', 900], ['entrance', 1050]] as const) {
+    for (const [s, dur] of [['greeting', 500], ['explaining', 4600], ['writing', 3400], ['speaking', 3200], ['success', 900], ['entrance', 600]] as const) {
       for (let k = 0; k <= 8; k++) {
         await freezeAt(p, s, (dur * k) / 8);
         const d = await dist();
@@ -269,7 +269,7 @@ async function main() {
     check('one-shots still settle quickly under reduced motion (choreographies keep advancing)', (await rp.getAttribute('.mino-rig', 'data-state')) === 'idle');
     await rp.click('[data-testid="rig-seq-welcome"]');
     await rp.waitForTimeout(1500);
-    check('the welcome choreography completes in ≤1.5 s under reduced motion', (await rp.getAttribute('.mino-rig', 'data-state')) === 'speaking');
+    check('the opening choreography completes in ≤1.5 s under reduced motion (ends idle)', (await rp.getAttribute('.mino-rig', 'data-state')) === 'idle');
     check('no console errors under reduced motion', rmErr.length === 0, rmErr.join(' | '));
     await rm.close();
 
@@ -292,10 +292,10 @@ async function main() {
     check('desktop: the character cell is ≈320 px wide', Math.abs(rowLayout.minoW - 320) <= 2, rowLayout.minoW);
     await dp.waitForTimeout(400);
     const entering = await dp.getAttribute('[data-testid="task1-welcome-mino"] .mino-rig', 'data-state');
-    check('the welcome choreography starts automatically', ['entrance', 'landing', 'greeting', 'speaking'].includes(entering ?? ''), entering);
+    check('the welcome choreography starts automatically', ['entrance', 'landing', 'greeting', 'idle'].includes(entering ?? ''), entering);
     await shot(dp, 'task1-welcome-desktop-entrance', false);
     await dp.waitForTimeout(3500);
-    check('after the choreography Mino is speaking while the text is shown', (await dp.getAttribute('[data-testid="task1-welcome-mino"] .mino-rig', 'data-state')) === 'speaking');
+    check('after the opening Mino rests in idle while the text is shown', (await dp.getAttribute('[data-testid="task1-welcome-mino"] .mino-rig', 'data-state')) === 'idle');
     await shot(dp, 'task1-welcome-desktop-speaking', false);
     await dp.getByRole('button', { name: 'Replay welcome' }).click();
     await dp.waitForTimeout(150);
