@@ -21,7 +21,7 @@ migrated, what intentionally keeps its old identifier (and why), and what still 
 | `vocabbrain:*` localStorage keys (`locale`, `guest`, `examinerVoice`, `testClock:*`, `speakingMode`, `annot:*`, `profile:*`, `testSessions:*`, `brain:*`, `mino-coach-welcome-seen:*`) | `components/**`, `lib/services/**`, `lib/mino/coach.ts` | Learners' saved language, guest progress, test sessions and welcome flags live under these keys. Renaming would silently reset them. A migration would be needed first. |
 | `vocab-brain`, `vocab-brain-original` (`series`, `sourceType`, `KnowledgeKind`) | `lib/ielts/**`, `lib/models/**`, `lib/content/**`, `lib/ai/server/**` | Persisted content/provenance ids and a typed knowledge-card kind; used for filtering and in stored test records. |
 | `vb-mock-*` ids | `lib/ielts/**`, `public/listening/**` | Book/test ids stored with test sessions and used in audio file paths. |
-| `vb-note` | `app/globals.css`, `components/test/AnnotationScope.tsx` | Name of a CSS Custom Highlight, internal only. |
+| `vb-hl`, `vb-note` | `app/globals.css`, `components/test/annotationHighlights.ts` | Names of CSS Custom Highlights, internal only. |
 | `vocabrain.vercel.app` | Vercel project domain | The old public hostname is deliberately kept active (see below); installed PWAs and shared links still use it. |
 | GitHub repository name | `https://github.com/Kayes2323/Vocabrain` | Renaming a repository needs the owner (see below). |
 
