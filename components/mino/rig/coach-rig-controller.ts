@@ -141,11 +141,13 @@ export class MinoRigController {
    * animated group, drop the old state, ease the groups back to rest (script animations outrank the CSS ones),
    * and only then start the next state from rest. Reduced motion / nothing displaced → no bridge, instant switch.
    */
-  private setState(next: CoachRigState, options: RigPlayOptions = {}): void {
+  private setState(next: CoachRigState, options: RigPlayOptions = {}, finished = false): void {
     clearTimeout(this.settleTimer);
     clearTimeout(this.bridgeTimer);
     this.cancelBlinkReopen();
-    const live = this.motionOn ? this.groups().filter((el) => this.away(el)) : [];
+    // `finished`: a one-shot that just ran to its end already sits at (≈) the rest pose — its settle timer fires a frame
+    // before the last keyframe — so there is nothing to bridge and the next state of a choreography follows at once.
+    const live = this.motionOn && !finished ? this.groups().filter((el) => this.away(el)) : [];
     const poses = live.map((el) => ({ el, transform: getComputedStyle(el).transform, opacity: getComputedStyle(el).opacity }));
     for (const a of this.bridgeAnims) a.cancel();
     this.bridgeAnims = [];
@@ -203,7 +205,7 @@ export class MinoRigController {
       this.seqIndex += 1;
       const nxt = this.sequence[this.seqIndex];
       if (!isRigOneShot(nxt)) this.base = nxt;
-      this.setState(nxt);
+      this.setState(nxt, {}, true);
       this.opts.onSettle?.(settled, nxt);
       return;
     }
@@ -211,7 +213,7 @@ export class MinoRigController {
     const target = this.sequence.length ? 'idle' : rigSettleTarget(this.base);
     this.sequence = [];
     this.base = target;
-    this.setState(target);
+    this.setState(target, {}, true);
     this.opts.onSettle?.(settled, target);
   }
 

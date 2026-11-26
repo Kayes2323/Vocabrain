@@ -158,8 +158,8 @@ export function MinoReviewClient() {
         <div className="flex items-center justify-between">
           <h2 id="places-h" className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">In the app (same component)</h2>
           <div className="flex gap-1 text-sm">
-            <button type="button" data-testid="review-locale-en" className={`rounded-full border px-3 py-1 ${locale === 'en' ? 'bg-foreground text-background' : ''}`} onClick={() => setLocale('en')}>EN</button>
-            <button type="button" data-testid="review-locale-bn" className={`rounded-full border px-3 py-1 ${locale === 'bn' ? 'bg-foreground text-background' : ''}`} onClick={() => setLocale('bn')}>বাংলা</button>
+            <button type="button" data-testid="review-locale-en" className={`min-h-11 rounded-full border px-4 py-1 ${locale === 'en' ? 'bg-foreground text-background' : ''}`} onClick={() => setLocale('en')}>EN</button>
+            <button type="button" data-testid="review-locale-bn" className={`min-h-11 rounded-full border px-4 py-1 ${locale === 'bn' ? 'bg-foreground text-background' : ''}`} onClick={() => setLocale('bn')}>বাংলা</button>
           </div>
         </div>
 
@@ -202,8 +202,8 @@ function PlaceWelcome({ locale, role, welcome }: { locale: Locale; role: string;
         <p className="text-xs font-semibold tracking-wide text-brand uppercase">{role}</p>
         <p className="text-[15px] leading-relaxed text-foreground/90 text-pretty">{welcome}</p>
         <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
-          <Button disabled>{locale === 'bn' ? 'চলুন, শুরু করি' : 'Start learning'}</Button>
-          <Button variant="outline" data-testid="review-welcome-replay" onClick={() => setN((x) => x + 1)}>
+          <Button className="min-h-11" disabled>{locale === 'bn' ? 'চলুন, শুরু করি' : 'Start learning'}</Button>
+          <Button variant="outline" className="min-h-11" data-testid="review-welcome-replay" onClick={() => setN((x) => x + 1)}>
             {locale === 'bn' ? 'আবার শুনি' : 'Replay welcome'}
           </Button>
         </div>
