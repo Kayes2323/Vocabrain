@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {
   COACH_RIG_STATES, evaluationSequence, isRigDormant, isRigOneShot, LESSON_START_SEQUENCE, REDUCED_MOTION_SETTLE_MS, RIG_DORMANT_STATES, RIG_ONE_SHOT_STATES,
-  RIG_POINT_DIRECTIONS, rigBlinkAllowed, rigSettleTarget, rigStateHoldMs, WELCOME_SEQUENCE,
+  RIG_POINT_DIRECTIONS, rigBlinkAllowed, rigSettleTarget, rigStateHoldMs, WELCOME_SEQUENCE, WELCOME_TOTAL_MS,
 } from '../components/mino/rig/coach-preview-state';
 
 let passed = 0;
@@ -28,14 +28,17 @@ test('one-shot states (entrance/landing/greeting/success/encouraging) settle on 
 });
 
 test('entrance/landing/success durations match the spec ranges (ms)', () => {
-  assert.ok(rigStateHoldMs('entrance') >= 900 && rigStateHoldMs('entrance') <= 1200);
-  assert.ok(rigStateHoldMs('landing') >= 350 && rigStateHoldMs('landing') <= 500);
-  assert.ok(rigStateHoldMs('greeting') >= 900 && rigStateHoldMs('greeting') <= 1300);
+  // the opening "Soft Roll-In & Pencil Salute": 600 (peek-in + roll-in) + 300 (hop) + 500 (salute + settle) = ~1.4 s
+  assert.equal(rigStateHoldMs('entrance'), 600);
+  assert.equal(rigStateHoldMs('landing'), 300);
+  assert.equal(rigStateHoldMs('greeting'), 500);
+  assert.equal(rigStateHoldMs('entrance') + rigStateHoldMs('landing') + rigStateHoldMs('greeting'), WELCOME_TOTAL_MS);
+  assert.ok(WELCOME_TOTAL_MS >= 1300 && WELCOME_TOTAL_MS <= 1500);
   assert.ok(rigStateHoldMs('success') >= 800 && rigStateHoldMs('success') <= 1000);
 });
 
-test('the welcome choreography is entrance -> landing -> greeting -> speaking, in that order', () => {
-  assert.deepEqual(WELCOME_SEQUENCE, ['entrance', 'landing', 'greeting', 'speaking']);
+test('the opening choreography is entrance -> landing -> greeting (then idle), in that order', () => {
+  assert.deepEqual(WELCOME_SEQUENCE, ['entrance', 'landing', 'greeting']);
 });
 
 test('the lesson-start choreography is explaining -> writing', () => {

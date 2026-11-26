@@ -26,7 +26,7 @@ export function Task1WelcomeClient() {
       <details className="rounded-lg border p-3" open>
         <summary className="cursor-pointer text-sm font-medium">Animation controls (preview only)</summary>
         <div className="pt-3">
-          <RigStateControls controller={ctrl} active={active} point={point} onPoint={setPoint} onWelcome={() => ctrl?.playSequence(['entrance', 'landing', 'greeting', 'speaking'])} />
+          <RigStateControls controller={ctrl} active={active} point={point} onPoint={setPoint} onWelcome={() => ctrl?.playSequence(['entrance', 'landing', 'greeting'])} />
         </div>
       </details>
     </main>

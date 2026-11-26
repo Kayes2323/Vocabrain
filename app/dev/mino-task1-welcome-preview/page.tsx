@@ -1,12 +1,14 @@
 import { notFound } from 'next/navigation';
+import { minoReviewEnabled } from '@/lib/mino/review-gate';
 import { Task1WelcomeClient } from './client';
 
 /**
  * Development-only, isolated placement preview of the new Mino rig in the Writing Task 1 welcome slot.
- * Never reachable in a production build (same guard as /dev/mino-coach-preview); production Task 1 still renders
- * the shipped SVG mascot through components/mino/MinoCoachWelcome.tsx, which this route does not import or modify.
+ * 404 on a Production deployment (same guard as /dev/mino-coach-preview). Uses the central MinoCoachMascot, like the real welcome.
  */
+export const dynamic = 'force-dynamic';
+
 export default function Task1WelcomePreviewPage() {
-  if (process.env.NODE_ENV !== 'development') notFound();
+  if (!minoReviewEnabled()) notFound();
   return <Task1WelcomeClient />;
 }

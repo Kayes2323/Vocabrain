@@ -8,7 +8,7 @@ import type { MinoRigController, RigEyes, RigMouth } from '../rig/coach-rig-cont
 export const ACTIVE_BUTTONS: { state: CoachRigState; label: string }[] = [
   { state: 'entrance', label: 'Entrance' },
   { state: 'landing', label: 'Landing' },
-  { state: 'greeting', label: 'Greeting (wave)' },
+  { state: 'greeting', label: 'Greeting (pencil salute)' },
   { state: 'speaking', label: 'Speaking' },
   { state: 'explaining', label: 'Explaining / pointing' },
   { state: 'writing', label: 'Writing' },
@@ -61,8 +61,8 @@ export function RigStateControls({
       <section className="space-y-2">
         <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Choreographies</h2>
         <div className="flex flex-wrap gap-2">
-          <button ref={welcomeBtn} type="button" data-testid="rig-seq-welcome" disabled={!controller} className={`${chip} border-border bg-card`} onClick={() => (onWelcome ? onWelcome() : controller?.playSequence(['entrance', 'landing', 'greeting', 'speaking']))}>
-            Welcome: entrance → landing → greeting → speaking
+          <button ref={welcomeBtn} type="button" data-testid="rig-seq-welcome" disabled={!controller} className={`${chip} border-border bg-card`} onClick={() => (onWelcome ? onWelcome() : controller?.playSequence(['entrance', 'landing', 'greeting']))}>
+            Opening: entrance → landing → greeting → idle
           </button>
           <button type="button" data-testid="rig-seq-lesson" disabled={!controller} className={`${chip} border-border bg-card`} onClick={() => controller?.playSequence(['explaining', 'writing'], { point })}>
             Lesson start: explaining → writing

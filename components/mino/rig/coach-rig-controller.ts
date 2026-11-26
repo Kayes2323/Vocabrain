@@ -24,7 +24,7 @@ import {
 } from './coach-preview-state';
 
 /** Every group that carries a state animation: their live pose is bridged back to rest when a state is interrupted. */
-const POSE_GROUPS = ['figure', 'pack', 'torso', 'tag', 'head', 'eyes', 'arm-r', 'arm-l', 'notebook', 'pencil', 'shadow'] as const;
+const POSE_GROUPS = ['figure', 'pack', 'torso', 'tag', 'head', 'eyes', 'arm-r', 'arm-l', 'notebook', 'pencil', 'shadow', 'foot-l', 'foot-r'] as const;
 /** How long the pose bridge takes (ms) and how far from rest a group must be before a bridge is worth playing. */
 export const RIG_BRIDGE_MS = 190;
 /** A pose far from rest (e.g. the raised wave arm) takes longer to ease back so it never looks like a flick. */

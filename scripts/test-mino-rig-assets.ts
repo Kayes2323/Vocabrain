@@ -78,6 +78,15 @@ async function test(name: string, fn: () => void | Promise<void>) {
     assert.ok(total < 600 * 1024, `total ${total}`);
   });
 
+  await test('the loading poster exists, matches the rig stage aspect (no layout shift), keeps alpha and stays small', async () => {
+    const f = path.join(pub, 'poster.webp');
+    assert.ok(fs.existsSync(f), 'poster.webp');
+    const m = await sharp(f).metadata();
+    assert.ok(m.hasAlpha);
+    assert.ok(Math.abs(m.width / m.height - 1200 / 1088) < 0.01, `aspect ${m.width}x${m.height}`);
+    assert.ok(fs.statSync(f).size < 70 * 1024, 'poster under 70 KB');
+  });
+
   console.log(`\n${passed} passed`);
 })().catch((e) => {
   console.error(e);

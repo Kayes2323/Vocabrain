@@ -15,11 +15,11 @@ export type CoachRigState = (typeof COACH_RIG_STATES)[number];
 export function rigStateHoldMs(state: CoachRigState): number {
   switch (state) {
     case 'entrance':
-      return 1050;
+      return 600; // opening phases 1+2: peek-in (200) + soft roll-in (400)
     case 'landing':
-      return 420;
+      return 300; // phase 3: tiny hop & landing
     case 'greeting':
-      return 1100;
+      return 500; // phase 4 pencil salute (~360) + phase 5 ready settle (~140)
     case 'success':
       return 900;
     case 'encouraging':
@@ -29,8 +29,12 @@ export function rigStateHoldMs(state: CoachRigState): number {
   }
 }
 
-/** The welcome choreography named in the spec: entrance -> landing -> greeting -> speaking -> idle. */
-export const WELCOME_SEQUENCE: CoachRigState[] = ['entrance', 'landing', 'greeting', 'speaking'];
+/**
+ * The opening choreography "Mino's Soft Roll-In & Pencil Salute" (~1.4 s): entrance (peek-in + soft roll-in) -> landing
+ * (tiny hop) -> greeting (pencil salute + settle) -> idle (a sequence that ends on a one-shot returns to idle by itself).
+ */
+export const WELCOME_SEQUENCE: CoachRigState[] = ['entrance', 'landing', 'greeting'];
+export const WELCOME_TOTAL_MS = 1400;
 
 /** The lesson-start choreography: idle -> explaining -> writing -> idle. */
 export const LESSON_START_SEQUENCE: CoachRigState[] = ['explaining', 'writing'];

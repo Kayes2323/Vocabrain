@@ -1,16 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Panel, PageHeader } from '@/components/ds';
 import { coachText, COACH_ROLE, COACH_WELCOME } from '@/lib/mino/coach-messages';
+import { MinoCoachMascot } from '@/components/mino/MinoCoachMascot';
 import { MinoCoachMascotLegacy } from '@/components/mino/MinoCoachMascotLegacy';
-import { MinoCoachRig } from '../rig/MinoCoachRig';
 import type { MinoRigController } from '../rig/coach-rig-controller';
 import { WELCOME_SEQUENCE } from '../rig/coach-preview-state';
-
-/** How long Mino keeps "speaking" while the welcome text is on screen (no audio in this phase). */
-export const WELCOME_SPEAK_MS = 8000;
 
 /**
  * ISOLATED PREVIEW of the real Writing Task 1 welcome (components/mino/MinoCoachWelcome.tsx, rendered by
@@ -22,14 +19,10 @@ export const WELCOME_SPEAK_MS = 8000;
 export function Task1WelcomePreview({ locale, onController }: { locale: 'en' | 'bn'; onController?: (c: MinoRigController) => void }) {
   const [dismissed, setDismissed] = useState(false);
   const ctrl = useRef<MinoRigController | null>(null);
-  const speakTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const runWelcome = useCallback(() => {
-    clearTimeout(speakTimer.current);
     ctrl.current?.playSequence(WELCOME_SEQUENCE);
-    speakTimer.current = setTimeout(() => ctrl.current?.play('idle'), WELCOME_SPEAK_MS);
   }, []);
-  useEffect(() => () => clearTimeout(speakTimer.current), []);
 
   const role = coachText(locale, COACH_ROLE.task1);
   const welcome = coachText(locale, COACH_WELCOME.task1);
@@ -45,12 +38,14 @@ export function Task1WelcomePreview({ locale, onController }: { locale: 'en' | '
       ) : (
         <Panel variant="brand" className="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-6 sm:text-left" data-testid="task1-welcome-panel">
           <div className="w-[min(100%,300px)] shrink-0 sm:w-[320px]" data-testid="task1-welcome-mino">
-            <MinoCoachRig
-              clip
-              onReady={(c) => {
+            {/* the central component: its own opening plays on mount; Replay re-runs the same choreography */}
+            <MinoCoachMascot
+              pose="welcome"
+              size="xl"
+              className="w-full"
+              onController={(c) => {
                 ctrl.current = c;
-                onController?.(c);
-                runWelcome();
+                if (c) onController?.(c);
               }}
             />
           </div>

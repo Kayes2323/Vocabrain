@@ -576,3 +576,6 @@
   background-color: rgb(59 130 246 / 0.45);
   color: inherit;
 }
+
+/* Mino review page: progress bar for the ~1.4 s opening (review route only) */
+@keyframes review-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
