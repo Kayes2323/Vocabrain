@@ -33,10 +33,11 @@ async function main() {
     await signUp(page, 'Priya', `lg-mastery-${stamp}@test.dev`, 'en');
 
     // ---------------------------------------------------------------- the Visual-Specific Training card opens the dedicated course
-    await page.goto(BASE + '/ielts/writing-studio/task1', { waitUntil: 'load' });
-    await page.getByText('Visual-specific training').first().waitFor({ timeout: 60_000 });
-    await page.getByText('Line Graphs', { exact: true }).click();
-    await page.waitForURL('**/lesson/line-graph-mastery', { timeout: 15_000 });
+    await page.goto(BASE + '/ielts/writing-studio/task1/learn/visual-information', { waitUntil: 'load' });
+    await page.locator('[data-chart-id="line-graphs"]').waitFor({ timeout: 60_000 });
+    await page.locator('[data-chart-id="line-graphs"]').click();
+    await page.getByTestId('ws-chart-course-link').click();
+    await page.waitForURL('**/lesson/line-graph-mastery*', { timeout: 15_000 });
     check('the Line Graphs card opens the dedicated Line Graph Mastery lesson, not the generic chart-analysis board', page.url().includes('/lesson/line-graph-mastery'), page.url());
     await page.getByText('The eight-step method').first().waitFor({ timeout: 30_000 });
 

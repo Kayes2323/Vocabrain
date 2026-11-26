@@ -140,8 +140,8 @@ export function ExamShell({ mode }: { mode: ExamMode }) {
           </Section>
         ))}
         <Button asChild variant="outline" className="w-full">
-          <Link href="/ielts/writing-studio">
-            <RotateCcw /> Back to the Writing Studio
+          <Link href={mode === 'full' ? '/ielts/writing-studio' : `/ielts/writing-studio/${mode}`}>
+            <RotateCcw /> {mode === 'full' ? 'Back to the Writing Studio' : `Back to Writing ${mode === 'task1' ? 'Task 1' : 'Task 2'}`}
           </Link>
         </Button>
       </div>

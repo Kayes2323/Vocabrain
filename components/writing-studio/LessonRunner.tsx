@@ -19,6 +19,7 @@ import { localize, type Lesson } from '@/lib/writing-studio/types';
 import { FeedbackPanel } from './FeedbackPanel';
 import { LessonAudioControls } from './LessonAudioControls';
 import { MaterialPanel } from './MaterialPanel';
+import { markLessonStarted } from '@/lib/writing-studio/lesson-activity';
 import { TrainerPanel } from './TrainerPanel';
 import { useLessonStepAudio } from './useLessonStepAudio';
 import { WSChart } from './WSChart';
@@ -77,7 +78,7 @@ function CheckBlock({
  * loop (spec §8), then hands off to the dedicated Writing Zone and Feedback
  * Zone for the lesson's final task.
  */
-export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyHref: string }) {
+export function LessonRunner({ lesson, academyHref, backLabel = 'Back to Academy' }: { lesson: Lesson; academyHref: string; backLabel?: string }) {
   const { locale, hasChosen } = useLocale();
   // Bangla is the default learning language for the Task 1 curriculum until a
   // student has explicitly picked a UI language on this device; Task 2 (and
@@ -122,6 +123,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
   const nextDisabled = needsCheckAnswer || needsBoard;
 
   const goNext = () => {
+    markLessonStarted(lesson.id); // device-local "in progress" marker for the course library; learning state is unchanged
     minoReact('success');
     if (isLastStep) setPhase('write');
     else setStepIndex((i) => i + 1);
@@ -197,7 +199,7 @@ export function LessonRunner({ lesson, academyHref }: { lesson: Lesson; academyH
         <div className="flex flex-col justify-center gap-2 sm:flex-row">
           <Button asChild variant="outline">
             <Link href={academyHref}>
-              <ArrowLeft /> Back to Academy
+              <ArrowLeft /> {backLabel}
             </Link>
           </Button>
           <Button

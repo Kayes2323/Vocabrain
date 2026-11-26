@@ -60,7 +60,7 @@ async function main() {
     await p.getByRole('button', { name: 'Start learning' }).click();
     check('the welcome closes', (await p.getByRole('button', { name: 'Start learning' }).count()) === 0);
     await p.reload({ waitUntil: 'load' });
-    await p.getByText('Your progress in this Academy').waitFor({ timeout: 30_000 });
+    await p.getByTestId('ws-progress-summary').waitFor({ timeout: 30_000 });
     check('a returning learner is not interrupted by the welcome again', (await p.getByRole('button', { name: 'Start learning' }).count()) === 0);
 
     console.log('\n[4] Task 2 Academy gets its own welcome, not Task 1\'s script');

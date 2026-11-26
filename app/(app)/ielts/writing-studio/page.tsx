@@ -1,151 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, ClipboardList, GraduationCap, RotateCcw, Sparkles, Timer } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CardGrid, ModuleCard, PageHeader, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
+import { ArrowRight, BarChart3, ChevronRight, PenLine } from 'lucide-react';
+import { ProgressBar } from '@/components/ds';
 import { MinoMark } from '@/components/shell/MinoMark';
-import { useLocale } from '@/components/providers/LocaleProvider';
-import { useProfile } from '@/components/providers/ProfileProvider';
-import type { WritingStudioProgress } from '@/lib/models';
+import { cn } from '@/lib/utils';
 import { TASK1_MODULES, TASK2_MODULES } from '@/lib/writing-studio/content';
-import { getLesson } from '@/lib/writing-studio/lessons';
-import { deriveAcademyStats, deriveMistakeCategories } from '@/lib/writing-studio/progress';
-import { localize } from '@/lib/writing-studio/types';
-import { LevelBadge } from '@/components/writing-studio/LevelBadge';
+import { useStartedLessons } from '@/lib/writing-studio/lesson-activity';
+import { continueHref, continueModule, taskHref } from '@/lib/writing-studio/navigation';
+import { deriveAcademyStats } from '@/lib/writing-studio/progress';
+import type { TaskId } from '@/lib/writing-studio/types';
+import { useWsLocale, useWsProgress } from '@/components/writing-studio/nav/common';
 
-const EMPTY_PROGRESS: WritingStudioProgress = { lessons: {}, practice: [], mistakes: [], exams: [] };
+/**
+ * Level 1 — Writing Studio home. One purpose: choose Task 1 or Task 2. Two prominent cards (with their own lesson count)
+ * and, only when the learner has something real to continue, one compact resume row. No training-mode cards, no progress
+ * dashboard, no module lists: those live one level down, once, where they belong.
+ */
+export default function WritingStudioHome() {
+  const { text, l } = useWsLocale();
+  const progress = useWsProgress();
+  const started = useStartedLessons();
 
-/** Mino Writing Studio — Dashboard (spec §4). A proper home screen, not a chat window. */
-export default function WritingStudioDashboard() {
-  const { profile } = useProfile();
-  const { locale, hasChosen } = useLocale();
-  const progress = profile?.writingStudio ?? EMPTY_PROGRESS;
-  const task1 = deriveAcademyStats(progress, 'task1', TASK1_MODULES);
-  const task2 = deriveAcademyStats(progress, 'task2', TASK2_MODULES);
-  const totalLessons = task1.lessonsCompleted + task2.lessonsCompleted;
-  const totalPractice = task1.practiceSessions + task2.practiceSessions;
-  const topMistakes = deriveMistakeCategories(progress, { task1: TASK1_MODULES, task2: TASK2_MODULES }, 3);
+  const tasks: { id: TaskId; icon: typeof PenLine; title: 'task1Title' | 'task2Title'; blurb: 'task1Blurb' | 'task2Blurb'; tint: string; bar: string }[] = [
+    { id: 'task1', icon: BarChart3, title: 'task1Title', blurb: 'task1Blurb', tint: 'bg-tint-blue text-tint-blue-fg', bar: 'blue' },
+    { id: 'task2', icon: PenLine, title: 'task2Title', blurb: 'task2Blurb', tint: 'bg-tint-lavender text-tint-lavender-fg', bar: 'lavender' },
+  ];
 
-  const builtLessons = [...TASK1_MODULES, ...TASK2_MODULES].filter((m) => m.builtLessonId);
-  const nextBuilt = builtLessons.find((m) => !progress.lessons[m.builtLessonId!]) ?? builtLessons[builtLessons.length - 1];
-  const lastLesson = getLesson(nextBuilt?.builtLessonId ?? 'overview-writing')!;
-  const lastLessonTask = lastLesson.task === 'task1' ? 'task1' : 'task2';
-  const lessonDone = !!progress.lessons[lastLesson.id];
-  const contentLocale: 'en' | 'bn' = lastLessonTask === 'task1' && !hasChosen ? 'bn' : locale;
+  // One compact resume: the unfinished lesson the learner is in (Task 1 first only when it is the more recent activity).
+  const resume = (() => {
+    const candidates = (['task1', 'task2'] as TaskId[]).flatMap((id) => {
+      const m = continueModule(id === 'task1' ? TASK1_MODULES : TASK2_MODULES, progress, started);
+      return m ? [{ id, m, at: Math.max(started[m.builtLessonId ?? ''] ?? 0, ...Object.values(progress.lessons).filter((x) => x.task === (id === 'task1' ? 1 : 2)).map((x) => Date.parse(x.completedAt) || 0)) }] : [];
+    });
+    return candidates.sort((a, b) => b.at - a.at)[0];
+  })();
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
-      <PageHeader title="Mino Writing Studio" subtitle="Learn to Write. Don't Just Get Corrected." backHref="/ielts" backLabel="IELTS" />
-
-      <Panel variant="brand" className="space-y-3">
-        <div className="flex items-start gap-3">
-          <MinoMark size="lg" alive />
-          <div className="space-y-1">
-            <p className="font-semibold">{totalLessons === 0 ? 'Welcome' : 'Welcome back'}</p>
-            <p className="text-[15px] text-foreground/90">
-              {totalLessons === 0
-                ? "Let's start with your first lesson — turning a chart into a focused overview is one of the biggest Task 1 score-changers."
-                : "You're building steady habits in both tasks. Pick up where you left off, or revisit a lesson Mino has already marked done."}
-            </p>
-          </div>
+    <div className="mx-auto max-w-3xl space-y-6" data-testid="ws-home">
+      <header className="flex items-center gap-3">
+        <MinoMark size="lg" alive />
+        <div className="space-y-0.5">
+          <h1 className="text-2xl font-semibold tracking-tight">{text('studioTitle')}</h1>
+          <p className="text-[15px] text-muted-foreground">{text('studioSubtitle')}</p>
         </div>
-      </Panel>
+      </header>
 
-      <Section title="Continue learning" variant="label">
-        <Panel className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">{lastLessonTask === 'task1' ? 'Task 1 Academy' : 'Task 2 Academy'}</p>
-            <p className="font-semibold">{localize(contentLocale, lastLesson.title)}</p>
-            <ProgressBar value={lessonDone ? 100 : 0} label="Lesson progress" size="sm" className="mt-1 max-w-56" />
-          </div>
-          <Button asChild className="shrink-0">
-            <Link href={`/ielts/writing-studio/${lastLessonTask}/lesson/${lastLesson.id}`}>
-              {lessonDone ? 'Practise again' : 'Continue lesson'} <ArrowRight />
+      <div className="grid gap-3 sm:grid-cols-2" data-testid="ws-task-cards">
+        {tasks.map((t) => {
+          const modules = t.id === 'task1' ? TASK1_MODULES : TASK2_MODULES;
+          const stats = deriveAcademyStats(progress, t.id, modules);
+          const Icon = t.icon;
+          return (
+            <Link
+              key={t.id}
+              href={taskHref(t.id)}
+              data-testid="ws-task-card"
+              data-task={t.id}
+              className="flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-sm transition-colors hover:bg-muted/50 active:scale-[0.99]"
+            >
+              <div className="flex items-start gap-3">
+                <span className={cn('flex size-12 shrink-0 items-center justify-center rounded-xl', t.tint)} aria-hidden>
+                  <Icon className="size-6" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-lg leading-snug font-semibold">{text(t.title)}</span>
+                  <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{text(t.blurb)}</span>
+                </span>
+                <ChevronRight className="mt-1 size-5 shrink-0 text-muted-foreground/70" aria-hidden />
+              </div>
+              <div className="space-y-1.5">
+                <ProgressBar value={(stats.lessonsCompleted / Math.max(1, stats.lessonsTotal)) * 100} label={text(t.title)} size="sm" />
+                <p className="text-xs text-muted-foreground">{text('lessonsOf', { done: stats.lessonsCompleted, total: stats.lessonsTotal })}</p>
+              </div>
             </Link>
-          </Button>
-        </Panel>
-      </Section>
+          );
+        })}
+      </div>
 
-      <Section title="Choose your Academy" variant="label">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Panel className="space-y-3">
-            <div>
-              <p className="font-semibold">Writing Task 1</p>
-              <p className="text-sm text-muted-foreground">Learn to analyse and describe visual information.</p>
-            </div>
-            <ProgressBar value={(task1.lessonsCompleted / task1.lessonsTotal) * 100} label="Task 1 progress" size="sm" />
-            <p className="text-xs text-muted-foreground">{task1.lessonsCompleted}/{task1.lessonsTotal} lessons · {TASK1_MODULES.length} modules</p>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/ielts/writing-studio/task1">Open Task 1 Academy</Link>
-            </Button>
-          </Panel>
-          <Panel className="space-y-3">
-            <div>
-              <p className="font-semibold">Writing Task 2</p>
-              <p className="text-sm text-muted-foreground">Learn to develop ideas, construct arguments, and write essays.</p>
-            </div>
-            <ProgressBar value={(task2.lessonsCompleted / task2.lessonsTotal) * 100} label="Task 2 progress" size="sm" />
-            <p className="text-xs text-muted-foreground">{task2.lessonsCompleted}/{task2.lessonsTotal} lessons · {TASK2_MODULES.length} modules</p>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/ielts/writing-studio/task2">Open Task 2 Academy</Link>
-            </Button>
-          </Panel>
-        </div>
-      </Section>
-
-      <Section title="Training modes" variant="label">
-        <CardGrid>
-          <ModuleCard href="/ielts/writing-studio/task1/lesson/overview-writing" icon={GraduationCap} tint="lavender" title="Learn Mode" subtitle="Step-by-step teaching from Mino." wrapSubtitle />
-          <ModuleCard href="/ielts/writing-studio/task1/chart-analysis-board" icon={ClipboardList} tint="green" title="Practice Mode" subtitle="Answer, get feedback, retry." wrapSubtitle />
-          <ModuleCard href="/ielts/writing-studio/exam" icon={Timer} tint="yellow" title="Exam Simulation" subtitle="Timed, distraction-free practice." wrapSubtitle />
-          <ModuleCard href="/ielts/writing-studio/progress" icon={RotateCcw} tint="neutral" title="Mistake Revision" subtitle="Practice built from your errors." wrapSubtitle />
-        </CardGrid>
-      </Section>
-
-      <Section title="Your progress" variant="label" action={<Link href="/ielts/writing-studio/progress" className="text-sm font-medium text-brand">See all</Link>}>
-        <Panel className="space-y-4">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div>
-              <p className="text-2xl font-semibold tabular-nums">{totalLessons}</p>
-              <p className="text-xs text-muted-foreground">Lessons done</p>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold tabular-nums">{totalPractice}</p>
-              <p className="text-xs text-muted-foreground">Practice sessions</p>
-            </div>
-            <div>
-              <p className="text-2xl font-semibold tabular-nums">{task1.mockTestsTaken + task2.mockTestsTaken}</p>
-              <p className="text-xs text-muted-foreground">Mock tests taken</p>
-            </div>
-          </div>
-          <div className="space-y-1.5 border-t pt-3">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Recurring mistakes to watch</p>
-            <div className="flex flex-wrap gap-1.5">
-              {topMistakes.length > 0 ? (
-                topMistakes.map((m) => (
-                  <StatusChip key={m.id} tone="warning">{m.label} · {m.occurrences}×</StatusChip>
-                ))
-              ) : (
-                <p className="text-sm text-muted-foreground">Finish a lesson and Mino will start tracking your recurring mistakes here.</p>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center justify-between border-t pt-3">
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Independence level</p>
-            <LevelBadge level={task1.currentLevel} />
-          </div>
-        </Panel>
-      </Section>
-
-      <Panel className="flex items-start gap-2.5 text-sm text-muted-foreground">
-        <Sparkles className="mt-0.5 size-4 shrink-0 text-brand" />
-        <p>
-          Stats above are your real history, saved to your account. Feedback comes from Mino's AI assessment against the
-          public IELTS criteria when it's available, or a local practice check otherwise — either way, it's a practice
-          estimate, never an official IELTS score. Some modules are still being built; those open an honest preview.
-        </p>
-      </Panel>
+      {resume && (
+        <Link
+          href={continueHref(resume.id, resume.m)}
+          data-testid="ws-resume"
+          className="flex min-h-12 items-center justify-between gap-3 rounded-xl border bg-brand-soft/60 px-4 py-2.5 text-sm"
+        >
+          <span className="min-w-0 truncate font-medium">{text('resumeLine', { title: l(resume.m.title) })}</span>
+          <span className="inline-flex shrink-0 items-center gap-1 font-semibold text-brand">
+            {text('resume')} <ArrowRight className="size-4" aria-hidden />
+          </span>
+        </Link>
+      )}
     </div>
   );
 }

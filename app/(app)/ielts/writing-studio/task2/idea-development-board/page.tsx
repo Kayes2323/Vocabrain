@@ -22,7 +22,7 @@ export default function IdeaDevelopmentBoardPage() {
         title="Idea Development Trainer"
         subtitle="Build one argument fully, one question at a time."
         backHref="/ielts/writing-studio/task2"
-        backLabel="Task 2 Academy"
+        backLabel="Task 2"
       />
       <Callout tone="neutral">
         Mino never writes the paragraph for you — only the next question. If an answer repeats the one before it, you'll

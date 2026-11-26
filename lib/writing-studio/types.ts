@@ -46,7 +46,16 @@ export interface VisualTrainingArea {
   id: string;
   title: L10n;
   description: L10n;
+  /**
+   * LEGACY generic link (kept for the existing registry tests). It points at a general lesson that is shared with other
+   * parts of the course, NOT at a chart-specific course, so navigation never reads it.
+   */
   builtLessonId?: string;
+  /**
+   * The id of this chart type's OWN course lesson, once one is authored and registered in lib/writing-studio/lessons.
+   * Unset = the chart-type screen shows an honest preview. Setting it is all the UI needs to start offering the course.
+   */
+  courseLessonId?: string;
 }
 
 export interface AcademyStats {

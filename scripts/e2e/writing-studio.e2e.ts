@@ -19,7 +19,7 @@ async function main() {
     // ---------------------------------------------------------------- dashboard
     await page.goto(BASE + '/ielts/writing-studio', { waitUntil: 'load' });
     await page.getByText('Mino Writing Studio').waitFor({ timeout: 60_000 });
-    check('dashboard: welcome panel for a new student', (await page.locator('main').innerText()).includes('Welcome'));
+    check('home: the two task cards are the way in (Task 1 and Task 2)', (await page.getByTestId('ws-task-card').count()) === 2);
     await shot(page, 'ws-dashboard');
 
     // ---------------------------------------------------------------- a real lesson, start to finish
@@ -66,24 +66,38 @@ async function main() {
     check('profile: one attempt recorded', record?.attempts === 1, record?.attempts);
     check('profile: task is 1', record?.task === 1, record?.task);
 
-    // ---------------------------------------------------------------- reflected on the Academy page
-    // The profile (and therefore real completion state) loads asynchronously after
-    // first paint, so poll rather than reading the row immediately.
-    await page.goto(BASE + '/ielts/writing-studio/task1', { waitUntil: 'load' });
-    await page.getByText('Understanding IELTS Writing Task 1').first().waitFor({ timeout: 60_000 });
-    let row = '';
+    // ---------------------------------------------------------------- reflected in Learn Mode and the task summary
+    // The profile (and therefore real completion state) loads asynchronously after first paint, so poll.
+    await page.goto(BASE + '/ielts/writing-studio/task1/learn', { waitUntil: 'load' });
+    await page.getByTestId('ws-module-card').first().waitFor({ timeout: 60_000 });
+    let status = '';
     for (let i = 0; i < 20; i++) {
-      row = await page.locator('main a', { hasText: 'Understanding IELTS Writing Task 1' }).first().innerText();
-      if (/Done/.test(row)) break;
+      status = (await page.locator('[data-module-id="task1-m1"]').getAttribute('data-status')) ?? '';
+      if (status === 'completed') break;
       await page.waitForTimeout(500);
     }
-    check('academy: the finished module shows "Done"', /Done/.test(row), row);
-    check('academy: lessons-completed count reflects the real save', /1\/7 lessons/.test(await page.locator('main').innerText()));
+    check('learn mode: the finished module shows as completed', status === 'completed', status);
+    check('learn mode: it says "Completed" and offers to revisit it', /Completed/.test(await page.locator('[data-module-id="task1-m1"]').innerText()) && /Revisit/.test(await page.locator('[data-module-id="task1-m1"]').innerText()));
+    await page.goto(BASE + '/ielts/writing-studio/task1', { waitUntil: 'load' });
+    await page.getByTestId('ws-sum-lessons').waitFor({ timeout: 60_000 });
+    let lessonsDone = '';
+    for (let i = 0; i < 20; i++) {
+      lessonsDone = (await page.getByTestId('ws-sum-lessons').innerText()).trim();
+      if (lessonsDone === '1/7') break;
+      await page.waitForTimeout(500);
+    }
+    check('task page: lessons-completed count reflects the real save (1/7)', lessonsDone === '1/7', lessonsDone);
 
-    // ---------------------------------------------------------------- reflected on the Dashboard and Progress page
+    // ---------------------------------------------------------------- reflected on the Studio home and Progress page
     await page.goto(BASE + '/ielts/writing-studio', { waitUntil: 'load' });
-    await page.getByText('1', { exact: true }).first().waitFor({ timeout: 30_000 });
-    check('dashboard: "Lessons done" is no longer zero', /Lessons done/.test(await page.locator('main').innerText()));
+    await page.getByTestId('ws-task-card').first().waitFor({ timeout: 30_000 });
+    let t1 = '';
+    for (let i = 0; i < 20; i++) {
+      t1 = await page.locator('[data-testid="ws-task-card"][data-task="task1"]').innerText();
+      if (/1 of 7 lessons/.test(t1)) break;
+      await page.waitForTimeout(500);
+    }
+    check('home: the Task 1 card shows "1 of 7 lessons"', /1 of 7 lessons/.test(t1), t1);
 
     await page.goto(BASE + '/ielts/writing-studio/progress', { waitUntil: 'load' });
     await page.getByText('Progress & Learning Profile').waitFor({ timeout: 30_000 });

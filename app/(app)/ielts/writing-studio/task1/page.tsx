@@ -1,6 +1,6 @@
-import { AcademyOverview } from '@/components/writing-studio/AcademyOverview';
-import { TASK1_MODULES, TASK1_VISUALS } from '@/lib/writing-studio/content';
+import { TaskModes } from '@/components/writing-studio/nav/TaskModes';
 
-export default function Task1AcademyPage() {
-  return <AcademyOverview task="task1" modules={TASK1_MODULES} visuals={TASK1_VISUALS} />;
+/** Level 2 — Task 1 mode selection: Learn · Practice · Exam · Mistake Revision. */
+export default function Task1ModesPage() {
+  return <TaskModes task="task1" />;
 }

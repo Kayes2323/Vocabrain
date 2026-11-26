@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { Callout, PageHeader, Panel, ProgressBar, Section, StatusChip } from '@/components/ds';
 import { LevelBadge } from '@/components/writing-studio/LevelBadge';
+import { MistakeCards } from '@/components/writing-studio/nav/MistakeRevision';
 import { useProfile } from '@/components/providers/ProfileProvider';
 import type { WritingStudioProgress } from '@/lib/models';
 import { TASK1_MODULES, TASK2_MODULES } from '@/lib/writing-studio/content';
-import { getLesson } from '@/lib/writing-studio/lessons';
 import { deriveAcademyStats, deriveMistakeCategories, deriveProgressTrend } from '@/lib/writing-studio/progress';
 
 const TREND_ICON = { up: TrendingUp, down: TrendingDown, flat: Minus } as const;
@@ -94,47 +94,12 @@ export default function ProgressPage() {
       </Section>
 
       <Section title="Mistake revision" variant="label" description="Built from the errors Mino sees most often in your writing.">
-        {mistakes.length > 0 ? (
-          <div className="space-y-3">
-            {mistakes.map((m) => {
-              const TrendIcon = TREND_ICON[m.trend];
-              const relatedTask = m.relatedLessonId ? getLesson(m.relatedLessonId)?.task : undefined;
-              return (
-                <Panel key={m.id} className="space-y-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{m.label}</p>
-                    <div className="flex items-center gap-2">
-                      <StatusChip tone={TREND_TONE[m.trend]}>
-                        <TrendIcon className="size-3" /> {m.occurrences}×
-                      </StatusChip>
-                    </div>
-                  </div>
-                  <div className="space-y-1 rounded-lg bg-muted/50 p-3 text-sm">
-                    <p lang="en">
-                      <span className="line-through decoration-destructive/60">{m.example.quote}</span> →{' '}
-                      <span className="font-medium">{m.example.fix}</span>
-                    </p>
-                    <p className="text-muted-foreground">{m.example.why}</p>
-                  </div>
-                  {m.relatedLessonId && relatedTask && (
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/ielts/writing-studio/${relatedTask}/lesson/${m.relatedLessonId}`}>
-                        Practise this again <ArrowRight />
-                      </Link>
-                    </Button>
-                  )}
-                </Panel>
-              );
-            })}
-          </div>
-        ) : (
-          <Panel>
-            <p className="text-sm text-muted-foreground">
-              Nothing recorded yet. Once you finish a lesson, a practice board or a mock test, Mino's and this prototype's
-              findings will build your mistake history here.
-            </p>
-          </Panel>
-        )}
+        <MistakeCards
+          mistakes={mistakes}
+          origin="progress"
+          practiseLabel="Practise this again"
+          emptyText="Nothing recorded yet. Once you finish a lesson, a practice board or a mock test, Mino's and this prototype's findings will build your mistake history here."
+        />
       </Section>
     </div>
   );

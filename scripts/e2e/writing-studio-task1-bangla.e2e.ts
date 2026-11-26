@@ -16,10 +16,11 @@ async function main() {
     await signUp(page, 'Nadia', `ws-bn-${stamp}@test.dev`, 'bn');
 
     // ---------------------------------------------------------------- Academy card is Bangla
-    await page.goto(BASE + '/ielts/writing-studio/task1', { waitUntil: 'load' });
+    await page.goto(BASE + '/ielts/writing-studio/task1/learn', { waitUntil: 'load' });
     await page.getByText('IELTS Writing Task 1 বোঝা').first().waitFor({ timeout: 60_000 });
-    check('Task 1 Academy card title is shown in Bangla', (await page.locator('main').innerText()).includes('IELTS Writing Task 1 বোঝা'));
-    await shot(page, 'ws-bn-academy');
+    check('Task 1 Learn Mode card title is shown in Bangla', (await page.locator('main').innerText()).includes('IELTS Writing Task 1 বোঝা'));
+    check('Task 1 Learn Mode: the status wording is Bangla too', /শুরু হয়নি|চলছে|সম্পন্ন/.test(await page.locator('main').innerText()));
+    await shot(page, 'ws-bn-learn');
 
     // ---------------------------------------------------------------- Lesson 1 opens in Bangla
     await page.goto(BASE + '/ielts/writing-studio/task1/lesson/task1-understanding', { waitUntil: 'load' });
