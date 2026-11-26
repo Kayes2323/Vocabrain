@@ -1,17 +1,16 @@
 # Mino Coach — Character & Animation Specification
 
-Status: **awaiting final character artwork**. This document specifies what the full-body Mino
-Coach mascot needs to be, so a real illustrator (or an image-generation pipeline, once one is
-available) can produce it, and so the animation engineering can be built and tested against a
-stable contract before that artwork exists.
+Status: **master artwork received and approved as the canonical composition; Stage B (local layer
+extraction) complete and awaiting review.** Nothing here is wired into production. The isolated
+preview route (`/dev/mino-coach-preview`) and the placeholder rig
+(`components/mino/dev/MinoCoachPlaceholder.tsx`) are unchanged; the shipped mascot in
+`components/mino/MinoCoachMascot.tsx` (Task 1, Task 2, My Brain) is untouched until the real rig is
+approved.
 
-This spec does not ship a final character. The reusable animation architecture described in
-`docs/MINO_COACH_CHARACTER_SPEC.md` §6 is built now, driven by clearly-labeled placeholder
-artwork (`components/mino/dev/MinoCoachPlaceholder.tsx`), reviewable at the dev-only preview
-route `/dev/mino-coach-preview`. It is kept entirely separate from the production mascot already
-live in `components/mino/MinoCoachMascot.tsx` (Task 1, Task 2, My Brain) — that component is
-unchanged by this work and remains the shipped character until this spec's real assets exist and
-are reviewed.
+Revision 2 (this revision) replaces the earlier 1024×1024 assumptions with the measured geometry of
+the supplied master render `MINO_master_character.png`
+(SHA-256 `16c5643e84ddb2de584541545138e72a2505373ed77f2729f5cfae9e10d56134`, 1536×1024 RGBA).
+Numbers marked *(estimate)* are still to be confirmed against final rigged artwork.
 
 ## 1. Reference
 
@@ -21,72 +20,79 @@ are reviewed.
 - Primary neutral-pose reference: the "Landing" / "Speaking" frame — character standing, full
   body visible, both eyes open, one gentle smile, pencil raised in the left hand, notebook in the
   right hand, backpack visible behind and to the left.
-- These renders are themselves AI-generated concept art, not layered production source files
-  (confirmed by the reference pack's own `README-FOR-CLAUDE.txt`). They are the *visual target*,
-  not an asset source to extract layers from.
+- The master render `MINO_master_character.png` (transparent PNG, plush-fur look) is the approved
+  canonical composition: backpack behind-left, pencil in the left hand, notebook in the right hand,
+  slight head tilt and the original eye-to-mask alignment preserved. It is a *flattened* render, so
+  layers extracted from it contain only the pixels that are actually visible in it; every hidden
+  pixel is a documented gap (see §8), never silently invented.
 
 ## 2. Canvas & coordinate system
 
-- **Master canvas: 1024 × 1024 px**, transparent background, character vertically centred with
-  ~60px of clear margin above the head and below the feet at rest (idle pose).
-- Every layer below is exported at the *same* 1024 × 1024 canvas and the *same* character
-  alignment — i.e. a given anatomical point (e.g. the left shoulder) sits at the same pixel
-  coordinate in every layer file that contains it. This is what makes independent-layer rotation
-  possible; it is the single most important constraint for the illustrator/pipeline to respect.
-- All pivot coordinates in §4 are given as fractions of this 1024×1024 canvas (0–1 on each axis),
-  so they survive a later resize.
+- **Master canvas: 1536 × 1024 px** (the master render's native size — no resampling), transparent
+  background. Character bounding box: x 213–1281, y 19–973 (≈ 1068 × 954 px; centre ≈ 747, 496).
+- Every layer is exported on the *same* 1536 × 1024 canvas and alignment: a given anatomical point
+  sits at the same pixel in every layer file. Shipped web assets may be cropped to their bounding
+  box with an offset manifest (to save memory on mobile) as long as the offsets are exact.
+- Pivots are listed in master pixels and as fractions of 1536 × 1024 (origin top-left) so they
+  survive a later resize.
+- Note: solid pixels in the master have alpha 253–254 (never 255). This is preserved as-is.
 
-## 3. Required layers
+## 3. Layers
 
-Path convention: `public/mino/coach/layers/<name>.webp` (or `.svg` where noted), one file per row.
+### 3.1 Extracted from the master (Stage B, local, exact where noted)
 
-| # | File | Contents | Notes |
-|---|------|----------|-------|
-| 1 | `shadow.webp` | Soft ambient ellipse under the feet | Scales/fades slightly on landing/success |
-| 2 | `backpack.webp` | Backpack body, behind the character | Never disappears between states |
-| 3 | `backpack-strap.webp` | The visible strap crossing the body | Independent secondary motion (lags torso) |
-| 4 | `backpack-tag.webp` | Small purple tag on the strap | Independent secondary motion (lags strap) |
-| 5 | `feet.webp` | Both feet, small and dark | Lifts fully off canvas during 'success' hop |
-| 6 | `body.webp` | Main rounded purple body/torso | The character's core silhouette |
-| 7 | `face-mask.webp` | Off-white face mask | Fixed to body; tilts a few degrees in 'explaining'/'thinking' |
-| 8 | `eyes-open.webp` | Both eyes open, round, with a highlight dot each | **Default** expression — not a wink |
-| 9 | `eyes-closed.webp` | Both eyes closed (blink) | Shown only for ~120–180 ms per blink |
-| 10 | `eyes-wink.webp` | Left eye open, right eye closed in a soft curve | Brief beat only, inside 'greeting' and 'success' |
-| 11 | `mouth-neutral.webp` | Closed, gentle smile | Default / idle / thinking |
-| 12 | `mouth-open-small.webp` | Small open mouth | Mid-syllable, speaking cycle |
-| 13 | `mouth-open-wide.webp` | Wider open mouth | Peak-syllable, speaking cycle |
-| 14 | `arm-pencil.webp` | Left arm, ending in the hand that holds the pencil | Rotates around its own shoulder pivot only |
-| 15 | `pencil.webp` | Pencil incl. pink eraser | Child-aligned to `arm-pencil`'s hand position; never floats independently |
-| 16 | `arm-notebook.webp` | Right arm, ending in the hand that holds the notebook | Rotates around its own shoulder pivot only |
-| 17 | `notebook.webp` | Spiral notebook | Child-aligned to `arm-notebook`'s hand position |
-| 18 | `writing-stroke.svg` | A short curved stroke to "draw" across the notebook page | Vector, animated via `stroke-dashoffset`, not a raster layer |
-| 19 | `sparkle.webp` | One small 4-point sparkle | Reused/duplicated for multiple simultaneous sparkles via CSS, not multiple files |
+Back → front draw order. Pixel counts are from `scripts/mino-art/stage-b/extract.mjs`.
 
-19 layers total (18 raster + 1 vector). None are decorative/optional — backpack, pencil and
-notebook must render in every state including idle.
+| # | Layer | Visible px | Bounding box (x0,y0–x1,y1) | Status |
+|---|-------|-----------:|----------------------------|--------|
+| 1 | `backpack` | 56,270 | 222,303–544,847 | exact; holes under tag / left arm / pencil / body |
+| 2 | `body` | 255,532 | 219,19–1229,910 | exact; large holes under both arms, props, mask, feet |
+| 3 | `footL` | 23,171 | 505,798–736,973 | exact; top edge hidden under body |
+| 4 | `footR` | 14,389 | 792,844–989,952 | exact; top edge hidden under body |
+| 5 | `tag` | 12,984 | 213,515–342,690 | exact (purple tag + metal clasp) |
+| 6 | `mask` | 193,218 | 549,158–1115,666 | exact *except* under eyes/mouth: flat-white **prototype fill** (see §8) |
+| 7 | `eyeL` | 22,968 | 634,286–805,451 | exact incl. highlight; anti-aliased rim split from the mask |
+| 8 | `eyeR` | 14,788 | 942,261–1070,404 | exact incl. highlight; anti-aliased rim split from the mask |
+| 9 | `mouth` | 1,622 | 838,392–930,424 | exact neutral smile |
+| 10 | `armLeft` | 35,475 | 375,550–604,790 | exact visible area; part under the pencil hidden |
+| 11 | `armRight` | 21,344 | 1137,490–1281,741 | exact visible area; part under the notebook hidden |
+| 12 | `notebook` | 59,784 | 920,488–1203,849 | exact; bite hidden under the right arm |
+| 13 | `pencil` | 23,918 | 439,465–702,771 | exact, fully visible |
 
-## 4. Proportions & pivots (fractions of the 1024×1024 canvas, origin top-left)
+The left eye and right eye are separate layers (left ≈ 172×166 px, right ≈ 129×144 px: the master
+head is slightly tilted/perspective-skewed and the two eyes are *not* the same size or level). The
+feet are separate layers too. 178 disconnected alpha-1 specks outside the character are dropped.
 
-These are *estimates from the reference renders*, to be corrected against the final artwork once
-it exists — but they are the numbers the animation engine is built and tested against, so a
-real illustrator should either match them or the engine's CSS custom properties (see §6) must be
-updated to match the final art.
+### 3.2 Still missing (cannot be derived from the master)
+
+| File | Needed for |
+|------|-----------|
+| `eyes-closed` L/R | blink |
+| `eye-wink` (right eye closed curve) | greeting/success beat |
+| `mouth-open-small`, `mouth-open-wide` | speaking cycle |
+| `body-under-arms` (hidden torso/shoulder pixels) | any arm rotation (see gap test) |
+| `arm-left/right` hidden portions; `notebook` bite; `backpack` hidden areas | clean overlap under motion |
+| `writing-stroke` (vector) | writing state |
+| `sparkle` | greeting/success/idle sparkle |
+| `shadow` (soft ground ellipse) | landing/success |
+
+## 4. Proportions & pivots (master pixels; fractions of 1536×1024 in brackets)
+
+Measured values come from the extracted layers; shoulder pivots are *(estimate)* from the arm-blob
+roots and must be tuned during Stage C.
 
 | Point | x | y | Used for |
 |---|---|---|---|
-| Canvas centre | 0.50 | 0.50 | — |
-| Body visual centre (breathing scale origin) | 0.50 | 0.46 | idle breathing |
-| Face mask tilt origin | 0.50 | 0.40 | explaining / thinking tilt |
-| Left shoulder (pencil arm pivot) | 0.20 | 0.47 | all pencil-arm rotation |
-| Right shoulder (notebook arm pivot) | 0.80 | 0.47 | all notebook-arm rotation |
-| Left eye centre | 0.42 | 0.38 | blink/wink swap |
-| Right eye centre | 0.58 | 0.38 | blink/wink swap |
-| Mouth centre | 0.50 | 0.54 | mouth-state swap |
-| Notebook page centre (writing-stroke target) | 0.74 | 0.70 | writing-stroke placement |
-| Feet baseline | — | 0.90 | shadow/ground reference |
-
-Body proportions (at idle, canvas-relative): total character height ≈ 0.80 of canvas height; head
-(mask) width ≈ 0.42 of canvas width; shoulder-to-shoulder (arms at rest) ≈ 0.62 of canvas width.
+| Character bbox centre | 747 (0.486) | 496 (0.484) | — |
+| Left eye centre (viewer's left) | 720 (0.468) | 369 (0.360) | blink/wink swap |
+| Right eye centre | 1006 (0.655) | 333 (0.325) | blink/wink swap |
+| Eye-line angle | — | — | −7.2° (rises to the right); keep the tilt |
+| Mouth centre | 884 (0.576) | 408 (0.398) | mouth-state swap |
+| Mask bbox centre | 832 (0.542) | 412 (0.402) | mask tilt origin |
+| Left shoulder (pencil arm pivot) *(estimate)* | 540 (0.352) | 575 (0.562) | pencil-arm rotation |
+| Right shoulder (notebook arm pivot) *(estimate)* | 1175 (0.765) | 540 (0.527) | notebook-arm rotation |
+| Notebook centre | 1062 (0.691) | 669 (0.653) | writing-stroke target |
+| Feet baseline | — | 973 (0.950) | shadow / ground reference |
 
 ## 5. Facial expression requirements
 
@@ -107,6 +113,11 @@ Body proportions (at idle, canvas-relative): total character height ≈ 0.80 of 
   silhouette, exaggerated sadness or disappointment during 'encouraging'.
 
 ## 6. Animation states (10), behaviour and approximate timing
+
+Approved mapping (Revision 2): keep the existing 10-state machine and timings unchanged. In the
+Task 1 welcome experience the shipped `welcome` pose maps to `greeting`; a "pointing" gesture is a
+gesture *inside* `explaining` (not a new state). `thinking` and `encouraging` stay implemented but
+dormant (not triggered from the welcome flow). No state is renamed.
 
 All timings below are the contract the placeholder/preview is built to; see `lib/mino/coach.ts`
 (unchanged, production) for how this maps onto the already-shipped 'enter'/'welcome' vocabulary —
@@ -147,21 +158,23 @@ used in `MinoCoachMascot.tsx`/`Mino.tsx`).
 - New CSS lives in its own namespace (`.mino-coach-rig__*`) so it can never collide with the
   shipped `.mino-coach`/`.mino` classes.
 
-## 8. What is genuinely missing right now
+## 8. Gaps, honest limits and prototype fills
 
-- All 18 raster layers in §3 and the one vector layer. No image-generation or layer-separation
-  tool available in this session can produce these at production quality from the existing
-  flattened concept renders — this requires either a human illustrator working from this spec, or
-  a proper rigging/illustration pipeline (e.g. exporting separated layers from a source file such
-  as Figma/Illustrator/Photoshop).
-- Final, artwork-verified pivot coordinates (§4) — today's numbers are estimates from the
-  reference renders and must be re-measured against the real art once it exists.
-- Approved Bangla audio to synchronise the `speaking` mouth-cycle timing against (explicitly out
-  of scope until a later phase, per instruction).
+- **Hidden pixels are not invented.** Where a part is covered by another in the master (torso under
+  the arms/pencil/notebook, arm under the pencil, notebook under the arm, backpack under the tag and
+  arm, foot tops under the body) the layer has a hole. Stage B's arm-rotation test shows these holes
+  open up as soon as an arm moves; they need new artwork before any arm motion is production-ready.
+- **One labelled prototype fill:** the flat-white mask area under the eyes/mouth (≈ 39k px incl. the
+  anti-aliased eye/mouth rims) is filled with a smooth estimate of the surrounding mask so the eyes
+  and mouth can be separate layers. It is a prototype, not master pixels.
+- Exact recomposite of the extracted layers differs from the master by at most 12/255 per channel
+  (mean 2.2 over differing pixels; 41,254 px = 2.6%), almost entirely from that fill and from the
+  master's 253/254 alpha under the eyes. Details in the Stage B report.
+- Not produced and not claimed: any new facial art, any inpainted body/arm pixels, any audio.
+- Approved Bangla audio is out of scope for this phase.
 
 ## 9. Next step
 
-Once real layered artwork matching this spec exists, it replaces the placeholder layers in
-`components/mino/dev/MinoCoachPlaceholder.tsx`'s asset references — the state machine, CSS
-animation classes, pivot handling and preview route built now should need little to no change,
-since they were built directly against this contract.
+Stage B output is local-only. Stages C–E (rig integration into the isolated preview, Task 1 welcome
+experience, QA) wait for artwork approval and for a decision on how the missing assets in §3.2 are
+produced. Nothing is uploaded to any external service without explicit approval.
