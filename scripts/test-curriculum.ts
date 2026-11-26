@@ -254,12 +254,13 @@ test('Foundation UI: navigation cards, no accordion', () => {
   assert.doesNotMatch(view, /aria-expanded|intercept\(/, 'no expanding, no modal before a lesson');
 });
 
-test('IELTS hub: plan, progress, learn, practice, test, tools — no learning path or stats block', () => {
+test('IELTS hub: plan, learning, tests & library, more tools — no learning path, no practice section', () => {
   const hub = readFileSync('app/(app)/ielts/page.tsx', 'utf8');
   assert.doesNotMatch(hub, /LearningPath|ContinueCard|learningStats|ielts\.path\./, 'the journey timeline and progress block are gone from the page');
-  const order = ['hub-plan', 'hub-learn', 'hub-practice', 'hub-test', 'hub-tools'].map((id) => hub.indexOf(`id="${id}"`));
+  const order = ['hub-plan', 'hub-learn', 'hub-test', 'hub-tools'].map((id) => hub.indexOf(`id="${id}"`));
   assert.ok(order.every((i, k) => i > 0 && (k === 0 || i > order[k - 1])), `sections in order: ${order}`);
   assert.match(hub, /<PlanHubCard/, 'My IELTS Plan comes first');
+  assert.ok(!hub.includes('id="hub-practice"') && !hub.includes('hub-writing-studio'), 'no IELTS Practice section and no separate NEW section for Writing Studio');
   const card = readFileSync('components/plan/PlanHubCard.tsx', 'utf8');
   assert.ok(card.includes('href="/ielts/plan"') && card.includes('href="/ielts/progress"'), 'the plan card opens the plan and links Progress separately');
 });
