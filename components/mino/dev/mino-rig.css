@@ -266,16 +266,17 @@
 
 /* ========================== WRITING (held): hand + wrist scribble on the notebook ========================== */
 @keyframes rig-write-arm-l {
-  0%, 100% { transform: translate(21.4%, -6.6%) rotate(-12deg); }
-  12% { transform: translate(21.0%, -6.2%) rotate(-11deg); }
-  24% { transform: translate(21.9%, -6.9%) rotate(-13deg); }
-  36% { transform: translate(21.2%, -6.0%) rotate(-11.5deg); }
-  48% { transform: translate(22.2%, -6.8%) rotate(-13deg); }
-  60% { transform: translate(21.4%, -6.2%) rotate(-12deg); }
-  72% { transform: translate(22.4%, -6.9%) rotate(-13.5deg); }
-  84% { transform: translate(21.6%, -6.1%) rotate(-12deg); }
+  0%, 100% { transform: translate(21.0%, -3.4%) rotate(-12deg); }
+  12% { transform: translate(20.6%, -3.0%) rotate(-11deg); }
+  24% { transform: translate(21.5%, -3.7%) rotate(-13deg); }
+  36% { transform: translate(20.8%, -2.8%) rotate(-11.5deg); }
+  48% { transform: translate(21.8%, -3.6%) rotate(-13deg); }
+  60% { transform: translate(21.0%, -3.0%) rotate(-12deg); }
+  72% { transform: translate(22.0%, -3.7%) rotate(-13.5deg); }
+  84% { transform: translate(21.2%, -2.9%) rotate(-12deg); }
 }
-@keyframes rig-write-pencil { 0%, 100% { transform: rotate(-2deg); } 25% { transform: rotate(4deg); } 50% { transform: rotate(-4deg); } 75% { transform: rotate(3deg); } }
+/* wrist: the pencil lies flatter (eraser clear of the eye), tip scribbles on the page */
+@keyframes rig-write-pencil { 0%, 100% { transform: rotate(-20deg); } 25% { transform: rotate(-14deg); } 50% { transform: rotate(-22deg); } 75% { transform: rotate(-15deg); } }
 @keyframes rig-write-arm-r { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(15.8deg); } }
 @keyframes rig-write-head { 0%, 100% { transform: rotate(-1.4deg) translateY(0.35%); } 50% { transform: rotate(-0.8deg) translateY(0.45%); } }
 @keyframes rig-write-gaze { 0%, 100% { transform: translate(0.45%, 0.8%); } 50% { transform: translate(0.55%, 0.9%); } }
