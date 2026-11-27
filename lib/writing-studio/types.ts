@@ -54,8 +54,15 @@ export interface VisualTrainingArea {
   /**
    * The id of this chart type's OWN course lesson, once one is authored and registered in lib/writing-studio/lessons.
    * Unset = the chart-type screen shows an honest preview. Setting it is all the UI needs to start offering the course.
+   * For a course with more than one lesson, this is always its first lesson (kept for the existing single-lesson
+   * courses and tests); `courseLessonIds` is the authoritative, ordered list when a chart type has several.
    */
   courseLessonId?: string;
+  /**
+   * The ordered lesson ids of this chart type's course, when it has more than one. Omitted (or a single entry) for a
+   * single-lesson course — the chart-type screen then falls back to `courseLessonId` alone, unchanged.
+   */
+  courseLessonIds?: string[];
 }
 
 export interface AcademyStats {

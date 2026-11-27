@@ -91,8 +91,13 @@ test('Line Graphs and Bar Charts are courses today; every other chart type is an
   assert.equal(resolveLessonBack('task2', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task2/learn');
   const bc = TASK1_VISUALS.find((v) => v.id === 'bar-charts')!;
   assert.equal(bc.courseLessonId, 'bar-chart-mastery');
+  assert.deepEqual(bc.courseLessonIds, ['bar-chart-mastery', 'bar-chart-mastery-2']);
   assert.ok(getLesson('bar-chart-mastery'));
+  assert.ok(getLesson('bar-chart-mastery-2'));
   assert.equal(resolveLessonBack('task1', 'bar-chart-mastery', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
+  // The second lesson in a multi-lesson course is found via `courseLessonIds`, not just the
+  // legacy single `courseLessonId` — this is the fix this lesson's own addition needed.
+  assert.equal(resolveLessonBack('task1', 'bar-chart-mastery-2', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
 });
 
 test('a chart type becomes a course only through its own registered lesson id', () => {

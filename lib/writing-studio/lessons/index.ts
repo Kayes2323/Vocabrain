@@ -18,6 +18,7 @@ import { task2FullPracticeLesson } from './task2-full-practice';
 import { highLevelWritingLesson } from './high-level-writing';
 import { lineGraphMasteryLesson } from './line-graph-mastery';
 import { barChartMasteryLesson } from './bar-chart-mastery';
+import { barChartMasteryLesson2 } from './bar-chart-mastery-2';
 
 export const LESSONS: Record<string, Lesson> = {
   [overviewWritingLesson.id]: overviewWritingLesson,
@@ -39,6 +40,7 @@ export const LESSONS: Record<string, Lesson> = {
   [highLevelWritingLesson.id]: highLevelWritingLesson,
   [lineGraphMasteryLesson.id]: lineGraphMasteryLesson,
   [barChartMasteryLesson.id]: barChartMasteryLesson,
+  [barChartMasteryLesson2.id]: barChartMasteryLesson2,
 };
 
 export function getLesson(id: string): Lesson | undefined {

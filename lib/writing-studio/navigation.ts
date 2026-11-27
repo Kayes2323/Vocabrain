@@ -56,7 +56,7 @@ export interface LessonBack {
 export function resolveLessonBack(task: TaskId, lessonId: string, from: string | null | undefined): LessonBack {
   const known = (LESSON_ORIGINS as readonly string[]).includes(from ?? '') ? (from as LessonOrigin) : undefined;
   // 'visual' only exists for Task 1's core lecture and the chart-type courses.
-  const chart = task === 'task1' ? TASK1_VISUALS.find((v) => v.courseLessonId === lessonId) : undefined;
+  const chart = task === 'task1' ? TASK1_VISUALS.find((v) => v.courseLessonId === lessonId || v.courseLessonIds?.includes(lessonId)) : undefined;
   const inVisual = task === 'task1' && (lessonId === VISUAL_LESSON_ID || !!chart);
   const origin: LessonOrigin = known === 'visual' && !inVisual ? 'learn' : (known ?? (inVisual ? 'visual' : 'learn'));
   switch (origin) {

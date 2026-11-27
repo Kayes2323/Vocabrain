@@ -10,7 +10,7 @@ import { TASK1_VISUALS } from '@/lib/writing-studio/content';
 import { getLesson } from '@/lib/writing-studio/lessons';
 import { useStartedLessons } from '@/lib/writing-studio/lesson-activity';
 import { chartTypeById, chartTypeHref, chartTypeState, lessonHref, lessonStatus, learnHref, visualHubHref, VISUAL_LESSON_ID } from '@/lib/writing-studio/navigation';
-import { actionKey, statusKey, useWsLocale, useWsProgress, WsHeader } from './common';
+import { actionKey, LessonCard, statusKey, useWsLocale, useWsProgress, WsHeader } from './common';
 
 /** One icon per chart type, by registry id (the registry stays the source of truth for the categories themselves). */
 const CHART_ICON: Record<string, LucideIcon> = {
@@ -115,10 +115,16 @@ export function VisualInformationHub() {
  */
 export function ChartTypeScreen({ chartTypeId }: { chartTypeId: string }) {
   const { text, l } = useWsLocale('task1');
+  const progress = useWsProgress();
+  const started = useStartedLessons();
   const area = chartTypeById(TASK1_VISUALS, chartTypeId);
   if (!area) notFound();
   const Icon = CHART_ICON[area.id] ?? BarChart3;
   const state = chartTypeState(area);
+  // Ordered lesson ids for this chart type's course. `courseLessonIds` is authoritative when a
+  // course has more than one lesson; a single-lesson course (or one authored before this field
+  // existed) falls back to `courseLessonId` alone, so existing single-lesson courses are unchanged.
+  const lessonIds = area.courseLessonIds?.length ? area.courseLessonIds : area.courseLessonId ? [area.courseLessonId] : [];
 
   return (
     <div className="mx-auto max-w-3xl space-y-6" data-testid="ws-chart-type" data-chart-id={area.id} data-state={state}>
@@ -136,14 +142,36 @@ export function ChartTypeScreen({ chartTypeId }: { chartTypeId: string }) {
         <p className="text-[15px] leading-snug font-medium">{l(area.title)}</p>
       </Panel>
 
-      {state === 'course' && area.courseLessonId ? (
+      {state === 'course' && lessonIds.length === 1 ? (
         <Link
-          href={lessonHref('task1', area.courseLessonId, 'visual')}
+          href={lessonHref('task1', lessonIds[0], 'visual')}
           data-testid="ws-chart-course-link"
           className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg bg-brand px-4 text-sm font-semibold text-brand-foreground"
         >
           {text('chartStartCourse')} <ArrowRight className="size-4" aria-hidden />
         </Link>
+      ) : state === 'course' && lessonIds.length > 1 ? (
+        <div className="space-y-2.5" data-testid="ws-chart-course-lessons">
+          {lessonIds.map((id, i) => {
+            const lesson = getLesson(id);
+            if (!lesson) return null;
+            const lessonState = lessonStatus(progress, id, started);
+            return (
+              <LessonCard
+                key={id}
+                href={lessonHref('task1', id, 'visual')}
+                number={i + 1}
+                title={l(lesson.title)}
+                description={l(lesson.objective)}
+                status={lessonState}
+                statusLabel={text(statusKey(lessonState))}
+                actionLabel={text(actionKey(lessonState))}
+                testId="ws-chart-course-lesson"
+                dataId={id}
+              />
+            );
+          })}
+        </div>
       ) : (
         <>
           <div data-testid="ws-chart-preview">

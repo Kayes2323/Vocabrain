@@ -100,7 +100,11 @@ async function main() {
       'The line graph illustrates the proportion of households using four home-heating methods in Dalton Borough between 2000 and 2025. Overall, mains gas use declined substantially while heat pumps rose sharply, overtaking both electric storage heating and mains gas during the period. Oil use remained broadly stable throughout, and electric storage heating rose at a steadier, more moderate pace than heat pumps. In 2000, mains gas was used by 62% of households, falling steadily to just 16% by 2025. Heat pumps started at only 1% but climbed quickly, reaching 46% by the end of the period. Electric storage heating rose gradually from 8% to 25%, while oil stayed within a narrow 9% to 10% range for the whole twenty-five years, never changing by more than one percentage point. Heat pumps overtook both mains gas and electric storage heating between 2015 and 2020, finishing the period as the most widely used heating method among the four shown in the borough.';
     await page.getByRole('textbox').first().fill(essay);
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
-    await page.getByText(/Mino is reading your answer/).waitFor({ timeout: 10_000 });
+    // Not asserting on the transient "Mino is reading your answer…" text: after this test's many
+    // real chart-answer calls, the shared per-minute AI rate limit is often already spent by this
+    // point, so the final essay resolves via the instant local fallback — too fast for a poll-based
+    // waitFor to reliably catch the in-between state. Waiting straight for the terminal Feedback
+    // screen is the real thing being verified (a result arrived, local or AI, and nothing hung).
     await page.getByText('Feedback').first().waitFor({ timeout: 30_000 });
     const feedbackScreen = await page.locator('main').innerText();
     check('submitting the independent test produces real feedback (not a silent failure)', feedbackScreen.length > 0);

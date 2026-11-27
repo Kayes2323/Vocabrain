@@ -39,14 +39,14 @@ async function main() {
     watchErrors(page, 'bc-mastery', errors);
     await signUp(page, 'Rashed', `bc-mastery-${stamp}@test.dev`, 'en');
 
-    // ---------------------------------------------------------------- the chart-type hub offers this course
+    // ---------------------------------------------------------------- the chart-type hub offers this course (now a two-lesson list; Lesson 01 is the first card)
     await page.goto(BASE + '/ielts/writing-studio/task1/learn/visual-information/bar-charts', { waitUntil: 'load' });
-    const courseLink = page.getByTestId('ws-chart-course-link');
-    await courseLink.waitFor({ timeout: 30_000 });
-    check('Bar Charts now offers its own course link (not stuck on the generic preview)', await courseLink.isVisible());
-    await courseLink.click();
-    await page.waitForURL('**/lesson/bar-chart-mastery**', { timeout: 15_000 });
-    check('opening the course goes to the dedicated bar-chart-mastery lesson', page.url().includes('/lesson/bar-chart-mastery'), page.url());
+    const lessonCards = page.getByTestId('ws-chart-course-lesson');
+    await lessonCards.first().waitFor({ timeout: 30_000 });
+    check('Bar Charts now offers its own course lessons (not stuck on the generic preview)', (await lessonCards.count()) >= 1);
+    await lessonCards.first().click();
+    await page.waitForURL((u) => /\/lesson\/bar-chart-mastery(?!-2)/.test(u.pathname), { timeout: 15_000 });
+    check('opening the first lesson card goes to the dedicated bar-chart-mastery lesson', page.url().includes('/lesson/bar-chart-mastery') && !page.url().includes('bar-chart-mastery-2'), page.url());
 
     await page.getByText('Understanding Bar Charts').first().waitFor({ timeout: 30_000 });
     const next = () => page.getByRole('button', { name: /^(Continue|Start writing)$/ });
@@ -160,7 +160,11 @@ async function main() {
       'The bar chart compares the proportions of Australian men and women in six different age groups who engaged in regular physical activity in 2010. Overall, women recorded higher levels of physical activity than men in five of the six age groups, the sole exception being those aged 15 to 24, where men led at 52.8% against 47.7% for women. The largest difference between the sexes was seen in the 35 to 44 age group. In that group, 52.5% of women were active compared with only 39.5% of men, a gap of 13 percentage points. Female participation then peaked at 53.3% among those aged 45 to 54, before remaining almost unchanged at 53.0% in the 55 to 64 group. In the oldest category, the figures were very similar, at 47.1% for women and 46.7% for men, a difference of only 0.4 percentage points.';
     await page.getByRole('textbox').first().fill(essay);
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
-    await page.getByText(/Mino is reading your answer/).waitFor({ timeout: 10_000 });
+    // Not asserting on the transient "Mino is reading your answer…" text: after this test's many
+    // real chart-answer calls, the shared per-minute AI rate limit is often already spent by this
+    // point, so the final essay resolves via the instant local fallback — too fast for a poll-based
+    // waitFor to reliably catch the in-between state. Waiting straight for the terminal Feedback
+    // screen is the real thing being verified (a result arrived, local or AI, and nothing hung).
     await page.getByText('Feedback').first().waitFor({ timeout: 30_000 });
     await shot(page, 'bc-mastery-feedback');
 

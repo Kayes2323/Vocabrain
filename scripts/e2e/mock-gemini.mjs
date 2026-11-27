@@ -78,7 +78,15 @@ http
         const targetWords = new Set([...words(reference), ...words(alternatives)]);
         const overlap = [...studentWords].filter((w) => targetWords.has(w)).length;
         const meaningfulLength = student.trim().length >= 2 && !/^(janinna|xyz|zzz)$/i.test(student.trim());
-        const meaningMatches = meaningfulLength && overlap >= 1;
+        // A classic swap/wrong-figure mistake can share every surrounding WORD with the
+        // reference ("Ownership was 31% in 2001, its peak.") while getting the one number
+        // that matters wrong. Catch that: if the student names a number the reference (or its
+        // alternatives) never mentions at all, the core fact is wrong regardless of word overlap.
+        const numbers = (s) => new Set((s.match(/\d+(\.\d+)?/g) ?? []));
+        const studentNumbers = numbers(student);
+        const targetNumbers = new Set([...numbers(reference), ...numbers(alternatives)]);
+        const hasForeignNumber = [...studentNumbers].some((n) => !targetNumbers.has(n));
+        const meaningMatches = meaningfulLength && overlap >= 1 && !hasForeignNumber;
         let verdict;
         if (isEnglishProduction && hasBangla) verdict = meaningMatches ? 'partially_correct' : 'incorrect';
         else verdict = meaningMatches ? 'correct' : 'incorrect';
