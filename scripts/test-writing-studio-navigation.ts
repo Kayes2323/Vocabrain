@@ -91,13 +91,17 @@ test('Line Graphs and Bar Charts are courses today; every other chart type is an
   assert.equal(resolveLessonBack('task2', 'line-graph-mastery', 'visual').href, '/ielts/writing-studio/task2/learn');
   const bc = TASK1_VISUALS.find((v) => v.id === 'bar-charts')!;
   assert.equal(bc.courseLessonId, 'bar-chart-mastery');
-  assert.deepEqual(bc.courseLessonIds, ['bar-chart-mastery', 'bar-chart-mastery-2']);
+  assert.deepEqual(bc.courseLessonIds, ['bar-chart-mastery', 'bar-chart-mastery-2', 'bar-chart-family-expenditure-cambridge-17-t3']);
   assert.ok(getLesson('bar-chart-mastery'));
   assert.ok(getLesson('bar-chart-mastery-2'));
+  assert.ok(getLesson('bar-chart-family-expenditure-cambridge-17-t3'));
   assert.equal(resolveLessonBack('task1', 'bar-chart-mastery', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
-  // The second lesson in a multi-lesson course is found via `courseLessonIds`, not just the
-  // legacy single `courseLessonId` — this is the fix this lesson's own addition needed.
+  // The second and third lessons in a multi-lesson course are found via
+  // `courseLessonIds`, not just the legacy single `courseLessonId` — this is
+  // the fix Lesson 02's addition needed, and Lesson 03 exercises it again
+  // for a third list entry.
   assert.equal(resolveLessonBack('task1', 'bar-chart-mastery-2', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
+  assert.equal(resolveLessonBack('task1', 'bar-chart-family-expenditure-cambridge-17-t3', 'visual').href, '/ielts/writing-studio/task1/learn/visual-information/bar-charts');
 });
 
 test('a chart type becomes a course only through its own registered lesson id', () => {

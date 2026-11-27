@@ -405,6 +405,7 @@ export const ACCOMMODATION_PLANNING_TASKS: ChartBoardTask[] = [
   },
 ];
 
+
 /** Writing-production checkpoints for the complete report (introduction + overview), mirroring Lesson 01's pattern. */
 export const ACCOMMODATION_WRITING_TASKS: ChartBoardTask[] = [
   {
@@ -437,3 +438,354 @@ export const ACCOMMODATION_WRITING_TASKS: ChartBoardTask[] = [
   },
 ];
 
+
+// ====================================================================
+// Lesson 03 — Cambridge IELTS 17 Academic, Test 3, Writing Task 1
+// "1968 and 2018: Average Weekly Spending by Families" (printed book page
+// 72). Eight expenditure categories, two paired years (1968 and 2018) —
+// unlike Lesson 02's nine-year continuous series, this is a two-point
+// comparison, and the chart itself is drawn HORIZONTALLY in the original
+// (categories on the Y-axis, percentage on the X-axis, 0-40% in 5-point
+// steps). These readings are approximate whole-percentage figures read off
+// the original bar chart, not an exact underlying survey table — every
+// Mino explanation below says "approximately"/"about" for this reason, and
+// the eight categories are NOT required to sum to 100% (the chart does not
+// claim to show every category of household spending).
+// ====================================================================
+
+export const CAMBRIDGE_17_T3_FAMILY_EXPENDITURE: ChartDataset = {
+  id: 'cambridge-17-t3-family-expenditure',
+  kind: 'bar',
+  title: '1968 and 2018: Average Weekly Spending by Families',
+  unit: '%',
+  categories: ['Food', 'Housing', 'Fuel and power', 'Clothing and footwear', 'Household goods', 'Personal goods', 'Transport', 'Leisure'],
+  series: [
+    // Semantic theme tokens rather than literal #000/#999: this keeps the
+    // original chart's black-vs-grey identity in light mode (what the
+    // Quick Questions in Step 02 teach) while still being visible against
+    // a dark background in dark mode, where literal black bars would
+    // disappear. var(--foreground) is near-black on the light theme;
+    // var(--muted-foreground) is grey in both themes.
+    { name: '1968', color: 'var(--foreground)', values: [35, 10, 6, 10, 8, 8, 8, 9] },
+    { name: '2018', color: 'var(--muted-foreground)', values: [17, 19, 4, 5, 8, 4, 14, 22] },
+  ],
+  note: 'Source: Cambridge IELTS 17 Academic, Test 3, Writing Task 1 (printed page 72). These are approximate chart readings, not exact survey figures — the eight categories shown are not the whole household budget and do not need to sum to 100%.',
+  orientation: 'horizontal',
+  axisDomain: [0, 40],
+  axisTickInterval: 5,
+};
+
+/** Step 02's five-question quick knowledge check (chart structure, not data values). */
+export const EXPENDITURE_STRUCTURE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-s-categories', order: 1,
+    prompt: 'How many expenditure categories are shown in this chart?',
+    modelAnswer: 'Eight.',
+    acceptableAlternatives: ['8', 'আটটা।', 'আটটি category।'],
+    belongsIn: 'introduction',
+  },
+  {
+    id: 'exp-s-colour-1968', order: 2,
+    prompt: 'Which colour represents 1968?',
+    modelAnswer: 'Black.',
+    acceptableAlternatives: ['The black bar.', 'কালো।', 'কালো bar।'],
+    belongsIn: 'introduction',
+  },
+  {
+    id: 'exp-s-colour-2018', order: 3,
+    prompt: 'Which colour represents 2018?',
+    modelAnswer: 'Grey.',
+    acceptableAlternatives: ['The grey bar.', 'ধূসর।', 'ধূসর bar।'],
+    belongsIn: 'introduction',
+  },
+  {
+    id: 'exp-s-xaxis', order: 4,
+    prompt: 'What does the horizontal (X) axis measure?',
+    modelAnswer: 'Percentage of weekly income.',
+    acceptableAlternatives: ['Percentage of weekly family income.', 'Weekly income-এর percentage।'],
+    belongsIn: 'introduction',
+  },
+  {
+    id: 'exp-s-exact-money', order: 5,
+    prompt: 'Does the chart show exact amounts of money?',
+    modelAnswer: 'No, it shows proportions of weekly income.',
+    acceptableAlternatives: ['No — it is a percentage, not a currency amount.', 'না, এটা টাকার amount না, percentage of income।'],
+    evaluationCriteria: ['Clearly says "no" — the chart reports a proportion of income, never a currency amount'],
+    belongsIn: 'introduction',
+  },
+];
+
+/** Step 03 — the biggest/smallest 1968 categories (bare-figure recall, Mode 1). */
+export const EXPENDITURE_1968_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e1-q1-largest-1968', order: 1,
+    prompt: 'Which category accounted for the largest proportion in 1968?',
+    modelAnswer: 'Food, about 35%.',
+    acceptableAlternatives: ['Food', 'Food at approximately 35%.', 'Food, ৩৫% এর কাছাকাছি।'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e1-q2-two-tens', order: 2,
+    prompt: 'Which two categories were both approximately 10%?',
+    modelAnswer: 'Housing and Clothing and footwear.',
+    acceptableAlternatives: ['Housing and clothing and footwear.', 'Housing, Clothing and footwear।'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e1-q3-smallest-1968', order: 3,
+    prompt: 'Which category had the smallest proportion in 1968?',
+    modelAnswer: 'Fuel and power, about 6%.',
+    acceptableAlternatives: ['Fuel and power', 'Fuel and power at approximately 6%.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e1-q4-three-eights', order: 4,
+    prompt: 'Which three categories were approximately 8% in 1968?',
+    modelAnswer: 'Household goods, Personal goods and Transport.',
+    acceptableAlternatives: ['Household goods, personal goods, transport.'],
+    belongsIn: 'body',
+  },
+];
+
+/** Step 04 — the biggest 2018 categories (bare-figure recall, Mode 1). */
+export const EXPENDITURE_2018_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e2-q1-largest-2018', order: 1,
+    prompt: 'Which category had the highest share in 2018?',
+    modelAnswer: 'Leisure, about 22%.',
+    acceptableAlternatives: ['Leisure', 'Leisure at approximately 22%.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e2-q2-second-2018', order: 2,
+    prompt: 'Which category was second highest in 2018?',
+    modelAnswer: 'Housing, about 19%.',
+    acceptableAlternatives: ['Housing', 'Housing at approximately 19%.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e2-q3-third-2018', order: 3,
+    prompt: 'Which category came third in 2018?',
+    modelAnswer: 'Food, about 17%.',
+    acceptableAlternatives: ['Food', 'Food at approximately 17%.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e2-q4-lowest-2018', order: 4,
+    prompt: 'Which two categories recorded the lowest proportions in 2018?',
+    modelAnswer: 'Fuel and power and Personal goods, both about 4%.',
+    acceptableAlternatives: ['Fuel and power and personal goods.'],
+    belongsIn: 'body',
+  },
+];
+
+/** Step 05 — increases (concept-level, approximations allowed per the data policy). */
+export const EXPENDITURE_INCREASE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e3-q1-leisure-most', order: 1,
+    prompt: 'Which category increased most?',
+    modelAnswer: 'Leisure.',
+    acceptableAlternatives: ['Leisure increased the most.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e3-q2-housing-points', order: 2,
+    prompt: 'Which category increased by approximately 9 percentage points?',
+    modelAnswer: 'Housing.',
+    acceptableAlternatives: ['Housing increased by about 9 percentage points.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e3-q3-transport-range', order: 3,
+    prompt: 'Which category increased from about 8% to 14%?',
+    modelAnswer: 'Transport.',
+    acceptableAlternatives: ['Transport, from 8% to 14%.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e3-q4-largest-of-three', order: 4,
+    prompt: 'Of housing, transport and leisure, which of these three increases was largest?',
+    modelAnswer: 'Leisure.',
+    acceptableAlternatives: ['Leisure had the largest increase of the three.'],
+    belongsIn: 'overview',
+  },
+];
+
+/** Step 06 — decreases and the one unchanged category. */
+export const EXPENDITURE_DECREASE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e4-q1-largest-decline', order: 1,
+    prompt: 'Which category experienced the largest decline?',
+    modelAnswer: 'Food.',
+    acceptableAlternatives: ['Food had the biggest decline.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e4-q2-unchanged', order: 2,
+    prompt: 'Which category remained unchanged?',
+    modelAnswer: 'Household goods.',
+    acceptableAlternatives: ['Household goods stayed the same, at about 8%.'],
+    evaluationCriteria: ['Names Household goods specifically — "no category changed" or a vague answer should not be accepted as this specific fact'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e4-q3-clothing-fall', order: 3,
+    prompt: 'Which category fell from approximately 10% to 5%?',
+    modelAnswer: 'Clothing and footwear.',
+    acceptableAlternatives: ['Clothing and footwear.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e4-q4-personal-fall', order: 4,
+    prompt: 'Which category fell from approximately 8% to 4%?',
+    modelAnswer: 'Personal goods.',
+    acceptableAlternatives: ['Personal goods.'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e4-q5-two-at-four', order: 5,
+    prompt: 'Which two categories were around 4% in 2018?',
+    modelAnswer: 'Fuel and power and Personal goods.',
+    acceptableAlternatives: ['Fuel and power, personal goods.'],
+    belongsIn: 'body',
+  },
+];
+
+/** Step 07 — approximate percentage-point differences (the core percentage-point-vs-percent distinction). */
+export const EXPENDITURE_DIFFERENCE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e5-q1-leisure-points', order: 1,
+    prompt: 'How many percentage points did leisure increase by?',
+    modelAnswer: 'Approximately 13 percentage points.',
+    acceptableAlternatives: ['About 13 percentage points.', 'Around 13.', 'প্রায় ১৩ percentage points।'],
+    evaluationCriteria: ['Gives a figure close to 13 (9 to 22), described in percentage points'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e5-q2-food-points', order: 2,
+    prompt: 'How many percentage points did food decrease by?',
+    modelAnswer: 'Approximately 18 percentage points.',
+    acceptableAlternatives: ['About 18 percentage points.', 'Around 18.', 'প্রায় ১৮ percentage points।'],
+    evaluationCriteria: ['Gives a figure close to 18 (35 down to 17), described in percentage points, not a currency fall ("18 taka" or similar is wrong)'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e5-q3-household-change', order: 3,
+    prompt: 'What was the approximate change in household goods?',
+    modelAnswer: 'Zero — it stayed at approximately 8% in both years.',
+    acceptableAlternatives: ['Zero.', 'No change.', 'কোনো পরিবর্তন নেই।'],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-e5-q4-food-vs-housing', order: 4,
+    prompt: 'Which category changed more: food or housing?',
+    modelAnswer: 'Food, by approximately 18 percentage points compared with housing\'s 9.',
+    acceptableAlternatives: ['Food changed more.', 'Food — 18 points vs 9 points for housing.'],
+    evaluationCriteria: ['Names food as the larger change and gives roughly correct supporting figures for both'],
+    belongsIn: 'body',
+  },
+];
+
+/** Step 08 — comparing the overall ranking between the two years (concept-level, Mode 1). */
+export const EXPENDITURE_RANKING_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e6-q1-food-fell-rank', order: 1,
+    prompt: 'Which category changed from the largest share in 1968 to a lower-ranking position in 2018?',
+    modelAnswer: 'Food.',
+    acceptableAlternatives: ['Food fell in ranking.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e6-q2-leisure-became-largest', order: 2,
+    prompt: 'Which category became the largest in 2018?',
+    modelAnswer: 'Leisure.',
+    acceptableAlternatives: ['Leisure became the biggest category.'],
+    belongsIn: 'overview',
+  },
+  {
+    id: 'exp-e6-q3-household-did-not-change', order: 3,
+    prompt: 'Did household goods change?',
+    modelAnswer: 'No, it remained approximately 8%.',
+    acceptableAlternatives: ['No, unchanged.', 'না, একই ছিল।'],
+    belongsIn: 'overview',
+  },
+];
+
+/** Step 09 — selecting the three most important overview features (open, concept-level). */
+export const EXPENDITURE_KEY_FEATURE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-e7-key-features', order: 1,
+    prompt: 'Name the three most important features an overview of this chart should mention.',
+    modelAnswer: 'Food fell substantially from the largest 1968 category; leisure and housing became the largest 2018 categories; household goods remained unchanged while several smaller categories declined.',
+    acceptableAlternatives: ['Food\'s big decline, leisure/housing\'s rise, and household goods staying the same.'],
+    evaluationCriteria: ['Mentions the food decline', 'Mentions leisure (and ideally housing) becoming larger', 'Does not just list every category individually with no selection'],
+    belongsIn: 'overview',
+  },
+];
+
+/** Steps 13-14 — English sentence-level writing checkpoints for each body paragraph grouping (Mode 2). */
+export const EXPENDITURE_SENTENCE_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-w-body1', order: 1,
+    prompt: 'Write a paragraph describing the categories that increased or remained stable: leisure, housing, transport and household goods.',
+    modelAnswer:
+      'Spending on leisure rose from approximately 9% of weekly income in 1968 to 22% in 2018, making it the largest category in the latter year. Housing also increased substantially, from around 10% to 19%, while the proportion allocated to transport grew from about 8% to 14%. By contrast, household goods accounted for approximately 8% in both years and therefore remained unchanged.',
+    requiredLanguage: 'en',
+    evaluationCriteria: [
+      'Reports leisure rising from about 9% to 22%',
+      'Reports housing rising from about 10% to 19%',
+      'Reports transport rising from about 8% to 14%',
+      'States household goods as unchanged at about 8%',
+      'Grammatically correct English',
+    ],
+    belongsIn: 'body',
+  },
+  {
+    id: 'exp-w-body2', order: 2,
+    prompt: 'Write a paragraph describing the categories that declined: food, clothing and footwear, personal goods, and fuel and power.',
+    modelAnswer:
+      'Food represented the largest share in 1968, at approximately 35%, but this figure fell to about 17% by 2018. Clothing and footwear expenditure was halved, declining from roughly 10% to 5%, while personal goods fell from around 8% to 4%. Fuel and power also received a smaller share, decreasing modestly from approximately 6% to 4%.',
+    requiredLanguage: 'en',
+    evaluationCriteria: [
+      'Reports food falling from about 35% to 17%',
+      'Reports clothing and footwear falling from about 10% to 5%',
+      'Reports personal goods falling from about 8% to 4%',
+      'Reports fuel and power falling from about 6% to 4%',
+      'Grammatically correct English',
+    ],
+    belongsIn: 'body',
+  },
+];
+
+/** Writing-production checkpoints for the complete report (introduction + overview), mirroring Lessons 01-02's pattern. */
+export const EXPENDITURE_WRITING_TASKS: ChartBoardTask[] = [
+  {
+    id: 'exp-w-introduction', order: 1,
+    prompt: 'Write your own introduction for this chart (1-2 sentences). Paraphrase — do not copy a model sentence.',
+    modelAnswer: 'The bar chart compares the proportions of weekly family income allocated to eight different spending categories in one country in 1968 and 2018.',
+    requiredLanguage: 'en',
+    evaluationCriteria: [
+      'Accurately represents the chart topic (weekly family spending/income allocation)',
+      'Includes the eight categories (or "several"/"different" categories)',
+      'Includes both years, 1968 and 2018',
+      'Does not add any data, trend or opinion — that belongs later',
+      'Grammatically correct, natural paraphrasing (not a word-for-word copy of the model)',
+    ],
+    belongsIn: 'introduction',
+  },
+  {
+    id: 'exp-w-overview', order: 2,
+    prompt: 'Write a two-to-three-sentence overview: the change in the leading category, the main increases, and the overall stability/decline pattern — not every individual figure.',
+    modelAnswer:
+      'Overall, food accounted for the largest share of weekly family expenditure in 1968, but leisure became the leading category in 2018. The proportion allocated to housing and transport also increased, while household goods remained stable and several other categories declined.',
+    requiredLanguage: 'en',
+    evaluationCriteria: [
+      'States that food was largest in 1968 but leisure became largest in 2018',
+      'States that housing and/or transport increased',
+      'States that household goods stayed stable',
+      'Does not list every individual category\'s figures',
+      'Grammatically correct English',
+    ],
+    belongsIn: 'overview',
+  },
+];

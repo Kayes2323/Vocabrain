@@ -181,6 +181,25 @@ void (async () => {
     assert.ok(res.incorrectClaims.some((c) => /52\.8/.test(c)));
   });
 
+  // ---------------------------------------------------------------- Bar Chart Mastery Lesson 03 (Cambridge 17 T3) mandatory regression case 6:
+  // the right NUMBER with the wrong unit — percentage points misstated as a currency amount.
+
+  await test('REGRESSION (Lesson 03, Part E case 6): "Food fell by 18 taka" is rejected even though the number 18 is correct — the unit is a percentage-point fact, never currency', async () => {
+    const provider = fakeOk({ verdict: 'incorrect', incorrectClaims: ['"18 taka" is wrong — the chart reports a fall of approximately 18 percentage points of weekly income, never a currency amount.'] });
+    const res = await assessChartAnswer(provider, {
+      chartTitle: '1968 and 2018: Average Weekly Spending by Families',
+      chartUnit: '%',
+      requiredLanguage: 'bn-or-en',
+      acceptableAlternatives: ['About 18 percentage points.', 'Around 18.'],
+      evaluationCriteria: ['Gives a figure close to 18 (35 down to 17), described in percentage points, not a currency fall ("18 taka" or similar is wrong)'],
+      question: 'How many percentage points did food decrease by?',
+      referenceAnswer: 'Approximately 18 percentage points.',
+      learnerAnswer: 'Food fell by about 18 taka.',
+    });
+    assert.equal(res.verdict, 'incorrect');
+    assert.match(seen!.system!, /percentage points, not a currency fall/);
+  });
+
   // ---------------------------------------------------------------- provider failures never produce a correct verdict
 
   await test('a provider that returns non-JSON text fails safely (unavailable), never a correct/partial/incorrect verdict', async () => {

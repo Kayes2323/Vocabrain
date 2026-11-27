@@ -1,5 +1,5 @@
 import type { ChartDataset } from './types';
-import { CAMBRIDGE_12_T1_PHYSICAL_ACTIVITY, CAMBRIDGE_13_T2_OWNED_RENTED } from './bar-charts';
+import { CAMBRIDGE_12_T1_PHYSICAL_ACTIVITY, CAMBRIDGE_13_T2_OWNED_RENTED, CAMBRIDGE_17_T3_FAMILY_EXPENDITURE } from './bar-charts';
 import { LINE_GRAPH_DATASETS } from './line-graphs';
 
 /** Turns a chart dataset into the plain table shape Mino's AI assessment takes as task data. */
@@ -53,4 +53,5 @@ export const CHART_DATASETS: Record<string, ChartDataset> = {
   'lg-06-independent-test': LINE_GRAPH_DATASETS['lg-06-independent-test'],
   'cambridge-12-t1-physical-activity': CAMBRIDGE_12_T1_PHYSICAL_ACTIVITY,
   'cambridge-13-t2-owned-rented-accommodation': CAMBRIDGE_13_T2_OWNED_RENTED,
+  'cambridge-17-t3-family-expenditure': CAMBRIDGE_17_T3_FAMILY_EXPENDITURE,
 };

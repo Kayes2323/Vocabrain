@@ -93,6 +93,11 @@ export interface ChartDataset {
   series: ChartSeries[];
   /** One honest line of context a student would be given with the real chart. */
   note?: string;
+  /** Bar charts only. 'horizontal' draws bars left-to-right with categories on the Y-axis (the orientation of the original Cambridge chart this course's Lesson 03 reproduces). Omitted/'vertical' keeps every existing chart's current rendering unchanged. */
+  orientation?: 'horizontal' | 'vertical';
+  /** Bar charts only. Fixes the numeric axis domain/tick spacing instead of Recharts' automatic scale — needed when the source chart itself specifies a scale (e.g. 0-40% in 5-point steps). */
+  axisDomain?: [number, number];
+  axisTickInterval?: number;
 }
 
 export interface ChartBoardTask {

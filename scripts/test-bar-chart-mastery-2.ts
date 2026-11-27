@@ -178,9 +178,12 @@ test('the model answer step quotes the real, byte-accurate word count rather tha
 
 // ---------------------------------------------------------------- multi-lesson course routing (Part G)
 
-test('the Bar Charts course now lists both lessons, in order, via courseLessonIds', () => {
+test('the Bar Charts course lists this lesson in its courseLessonIds (a later lesson may extend, not shrink, this list)', () => {
   const visual = TASK1_VISUALS.find((v) => v.id === 'bar-charts');
-  assert.deepEqual(visual?.courseLessonIds, ['bar-chart-mastery', 'bar-chart-mastery-2']);
+  assert.ok(visual?.courseLessonIds?.includes('bar-chart-mastery'));
+  assert.ok(visual?.courseLessonIds?.includes('bar-chart-mastery-2'));
+  assert.equal(visual?.courseLessonIds?.indexOf('bar-chart-mastery'), 0, 'Lesson 01 stays first');
+  assert.equal(visual?.courseLessonIds?.indexOf('bar-chart-mastery-2'), 1, 'Lesson 02 stays second');
   assert.equal(visual?.courseLessonId, 'bar-chart-mastery', 'the legacy single-id field still points at Lesson 01, unchanged');
 });
 

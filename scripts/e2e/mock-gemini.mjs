@@ -86,7 +86,16 @@ http
         const studentNumbers = numbers(student);
         const targetNumbers = new Set([...numbers(reference), ...numbers(alternatives)]);
         const hasForeignNumber = [...studentNumbers].some((n) => !targetNumbers.has(n));
-        const meaningMatches = meaningfulLength && overlap >= 1 && !hasForeignNumber;
+        // Same idea as the swap check above, for the other classic mistake this
+        // heuristic needs to catch: a student can get the NUMBER right while
+        // misstating its unit (e.g. "fell by 18 taka" for a fact that is a
+        // percentage-point difference, never a currency amount). The number
+        // alone would pass the overlap/foreign-number checks above, so check
+        // the unit word separately: a currency word the reference never uses
+        // disqualifies the answer regardless of number/word overlap.
+        const currencyWord = /\b(taka|rupees?|dollars?|pounds?|euros?)\b/i;
+        const hasWrongUnit = currencyWord.test(student) && !currencyWord.test(reference) && !currencyWord.test(alternatives);
+        const meaningMatches = meaningfulLength && overlap >= 1 && !hasForeignNumber && !hasWrongUnit;
         let verdict;
         if (isEnglishProduction && hasBangla) verdict = meaningMatches ? 'partially_correct' : 'incorrect';
         else verdict = meaningMatches ? 'correct' : 'incorrect';
