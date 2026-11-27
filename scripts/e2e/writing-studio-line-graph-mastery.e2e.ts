@@ -9,9 +9,11 @@
 import { BASE, check, launch, report, shot, signUp, watchErrors } from './helpers';
 
 // Only one task's textarea+"Check my answer" pair is ever interactive at a
-// time (earlier tasks turn into read-only model-answer panels once
-// revealed), so the last enabled textarea on the page is always the current
-// question.
+// time (earlier tasks turn into read-only model-answer/verdict panels once
+// settled), so the last enabled textarea on the page is always the current
+// question. Checking an answer now goes through a real (mocked) AI
+// evaluation round trip — never instant — so each submission must wait for
+// "Mino is checking…" to clear before the next task's textarea can appear.
 async function revealAllChartBoardTasks(page: import('playwright-core').Page) {
   for (let i = 0; i < 10; i++) {
     const checkBtn = page.getByRole('button', { name: 'Check my answer' });
@@ -19,6 +21,7 @@ async function revealAllChartBoardTasks(page: import('playwright-core').Page) {
     const textarea = page.locator('textarea:not([disabled])').last();
     await textarea.fill('My own interpretation of this feature of the chart, in my own words.');
     await checkBtn.last().click();
+    await page.getByRole('button', { name: 'Mino is checking…' }).waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
     await page.waitForTimeout(150);
   }
 }
