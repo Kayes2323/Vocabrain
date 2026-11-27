@@ -156,10 +156,14 @@ async function main() {
     await shot(page, 'bc2-mastery-write');
 
     const essay =
-      'The bar chart compares the percentages of households in England and Wales that owned or rented their accommodation between 1918 and 2011. Overall, home ownership increased substantially while renting declined, with the two figures becoming equal in 1971. Ownership then became the dominant form of accommodation, although this pattern reversed slightly in the final decade. In 1918, only 22% of households owned their accommodation, whereas 78% rented. By 1971, both figures had converged at exactly 50%. After 1971, ownership continued rising, reaching 69% in 2001, its highest point. However, this was followed by a decline to 64% by 2011, while renting recovered slightly from 31% to 36% over the same period, showing that the long-term trend partly reversed in the final decade.';
+      'The bar chart compares the percentages of households in England and Wales that owned or rented their accommodation between 1918 and 2011. Overall, home ownership increased substantially while renting declined over most of the period, with the two figures becoming exactly equal in 1971. Ownership then became the dominant form of accommodation for three decades, although this long-term pattern reversed slightly in the final ten years of the chart. In 1918, only 22% of households owned their accommodation, whereas a clear majority, 78%, rented instead. Ownership then rose steadily through the twentieth century, reaching 42% by 1961. By 1971, both figures had converged at exactly 50% each, a genuine turning point in the data. After 1971, ownership continued rising further still, climbing to 60% in 1981 and 68% in 1991, before reaching its highest recorded point of 69% in 2001. However, this long rise was followed by a decline to 64% by 2011, while renting recovered slightly from its low of 31% to 36% over the same final decade, showing that the long-term trend had partly reversed by the end of the period shown.';
     await page.getByRole('textbox').first().fill(essay);
     await page.getByRole('button', { name: 'Get feedback from Mino' }).click();
-    await page.getByText(/Mino is reading your answer/).waitFor({ timeout: 10_000 });
+    // Not asserting on the transient "Mino is reading your answer…" text: after this test's many
+    // real chart-answer calls, the shared per-minute AI rate limit is often already spent by this
+    // point, so the final essay resolves via the instant local fallback — too fast for a poll-based
+    // waitFor to reliably catch the in-between state. Waiting straight for the terminal Feedback
+    // screen is the real thing being verified (a result arrived, local or AI, and nothing hung).
     await page.getByText('Feedback').first().waitFor({ timeout: 30_000 });
     await shot(page, 'bc2-mastery-feedback');
 
