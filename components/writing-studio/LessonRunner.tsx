@@ -312,7 +312,12 @@ export function LessonRunner({ lesson, academyHref, backLabel = 'Back to Academy
       )}
 
       {step.material && (
-        <MaterialPanel block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} context={{ lessonId: lesson.id, stepId: step.id }} />
+        // Keyed by step id so a chart-board/idea-board fully remounts (fresh answers, verdicts,
+        // and reveal state) between two steps that both render one — without this, React reuses
+        // the same component instance across steps (same position, same type) and its internal
+        // state — and the "N/total checked" count derived from it — leaks from the previous
+        // step's board into the next one's.
+        <MaterialPanel key={step.id} block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} context={{ lessonId: lesson.id, stepId: step.id }} />
       )}
       {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} locale={contentLocale} />}
 

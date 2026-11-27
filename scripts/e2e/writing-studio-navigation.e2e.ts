@@ -108,15 +108,25 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   }
   check(`${tag}: every other chart type is its own honest preview screen`, true);
 
-  // Bar Charts: its own course (Bar Chart Mastery), never the generic overview lesson or chart-analysis board
+  // Bar Charts: a TWO-lesson course (Bar Chart Mastery + Lesson 02), never the generic overview lesson or chart-analysis board
   await p.goto(BASE + `${WS}/task1/learn/visual-information/bar-charts`, { waitUntil: 'load' });
   await p.getByTestId('ws-chart-type').waitFor({ timeout: 60_000 });
   const bcLinks = await hrefs(p, 'main a');
+  const bcLessonCards = await p.getByTestId('ws-chart-course-lesson').evaluateAll((els) => els.map((e) => ({ id: e.getAttribute('data-module-id'), href: e.getAttribute('href') })));
   check(
-    `${tag}: Bar Charts opens its own area with its dedicated course`,
-    (await p.getByTestId('ws-chart-type').getAttribute('data-state')) === 'course' && (await p.getByTestId('ws-chart-course-link').getAttribute('href')) === `${WS}/task1/lesson/bar-chart-mastery?from=visual`,
+    `${tag}: Bar Charts opens its own area with TWO lessons listed, in order`,
+    (await p.getByTestId('ws-chart-type').getAttribute('data-state')) === 'course' &&
+      JSON.stringify(bcLessonCards) === JSON.stringify([
+        { id: 'bar-chart-mastery', href: `${WS}/task1/lesson/bar-chart-mastery?from=visual` },
+        { id: 'bar-chart-mastery-2', href: `${WS}/task1/lesson/bar-chart-mastery-2?from=visual` },
+      ]),
+    JSON.stringify(bcLessonCards),
   );
   check(`${tag}: Bar Charts does NOT route to the generic overview lesson or the chart-analysis board`, !bcLinks.some((h) => /overview-writing|chart-analysis-board/.test(h ?? '')), JSON.stringify(bcLinks));
+  await p.getByTestId('ws-chart-course-lesson').nth(1).click();
+  await p.waitForURL(`**${WS}/task1/lesson/bar-chart-mastery-2*`, { timeout: 30_000 });
+  check(`${tag}: Bar Chart Mastery Lesson 02 opens and its Back returns to the Bar Charts area`, (await p.getByTestId('ws-back').getAttribute('href')) === `${WS}/task1/learn/visual-information/bar-charts`);
+  await p.goto(BASE + `${WS}/task1/learn/visual-information/bar-charts`, { waitUntil: 'load' });
   check(`${tag}: an unknown chart type is a 404`, (await (await p.goto(BASE + `${WS}/task1/learn/visual-information/not-a-chart`))!.status()) === 404);
 
   // back through the whole hierarchy
