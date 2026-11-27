@@ -74,7 +74,8 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   const charts = await p.getByTestId('ws-chart-card').evaluateAll((els) => els.map((e) => ({ id: e.getAttribute('data-chart-id'), state: e.getAttribute('data-state'), href: e.getAttribute('href'), text: (e as HTMLElement).innerText })));
   check(`${tag}: hub: exactly the seven chart types, in registry order`, JSON.stringify(charts.map((c) => c.id)) === JSON.stringify(VISUAL_IDS), JSON.stringify(charts.map((c) => c.id)));
   check(`${tag}: hub: each chart type is its own screen (distinct route under the hub)`, charts.every((c) => c.href === `${WS}/task1/learn/visual-information/${c.id}`) && new Set(charts.map((c) => c.href)).size === 7);
-  check(`${tag}: hub: only Line Graphs is marked a course; the other six are honest previews`, charts.every((c) => (c.id === 'line-graphs' ? c.state === 'course' : c.state === 'preview' && /Preview/.test(c.text))), JSON.stringify(charts.map((c) => c.state)));
+  const COURSE_CHART_IDS = new Set(['line-graphs', 'bar-charts']);
+  check(`${tag}: hub: Line Graphs and Bar Charts are marked as courses; the other five are honest previews`, charts.every((c) => (COURSE_CHART_IDS.has(c.id!) ? c.state === 'course' : c.state === 'preview' && /Preview/.test(c.text))), JSON.stringify(charts.map((c) => c.state)));
   check(`${tag}: hub: the core lecture is not duplicated among the chart cards`, !charts.some((c) => /visual-information\?from|lesson\/visual-information/.test(c.href ?? '')));
   check(`${tag}: hub: tap targets and no sideways scroll`, (await tapOk(p, '[data-testid="ws-chart-card"]')) && (await noHorizontalScroll(p)));
   await shot(p, `ws-nav-visual-${lang}`, false);
@@ -100,12 +101,22 @@ async function run(p: Page, lang: Lang, tag: string, mobile: boolean) {
   await p.waitForURL(`**${WS}/task1/lesson/line-graph-mastery*`, { timeout: 30_000 });
   check(`${tag}: the course lesson's Back returns to the Line Graphs area`, (await p.getByTestId('ws-back').getAttribute('href')) === `${WS}/task1/learn/visual-information/line-graphs`);
   await p.goto(BASE + `${WS}/task1/learn/visual-information/line-graphs`, { waitUntil: 'load' });
-  for (const id of VISUAL_IDS.slice(1)) {
+  for (const id of VISUAL_IDS.slice(1).filter((id) => id !== 'bar-charts')) {
     await p.goto(BASE + `${WS}/task1/learn/visual-information/${id}`, { waitUntil: 'load' });
     await p.getByTestId('ws-chart-type').waitFor({ timeout: 60_000 });
     if ((await p.getByTestId('ws-chart-type').getAttribute('data-state')) !== 'preview' || (await p.locator('main a[href*="chart-analysis-board"], main a[href*="overview-writing"]').count()) > 0) check(`${tag}: ${id} is an honest, separate preview`, false);
   }
   check(`${tag}: every other chart type is its own honest preview screen`, true);
+
+  // Bar Charts: its own course (Bar Chart Mastery), never the generic overview lesson or chart-analysis board
+  await p.goto(BASE + `${WS}/task1/learn/visual-information/bar-charts`, { waitUntil: 'load' });
+  await p.getByTestId('ws-chart-type').waitFor({ timeout: 60_000 });
+  const bcLinks = await hrefs(p, 'main a');
+  check(
+    `${tag}: Bar Charts opens its own area with its dedicated course`,
+    (await p.getByTestId('ws-chart-type').getAttribute('data-state')) === 'course' && (await p.getByTestId('ws-chart-course-link').getAttribute('href')) === `${WS}/task1/lesson/bar-chart-mastery?from=visual`,
+  );
+  check(`${tag}: Bar Charts does NOT route to the generic overview lesson or the chart-analysis board`, !bcLinks.some((h) => /overview-writing|chart-analysis-board/.test(h ?? '')), JSON.stringify(bcLinks));
   check(`${tag}: an unknown chart type is a 404`, (await (await p.goto(BASE + `${WS}/task1/learn/visual-information/not-a-chart`))!.status()) === 404);
 
   // back through the whole hierarchy

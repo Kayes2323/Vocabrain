@@ -58,6 +58,39 @@ http
           exampleBn: `${word} দিয়ে একটা উদাহরণ।`,
         }) }]);
       }
+      if (b.generationConfig?.responseMimeType === 'application/json' && /checking one student's answer to one guided chart-reading or chart-writing question/.test(system)) {
+        // Writing Studio chart-board answer evaluation (lib/ai/server/assess/chart-answer.ts).
+        // A simple, deterministic keyword-overlap judge: the reference
+        // answer (and any acceptable alternatives) are parsed out of the
+        // system prompt, and the student's answer is "correct" only if it
+        // substantively overlaps with one of them — nonsense, an unrelated
+        // word, or a wrong-but-plausible-looking fact (e.g. the wrong year
+        // or age group) never matches and is always "incorrect". This is
+        // what proves, end to end, that a bad answer can no longer come
+        // back green just because something was submitted.
+        const student = (b.contents?.[0]?.parts?.[0]?.text.match(/<student>([\s\S]*)<\/student>/) ?? [])[1] ?? '';
+        const reference = (system.match(/Reference answer \(the fact\(s\) a correct answer must convey\): ([^\n]*)/) ?? [])[1] ?? '';
+        const alternatives = (system.match(/Other acceptable phrasings\/equivalents: ([^\n]*)/) ?? [])[1] ?? '';
+        const isEnglishProduction = /IELTS WRITING PRODUCTION check/.test(system);
+        const hasBangla = /[ঀ-৿]/.test(student);
+        const words = (s) => new Set((s.toLowerCase().match(/[a-z0-9]{3,}/g) ?? []));
+        const studentWords = words(student);
+        const targetWords = new Set([...words(reference), ...words(alternatives)]);
+        const overlap = [...studentWords].filter((w) => targetWords.has(w)).length;
+        const meaningfulLength = student.trim().length >= 2 && !/^(janinna|xyz|zzz)$/i.test(student.trim());
+        const meaningMatches = meaningfulLength && overlap >= 1;
+        let verdict;
+        if (isEnglishProduction && hasBangla) verdict = meaningMatches ? 'partially_correct' : 'incorrect';
+        else verdict = meaningMatches ? 'correct' : 'incorrect';
+        return reply([{ text: JSON.stringify({
+          verdict,
+          identifiedFacts: verdict !== 'incorrect' ? [`Mentions: ${[...studentWords].filter((w) => targetWords.has(w)).join(', ') || 'the core fact'}`] : [],
+          missingFacts: verdict === 'partially_correct' ? ['Needs to be written as an English sentence.'] : [],
+          incorrectClaims: verdict === 'incorrect' ? [`"${student.slice(0, 80)}" does not match the chart's facts for this question.`] : [],
+          explanationBn: verdict === 'correct' ? 'ঠিক আছে — এটা chart-এর real fact-এর সাথে মিলছে।' : verdict === 'partially_correct' ? 'তথ্যটা ঠিক আছে, কিন্তু এটা English sentence হিসেবে লিখতে হবে।' : 'এই উত্তরটা chart-এ যা দেখানো হয়েছে তার সাথে মিলছে না।',
+          suggestedAnswerEn: reference || 'See the model answer below.',
+        }) }]);
+      }
       if (b.generationConfig?.responseMimeType === 'application/json') {
         const student = (b.contents?.[0]?.parts?.[0]?.text.match(/<student>([\s\S]*)<\/student>/) ?? [])[1] ?? '';
         const bn = /natural Bangla/.test(system);

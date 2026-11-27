@@ -96,6 +96,22 @@ export interface ChartBoardTask {
   modelAnswer: string;
   /** Which part of a Task 1 response this feature belongs in. */
   belongsIn: 'introduction' | 'overview' | 'body';
+  /**
+   * What language the learner's answer is checked in. 'bn-or-en' (the default
+   * when unset, for every pre-existing task) is a chart-understanding check:
+   * Bangla, English, short or long — only the information matters. 'en' is an
+   * IELTS writing-production check (an introduction/overview/paragraph
+   * sentence): the answer must itself be the English sentence being taught.
+   */
+  requiredLanguage?: 'bn-or-en' | 'en';
+  /** Other phrasings of `modelAnswer` the AI evaluator should also accept as correct. */
+  acceptableAlternatives?: string[];
+  /**
+   * Extra, task-specific things a fully correct answer must get right (e.g.
+   * "includes the location and year", "does not add unsupported information").
+   * Optional — omitted for simple one-fact concept checks.
+   */
+  evaluationCriteria?: string[];
 }
 
 // ---------------------------------------------------------------- Idea board

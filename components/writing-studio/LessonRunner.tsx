@@ -311,7 +311,9 @@ export function LessonRunner({ lesson, academyHref, backLabel = 'Back to Academy
         />
       )}
 
-      {step.material && <MaterialPanel block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} />}
+      {step.material && (
+        <MaterialPanel block={step.material} locale={contentLocale} onBoardComplete={() => setBoardDone(true)} context={{ lessonId: lesson.id, stepId: step.id }} />
+      )}
       {step.check && <CheckBlock question={step.check} selected={checkAnswer} onSelect={setCheckAnswer} locale={contentLocale} />}
 
       <div className="flex items-center justify-between gap-2 border-t pt-4">

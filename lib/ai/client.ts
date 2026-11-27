@@ -63,6 +63,36 @@ export async function writingStudioFeedback(
   }
 }
 
+/** Mino checks one Writing Studio Visual Analysis Board answer (signed-in students only). */
+export async function assessChartAnswer(input: {
+  lessonId: string;
+  stepId: string;
+  chartId: string;
+  chartTitle: string;
+  chartUnit: string;
+  questionId: string;
+  question: string;
+  requiredLanguage: 'bn-or-en' | 'en';
+  referenceAnswer: string;
+  acceptableAlternatives: string[];
+  evaluationCriteria: string[];
+  learnerAnswer: string;
+}): Promise<{ ok: true; feedback: import('./server/assess/chart-answer').ChartAnswerFeedback } | { ok: false; error: import('./types').MinoErrorCode }> {
+  const user = auth?.currentUser;
+  if (!user) return { ok: false, error: 'unauthenticated' };
+  try {
+    const token = await user.getIdToken();
+    const res = await fetch('/api/mino/chart-answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(input),
+    });
+    return (await res.json().catch(() => ({ ok: false, error: 'unavailable' }))) as never;
+  } catch {
+    return { ok: false, error: 'unavailable' };
+  }
+}
+
 /** Mino's feedback on a student's own Foundation sentence. */
 export async function foundationFeedback(
   lessonId: string,
