@@ -43,7 +43,7 @@ async function main() {
     await page.goto(BASE + '/ielts/writing-studio/task1/learn/visual-information/bar-charts', { waitUntil: 'load' });
     const lessonCards = page.getByTestId('ws-chart-course-lesson');
     await lessonCards.first().waitFor({ timeout: 30_000 });
-    check('the Bar Charts area now lists exactly two lessons', (await lessonCards.count()) === 2);
+    check('the Bar Charts area lists at least two lessons (Lesson 02 present; a later lesson may extend the list further)', (await lessonCards.count()) >= 2);
     await lessonCards.nth(1).click();
     await page.waitForURL('**/lesson/bar-chart-mastery-2**', { timeout: 15_000 });
     check('opening the second card goes to the dedicated bar-chart-mastery-2 lesson', page.url().includes('/lesson/bar-chart-mastery-2'), page.url());
